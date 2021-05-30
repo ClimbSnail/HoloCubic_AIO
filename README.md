@@ -44,7 +44,7 @@ HoloCubic Firmware
 2. wifi密码
 3. 所在省份（用于天气查询）
 4. 上述省份的语言（默认使用zh-Hans 简体中文）
-5. 知心天气的key。（申请地址https://seniverse.com，程序默认使用的是v3版本的api）
+5. 知心天气的key。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
 
 关于天气：程序启动后在天气的界面时，将会读取`Weather/`目录下的图标文件。
 
