@@ -2,6 +2,8 @@
 HoloCubic Firmware
 
 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
+本项目的地址 https://github.com/ClimbSnail/HoloCubic
+或者 https://gitee.com/ClimbSnailQ/HoloCubic
 
 注意：硬件部分C7电容换成10uF左右就可以实现自动下载。
 
@@ -37,7 +39,7 @@ HoloCubic Firmware
 
 内存卡文件系统为fat32，将`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
 
-关于`wifi.txt`文件的结构一共5行：
+关于`wifi.txt`文件的结构一共5行（每一行一定要加回车，最后一行也必须有回车）：
 1. wifi名称
 2. wifi密码
 3. 所在省份（用于天气查询）
