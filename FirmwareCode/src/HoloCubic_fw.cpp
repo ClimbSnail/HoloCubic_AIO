@@ -225,6 +225,8 @@ void clock_app_process(Imu_Active *act_info)
     else if (TURN_LEFT == act_info->active)
     {
         direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
+        // 以下等效与 clock_page = (clock_page - 1 + 3) % 3;
+        // +3为了不让数据溢出成负数，而导致取模逻辑错误
         clock_page = (clock_page + 2) % 3;
     }
 
