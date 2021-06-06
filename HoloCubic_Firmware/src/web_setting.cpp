@@ -179,14 +179,14 @@ void save_config(void)
 void File_Delete()
 {
     webpage = "<h3>Enter filename to delete</h3>"
-              "<form action='/delete_file' method='post'>"
-              "<input type='text' name='delete_filepath' placeHolder='填写绝对路径'><br>"
+              "<form action='/delete_result' method='post'>"
+              "<input type='text' name='delete_filepath' placeHolder='绝对路径 /image/...'><br>"
               "</label><input class=\"btn\" type=\"submit\" name=\"Submie\" value=\"确认删除\"></form>"
               "<a href='/'>[Back]</a>";
     Send_HTML(webpage);
 }
 
-void delete_file(void)
+void delete_result(void)
 {
     String del_file = server.arg("delete_filepath");
     boolean ret = tf.deleteFile(del_file);

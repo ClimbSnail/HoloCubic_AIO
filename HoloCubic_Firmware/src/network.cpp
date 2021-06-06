@@ -251,7 +251,7 @@ void Network::start_web_config()
 	server.on("/download", File_Download);
 	server.on("/upload", File_Upload);
 	server.on("/delete", File_Delete);
-	server.on("/delete_file", delete_file);
+	server.on("/delete_result", delete_result);
 	server.on("/setting", Setting);
 	server.on(
 		"/fupload", HTTP_POST,

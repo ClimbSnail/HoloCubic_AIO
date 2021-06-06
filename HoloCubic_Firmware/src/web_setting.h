@@ -12,7 +12,7 @@ void Setting(void);
 void File_Download(void);
 void File_Upload(void);
 void File_Delete(void);
-void delete_file(void);
+void delete_result(void);
 void handleFileUpload(void);
 void save_config(void);
 
