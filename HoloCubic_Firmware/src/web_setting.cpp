@@ -199,7 +199,7 @@ void delete_result(void)
     {
         webpage = "<h3>Delete fail! Please check up file path.</h3><a href='/delete'>[Back]</a>";
     }
-
+    tf.listDir("/image", 250);
     Send_HTML(webpage);
 }
 
@@ -237,8 +237,6 @@ void sd_file_download(const String &filename)
 void File_Upload()
 {
     tf.listDir("/image", 250);
-    // int photo_file_num = 0;
-    // char file_name_list[IMAGE_FILE_NUM][IMAGE_FILE_NAME_MAX_LEN];
 
     webpage = webpage_header;
     webpage += "<h3>Select File to Upload</h3>"
@@ -255,11 +253,12 @@ void handleFileUpload()
 {                                                   // upload a new file to the Filing system
     HTTPUpload &uploadFileStream = server.upload(); // See https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WebServer/srcv
                                                     // For further information on 'status' structure, there are other reasons such as a failed transfer that could be used
+    String filename = uploadFileStream.filename;
     if (uploadFileStream.status == UPLOAD_FILE_START)
     {
-        String filename = uploadFileStream.filename;
-        if (!filename.startsWith("/"))
-            filename = "/" + filename;
+        // String filename = uploadFileStream.filename;
+        // if (!filename.startsWith("/image"))
+            filename = "/image/" + filename;
         Serial.print("Upload File Name: ");
         Serial.println(filename);
         tf.deleteFile(filename);                    // Remove a previous version, otherwise data is appended the file again
@@ -280,11 +279,12 @@ void handleFileUpload()
             webpage = webpage_header;
             webpage += F("<h3>File was successfully uploaded</h3>");
             webpage += F("<h2>Uploaded File Name: ");
-            webpage += uploadFileStream.filename + "</h2>";
+            webpage += filename + "</h2>";
             webpage += F("<h2>File Size: ");
             webpage += file_size(uploadFileStream.totalSize) + "</h2><br>";
             webpage += webpage_footer;
             server.send(200, "text/html", webpage);
+            tf.listDir("/image", 250);
         }
         else
         {

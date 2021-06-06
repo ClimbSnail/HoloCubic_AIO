@@ -46,6 +46,7 @@ void SdCard::init()
 void SdCard::listDir(const char *dirname, uint8_t levels)
 {
   Serial.printf("Listing directory: %s\n", dirname);
+  photo_file_num = 0;
 
   File root = SD.open(dirname);
   if (!root)
