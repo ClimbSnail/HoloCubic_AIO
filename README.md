@@ -1,18 +1,30 @@
 # HoloCubic
 HoloCubic Firmware
 
-原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
-本项目的地址 https://github.com/ClimbSnail/HoloCubic
-或者 https://gitee.com/ClimbSnailQ/HoloCubic
+* 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
+* 本项目的地址 https://github.com/ClimbSnail/HoloCubic
+* 或者 https://gitee.com/ClimbSnailQ/HoloCubic
 
 注意：硬件部分C7电容换成10uF左右就可以实现自动下载。
 
 ### 本固件程序是基于前人的基础上修改了整体框架，更有利于多功能的实现
+![HomePage](Image/home.png)
+
+![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/Note/home.png)
+
+![UploadPage](Image/upload.png)
+
+![UploadPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/Note/upload.png)
+
+![SettingPage](Image/setting.png)
+
+![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/Note/setting.png)
 
 ##### 主要特点
 1. 程序相对模块化，低耦合。
-2. 能够在连不上wifi时，正常运行其他项。
-3. wifi连接运行在后台，全自动。同样带有自动配网。
+2. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式则WebServer建立在STA模式下的AP_IP上，若为AP模式，则建立在Local_IP上（屏幕的服务界面有标注）
+3. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
+4. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
 
 ##### 目前已完成的功能：
 1. 左右摇晃即可切换界面。

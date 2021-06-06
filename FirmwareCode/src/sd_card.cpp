@@ -168,8 +168,7 @@ String SdCard::readFileLine(const char *path, int num)
   return String("error parameter!");
 }
 
-void SdCard::writeFile(const char *path, const char *message1, const char *message2, const char *message3,
-                       const char *message4, const char *message5)
+void SdCard::writeFile(const char *path, const char *info)
 {
   Serial.printf("Writing file: %s\n", path);
 
@@ -179,21 +178,9 @@ void SdCard::writeFile(const char *path, const char *message1, const char *messa
     Serial.println("Failed to open file for writing");
     return;
   }
-  if (file.println(message1))
+  if (file.println(info))
   {
-    if (file.println(message2))
-    {
-      if (file.println(message3))
-      {
-        if (file.println(message4))
-        {
-          if (file.println(message5))
-          {
-            Serial.println("File written");
-          }
-        }
-      }
-    }
+    Serial.println("Write succ");
   }
   else
   {
@@ -201,6 +188,12 @@ void SdCard::writeFile(const char *path, const char *message1, const char *messa
   }
   file.close();
 }
+
+File SdCard::open(const String &path, const char *mode)
+{
+  return SD.open(path, FILE_WRITE);
+}
+
 void SdCard::appendFile(const char *path, const char *message)
 {
   Serial.printf("Appending to file: %s\n", path);
@@ -235,17 +228,34 @@ void SdCard::renameFile(const char *path1, const char *path2)
   }
 }
 
-void SdCard::deleteFile(const char *path)
+boolean SdCard::deleteFile(const char *path)
 {
   Serial.printf("Deleting file: %s\n", path);
   if (SD.remove(path))
   {
     Serial.println("File deleted");
+    return true;
   }
   else
   {
     Serial.println("Delete failed");
   }
+  return false;
+}
+
+boolean SdCard::deleteFile(const String &path)
+{
+  Serial.printf("Deleting file: %s\n", path);
+  if (SD.remove(path))
+  {
+    Serial.println("File deleted");
+    return true;
+  }
+  else
+  {
+    Serial.println("Delete failed");
+  }
+  return false;
 }
 
 void SdCard::readBinFromSd(const char *path, uint8_t *buf)

@@ -10,11 +10,8 @@
 #define IMU_I2C_SDA 32 
 #define IMU_I2C_SCL 33
 
-
 extern int32_t encoder_diff;
 extern lv_indev_state_t encoder_state;
-extern boolean image_flag;
-
 
 enum ACTIVE_TYPE
 {

@@ -29,14 +29,17 @@ class SdCard
 
     String readFileLine( const char* path, int num);
 
-    void writeFile(const char* path, const char* message1,const char* message2,
-        const char* message3, const char* message4, const char* message5);
+    void writeFile(const char* path, const char* message1);
+
+    File open(const String& path, const char* mode = FILE_READ);
 
     void appendFile(  const char* path, const char* message);
 
     void renameFile(  const char* path1, const char* path2);
 
-    void deleteFile(  const char* path);
+    boolean deleteFile(  const char* path);
+
+    boolean deleteFile(const String &path);
 
     void readBinFromSd(const char* path, uint8_t* buf);
 
@@ -45,7 +48,5 @@ class SdCard
     void fileIO(  const char* path);
 
 };
-
-extern SdCard tf;
 
 #endif
