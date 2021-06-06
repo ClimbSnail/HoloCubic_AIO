@@ -8,11 +8,13 @@ HoloCubic Firmware
 注意：硬件部分C7电容换成10uF左右就可以实现自动下载。
 
 ### 本固件程序是基于前人的基础上修改了整体框架，更有利于多功能的实现
-[comment]: <> (![HomePage](Image/holocubic_home.png))
+[^_^]:
+	![HomePage](Image/holocubic_home.png)
 
 ![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_home.png)
 
-[comment]: <> (![UploadPage](Image/holocubic_upload.png))
+[^_^]:
+	![UploadPage](Image/holocubic_upload.png)
 
 ![UploadPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_upload.png)
 
