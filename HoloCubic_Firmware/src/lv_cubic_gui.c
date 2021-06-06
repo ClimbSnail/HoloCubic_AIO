@@ -36,16 +36,16 @@ lv_font_declare(lv_font_montserrat_24);
 lv_font_declare(lv_font_montserrat_40);
 
 // 天气图标路径的映射关系
-void *image_map[] = {&Sunny, &Clear, "S:/Weather/2.bin", "S:/Weather/3.bin",
+void *image_map[] = {&Sunny, &Clear, "S:/weather/2.bin", "S:/weather/3.bin",
                      &Cloudy, &PartlyCloudy, &Overcast, &ModerateSnow,
-                     &Thundershower, "S:/Weather/12.bin", &LightRain,
-                     &ModerateRain, &HeavyRain, "S:/Weather/19.bin",
+                     &Thundershower, "S:/weather/12.bin", &LightRain,
+                     &ModerateRain, &HeavyRain, "S:/weather/19.bin",
                      &Sleet, &SnowFlurry, &LightSnow, &HeavySnow,
-                     "S:/Weather/26.bin", "S:/Weather/27.bin", "S:/Weather/28.bin",
-                     "S:/Weather/29.bin", "S:/Weather/30.bin", "S:/Weather/31.bin",
-                     "S:/Weather/32.bin", "S:/Weather/33.bin", "S:/Weather/34.bin",
-                     "S:/Weather/35.bin", "S:/Weather/36.bin", "S:/Weather/37.bin",
-                     "S:/Weather/38.bin", "S:/Weather/99.bin"};
+                     "S:/weather/26.bin", "S:/weather/27.bin", "S:/weather/28.bin",
+                     "S:/weather/29.bin", "S:/weather/30.bin", "S:/weather/31.bin",
+                     "S:/weather/32.bin", "S:/weather/33.bin", "S:/weather/34.bin",
+                     "S:/weather/35.bin", "S:/weather/36.bin", "S:/weather/37.bin",
+                     "S:/weather/38.bin", "S:/weather/99.bin"};
 int map_index[] = {0, 1, 2, 3, 4, 5, 5, 5, 5, 6,
                    7, 8, 9, 10, 11, 12, 12, 12, 12, 13,
                    14, 15, 16, 7, 17, 17, 18, 19, 20, 21,
