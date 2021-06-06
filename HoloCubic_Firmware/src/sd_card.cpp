@@ -76,9 +76,13 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
     else
     {
       Serial.print("  FILE: ");
+      // 只取文件名 保存到file_name_list中
       strncpy(file_name_list[photo_file_num], file.name() + dir_len, IMAGE_FILE_NAME_MAX_LEN - 1);
       file_name_list[photo_file_num][strlen(file_name_list[photo_file_num]) - 4] = 0;
-      Serial.print(file_name_list[photo_file_num]);
+
+      char file_name[30] = {0};
+      sprintf(file_name, "%s/%s.bin", dirname, file_name_list[photo_file_num]);
+      Serial.print(file_name);
       ++photo_file_num;
       Serial.print("  SIZE: ");
       Serial.println(file.size());

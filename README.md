@@ -21,10 +21,11 @@ HoloCubic Firmware
 ![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
 ##### 主要特点
-1. 程序相对模块化，低耦合。
-2. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式则WebServer建立在STA模式下的AP_IP上，若为AP模式，则建立在Local_IP上（屏幕的服务界面有标注）
-3. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
-4. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
+1. 开机无论是否连接wifi，都不影响其他功能运行。
+2. 程序相对模块化，低耦合。
+3. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式则WebServer建立在STA模式下的AP_IP上，若为AP模式，则建立在Local_IP上（屏幕的服务界面有标注）
+4. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
+5. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
 
 ##### 目前已完成的功能：
 1. 左右摇晃即可切换界面。

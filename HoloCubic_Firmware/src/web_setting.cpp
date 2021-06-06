@@ -193,6 +193,7 @@ void delete_file(void)
     if (ret)
     {
         webpage = "<h3>Delete succ!</h3><a href='/delete'>[Back]</a>";
+        tf.listDir("/image", 250);
     }
     else
     {
