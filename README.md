@@ -40,7 +40,7 @@ HoloCubic Firmware
 2. 电脑桌面投屏。
 
 
-本工程代码是基于vscode上的platformIO插件开发的，开发时请改动`platformio`中的`upload_port`参数。需要修改platformIO上对esp32的默认分区（否则编译大小超限，强制报错）。
+本工程代码是基于vscode上的platformIO插件开发的，开发时请改动`platformio`中的`upload_port`参数。需要修改platformIO上对esp32的默认分区（否则编译大小超限，强制报错）。需要修改的文件为`.platformio/packages/framework-arduinoespressif32/boards.txt`，修改其中的`pico32.upload.maximum_size`字段的值为2097152（2M）够用就行。
 
 **然后这里需要修改一个官方库文件才能正常使用：**
 
