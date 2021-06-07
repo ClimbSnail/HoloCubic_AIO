@@ -7,6 +7,11 @@ HoloCubic Firmware
 
 ### 本固件程序是基于前人的基础上修改了整体框架，更有利于多功能的实现
 [^_^]:
+	![HomePage](Image/holocubic_1080x1080.jpg)
+
+![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_1080x1080.jpg)
+
+[^_^]:
 	![HomePage](Image/holocubic_home.png)
 
 ![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_home.png)
