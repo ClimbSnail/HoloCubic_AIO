@@ -71,7 +71,7 @@ public:
 	String get_softAPIP(void);
 	static boolean start_conn_wifi(const char *ssid, const char *password);
 	boolean end_conn_wifi(void);
-	boolean open_ap(const char *ap_ssid = AP_SSID, const char *ap_password = AP_PASS);
+	boolean open_ap(const char *ap_ssid = AP_SSID, const char *ap_password = NULL);
 	wl_status_t get_wifi_sta_status(void);
 	long int getTimestamp(String url);
 	Weather getWeather(String url);

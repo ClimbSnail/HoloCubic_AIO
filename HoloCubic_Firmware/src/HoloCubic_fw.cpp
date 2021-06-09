@@ -74,8 +74,7 @@ void wifi_auto_process()
             // todo
             // if (AP_ENABLE == g_network.getApStatus())
             // {
-            //     g_network.open_ap();
-            //     g_network.start_web_config();
+                
             // }
         }
     }
@@ -152,7 +151,7 @@ void clock_app_process(Imu_Active *act_info)
         // 如果STA模式连接失败 切换成ap模式
         if (CONN_SUCC != g_network.end_conn_wifi())
         {
-            g_network.open_ap();
+            g_network.open_ap(AP_SSID);
         }
         display_setting(g_network.get_localIp().c_str(),
                         g_network.get_softAPIP().c_str(),
@@ -228,6 +227,10 @@ void loop()
     act_info->active = GO_FORWORD; // 让第一次能够执行刷新屏幕的判断
     while (true)
     {
+        unsigned int x = ambLight.getLux();
+        Serial.print("AmbLight: ");
+        Serial.println(x);
+
         screen.routine();
         controller(act_info); // 运行当前进程
         delay(300);
@@ -236,5 +239,6 @@ void loop()
         rgb.setBrightness(ambLight.getLux() / 500.0);
         wifi_auto_process();   // 任务调度
         server.handleClient(); // 一定需要放在循环里扫描
+        //malloc(2);
     }
 }
