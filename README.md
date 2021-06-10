@@ -5,7 +5,7 @@ HoloCubic Firmware
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic
 
-**欢迎加入QQ讨论群 755143193**
+__**欢迎加入QQ讨论群 755143193**__
 
 ### 本固件程序是基于前人的基础上修改了整体框架，更有利于多功能的实现
 B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=search&seid=5347262882311444671
