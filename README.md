@@ -1,5 +1,5 @@
-# HoloCubic
-HoloCubic Firmware
+# HoloCubic_AIO (All in one for HoloCubic)
+
 
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic
