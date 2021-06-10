@@ -115,7 +115,7 @@ void init_page_header()
 
     webpage_header += F("</style></head><body>");
 
-    webpage_header += F("<h1>HoloCubic_Pro ");
+    webpage_header += F("<h1>HoloCubic_AIO ");
     webpage_header += String(SERVER_VERSION) + "</h1>";
     webpage_header += F("<ul>");
     webpage_header += F("<li><a href='/'>Home</a></li>"); // Lower Menu bar command entries

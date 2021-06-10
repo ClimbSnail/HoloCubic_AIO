@@ -218,27 +218,24 @@ void setup()
     g_network.init(g_cfg.ssid, g_cfg.password);
 
     display_init();
+    UpdateWeather();
+    act_info = mpu.update(200);
+    act_info->active = GO_FORWORD; // 让第一次能够执行刷新屏幕的判断
 }
 
 void loop()
 {
-    UpdateWeather();
+    // unsigned int x = ambLight.getLux();
+    // Serial.print("AmbLight: ");
+    // Serial.println(x);
+
+    screen.routine();
+    controller(act_info); // 运行当前进程
+    delay(300);
     act_info = mpu.update(200);
-    act_info->active = GO_FORWORD; // 让第一次能够执行刷新屏幕的判断
-    while (true)
-    {
-        unsigned int x = ambLight.getLux();
-        Serial.print("AmbLight: ");
-        Serial.println(x);
 
-        screen.routine();
-        controller(act_info); // 运行当前进程
-        delay(300);
-        act_info = mpu.update(200);
-
-        rgb.setBrightness(ambLight.getLux() / 500.0);
-        wifi_auto_process();   // 任务调度
-        server.handleClient(); // 一定需要放在循环里扫描
-        //malloc(2);
-    }
+    rgb.setBrightness(ambLight.getLux() / 500.0);
+    wifi_auto_process();   // 任务调度
+    server.handleClient(); // 一定需要放在循环里扫描
+    //malloc(2);
 }

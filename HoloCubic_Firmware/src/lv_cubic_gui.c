@@ -90,7 +90,7 @@ void display_init(void)
   weather_image = lv_img_create(scr[0], NULL);
   cityname_label = lv_label_create(scr[0], NULL);
   temperature_label = lv_label_create(scr[0], NULL);
-
+  
   // 日期时间页初始化
   scr[1] = lv_obj_create(NULL, NULL);
   lv_obj_add_style(scr[1], LV_BTN_PART_MAIN, &default_style);
@@ -206,10 +206,12 @@ void display_setting(const char *info, const char *ap_ip, const char *domain, co
   lv_obj_add_style(local_ip_label, LV_LABEL_PART_MAIN, &label_style5);
   lv_label_set_text(local_ip_label, info);
   lv_obj_align(local_ip_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -50);
+  lv_scr_load_anim(local_ip_label, LV_SCR_LOAD_ANIM_MOVE_LEFT, 500, 300, false);
 
   lv_obj_add_style(ap_ip_label, LV_LABEL_PART_MAIN, &label_style5);
   lv_label_set_text(ap_ip_label, ap_ip);
   lv_obj_align(ap_ip_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -80);
+  lv_scr_load_anim(local_ip_label, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 500, 300, false);
 
   lv_obj_add_style(domain_label, LV_LABEL_PART_MAIN, &label_style5);
   lv_label_set_text(domain_label, domain);

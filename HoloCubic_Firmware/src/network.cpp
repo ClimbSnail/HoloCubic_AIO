@@ -9,7 +9,7 @@ IPAddress gateway(192, 168, 4, 1);	// Set your network Gateway usually your Rout
 IPAddress subnet(255, 255, 255, 0); // Set your network sub-network mask here
 IPAddress dns(192, 168, 4, 1);		// Set your network DNS usually your Router base address
 
-const char *AP_SSID = "HoloCubic_Pro"; //热点名称
+const char *AP_SSID = "HoloCubic_AIO"; //热点名称
 const char *AP_PASS = "12345678";	   //密码
 const char *HOST_NAME = "HoloCubic";   //密码
 

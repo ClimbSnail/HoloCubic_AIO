@@ -34,7 +34,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 1. 内置天气、时钟、相册（tf卡）、浏览器文件修改等功能。
 2. 开机无论是否连接wifi（一定要2.4G的wifi），都不影响其他功能运行。
 3. 程序相对模块化，低耦合。
-4. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式，则WebServer建立在STA模式下的Local_IP上。若为AP模式，则建立在AP_IP上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_Pro`无密码。
+4. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式，则WebServer建立在STA模式下的Local_IP上。若为AP模式，则建立在AP_IP上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
 6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
 7. 即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
