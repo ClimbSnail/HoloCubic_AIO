@@ -54,7 +54,7 @@ HoloCubic Firmware
 关于图片转换：有空会出图片转换的工具。
 
 ### 固件更新：
-进行一定分区后方可上传。随后会出全套刷机教程。
+根目录下的`firmware.bin`即为实现编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
 
 ### 之后计划
 1. 添加视频播放。
@@ -67,8 +67,8 @@ HoloCubic Firmware
 
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pic的Arduino平台开发。
-2. 开发时请改动`platformio`中的`upload_port`参数。需要修改platformIO上对esp32的默认分区（否则编译大小超限，强制报错）。需要修改的文件为`.platformio/packages/framework-arduinoespressif32/boards.txt`，修改其中的`pico32.upload.maximum_size`字段的值为`2097152`（2M）够用就行。
-3. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
+2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
+3. 开发时，需要修改platformIO上对esp32的默认分区（否则编译大小超限，强制报错）。需要修改的文件为`.platformio/packages/framework-arduinoespressif32/boards.txt`，修改其中的`pico32.upload.maximum_size`字段的值为`2097152`（2M）够用就行。
 4. 然后这里需要修改一个官方库文件才能正常使用：
 
 首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。然后在安装的支持包的`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
