@@ -55,7 +55,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 
 关于天气：程序启动后在天气的界面时，将会读取`weather/`目录下的图标文件。
 
-关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
+关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
 
 ### 固件更新：
 根目录下的`firmware.bin`即为事先编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
