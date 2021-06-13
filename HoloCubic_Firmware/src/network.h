@@ -2,7 +2,7 @@
 #define NETWORK_H
 
 // 时区偏移(小时) 8*60*60
-#define TIMEZERO_OFFSIZE (28800)
+#define TIMEZERO_OFFSIZE (28800000)
 
 #define CONN_SUCC 0
 #define CONN_ERROR 1
@@ -59,8 +59,9 @@ class Network
 public:
 	unsigned long m_preWifiClickMillis;	// 保存上一回的时间戳
 	unsigned long m_wifiClickInterval = 15000;	// 日期时钟更新的时间间隔
-	long int m_preNetTimestamp = 0;   // 上一次的网络时间戳
-	long int m_preLocalTimestamp = 0;   // 上一次的本地机器时间戳
+	long long m_preNetTimestamp = 0;   // 上一次的网络时间戳
+	long long m_preLocalTimestamp = 0;   // 上一次的本地机器时间戳
+    boolean m_web_start = 0;    // 标志是否开启web server服务，0为关闭 1为开启
 	Weather m_weather;	// 保存天气状况
 
 public:
@@ -73,7 +74,8 @@ public:
 	boolean end_conn_wifi(void);
 	boolean open_ap(const char *ap_ssid = AP_SSID, const char *ap_password = NULL);
 	wl_status_t get_wifi_sta_status(void);
-	long int getTimestamp(String url);
+	long long getTimestamp(String url);
+	long long getTimestamp(void);
 	Weather getWeather(String url);
 	void start_web_config(void);
 	void stop_web_config(void);

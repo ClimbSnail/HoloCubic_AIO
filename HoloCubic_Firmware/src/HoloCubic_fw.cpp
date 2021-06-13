@@ -17,9 +17,9 @@ int image_pos = 0;  // 记录相册播放的历史
 int clock_page = 0; // 时钟桌面的播放记录
 unsigned long pic_perMillis = 0;
 unsigned long preWeatherMillis = 0;           // 上一回更新天气时的毫秒数
-unsigned long preTimeMillis = 0;              // 上一回更新日期与时间时的毫秒数
+unsigned long preTimeMillis = 0;              // 上一回从网络更新日期与时间时的毫秒数
 unsigned long weatherUpdataInterval = 900000; // 天气更新的时间间隔
-unsigned long timeUpdataInterval = 10000;     // 日期时钟更新的时间间隔
+unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间隔(30s)
 
 /*** Component objects **7*/
 Display screen;
@@ -51,15 +51,28 @@ void UpdateWeather(void)
 
 void UpdateTime_RTC(void)
 {
-    long int timestamp = g_network.getTimestamp(time_api) + TIMEZERO_OFFSIZE; //nowapi时间API
-    g_rtc.setTime(timestamp);
+    long long timestamp = 0;
+    // 以下减少网络请求的压力
+    if (millis() - preTimeMillis >= timeUpdataInterval)
+    {
+        // 尝试同步网络上的时钟
+        preTimeMillis = millis();
+        timestamp = g_network.getTimestamp(time_api) + TIMEZERO_OFFSIZE; //nowapi时间API
+    }
+    else
+    {
+        // 使用本地的机器时钟
+        timestamp = g_network.getTimestamp() + TIMEZERO_OFFSIZE; //nowapi时间API
+    }
+
+    g_rtc.setTime(timestamp / 1000);
     String date = g_rtc.getDate(String("%Y-%m-%d"));
     String time = g_rtc.getTime(String("%H:%M"));
 
-    Serial.println("-------------------------------------");
-    Serial.println(date.c_str());
-    Serial.println(time.c_str());
-    Serial.println("-------------------------------------");
+    // Serial.println("-------------------------------------");
+    // Serial.println(date.c_str());
+    // Serial.println(time.c_str());
+    // Serial.println("-------------------------------------");
     display_time(date.c_str(), time.c_str());
 }
 
@@ -74,7 +87,7 @@ void wifi_auto_process()
             // todo
             // if (AP_ENABLE == g_network.getApStatus())
             // {
-                
+
             // }
         }
     }
@@ -83,11 +96,14 @@ void wifi_auto_process()
 void controller(Imu_Active *act_info)
 {
     // processId == 1 是相册功能
-    if (UNKNOWN == act_info->active && 1 != processId)
-        return;
+    // if (UNKNOWN == act_info->active && 1 != processId)
+    //     return;
+    if (UNKNOWN != act_info->active)
+    {
+        Serial.print("act_info->active: ");
+        Serial.println(act_info->active);
+    }
 
-    Serial.print("act_info->active: ");
-    Serial.println(act_info->active);
     if (RETURN == act_info->active)
     {
         act_info->active = UNKNOWN;
@@ -120,11 +136,8 @@ void clock_app_process(Imu_Active *act_info)
         clock_page = (clock_page + 3) % 4;
     }
 
-    Serial.println("clock_page");
-    Serial.println(clock_page);
-
-    if (clock_page != 2)
-        lv_scr_load_anim(scr[clock_page], direction, 500, 300, false);
+    // Serial.println("clock_page");
+    // Serial.println(clock_page);
 
     if (0 == clock_page && millis() - preWeatherMillis >= weatherUpdataInterval)
     {
@@ -133,10 +146,9 @@ void clock_app_process(Imu_Active *act_info)
         UpdateWeather();
     }
 
-    if (1 == clock_page && millis() - preTimeMillis >= timeUpdataInterval)
+    if (1 == clock_page)
     {
         // 更新时钟
-        preTimeMillis = millis();
         UpdateTime_RTC();
     }
 
@@ -148,17 +160,24 @@ void clock_app_process(Imu_Active *act_info)
 
     if (3 == clock_page)
     {
-        // 如果STA模式连接失败 切换成ap模式
-        if (CONN_SUCC != g_network.end_conn_wifi())
+        if (0 == g_network.m_web_start)
         {
-            g_network.open_ap(AP_SSID);
+            // 如果STA模式连接失败 切换成ap模式
+            if (CONN_SUCC != g_network.end_conn_wifi())
+            {
+                g_network.open_ap(AP_SSID);
+            }
+            display_setting(g_network.get_localIp().c_str(),
+                            g_network.get_softAPIP().c_str(),
+                            "Domain: holocubic",
+                            "WebServer Start");
+            g_network.start_web_config();
         }
-        display_setting(g_network.get_localIp().c_str(),
-                        g_network.get_softAPIP().c_str(),
-                        "Domain: holocubic",
-                        "WebServer Start");
-        g_network.start_web_config();
+        server.handleClient(); // 一定需要放在循环里扫描
     }
+
+    if (clock_page != 2)
+        lv_scr_load_anim(scr[clock_page], direction, 500, 300, false);
 }
 
 void picture_app_process(Imu_Active *act_info)
@@ -235,7 +254,6 @@ void loop()
     act_info = mpu.update(200);
 
     rgb.setBrightness(ambLight.getLux() / 500.0);
-    wifi_auto_process();   // 任务调度
-    server.handleClient(); // 一定需要放在循环里扫描
+    wifi_auto_process(); // 任务调度
     //malloc(2);
 }

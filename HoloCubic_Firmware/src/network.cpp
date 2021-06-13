@@ -25,6 +25,7 @@ Network::Network()
 {
 	ap_status = AP_DISABLE;
 	m_preWifiClickMillis = 0;
+    m_web_start = 0;
 }
 
 void Network::init(String ssid, String password)
@@ -168,7 +169,7 @@ wl_status_t Network::get_wifi_sta_status(void)
 	return WiFi.status();
 }
 
-long int Network::getTimestamp(String url)
+long long Network::getTimestamp(String url)
 {
 	if (WL_CONNECTED != get_wifi_sta_status())
 		return 0;
@@ -187,7 +188,7 @@ long int Network::getTimestamp(String url)
 		{
 			String payload = http.getString();
 			int time_index = (payload.indexOf("data")) + 12;
-			time = payload.substring(time_index, payload.length() - 6);
+			time = payload.substring(time_index, payload.length() - 3);
 			// 以网络时间戳为准
 			m_preNetTimestamp = atoll(time.c_str());
 			m_preLocalTimestamp = millis();
@@ -201,6 +202,15 @@ long int Network::getTimestamp(String url)
 		m_preLocalTimestamp = millis();
 	}
 	http.end();
+
+	return m_preNetTimestamp;
+}
+
+long long Network::getTimestamp()
+{
+	// 使用本地的机器时钟
+	m_preNetTimestamp = m_preNetTimestamp + (millis() - m_preLocalTimestamp);
+	m_preLocalTimestamp = millis();
 
 	return m_preNetTimestamp;
 }
@@ -284,6 +294,7 @@ void Network::start_web_config()
 
 	// 	  config_save("/wifi.txt", &g_cfg); // 更新配置文件
 	//   });
+    m_web_start = 1;
 }
 
 void Network::stop_web_config()
