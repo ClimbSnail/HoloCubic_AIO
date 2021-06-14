@@ -60,7 +60,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
 
 ### 固件更新：
-根目录下的`firmware.bin`即为事先编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
+根目录下的`HoloCubic_AIO.bin`即为事先编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
 
 ### 之后计划
 1. 添加视频播放。
