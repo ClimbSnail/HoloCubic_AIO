@@ -25,18 +25,23 @@ unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间�
 Display screen;
 IMU mpu;
 Ambient ambLight;
-Imu_Active *act_info; // 存放mpu6050返回的数据
-Network g_network;    // 网络连接
-ESP32Time g_rtc;      // 用于时间解码
+Imu_Active *act_info;      // 存放mpu6050返回的数据
+Network g_network;         // 网络连接
+ESP32Time g_rtc;           // 用于时间解码
+boolean app_exit_flag = 0; // 表示是否退出APP应用
 
 String unit = "c";
 String time_api = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
 
 void clock_app_process(Imu_Active *act_info);
 void picture_app_process(Imu_Active *act_info);
+void movie_app_process(Imu_Active *act_info);
+void screen_app_process(Imu_Active *act_info);
+void server_app_process(Imu_Active *act_info);
 
 //函数指针组
-void (*p_processList[2])(Imu_Active *) = {clock_app_process, picture_app_process};
+void (*p_processList[APP_NUM])(Imu_Active *) = {clock_app_process, picture_app_process,
+                                                movie_app_process, screen_app_process, server_app_process};
 void controller(Imu_Active *act_info); // 对所有控制的通用处理
 int processId = 0;
 
@@ -95,24 +100,42 @@ void wifi_auto_process()
 
 void controller(Imu_Active *act_info)
 {
-    // processId == 1 是相册功能
-    // if (UNKNOWN == act_info->active && 1 != processId)
-    //     return;
     if (UNKNOWN != act_info->active)
     {
         Serial.print("act_info->active: ");
         Serial.println(act_info->active);
     }
 
-    if (RETURN == act_info->active)
+    if (0 == app_exit_flag)
     {
-        act_info->active = UNKNOWN;
-        act_info->isValid = 0;
-        processId = (processId + 1) % 2; // 此处的2与p_processList的长度一致
+        // 当前没有进入任何app
+        lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+        if (TURN_RIGHT == act_info->active)
+        {
+            direction = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
+            processId = (processId + 1) % APP_NUM;
+        }
+        else if (TURN_LEFT == act_info->active)
+        {
+            direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
+            // 以下等效与 processId = (processId - 1 + APP_NUM) % 4;
+            // +3为了不让数据溢出成负数，而导致取模逻辑错误
+            processId = (processId - 1 + APP_NUM) % APP_NUM; // 此处的3与p_processList的长度一致
+        }
+        else if (GO_FORWORD == act_info->active)
+        {
+            app_exit_flag = 1; // 进入app
+        }
+        Serial.print("processId: ");
+        Serial.println(processId);
+        display_app_scr(processId);
+        lv_scr_load_anim(app_scr[processId], direction, 300, 300, false);
     }
-
-    (*(p_processList[processId]))(act_info);
-
+    else
+    {
+        // 把控制权交给当前APP
+        (*(p_processList[processId]))(act_info);
+    }
     act_info->active = UNKNOWN;
     act_info->isValid = 0;
 }
@@ -126,18 +149,18 @@ void clock_app_process(Imu_Active *act_info)
     if (TURN_RIGHT == act_info->active)
     {
         direction = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-        clock_page = (clock_page + 1) % 4;
+        clock_page = (clock_page + 1) % 3;
     }
     else if (TURN_LEFT == act_info->active)
     {
         direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
-        // 以下等效与 clock_page = (clock_page - 1 + 3) % 4;
+        // 以下等效与 clock_page = (clock_page - 1 + 3) % 3;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
-        clock_page = (clock_page + 3) % 4;
+        clock_page = (clock_page + 2) % 3;
     }
 
-    // Serial.println("clock_page");
-    // Serial.println(clock_page);
+    Serial.println("clock_page");
+    Serial.println(clock_page);
 
     if (0 == clock_page && millis() - preWeatherMillis >= weatherUpdataInterval)
     {
@@ -158,26 +181,8 @@ void clock_app_process(Imu_Active *act_info)
         display_hardware(NULL);
     }
 
-    if (3 == clock_page)
-    {
-        if (0 == g_network.m_web_start)
-        {
-            // 如果STA模式连接失败 切换成ap模式
-            if (CONN_SUCC != g_network.end_conn_wifi())
-            {
-                g_network.open_ap(AP_SSID);
-            }
-            display_setting(g_network.get_localIp().c_str(),
-                            g_network.get_softAPIP().c_str(),
-                            "Domain: holocubic",
-                            "WebServer Start");
-            g_network.start_web_config();
-        }
-        server.handleClient(); // 一定需要放在循环里扫描
-    }
-
     if (clock_page != 2)
-        lv_scr_load_anim(scr[clock_page], direction, 500, 300, false);
+        lv_scr_load_anim(wc_scr[clock_page], direction, 300, 300, false);
 }
 
 void picture_app_process(Imu_Active *act_info)
@@ -193,6 +198,12 @@ void picture_app_process(Imu_Active *act_info)
     // {
     //     direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
     // }
+    if (RETURN == act_info->active)
+    {
+        app_exit_flag = 0; // 退出APP
+        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        return;
+    }
 
     if (doDelayMillisTime(3000, &pic_perMillis, false) == true)
     {
@@ -206,6 +217,46 @@ void picture_app_process(Imu_Active *act_info)
 
     display_photo(file_name_list[image_pos]);
     lv_scr_load_anim(image, direction, 100, 0, false);
+}
+
+void movie_app_process(Imu_Active *act_info)
+{
+    app_exit_flag = 0; // 退出APP
+}
+
+void screen_app_process(Imu_Active *act_info)
+{
+    app_exit_flag = 0; // 退出APP
+}
+
+void server_app_process(Imu_Active *act_info)
+{
+    Serial.println("-----------> server_app_process");
+    lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+
+    if (RETURN == act_info->active)
+    {
+        g_network.stop_web_config();
+        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        app_exit_flag = 0; // 退出APP
+        return;
+    }
+
+    if (0 == g_network.m_web_start)
+    {
+        // 如果STA模式连接失败 切换成ap模式
+        if (CONN_SUCC != g_network.end_conn_wifi())
+        {
+            g_network.open_ap(AP_SSID);
+        }
+        display_setting(g_network.get_localIp().c_str(),
+                        g_network.get_softAPIP().c_str(),
+                        "Domain: holocubic",
+                        "WebServer Start");
+        g_network.start_web_config();
+        lv_scr_load_anim(wc_scr[3], direction, 300, 300, false);
+    }
+    server.handleClient(); // 一定需要放在循环里扫描
 }
 
 void setup()
@@ -238,8 +289,6 @@ void setup()
 
     display_init();
     UpdateWeather();
-    act_info = mpu.update(200);
-    act_info->active = GO_FORWORD; // 让第一次能够执行刷新屏幕的判断
 }
 
 void loop()

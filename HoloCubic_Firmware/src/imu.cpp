@@ -36,7 +36,7 @@ Imu_Active* IMU::update(int interval)
 
 		if (active_info.ax > 5000 && !active_info.isValid)
 		{
-			delay(1000);
+			delay(300);
 			imu.getMotion6(&(active_info.ax), &(active_info.ay), &(active_info.az), 
 						&(active_info.gx), &(active_info.gy), &(active_info.gz));
 			if (active_info.ax > 5000)
@@ -48,7 +48,7 @@ Imu_Active* IMU::update(int interval)
 		}
 		else if (active_info.ax < -5000 && !active_info.isValid)
 		{
-			delay(1000);
+			delay(300);
 			imu.getMotion6(&(active_info.ax), &(active_info.ay), &(active_info.az), 
 						&(active_info.gx), &(active_info.gy), &(active_info.gz));
 			if (active_info.ax < -5000)

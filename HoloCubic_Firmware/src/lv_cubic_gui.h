@@ -8,9 +8,12 @@ extern "C"
 
 #include "lvgl.h"
 
+#define APP_NUM 5
 	//extern lv_img_dsc_t screen_buffer;
 
-	extern lv_obj_t *scr[4];
+    extern lv_obj_t *app_scr[APP_NUM];
+    extern lv_obj_t *app_image[APP_NUM];
+	extern lv_obj_t *wc_scr[4];
 	extern lv_obj_t *image;
 
 	void display_init(void);
@@ -19,6 +22,7 @@ extern "C"
 	void display_time(const char *date, const char *time);
 	void display_hardware(const char *info);
 	void display_setting(const char *info, const char *ap_ip, const char *domain, const char *title);
+    void display_app_scr(int index);
 
 #ifdef __cplusplus
 } /* extern "C" */
