@@ -142,6 +142,12 @@ void controller(Imu_Active *act_info)
 void clock_app_process(Imu_Active *act_info)
 {
     lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+    if (RETURN == act_info->active)
+    {
+        app_exit_flag = 0; // 退出APP
+        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        return;
+    }
 
     if (TURN_RIGHT == act_info->active)
     {
