@@ -126,8 +126,7 @@ void controller(Imu_Active *act_info)
         {
             app_exit_flag = 1; // 进入app
         }
-        Serial.print("processId: ");
-        Serial.println(processId);
+        
         display_app_scr(processId);
         lv_scr_load_anim(app_scr[processId], direction, 300, 300, false);
     }
@@ -142,8 +141,6 @@ void controller(Imu_Active *act_info)
 
 void clock_app_process(Imu_Active *act_info)
 {
-    Serial.println("-----------> clock_app_process");
-
     lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
 
     if (TURN_RIGHT == act_info->active)
@@ -158,9 +155,6 @@ void clock_app_process(Imu_Active *act_info)
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
         clock_page = (clock_page + 2) % 3;
     }
-
-    Serial.println("clock_page");
-    Serial.println(clock_page);
 
     if (0 == clock_page && millis() - preWeatherMillis >= weatherUpdataInterval)
     {
@@ -187,7 +181,6 @@ void clock_app_process(Imu_Active *act_info)
 
 void picture_app_process(Imu_Active *act_info)
 {
-    Serial.println("-----------> picture_app_process");
     lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
 
     // if (TURN_RIGHT == act_info->active)
@@ -231,7 +224,6 @@ void screen_app_process(Imu_Active *act_info)
 
 void server_app_process(Imu_Active *act_info)
 {
-    Serial.println("-----------> server_app_process");
     lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
 
     if (RETURN == act_info->active)
@@ -289,6 +281,7 @@ void setup()
 
     display_init();
     UpdateWeather();
+    act_info = mpu.update(200);
 }
 
 void loop()

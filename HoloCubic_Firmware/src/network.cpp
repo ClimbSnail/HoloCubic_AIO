@@ -299,6 +299,7 @@ void Network::start_web_config()
 
 void Network::stop_web_config()
 {
+    m_web_start = 0;
 	server.stop();
 	server.close();
 }
