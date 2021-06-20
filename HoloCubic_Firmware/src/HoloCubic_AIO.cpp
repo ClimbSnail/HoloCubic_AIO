@@ -18,7 +18,7 @@ int clock_page = 0;                           // 时钟桌面的播放记录
 unsigned long pic_perMillis = 0;              // 图片上一回更新的时间
 unsigned long preWeatherMillis = 0;           // 上一回更新天气时的毫秒数
 unsigned long preTimeMillis = 0;              // 上一回从网络更新日期与时间时的毫秒数
-unsigned long picRefreshInterval = 5000;     // 图片播放的时间间隔(10s)
+unsigned long picRefreshInterval = 5000;      // 图片播放的时间间隔(10s)
 unsigned long weatherUpdataInterval = 900000; // 天气更新的时间间隔
 unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间隔(300s)
 
@@ -139,6 +139,7 @@ void controller(Imu_Active *act_info)
     {
         // 把控制权交给当前APP
         (*(p_processList[processId]))(act_info);
+        delay(300);
     }
     act_info->active = UNKNOWN;
     act_info->isValid = 0;
@@ -285,6 +286,7 @@ void setup()
     g_network.init(g_cfg.ssid, g_cfg.password);
 
     display_init();
+    display_app_scr(processId, LV_SCR_LOAD_ANIM_NONE, true);
     act_info = mpu.update(200);
 }
 
@@ -296,7 +298,6 @@ void loop()
 
     screen.routine();
     controller(act_info); // 运行当前进程
-    delay(300);
     act_info = mpu.update(200);
 
     rgb.setBrightness(ambLight.getLux() / 500.0);
