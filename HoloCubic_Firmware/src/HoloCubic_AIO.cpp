@@ -13,13 +13,14 @@
 #include <WebServer.h>
 #include <WiFiMulti.h> // 当我们需要使用ESP8266开发板存储多个WiFi网络连接信息时，可以使用ESP8266WiFiMulti库来实现。
 
-int image_pos = 0;  // 记录相册播放的历史
-int clock_page = 0; // 时钟桌面的播放记录
-unsigned long pic_perMillis = 0;
+int image_pos = 0;                            // 记录相册播放的历史
+int clock_page = 0;                           // 时钟桌面的播放记录
+unsigned long pic_perMillis = 0;              // 图片上一回更新的时间
 unsigned long preWeatherMillis = 0;           // 上一回更新天气时的毫秒数
 unsigned long preTimeMillis = 0;              // 上一回从网络更新日期与时间时的毫秒数
+unsigned long picRefreshInterval = 5000;     // 图片播放的时间间隔(10s)
 unsigned long weatherUpdataInterval = 900000; // 天气更新的时间间隔
-unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间隔(30s)
+unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间隔(300s)
 
 /*** Component objects **7*/
 Display screen;
@@ -45,16 +46,26 @@ void (*p_processList[APP_NUM])(Imu_Active *) = {clock_app_process, picture_app_p
 void controller(Imu_Active *act_info); // 对所有控制的通用处理
 int processId = 0;
 
-void UpdateWeather(void)
+void UpdateWeather(lv_scr_load_anim_t anim_type)
 {
-    Weather weather = g_network.getWeather("https://api.seniverse.com/v3/weather/now.json?key=" + g_cfg.weather_key + "&location=" + g_cfg.cityname + "&language=" + g_cfg.language + "&unit=" + unit); //如果要改城市这里也需要修改
-    Serial.println(weather.weather_code);
+    Weather weather;
+    // 以下减少网络请求的压力
+    if (millis() - preWeatherMillis >= weatherUpdataInterval)
+    {
+        preWeatherMillis = millis();
+        //如果要改城市这里也需要修改
+        weather = g_network.getWeather("https://api.seniverse.com/v3/weather/now.json?key=" + g_cfg.weather_key + "&location=" + g_cfg.cityname + "&language=" + g_cfg.language + "&unit=" + unit);
+    }
+    else
+    {
+        weather = g_network.getWeather();
+    }
     char temperature[10] = {0};
     sprintf(temperature, "%d", weather.temperature);
-    display_weather(g_cfg.cityname.c_str(), temperature, weather.weather_code);
+    display_weather(g_cfg.cityname.c_str(), temperature, weather.weather_code, anim_type);
 }
 
-void UpdateTime_RTC(void)
+void UpdateTime_RTC(lv_scr_load_anim_t anim_type)
 {
     long long timestamp = 0;
     // 以下减少网络请求的压力
@@ -74,11 +85,7 @@ void UpdateTime_RTC(void)
     String date = g_rtc.getDate(String("%Y-%m-%d"));
     String time = g_rtc.getTime(String("%H:%M"));
 
-    // Serial.println("-------------------------------------");
-    // Serial.println(date.c_str());
-    // Serial.println(time.c_str());
-    // Serial.println("-------------------------------------");
-    display_time(date.c_str(), time.c_str());
+    display_time(date.c_str(), time.c_str(), anim_type);
 }
 
 void wifi_auto_process()
@@ -92,7 +99,6 @@ void wifi_auto_process()
             // todo
             // if (AP_ENABLE == g_network.getApStatus())
             // {
-
             // }
         }
     }
@@ -109,15 +115,15 @@ void controller(Imu_Active *act_info)
     if (0 == app_exit_flag)
     {
         // 当前没有进入任何app
-        lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+        lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
         if (TURN_RIGHT == act_info->active)
         {
-            direction = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
+            anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
             processId = (processId + 1) % APP_NUM;
         }
         else if (TURN_LEFT == act_info->active)
         {
-            direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
+            anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
             // 以下等效与 processId = (processId - 1 + APP_NUM) % 4;
             // +3为了不让数据溢出成负数，而导致取模逻辑错误
             processId = (processId - 1 + APP_NUM) % APP_NUM; // 此处的3与p_processList的长度一致
@@ -126,9 +132,8 @@ void controller(Imu_Active *act_info)
         {
             app_exit_flag = 1; // 进入app
         }
-        
-        display_app_scr(processId);
-        lv_scr_load_anim(app_scr[processId], direction, 300, 300, false);
+
+        display_app_scr(processId, anim_type, false);
     }
     else
     {
@@ -141,81 +146,76 @@ void controller(Imu_Active *act_info)
 
 void clock_app_process(Imu_Active *act_info)
 {
-    lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
     {
         app_exit_flag = 0; // 退出APP
-        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        display_app_scr(processId, LV_SCR_LOAD_ANIM_NONE, true);
         return;
     }
 
     if (TURN_RIGHT == act_info->active)
     {
-        direction = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
         clock_page = (clock_page + 1) % 3;
     }
     else if (TURN_LEFT == act_info->active)
     {
-        direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
         // 以下等效与 clock_page = (clock_page - 1 + 3) % 3;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
         clock_page = (clock_page + 2) % 3;
     }
 
-    if (0 == clock_page && millis() - preWeatherMillis >= weatherUpdataInterval)
+    if (0 == clock_page) // 更新天气
     {
-        // 更新天气
-        preWeatherMillis = millis();
-        UpdateWeather();
+        UpdateWeather(anim_type);
     }
 
-    if (1 == clock_page)
+    if (1 == clock_page) // 更新时钟
     {
-        // 更新时钟
-        UpdateTime_RTC();
+        UpdateTime_RTC(anim_type);
     }
 
-    if (2 == clock_page)
+    if (2 == clock_page) // NULL后期可以是具体数据
     {
-        // NULL后期可以是具体数据
-        display_hardware(NULL);
+        display_hardware(NULL, anim_type);
     }
-
-    if (clock_page != 2)
-        lv_scr_load_anim(wc_scr[clock_page], direction, 300, 300, false);
 }
 
 void picture_app_process(Imu_Active *act_info)
 {
-    lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
+    static int image_pos_increate = 1;
 
-    // if (TURN_RIGHT == act_info->active)
-    // {
-    //     direction = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-    // }
-    // else if (TURN_LEFT == act_info->active)
-    // {
-    //     direction = LV_SCR_LOAD_ANIM_MOVE_LEFT;
-    // }
     if (RETURN == act_info->active)
     {
         app_exit_flag = 0; // 退出APP
-        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        display_app_scr(processId, LV_SCR_LOAD_ANIM_NONE, true);
         return;
     }
 
-    if (doDelayMillisTime(3000, &pic_perMillis, false) == true)
+    if (TURN_RIGHT == act_info->active)
     {
-        ++image_pos;
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
+        image_pos_increate = 1;
+        pic_perMillis = millis() - picRefreshInterval; // 间接强制更新
+    }
+    else if (TURN_LEFT == act_info->active)
+    {
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
+        image_pos_increate = -1;
+        pic_perMillis = millis() - picRefreshInterval; // 间接强制更新
     }
 
-    if (image_pos >= photo_file_num)
+    if (doDelayMillisTime(picRefreshInterval, &pic_perMillis, false) == true)
     {
-        image_pos = 0;
+        // photo_file_num为了防止当 image_pos_increate为-1时，数据取模出错
+        image_pos = (image_pos + image_pos_increate + photo_file_num) % photo_file_num;
+        Serial.print("image_pos: ");
+        Serial.println(image_pos);
+        display_photo(file_name_list[image_pos], anim_type);
     }
-
-    display_photo(file_name_list[image_pos]);
-    lv_scr_load_anim(image, direction, 100, 0, false);
 }
 
 void movie_app_process(Imu_Active *act_info)
@@ -230,12 +230,12 @@ void screen_app_process(Imu_Active *act_info)
 
 void server_app_process(Imu_Active *act_info)
 {
-    lv_scr_load_anim_t direction = LV_SCR_LOAD_ANIM_NONE;
+    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 
     if (RETURN == act_info->active)
     {
         g_network.stop_web_config();
-        lv_scr_load_anim(app_scr[processId], LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
+        display_app_scr(processId, LV_SCR_LOAD_ANIM_NONE, true);
         app_exit_flag = 0; // 退出APP
         return;
     }
@@ -250,9 +250,8 @@ void server_app_process(Imu_Active *act_info)
         display_setting(g_network.get_localIp().c_str(),
                         g_network.get_softAPIP().c_str(),
                         "Domain: holocubic",
-                        "WebServer Start");
+                        "WebServer Start", anim_type);
         g_network.start_web_config();
-        lv_scr_load_anim(wc_scr[3], direction, 300, 300, false);
     }
     server.handleClient(); // 一定需要放在循环里扫描
 }
@@ -286,7 +285,6 @@ void setup()
     g_network.init(g_cfg.ssid, g_cfg.password);
 
     display_init();
-    UpdateWeather();
     act_info = mpu.update(200);
 }
 

@@ -215,6 +215,11 @@ long long Network::getTimestamp()
 	return m_preNetTimestamp;
 }
 
+Weather Network::getWeather()
+{
+    return m_weather;
+}
+
 Weather Network::getWeather(String url)
 {
 	if (WL_CONNECTED != get_wifi_sta_status())

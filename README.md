@@ -2,7 +2,7 @@
 
 
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
-* 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO
+* 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
 _**欢迎加入QQ讨论群 755143193**_

@@ -77,6 +77,7 @@ public:
 	long long getTimestamp(String url);
 	long long getTimestamp(void);
 	Weather getWeather(String url);
+	Weather getWeather(void);
 	void start_web_config(void);
 	void stop_web_config(void);
 	boolean getApStatus(void);
