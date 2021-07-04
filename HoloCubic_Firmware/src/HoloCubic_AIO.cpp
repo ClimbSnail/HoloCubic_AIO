@@ -271,7 +271,7 @@ void setup()
 
     /*** Init on-board RGB ***/
     rgb.init();
-    rgb.setBrightness(0.1).setRGB(0, 122, 204);
+    rgb.setBrightness(0.1).setRGB(0, 128, 128);
 
     /*** Init ambient-light sensor ***/
     ambLight.init(ONE_TIME_H_RESOLUTION_MODE);
@@ -300,7 +300,7 @@ void loop()
     controller(act_info); // 运行当前进程
     act_info = mpu.update(200);
 
-    rgb.setBrightness(ambLight.getLux() / 500.0);
+    // rgb.setBrightness(ambLight.getLux() / 500.0);
     wifi_auto_process(); // 任务调度
     //malloc(2);
 }
