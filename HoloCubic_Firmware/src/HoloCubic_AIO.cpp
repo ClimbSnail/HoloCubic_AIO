@@ -158,14 +158,14 @@ void clock_app_process(Imu_Active *act_info)
     if (TURN_RIGHT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-        clock_page = (clock_page + 1) % 3;
+        clock_page = (clock_page + 1) % 2;
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
         // 以下等效与 clock_page = (clock_page - 1 + 3) % 3;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
-        clock_page = (clock_page + 2) % 3;
+        clock_page = (clock_page + 1) % 2;
     }
 
     if (0 == clock_page) // 更新天气
@@ -189,7 +189,7 @@ void picture_app_process(Imu_Active *act_info)
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     static int image_pos_increate = 1;
 
-    if (RETURN == act_info->active)
+    if (photo_file_num == 0 || RETURN == act_info->active)
     {
         app_exit_flag = 0; // 退出APP
         display_app_scr(processId, LV_SCR_LOAD_ANIM_NONE, true);

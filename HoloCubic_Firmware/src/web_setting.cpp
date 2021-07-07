@@ -152,8 +152,6 @@ void HomePage()
 
 void Setting()
 {
-    // 实时读取配置文件
-    // config_read("/wifi.txt", &g_cfg);
     char buf[1024];
     sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
             g_cfg.cityname.c_str(), g_cfg.language.c_str(),

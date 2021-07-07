@@ -62,25 +62,27 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 ### 固件更新：
 根目录下的`HoloCubic_AIO.bin`即为事先编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
 ##### 关于烧录
-对ESP32进行开发，将代码编译好了之后，可以提取后在其他设备使用ESP Flash Download Tool直接烧录。使用ESP Flash Download Tool烧录需要提前准备四个文件，其中包含两个启动引导文件`bootloaderbin`、`boot_app0.bin`，一个flash划分文件`partitions.bin`和一个固件文件`firmware.bin`当然名字是可以更改的。
+对ESP32进行开发，将代码编译好了之后，可以提取后在其他设备使用ESP Flash Download Tool直接烧录。使用ESP Flash Download Tool烧录需要提前准备四个文件，其中包含两个启动引导文件`bootloader_dio_40m.bin`、`boot_app0.bin`，一个flash划分文件`partitions.bin`和一个固件文件`firmware.bin`(当然名字是可以更改的)。
 
 下面说下这些文件的存放位置以及烧录地址：
 
 以Windows为例()
-1. `bootloader.bin`的位置为PlatformIO安装目录下的`.platformio\packages\tool-esptoolpy\test\image`目录下面,它的对应的烧录地址为0X1000。
+1. `bootloader_dio_40m.bin`的位置为PlatformIO安装目录下的`.platformio\packages\framework-arduinoespressif32\tools\sdk\bin`目录下面,它的对应的烧录地址为0X1000。
 2. `boot_app0.bin`的位置为PlatformIO安装目录下的`platformio\packages\framework-arduinoespressif32\tools\partitions`目录下面，它对应的烧录地址为0xe000
 3. `partitions.bin`的位置为代码工程目录下的.pioenvs\[board]目录下面,它对应的烧录地址为0x8000。同时platformio\packages\framework-arduinoespressif32\tools\partitions目录下面的`partitions.csv`为编译的分区配置文件，会根据版型选择的不同有所不同，可以使用Excel打开进行编辑，然后在编译器内使用PIO进行重新编译即可，同时他也可以使用PIO包里面带的`gen_esp32part.py`脚本进行编译与反编译，操作方法为：python C:\SPB_Data\.platformio\packages\framework-arduinoespressif32\tools\gen_esp32part.py --verify xxx.csv xxx.bin(后面填写csv文件或者bin文件存放的位置，这里是将csv转换成bin，如果将位置对换，则可以将bin转换成csv)
 4. firmware.bin的位置为代码工程目录下的.pioenvs\[board]目录下面，这个就是代码编译出来的固件，它对应的烧录地址为0x10000，如果分区文件未做修改的话（人为修改，或者更换编译平台），更新固件或者重新烧录只在对应地址开始需要烧录这一个文件即可。
 
-同上面介绍的对分区文件的相互转换的操作方法相似的烧录方法为：
-
-`python C:\SPB_Data\.platformio\packages\tool-esptoolpy\esptool.py --port COM19 --baud 115200 write_flash -fm dio -fs 4MB 0x010000 xxx\firmware.bin`后面选择编译出来固件，进行代码更新，直接可以在cmd.exe内执行这条指令即可，方便快捷。
-
 ##### 烧录参考脚本
-1. python tool-esptoolpy\esptool.py --port COM7 --baud 115200 write_flash -fm dio -fs 4MB 0x1000 bootloader_esp32c3.bin
-2. python tool-esptoolpy\esptool.py --port COM7 --baud 115200 write_flash -fm dio -fs 4MB 0x8000 boot_app0.bin
-3. python tool-esptoolpy\esptool.py --port COM7 --baud 115200 write_flash -fm dio -fs 4MB 0xe000 partitions.bin
-4. python tool-esptoolpy\esptool.py --port COM7 --baud 115200 write_flash -fm dio -fs 4MB 0x00010000 HoloCubic_AIO固件_v1.3.bin
+1. python tool-esptoolpy\esptool.py --port COM7 --baud 921600 write_flash -fm dio -fs 4MB 0x1000 bootloader_dio_40m.bin 0x00008000 partitions.bin 0x0000e000 boot_app0.bin 0x00010000 HoloCubic_AIO固件_v1.3.bin
+2. python tool-esptoolpy\esptool.py erase_flash
+
+可用波特率为：
+* 115200
+* 230400
+* 460800
+* 576000
+* 921600
+* 1152000
 
 ### 之后计划
 1. 添加视频播放。
