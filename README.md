@@ -41,48 +41,23 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 
 ### 功能切换说明：
 1. TF卡的文件系统为fat32。在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。（以下会单独介绍tf卡里的配置文件）
-2. 插不插tf内存卡都不影响开机，但影响wifi密码和相册照片的读取。
+2. 插不插tf内存卡都不影响开机，但影响相册照片的读取。
 3. 左右摇晃即可切换界面。
 4. 向前倾斜1s钟即可切换第二功能，今后还会整合更多功能，同样前倾1s即切换。
 
-### TF卡文件说明
-关于`wifi.txt`文件的结构一共5行。如果手动修改的需要注意每一行一定要加回车，**最后一行也必须有回车。**
-1. wifi名称（一定要2.4G的wifi）
-2. wifi密码
-3. 所在省份（用于天气查询）
-4. 上述省份的语言（默认使用zh-Hans 简体中文）
-5. 知心天气的key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
+知心天气的key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
 
-关于天气：程序启动后在天气的界面时，将会读取`weather/`目录下的图标文件。
+### TF卡文件说明
+* 关于视频（暂时不可用）：运行播放器APP后，将会读取`movie/`目录下的视频文件。
+* 关于天气：程序启动后在天气的界面时，将会读取`weather/`目录下的图标文件。
+* 关于相册：运行图片APP后，将会读取`image/`目录下的图片文件。
 
 关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
 
 应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
 
 ### 固件更新：
-根目录下的`HoloCubic_AIO.bin`即为事先编译好的二进制固件文件，进行一定分区后方可上传。随后会出全套刷机教程。
-##### 关于烧录
-对ESP32进行开发，将代码编译好了之后，可以提取后在其他设备使用ESP Flash Download Tool直接烧录。使用ESP Flash Download Tool烧录需要提前准备四个文件，其中包含两个启动引导文件`bootloader_dio_40m.bin`、`boot_app0.bin`，一个flash划分文件`partitions.bin`和一个固件文件`firmware.bin`(当然名字是可以更改的)。
-
-下面说下这些文件的存放位置以及烧录地址：
-
-以Windows为例()
-1. `bootloader_dio_40m.bin`的位置为PlatformIO安装目录下的`.platformio\packages\framework-arduinoespressif32\tools\sdk\bin`目录下面,它的对应的烧录地址为0X1000。
-2. `boot_app0.bin`的位置为PlatformIO安装目录下的`platformio\packages\framework-arduinoespressif32\tools\partitions`目录下面，它对应的烧录地址为0xe000
-3. `partitions.bin`的位置为代码工程目录下的.pioenvs\[board]目录下面,它对应的烧录地址为0x8000。同时platformio\packages\framework-arduinoespressif32\tools\partitions目录下面的`partitions.csv`为编译的分区配置文件，会根据版型选择的不同有所不同，可以使用Excel打开进行编辑，然后在编译器内使用PIO进行重新编译即可，同时他也可以使用PIO包里面带的`gen_esp32part.py`脚本进行编译与反编译，操作方法为：python C:\SPB_Data\.platformio\packages\framework-arduinoespressif32\tools\gen_esp32part.py --verify xxx.csv xxx.bin(后面填写csv文件或者bin文件存放的位置，这里是将csv转换成bin，如果将位置对换，则可以将bin转换成csv)
-4. firmware.bin的位置为代码工程目录下的.pioenvs\[board]目录下面，这个就是代码编译出来的固件，它对应的烧录地址为0x10000，如果分区文件未做修改的话（人为修改，或者更换编译平台），更新固件或者重新烧录只在对应地址开始需要烧录这一个文件即可。
-
-##### 烧录参考脚本
-1. python tool-esptoolpy\esptool.py --port COM7 --baud 921600 write_flash -fm dio -fs 4MB 0x1000 bootloader_dio_40m.bin 0x00008000 partitions.bin 0x0000e000 boot_app0.bin 0x00010000 HoloCubic_AIO固件_v1.3.bin
-2. python tool-esptoolpy\esptool.py erase_flash
-
-可用波特率为：
-* 115200
-* 230400
-* 460800
-* 576000
-* 921600
-* 1152000
+根目录下的`HoloCubic_AIO_XXX.bin`
 
 ### 之后计划
 1. 添加视频播放。
