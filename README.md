@@ -57,7 +57,14 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
 
 ### 固件更新：
-根目录下的`HoloCubic_AIO_XXX.bin`
+1. `bootloader_dio_40m.bin`启动的`bootloader`。
+2. `partitions.bin`分区文件
+3. `boot_app0.bin`
+4. 最新的固件`HoloCubic_AIO_XXX.bin`
+
+其中`HoloCubic_AIO_XXX.bin`文件随着每次版本更新而更新，其他三个文件基本不会变动。
+
+将以上四个文件与`cubic_tool.exe`放在同一个目录下，双击运行`cubic_tool.exe`即可刷写固件。
 
 ### 之后计划
 1. 添加视频播放。
