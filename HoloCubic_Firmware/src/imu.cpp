@@ -7,62 +7,62 @@ void IMU::init()
     while (!imu.testConnection())
         ;
     imu.initialize();
-    active_info.active = UNKNOWN;
+    action_info.active = UNKNOWN;
 }
 
-Imu_Active *IMU::update(int interval)
+Imu_Action *IMU::update(int interval)
 {
-    imu.getMotion6(&(active_info.ax), &(active_info.ay), &(active_info.az),
-                   &(active_info.gx), &(active_info.gy), &(active_info.gz));
+    imu.getMotion6(&(action_info.ax), &(action_info.ay), &(action_info.az),
+                   &(action_info.gx), &(action_info.gy), &(action_info.gz));
 
     if (millis() - last_update_time > interval)
     {
-        if (active_info.ay > 4000 && !active_info.isValid)
+        if (action_info.ay > 4000 && !action_info.isValid)
         {
             encoder_diff--;
-            active_info.isValid = 1;
-            active_info.active = TURN_LEFT;
+            action_info.isValid = 1;
+            action_info.active = TURN_LEFT;
         }
-        else if (active_info.ay < -4000)
+        else if (action_info.ay < -4000)
         {
             encoder_diff++;
-            active_info.isValid = 1;
-            active_info.active = TURN_RIGHT;
+            action_info.isValid = 1;
+            action_info.active = TURN_RIGHT;
         }
         else
         {
-            active_info.isValid = 0;
+            action_info.isValid = 0;
         }
 
-        if (active_info.ax > 5000 && !active_info.isValid)
+        if (action_info.ax > 5000 && !action_info.isValid)
         {
             delay(300);
-            imu.getMotion6(&(active_info.ax), &(active_info.ay), &(active_info.az),
-                           &(active_info.gx), &(active_info.gy), &(active_info.gz));
-            if (active_info.ax > 5000)
+            imu.getMotion6(&(action_info.ax), &(action_info.ay), &(action_info.az),
+                           &(action_info.gx), &(action_info.gy), &(action_info.gz));
+            if (action_info.ax > 5000)
             {
-                active_info.isValid = 1;
-                active_info.active = GO_FORWORD;
+                action_info.isValid = 1;
+                action_info.active = GO_FORWORD;
                 encoder_state = LV_INDEV_STATE_PR;
             }
         }
-        else if (active_info.ax < -5000 && !active_info.isValid)
+        else if (action_info.ax < -5000 && !action_info.isValid)
         {
             delay(300);
-            imu.getMotion6(&(active_info.ax), &(active_info.ay), &(active_info.az),
-                           &(active_info.gx), &(active_info.gy), &(active_info.gz));
-            if (active_info.ax < -5000)
+            imu.getMotion6(&(action_info.ax), &(action_info.ay), &(action_info.az),
+                           &(action_info.gx), &(action_info.gy), &(action_info.gz));
+            if (action_info.ax < -5000)
             {
-                active_info.isValid = 1;
-                active_info.active = RETURN;
+                action_info.isValid = 1;
+                action_info.active = RETURN;
                 encoder_state = LV_INDEV_STATE_REL;
             }
         }
         else
         {
-            active_info.isValid = 0;
+            action_info.isValid = 0;
         }
         last_update_time = millis();
     }
-    return &active_info;
+    return &action_info;
 }

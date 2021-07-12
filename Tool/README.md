@@ -11,7 +11,7 @@
 
 ##### 烧录参考脚本
 1. python tool-esptoolpy\esptool.py --port COM7 --baud 921600 write_flash -fm dio -fs 4MB 0x1000 bootloader_dio_40m.bin 0x00008000 partitions.bin 0x0000e000 boot_app0.bin 0x00010000 HoloCubic_AIO固件_v1.3.bin
-2. python tool-esptoolpy\esptool.py erase_flash
+2. 清空flash命令 python tool-esptoolpy\esptool.py erase_flash
 
 可用波特率为：
 * 115200

@@ -13,6 +13,7 @@
 #define LV_ATTRIBUTE_IMG_APP_MOVIE
 #endif
 
+
 const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_APP_MOVIE uint8_t app_movie_map[] = {
   0x04, 0x02, 0x04, 0xff, 	/*Color of index 0*/
   0xdc, 0x8e, 0x14, 0xff, 	/*Color of index 1*/
@@ -169,4 +170,3 @@ const lv_img_dsc_t app_movie = {
   .header.cf = LV_IMG_CF_INDEXED_4BIT,
   .data = app_movie_map,
 };
-

@@ -10,7 +10,7 @@ void config_read(const char *file_path, Config *cfg)
     // cfg->language = tf.readFileLine(file_path, 4);    // line-2 for language
     // cfg->weather_key = tf.readFileLine(file_path, 5); // line-3 for weather_key
     // return cfg->ssid+cfg->password+cfg->cityname+cfg->language+cfg->weather_key;
-    
+
     prefs.begin("Config"); // 打开命名空间mynamespace
     cfg->ssid = prefs.getString("ssid", "");
     cfg->password = prefs.getString("password", "");
@@ -27,7 +27,7 @@ void config_save(const char *file_path, Config *cfg)
     // Serial.println(res);
     // tf.deleteFile(file_path);
     // tf.writeFile(file_path, res.c_str());
-    
+
     prefs.begin("Config"); // 打开命名空间mynamespace
     prefs.putString("ssid", cfg->ssid);
     prefs.putString("password", cfg->password);
