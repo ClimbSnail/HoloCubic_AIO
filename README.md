@@ -90,6 +90,8 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
         _ss = (_spi_num == VSPI) ? SS : 15;
 这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
 
+### 关于GUI绘制
+可以自行关注下`gui-guider`工具。
 
 ### 版本更新日志
 ##### HoloCubic_AIO固件_v1.4.bin
