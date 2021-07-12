@@ -78,6 +78,7 @@ void weather_process(AppController *sys,
 
     if (TURN_RIGHT == act_info->active)
     {
+        // 切换界面时，便向强制更新
         preWeatherMillis = millis() - weatherUpdataInterval;
         preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
@@ -85,6 +86,7 @@ void weather_process(AppController *sys,
     }
     else if (TURN_LEFT == act_info->active)
     {
+        // 切换界面时，便向强制更新
         preWeatherMillis = millis() - weatherUpdataInterval;
         preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
