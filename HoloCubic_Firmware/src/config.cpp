@@ -12,11 +12,11 @@ void config_read(const char *file_path, Config *cfg)
     // return cfg->ssid+cfg->password+cfg->cityname+cfg->language+cfg->weather_key;
 
     prefs.begin("Config"); // 打开命名空间mynamespace
-    cfg->ssid = prefs.getString("ssid", "");
-    cfg->password = prefs.getString("password", "");
+    cfg->ssid = prefs.getString("ssid", "7#5802");
+    cfg->password = prefs.getString("password", "7#58027#5802");
     cfg->cityname = prefs.getString("cityname", "Beijing");
     cfg->language = prefs.getString("language", "zh-Hans");
-    cfg->weather_key = prefs.getString("weather_key", "");
+    cfg->weather_key = prefs.getString("weather_key", "SfGOpgf5IPnqgFbke");
     prefs.end(); // 关闭当前命名空间
 }
 

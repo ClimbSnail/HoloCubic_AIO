@@ -176,6 +176,7 @@ long long Network::getTimestamp(String url)
 
     String time = "";
     HTTPClient http;
+    http.setTimeout(1000);
     http.begin(url);
 
     // start connection and send HTTP headerFFF
@@ -225,11 +226,12 @@ Weather Network::getWeather(String url)
     if (WL_CONNECTED != get_wifi_sta_status())
         return m_weather;
 
-    HTTPClient https;
-    https.begin(url);
+    HTTPClient http;
+    http.setTimeout(1000);
+    http.begin(url);
 
     // start connection and send HTTP headerFFF
-    int httpCode = https.GET();
+    int httpCode = http.GET();
 
     // httpCode will be negative on error
     if (httpCode > 0)
@@ -237,7 +239,7 @@ Weather Network::getWeather(String url)
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-            String payload = https.getString();
+            String payload = http.getString();
             Serial.println(payload);
             int code_index = (payload.indexOf("code")) + 7;         //获取code位置
             int temp_index = (payload.indexOf("temperature")) + 14; //获取temperature位置
@@ -249,9 +251,9 @@ Weather Network::getWeather(String url)
     }
     else
     {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
     }
-    https.end();
+    http.end();
 
     return m_weather;
 }

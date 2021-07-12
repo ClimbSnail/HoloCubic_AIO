@@ -78,15 +78,19 @@ void weather_process(AppController *sys,
 
     if (TURN_RIGHT == act_info->active)
     {
+        preWeatherMillis = millis() - weatherUpdataInterval;
+        preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
         clock_page = (clock_page + 1) % WEATHER_PAGE_SIZE;
     }
     else if (TURN_LEFT == act_info->active)
     {
+        preWeatherMillis = millis() - weatherUpdataInterval;
+        preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
         // 以下等效与 clock_page = (clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
-        clock_page = (clock_page + WEATHER_PAGE_SIZE -1) % WEATHER_PAGE_SIZE;
+        clock_page = (clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
     }
 
     if (0 == clock_page) // 更新天气
@@ -113,9 +117,8 @@ void weather_exit_callback(void)
 
 void weather_event_notification(APP_EVENT event)
 {
-    if(event == APP_EVENT_WIFI_CONN)
+    if (event == APP_EVENT_WIFI_CONN)
     {
-
     }
 }
 
