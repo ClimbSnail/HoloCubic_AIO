@@ -66,10 +66,6 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 
 将以上四个文件与`cubic_tool.exe`放在同一个目录下，双击运行`cubic_tool.exe`即可刷写固件。
 
-### 之后计划
-1. 添加视频播放。
-2. 电脑桌面投屏。
-
 
 ### 硬件相关
 **注意：硬件部分C7电容换成1uF左右就可以实现自动下载。**
@@ -92,6 +88,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 
 ### 关于GUI绘制
 可以自行关注下`gui-guider`工具。
+
 
 ### 版本更新日志
 ##### HoloCubic_AIO固件_v1.4.bin

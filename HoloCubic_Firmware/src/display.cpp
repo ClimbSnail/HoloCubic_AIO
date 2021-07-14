@@ -1,13 +1,8 @@
 #include "display.h"
-#include <TFT_eSPI.h>
 #include "network.h"
 #include "lv_port_indev.h"
 #include "lv_demo_encoder.h"
-
-/*
-TFT pins should be set in path/to/Arduino/libraries/TFT_eSPI/User_Setups/Setup24_ST7789.h
-*/
-TFT_eSPI tft = TFT_eSPI();
+#include "common.h"
 
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];
@@ -23,10 +18,11 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
 
-    tft.startWrite();
-    tft.setAddrWindow(area->x1, area->y1, w, h);
-    tft.pushColors(&color_p->full, w * h, true);
-    tft.endWrite();
+    tft->setAddrWindow(area->x1, area->y1, w, h);
+    tft->startWrite();
+    tft->writePixels(&color_p->full, w * h);
+    //tft->pushColors(&color_p->full, w * h, true);
+    tft->endWrite();
 
     lv_disp_flush_ready(disp);
 }
@@ -40,8 +36,9 @@ void Display::init()
 
     lv_log_register_print_cb(my_print); /* register print function for debugging */
 
-    tft.begin();        /* TFT init */
-    tft.setRotation(4); /* mirror 修改反转，如果加上分光棱镜需要改为4镜像*/
+    tft->begin(); /* TFT init */
+    tft->fillScreen(BLACK);
+    tft->setRotation(2); /* mirror 修改反转，如果加上分光棱镜需要改为4镜像*/
 
     lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
 

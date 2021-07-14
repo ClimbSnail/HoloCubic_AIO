@@ -14,8 +14,6 @@ unsigned long preTimeMillis = 0;              // 上一回从网络更新日期�
 unsigned long weatherUpdataInterval = 900000; // 天气更新的时间间隔
 unsigned long timeUpdataInterval = 300000;    // 日期时钟更新的时间间隔(300s)
 
-// preWeatherMillis = millis() - weatherUpdataInterval;
-// preTimeMillis = millis() - timeUpdataInterval;
 String unit = "c";
 String time_api = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
 
@@ -64,6 +62,9 @@ void UpdateTime_RTC(lv_scr_load_anim_t anim_type)
 void weather_init(void)
 {
     weather_gui_init();
+    // 变相强制更新
+    preWeatherMillis = millis() - weatherUpdataInterval;
+    preTimeMillis = millis() - timeUpdataInterval;
 }
 
 void weather_process(AppController *sys,
@@ -78,7 +79,7 @@ void weather_process(AppController *sys,
 
     if (TURN_RIGHT == act_info->active)
     {
-        // 切换界面时，便向强制更新
+        // 切换界面时，变相强制更新
         preWeatherMillis = millis() - weatherUpdataInterval;
         preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
@@ -86,7 +87,7 @@ void weather_process(AppController *sys,
     }
     else if (TURN_LEFT == act_info->active)
     {
-        // 切换界面时，便向强制更新
+        // 切换界面时，变相强制更新
         preWeatherMillis = millis() - weatherUpdataInterval;
         preTimeMillis = millis() - timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;

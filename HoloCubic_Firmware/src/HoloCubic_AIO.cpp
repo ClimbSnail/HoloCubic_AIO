@@ -53,11 +53,10 @@ void setup()
     tf.init();
     lv_fs_if_init();
     config_read("/wifi.txt", &g_cfg);
-    tf.listDir("/image", 250);
 
+    app_contorller->app_register(&media_app);
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
-    app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);
     app_contorller->app_register(&server_app);
 

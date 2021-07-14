@@ -5,11 +5,12 @@
 
 int image_pos = 0;                       // 记录相册播放的历史
 unsigned long pic_perMillis = 0;         // 图片上一回更新的时间
-unsigned long picRefreshInterval = 5000; // 图片播放的时间间隔(5s)
+unsigned long picRefreshInterval = 10000; // 图片播放的时间间隔(5s)
 
 void picture_init(void)
 {
     photo_gui_init();
+    tf.listDir("/image", 250);
 }
 
 void picture_process(AppController *sys,
