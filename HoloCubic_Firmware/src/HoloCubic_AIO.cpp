@@ -39,7 +39,6 @@ void setup()
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
-    app_contorller = new AppController(); // APP控制器
     mpu.init();
 
     /*** Init on-board RGB ***/
@@ -54,9 +53,10 @@ void setup()
     lv_fs_if_init();
     config_read("/wifi.txt", &g_cfg);
 
-    app_contorller->app_register(&media_app);
+    app_contorller = new AppController(); // APP控制器
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
+    app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);
     app_contorller->app_register(&server_app);
 

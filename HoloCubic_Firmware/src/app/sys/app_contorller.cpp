@@ -1,6 +1,7 @@
 #include "app_contorller.h"
 #include "app_contorller_gui.h"
 #include "common.h"
+#include "sys_rgb.h"
 #include "../sys/interface.h"
 #include "Arduino.h"
 
@@ -13,11 +14,18 @@ AppController::AppController()
     appList = new APP_OBJ[APP_MAX_NUM];
     app_control_gui_init();
     appList[0].app_image = &app_loading;
-    app_contorl_display_scr(appList[cur_app_index].app_image, LV_SCR_LOAD_ANIM_NONE, true);
+    app_contorl_display_scr(appList[cur_app_index].app_image,
+                            LV_SCR_LOAD_ANIM_NONE, true);
+    // 初始化RGB灯
+    RgbParam rgb_setting = {0, 0, 0,
+                            255, 255, 255, 1,
+                            0.05, 0.5, 0.001, 10};
+    rgb_thread_init(rgb_setting);
 }
 
 AppController::~AppController()
 {
+    rgb_thread_del();
 }
 
 int AppController::app_is_legal(const APP_OBJ *app_obj)
@@ -91,6 +99,8 @@ int AppController::main_process(Imu_Action *act_info)
     }
     else
     {
+        rgb_thread_del();
+        rgb.setRGB(0, 64, 64).setBrightness(0.05);
         // 运行APP进程 等效于把控制权交给当前APP
         (*(appList[cur_app_index].main_process))(this, act_info);
     }

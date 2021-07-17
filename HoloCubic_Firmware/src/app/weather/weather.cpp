@@ -21,9 +21,11 @@ void UpdateWeather(lv_scr_load_anim_t anim_type)
 {
     Weather weather;
     // 以下减少网络请求的压力
-    if (millis() - preWeatherMillis >= weatherUpdataInterval)
+    
+    // if (millis() - preWeatherMillis >= weatherUpdataInterval)
+    if (doDelayMillisTime(weatherUpdataInterval, &preWeatherMillis, 0))
     {
-        preWeatherMillis = millis();
+        // preWeatherMillis = millis();
         //如果要改城市这里也需要修改
         weather = g_network.getWeather("https://api.seniverse.com/v3/weather/now.json?key=" + g_cfg.weather_key + "&location=" + g_cfg.cityname + "&language=" + g_cfg.language + "&unit=" + unit);
     }
@@ -40,10 +42,11 @@ void UpdateTime_RTC(lv_scr_load_anim_t anim_type)
 {
     long long timestamp = 0;
     // 以下减少网络请求的压力
-    if (millis() - preTimeMillis >= timeUpdataInterval)
+    // if (millis() - preTimeMillis >= timeUpdataInterval)
+    if (doDelayMillisTime(timeUpdataInterval, &preTimeMillis, 0))
     {
         // 尝试同步网络上的时钟
-        preTimeMillis = millis();
+        // preTimeMillis = millis();
         timestamp = g_network.getTimestamp(time_api) + TIMEZERO_OFFSIZE; //nowapi时间API
     }
     else

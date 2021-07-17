@@ -1,13 +1,12 @@
 # HoloCubic_AIO (All in one for HoloCubic)
 
-
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
 _**欢迎加入QQ讨论群 755143193**_
 
-### 本固件程序是基于前人的基础上修改了整体框架，更有利于多功能的实现
+### 本固件程序的实现是基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
 B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=search&seid=5347262882311444671
 
 [^_^]:
@@ -40,7 +39,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 7. 即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
 ### 功能切换说明：
-1. TF卡的文件系统为fat32。在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。（以下会单独介绍tf卡里的配置文件）
+1. TF卡的文件系统为fat32。在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
 2. 插不插tf内存卡都不影响开机，但影响相册照片的读取。
 3. 左右摇晃即可切换界面。
 4. 向前倾斜1s钟即可切换第二功能，今后还会整合更多功能，同样前倾1s即切换。
@@ -100,4 +99,6 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 2. 调整RBG氛围灯。
 3. 增加内存卡中的`movie`目录（便于后期拓展）。
 
+### 资料
+ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 

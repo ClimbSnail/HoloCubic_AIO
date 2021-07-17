@@ -20,7 +20,6 @@ boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis,
 }
 
 #if GFX
-#include <Arduino_GFX_Library.h>
 
 #define TFT_MISO 19
 #define TFT_MOSI 23
@@ -28,6 +27,7 @@ boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis,
 #define TFT_CS -1 // Not connected
 #define TFT_DC 2
 #define TFT_RST 4 // Connect reset to ensure display initialises
+#include <Arduino_GFX_Library.h>
 
 Arduino_HWSPI *bus = new Arduino_HWSPI(TFT_DC /* DC */, TFT_CS /* CS */, TFT_SCLK, TFT_MOSI, TFT_MISO);
 Arduino_ST7789 *tft = new Arduino_ST7789(bus, TFT_RST /* RST */, 3 /* rotation */, true /* IPS */,
