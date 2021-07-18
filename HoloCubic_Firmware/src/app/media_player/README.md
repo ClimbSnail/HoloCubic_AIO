@@ -1,4 +1,6 @@
 ### ffmpeg视频转换
+使用pyinstaller打包程序`pyinstaller -F video_player_tool.py`
+
 ffmpeg -i butterfly.mp4 -vf scale=240:240 input_output.mp4
 
 ffmpeg -i input_output.mp4 -vf "fps=9,scale=-1:240:flags=lanczos,crop=240:in_h:(in_w-240)/2:0" -c:v rawvideo -pix_fmt rgb565be 240_9fps.rgb
