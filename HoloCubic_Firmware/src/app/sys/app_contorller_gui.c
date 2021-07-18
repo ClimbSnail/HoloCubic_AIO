@@ -23,11 +23,22 @@ void app_control_gui_init(void)
     lv_obj_add_style(app_scr, LV_BTN_PART_MAIN, &default_style);
 }
 
+// void display_app_scr_release(void)
+// {
+//     // 释放主桌面的页面
+//     // lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
+//     // lv_obj_clean(act_obj);            // 清空此前页面
+// }
+
 void display_app_scr_init(const void *src_img)
 {
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == app_scr)
+    {
+        // 防止一些不适用lvgl的APP退出 造成画面在无其他动作情况下无法绘制更新
+        lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
         return;
+    }
     pre_img_path = src_img;
     lv_obj_clean(act_obj); // 清空此前页面
     pre_app_image = lv_img_create(app_scr, NULL);

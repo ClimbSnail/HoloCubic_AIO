@@ -51,7 +51,7 @@ void setup()
     /*** Init micro SD-Card ***/
     tf.init();
     lv_fs_if_init();
-    config_read("/wifi.txt", &g_cfg);
+    config_read(NULL, &g_cfg);
 
     app_contorller = new AppController(); // APP控制器
     app_contorller->app_register(&weather_app);
