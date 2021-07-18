@@ -7,7 +7,7 @@
 _**欢迎加入QQ讨论群 755143193**_
 
 ### 本固件程序的实现是基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
-B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=search&seid=5347262882311444671
+B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 [^_^]:
 	![HomePage](Image/holocubic_1080x1080.jpg)
@@ -85,11 +85,23 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
         _ss = (_spi_num == VSPI) ? SS : 15;
 这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
 
-### 关于GUI绘制
-可以自行关注下`gui-guider`工具。
+### 程序框架图
+
+[^_^]:
+	![HoloCubic_AIO_Frame](Image/holocubic_AIO_Frame.png)
+	
+![HoloCubic_AIO_Frame](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_AIO_Frame.png)
+
+AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=2
+
+关于UI的设计可以自行关注下`gui-guider`工具。
+
+### 资料
+ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 
 
 ### 版本更新日志
+
 ##### HoloCubic_AIO固件_v1.4.bin
 1. 大量修改程序框架。
 2. 增加屏幕亮度。
@@ -98,7 +110,4 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?from=se
 1. 将wifi配置信息从内存卡移到flash中，实现非相册功能的应用无需依赖内存卡。开机需要使用里面的配置APP在浏览器端配置网络信息。后期升级固件无需重新配置信息。
 2. 调整RBG氛围灯。
 3. 增加内存卡中的`movie`目录（便于后期拓展）。
-
-### 资料
-ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 

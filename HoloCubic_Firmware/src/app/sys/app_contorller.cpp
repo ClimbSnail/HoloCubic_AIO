@@ -1,7 +1,6 @@
 #include "app_contorller.h"
 #include "app_contorller_gui.h"
 #include "common.h"
-#include "sys_rgb.h"
 #include "../sys/interface.h"
 #include "Arduino.h"
 
@@ -16,11 +15,13 @@ AppController::AppController()
     appList[0].app_image = &app_loading;
     app_contorl_display_scr(appList[cur_app_index].app_image,
                             LV_SCR_LOAD_ANIM_NONE, true);
-    // 初始化RGB灯
-    RgbParam rgb_setting = {0, 0, 0,
-                            255, 255, 255, 1,
-                            0.05, 0.5, 0.001, 10};
-    rgb_thread_init(rgb_setting);
+    // 初始化RGB灯 HSV色彩模式
+    RgbParam rgb_setting = {LED_MODE_HSV,
+                            1, 32, 255,
+                            255, 255, 255,
+                            1, 1, 1,
+                            0.05, 0.5, 0.001, 30};
+    rgb_thread_init(&rgb_setting);
 }
 
 AppController::~AppController()
@@ -94,13 +95,15 @@ int AppController::main_process(Imu_Action *act_info)
                 (*(appList[cur_app_index].app_init))(); // 执行APP初始化
             }
         }
-        app_contorl_display_scr(appList[cur_app_index].app_image, anim_type, false);
-        delay(300);
+
+        if (GO_FORWORD != act_info->active)
+        {
+            app_contorl_display_scr(appList[cur_app_index].app_image, anim_type, false);
+            delay(300);
+        }
     }
     else
     {
-        rgb_thread_del();
-        rgb.setRGB(0, 64, 64).setBrightness(0.05);
         // 运行APP进程 等效于把控制权交给当前APP
         (*(appList[cur_app_index].main_process))(this, act_info);
     }
@@ -123,5 +126,6 @@ void AppController::app_exit()
         // 执行APP退出回调
         (*(appList[cur_app_index].exit_callback))();
     }
+
     app_contorl_display_scr(appList[cur_app_index].app_image, LV_SCR_LOAD_ANIM_NONE, true);
 }

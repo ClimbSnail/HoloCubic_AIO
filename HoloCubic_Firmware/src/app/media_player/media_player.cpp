@@ -7,21 +7,19 @@
 
 // #define VIDEO_WIDTH 240L
 // #define VIDEO_HEIGHT 240L
-// #define RGB565_FILENAME "/movie/Bad_Apple_240_9fps.rgb"
 // #define RGB565_FILENAME_1 "/movie/240_9fps.rgb"
+// #define RGB565_FILENAME_2 "/movie/Bad_Apple_240_9fps.rgb"
 
 #define VIDEO_WIDTH 180L
 #define VIDEO_HEIGHT 180L
-#define RGB565_FILENAME "/movie/Bad_Apple_180_9fps.rgb"
 #define RGB565_FILENAME_1 "/movie/180_9fps.rgb"
-int pos = 0;
+#define RGB565_FILENAME_2 "/movie/Bad_Apple_180_9fps.rgb"
 
 // #define VIDEO_WIDTH 120L
 // #define VIDEO_HEIGHT 120L
-// #define RGB565_FILENAME "/movie/120_9fps.rgb"
+// #define RGB565_FILENAME_1 "/movie/120_9fps.rgb"
 
 #define RGB565_BUFFER_SIZE (VIDEO_WIDTH * VIDEO_HEIGHT * 2)
-#define TFT_BRIGHTNESS 128
 
 #define TFT_MISO 19
 #define TFT_MOSI 23
@@ -31,16 +29,31 @@ int pos = 0;
 #define TFT_RST 4 // Connect reset to ensure display initialises
 
 uint8_t *file_buf = NULL;
+File file;
+int movie_pos_increate = 0;
+int movie_pos = 0;
+String movie_filename[2] = {RGB565_FILENAME_1, RGB565_FILENAME_2};
 
 void media_player_init(void)
 {
+    // 调整RGB模式  HSV色彩模式
+    RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
+                            255, 255, 32,
+                            1, 1, 1,
+                            0.05, 0.5, 0.001, 30};
+    set_rgb(&rgb_setting);
+
     Serial.println("ESP.getFreeHeap()---------> 1");
     Serial.println(ESP.getFreeHeap());
     file_buf = (uint8_t *)malloc(RGB565_BUFFER_SIZE);
     Serial.println(ESP.getFreeHeap());
-    DMADrawer::setup(RGB565_BUFFER_SIZE, 40000000,
-                     TFT_MOSI, TFT_MISO,
-                     TFT_SCLK, TFT_CS, TFT_DC);
+    // DMADrawer::setup(RGB565_BUFFER_SIZE, 40000000,
+    //                  TFT_MOSI, TFT_MISO,
+    //                  TFT_SCLK, TFT_CS, TFT_DC);
+
+    Serial.println(F("RGB565 video start"));
+    file = SD.open(movie_filename[movie_pos]);
+    tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
 }
 
 void media_player_process(AppController *sys,
@@ -52,24 +65,30 @@ void media_player_process(AppController *sys,
         return;
     }
 
+    if (TURN_RIGHT == act_info->active)
+    {
+        movie_pos_increate = 1;
+    }
+    else if (TURN_LEFT == act_info->active)
+    {
+        movie_pos_increate = -1;
+    }
+
+    if (TURN_RIGHT == act_info->active || TURN_LEFT == act_info->active)
+    {
+        movie_pos = (movie_pos + movie_pos_increate + 2) % 2;
+        file.close(); // 尝试关闭文件
+        Serial.println(F("RGB565 video start"));
+        file = SD.open(movie_filename[movie_pos]);
+        tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
+    }
+
     // uint8_t file_buf[RGB565_BUFFER_SIZE];
     if (!file_buf)
     {
         Serial.println(F("buf malloc failed!"));
     }
-    Serial.println(F("RGB565 video start"));
-    tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
-    File file;
-    if (pos <= 2)
-    {
-        pos++;
-        file = SD.open(RGB565_FILENAME_1);
-    }
-    else
-    {
-        file = SD.open(RGB565_FILENAME);
-        pos = 0;
-    }
+
     if (!file)
     {
         Serial.println("Failed to open file for reading");
@@ -77,7 +96,7 @@ void media_player_process(AppController *sys,
     }
 
     // Serial.print("Read from file: ");
-    while (file.available())
+    if (file.available())
     {
         // Read video
         // file_buf = (uint8_t *)DMADrawer::getNextBuffer();
@@ -93,15 +112,30 @@ void media_player_process(AppController *sys,
         tft->pushColors(file_buf, l);
         tft->endWrite();
     }
-    file.close();
-    // Serial.println(F("RGB565 video end"));
+    else
+    {
+        file.close();
+        // Serial.println(F("RGB565 video end"));
+        Serial.println(F("RGB565 video start"));
+        file = SD.open(movie_filename[movie_pos]);
+        tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
+    }
     // delay(300);
 }
 
 void media_player_exit_callback(void)
 {
+    file.close(); // 退出时关闭文件
     free(file_buf);
     // DMADrawer::close();
+
+    // 恢复RGB灯  HSV色彩模式
+    RgbParam rgb_setting = {LED_MODE_HSV,
+                            1, 32, 255,
+                            255, 255, 255,
+                            1, 1, 1,
+                            0.05, 0.5, 0.001, 30};
+    set_rgb(&rgb_setting);
 }
 
 void media_player_event_notification(APP_EVENT event)
