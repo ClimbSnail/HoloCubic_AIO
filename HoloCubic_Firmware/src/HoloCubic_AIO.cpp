@@ -6,6 +6,7 @@
 #include "config.h"
 
 #include "app/sys/app_contorller.h"
+#include "app/bilibili_fans/bilibili.h"
 #include "app/media_player/media_player.h"
 #include "app/picture/picture.h"
 #include "app/screen_share/screen_share.h"
@@ -56,6 +57,7 @@ void setup()
     app_contorller = new AppController(); // APP控制器
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
+    app_contorller->app_register(&bilibili_app);
     app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);
     app_contorller->app_register(&server_app);
