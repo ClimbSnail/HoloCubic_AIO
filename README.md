@@ -4,10 +4,19 @@
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
-_**欢迎加入QQ讨论群 755143193**_
+_**欢迎加入AIO内测QQ讨论群 755143193**_
+
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
-### 本固件程序的实现是基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
+### 主要特点
+1. 聚合多种APP，内置天气、时钟、相册、视频播放、浏览器文件修改。（各APP具体使用参考说明书）
+2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动。
+3. 程序相对模块化，低耦合。
+4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
+5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
+6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
+
+### 本固件基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
 B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 [^_^]:
@@ -30,15 +39,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 ![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
-### 主要特点
-1. 聚合多种APP，内置天气、时钟、相册、视频播放、浏览器文件修改。（各APP具体使用参考说明书）
-2. 开机无论是否连接wifi（一定要2.4G的wifi），都不影响其他功能运行。
-3. 程序相对模块化，低耦合。
-4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
-5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
-6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
-
-### 固件更新
+### 固件刷写（提供一键刷机工具，无需搭建任何IDE环境）
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
 3. `boot_app0.bin`
@@ -58,7 +59,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 ### APP介绍
 
 ##### Web Server服务
-1. 运行条件：无。
+1. 运行条件：无。如：wifi等信息是保存在flash中，内存卡完全不影响wifi功能的连接。
 2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
 4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。
@@ -68,7 +69,9 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 2. 将需要播放的图片转化成一定格式，再保存在`image/`目录中。
 3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
 
-关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
+关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 
+* 常用的天气图片，转换为c数组，格式为Indexed 16 colors 选择 C array。
+* 不常用的图片则可以转换成（True color with alpha 选择Binary RGB565）bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
 
 ##### 视频播放
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`movie/`目录。
