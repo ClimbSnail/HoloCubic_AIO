@@ -4,11 +4,22 @@
 int photo_file_num = 0;
 char file_name_list[IMAGE_FILE_NUM][IMAGE_FILE_NAME_MAX_LEN];
 
+void release_file_info(File_Info *info)
+{
+    File_Info *tmp;
+    for (tmp = info; info != NULL;)
+    {
+        info = info->next_node;
+        free(tmp);
+        tmp = info;
+    }
+}
+
 void SdCard::init()
 {
 
     SPIClass *sd_spi = new SPIClass(HSPI); // another SPI
-    if (!SD.begin(15, *sd_spi))            // SD-Card SS pin is 15
+    if (!SD.begin(15, *sd_spi, 80000000))  // SD-Card SS pin is 15
     {
         Serial.println("Card Mount Failed");
         return;
@@ -91,6 +102,74 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
         file = root.openNextFile();
     }
     Serial.println(photo_file_num);
+}
+
+File_Info *SdCard::listDir(const char *dirname)
+{
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = SD.open(dirname);
+    if (!root)
+    {
+        Serial.println("Failed to open directory");
+        return NULL;
+    }
+    if (!root.isDirectory())
+    {
+        Serial.println("Not a directory");
+        return NULL;
+    }
+
+    int dir_len = strlen(dirname) + 1;
+
+    // 头节点的创建
+    File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
+    head_file->file_name = (char *)malloc(dir_len);
+    head_file->next_node = NULL;
+    // 将文件夹名赋值给头节点（当作这个节点的文件名）
+    strncpy(head_file->file_name, dirname, dir_len - 1);
+    head_file->file_name[dir_len - 1] = 0;
+    head_file->next_node = NULL;
+
+    File_Info *file_node = head_file;
+
+    File file = root.openNextFile();
+    while (file)
+    {
+        if (file.isDirectory())
+        {
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+            // if (levels)
+            // {
+            //     listDir(file.name(), levels - 1);
+            // }
+        }
+        else
+        {
+            int filename_len = strlen(file.name()) + 1 - dir_len;
+            // 创建新节点
+            file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
+            // file_node指针移向节点
+            file_node = file_node->next_node;
+            // 船家创建新节点的文件名
+            file_node->file_name = (char *)malloc(filename_len);
+            strncpy(file_node->file_name, file.name() + dir_len, filename_len);
+            file_node->file_name[filename_len - 1] = 0; //
+            // 下一个节点赋空
+            file_node->next_node = NULL;
+
+            char file_name[30] = {0};
+            sprintf(file_name, "%s/%s", dirname, file_node->file_name);
+
+            Serial.print("  FILE: ");
+            Serial.print(file_name);
+            Serial.print("  SIZE: ");
+            Serial.println(file.size());
+        }
+        file = root.openNextFile();
+    }
+    return head_file;
 }
 
 void SdCard::createDir(const char *path)

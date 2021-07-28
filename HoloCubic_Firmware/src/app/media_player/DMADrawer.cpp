@@ -15,6 +15,8 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include "../../common.h"
+
 static spi_device_handle_t _spi = NULL;
 static spi_transaction_t trans[6];
 static gpio_num_t tft_dc_pin, tft_cs_pin;
@@ -75,7 +77,13 @@ static spi_device_handle_t spi_start(uint32_t len, int spi_freq, int tft_mosi, i
 bool DMADrawer::setup(uint32_t bufsize, int spi_freq, int tft_mosi, int tft_miso, int tft_sclk, int tft_cs, int tft_dc)
 {
     for (int i = 0; i < 2; ++i)
-        _pixBuf[i] = (uint16_t *)pvPortMallocCaps(bufsize, MALLOC_CAP_DMA);
+    {
+        _pixBuf[i] = NULL;
+        // _pixBuf[i] = (uint16_t *)pvPortMallocCaps(bufsize, MALLOC_CAP_DMA);
+        _pixBuf[i] = (uint16_t *)heap_caps_malloc(bufsize, MALLOC_CAP_DMA); // 一个字节
+        if (NULL == _pixBuf[i])
+            Serial.println("Fail _pixBuf[i]");
+    }
     _lastX = -1;
     _lastY = -1;
     _lastW = -1;
@@ -107,7 +115,10 @@ void DMADrawer::close()
 {
     waitDraw();
     for (int i = 0; i < 2; ++i)
+    {
         free(_pixBuf[i]);
+        _pixBuf[i] = NULL;
+    }
 }
 
 uint16_t *DMADrawer::getNextBuffer()
@@ -121,8 +132,11 @@ void DMADrawer::draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
     spi_transaction_t *tr;
     for (uint8_t i = 0; i < 6; i++)
     {
+        Serial.print("for :");
+        Serial.println(i);
         if (_sent[i])
         {
+            Serial.println("spi_device_get_trans_result");
             ret = spi_device_get_trans_result(_spi, &tr, portMAX_DELAY);
             assert(ret == ESP_OK);
             _sent[i] = false;
@@ -168,6 +182,7 @@ void DMADrawer::draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
             break;
         }
         tr->rxlength = 0;
+        Serial.println("spi_device_queue_trans");
         ret = spi_device_queue_trans(_spi, tr, portMAX_DELAY);
         assert(ret == ESP_OK);
         _sent[i] = true;

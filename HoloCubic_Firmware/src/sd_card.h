@@ -10,6 +10,14 @@
 extern int photo_file_num;
 extern char file_name_list[IMAGE_FILE_NUM][IMAGE_FILE_NAME_MAX_LEN];
 
+struct File_Info
+{
+    char *file_name;
+    File_Info *next_node;
+};
+
+void release_file_info(File_Info* info);
+
 class SdCard
 {
 private:
@@ -17,7 +25,10 @@ private:
 
 public:
     void init();
+
     void listDir(const char *dirname, uint8_t levels);
+
+    File_Info *listDir(const char *dirname);
 
     void createDir(const char *path);
 

@@ -5,6 +5,7 @@
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
 _**欢迎加入QQ讨论群 755143193**_
+![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
 ### 本固件程序的实现是基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
 B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
@@ -30,32 +31,14 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 ![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
 ### 主要特点
-1. 内置天气、时钟、相册（tf卡）、浏览器文件修改等功能。
+1. 聚合多种APP，内置天气、时钟、相册、视频播放、浏览器文件修改。（各APP具体使用参考说明书）
 2. 开机无论是否连接wifi（一定要2.4G的wifi），都不影响其他功能运行。
 3. 程序相对模块化，低耦合。
-4. 提供web界面进行配网以及其他设置选项。注：若当前模式为STA模式，则WebServer建立在STA模式下的Local_IP上。若为AP模式，则建立在AP_IP上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
+4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
 5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
 6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
-7. 即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
-### 功能切换说明：
-1. TF卡的文件系统为fat32。在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
-2. 插不插tf内存卡都不影响开机，但影响相册照片的读取。
-3. 左右摇晃即可切换界面。
-4. 向前倾斜1s钟即可切换第二功能，今后还会整合更多功能，同样前倾1s即切换。
-
-知心天气的key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
-
-### TF卡文件说明
-* 关于视频（暂时不可用）：运行播放器APP后，将会读取`movie/`目录下的视频文件。
-* 关于天气：程序启动后在天气的界面时，将会读取`weather/`目录下的图标文件。
-* 关于相册：运行图片APP后，将会读取`image/`目录下的图片文件。
-
-关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
-
-应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
-
-### 固件更新：
+### 固件更新
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
 3. `boot_app0.bin`
@@ -64,6 +47,43 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 其中`HoloCubic_AIO_XXX.bin`文件随着每次版本更新而更新，其他三个文件基本不会变动。
 
 将以上四个文件与`cubic_tool.exe`放在同一个目录下，双击运行`cubic_tool.exe`即可刷写固件。
+
+
+### 功能切换说明：
+1. TF卡的文件系统为fat32。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
+2. 插不插tf内存卡都不影响开机，但影响某些APP的功能（各自APP介绍里会说明）。
+3. 左右摇晃即可切换界面。
+4. 向前倾斜1s钟即可切换第二功能，今后还会整合更多功能，同样前倾1s即切换。
+
+### APP介绍
+
+##### Web Server服务
+1. 运行条件：无。
+2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
+3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
+4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。
+
+##### 相册
+1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片）。
+2. 将需要播放的图片转化成一定格式，再保存在`image/`目录中。
+3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
+
+关于图片转换：有空会出图片转换的工具。目前先自行手动转化(尺寸240*240)，常用的天气图片利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 转换为c数组，格式为Indexed 16 colors。不常用的图片则可以转换成bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。
+
+##### 视频播放
+1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`movie/`目录。
+2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件，存放在`movie/`目录下。
+2. 运行播放器APP后，将会读取`movie/`目录下的视频文件。
+
+##### 天气、时钟
+1. 运行APP条件：必须是已经联网状态。不插内存卡大多数情况能正常工作。
+2. 一般情况下不插内存卡也可以工作，但部分天气图标是存在内存卡中（由于内部flash不够用）的，需要将固件附带的`weather/`文件夹复制到tf卡根目录。
+3. 需要再"Web Server"服务中修改知心天气的地址、key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
+
+注：即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
+
+##### BiliBili APP
+目前还在开发中。
 
 
 ### 硬件相关
@@ -89,18 +109,23 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 [^_^]:
 	![HoloCubic_AIO_Frame](Image/holocubic_AIO_Frame.png)
-	
+
 ![HoloCubic_AIO_Frame](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_AIO_Frame.png)
 
 AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=2
 
 关于UI的设计可以自行关注下`gui-guider`工具。
 
+应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
+
 ### 资料
 ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 
 
 ### 版本更新日志
+
+##### HoloCubic_AIO固件_v1.5.bin
+1. 新增视频播放(持续改进中)。
 
 ##### HoloCubic_AIO固件_v1.4.bin
 1. 大量修改程序框架。

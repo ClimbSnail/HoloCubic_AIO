@@ -1,3 +1,6 @@
+### 关于内存分配
+如有错误请参考 https://docs.espressif.com/projects/esp-idf/zh_CN/release-v4.1/api-reference/system/index.html
+
 ### ffmpeg视频转换
 使用pyinstaller打包程序`pyinstaller -F video_player_tool.py`
 

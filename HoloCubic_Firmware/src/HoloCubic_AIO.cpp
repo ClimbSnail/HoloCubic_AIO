@@ -32,6 +32,12 @@ void wifi_auto_process()
 
 void setup()
 {
+
+    Serial.print("Stack: ");
+    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+    Serial.print("Free heap: ");
+    Serial.println(esp_get_free_heap_size());
+
     Serial.begin(115200);
 
     /*** Init screen ***/
@@ -55,8 +61,10 @@ void setup()
     config_read(NULL, &g_cfg);
 
     app_contorller = new AppController(); // APP控制器
+    app_contorller->app_register(&media_app);
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
+    app_contorller->app_register(&media_app);
     app_contorller->app_register(&bilibili_app);
     app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);

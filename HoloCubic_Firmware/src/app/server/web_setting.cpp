@@ -3,6 +3,7 @@
 
 #include "network.h"
 #include "common.h"
+#include "server.h"
 #include "web_setting.h"
 #include "FS.h"
 #include "HardwareSerial.h"
@@ -105,16 +106,7 @@ void init_page_header()
 }
 
 void init_page_footer()
-{ // Saves repeating many lines of code for HTML page footers
-    //   webpage_footer += F("<ul>");
-    //   webpage_footer += F("<li><a href='/'>Home</a></li>"); // Lower Menu bar command entries
-    //   webpage_footer += F("<li><a href='/download'>Download</a></li>");
-    //   webpage_footer += F("<li><a href='/upload'>Upload</a></li>");
-    //   webpage_footer += F("<li><a href='/setting'>Setting</a></li>");
-    //   webpage_footer += F("</ul>");
-    // webpage_footer += "<footer>&copy;" + String(char(byte(0x40 >> 1))) + String(char(byte(0x88 >> 1))) + String(char(byte(0x5c >> 1))) + String(char(byte(0x98 >> 1))) + String(char(byte(0x5c >> 1)));
-    // webpage_footer += String(char((0x84 >> 1))) + String(char(byte(0xd2 >> 1))) + String(char(0xe4 >> 1)) + String(char(0xc8 >> 1)) + String(char(byte(0x40 >> 1)));
-    // webpage_footer += String(char(byte(0x64 / 2))) + String(char(byte(0x60 >> 1))) + String(char(byte(0x62 >> 1))) + String(char(0x70 >> 1)) + "</footer>";
+{ 
     webpage_footer = "<footer>&copy;ClimbSnail 2021</footer>";
     webpage_footer += F("</body></html>");
 }
