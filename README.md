@@ -47,7 +47,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 其中`HoloCubic_AIO_XXX.bin`文件随着每次版本更新而更新，其他三个文件基本不会变动。
 
-将以上四个文件与`cubic_tool.exe`放在同一个目录下，双击运行`cubic_tool.exe`即可刷写固件。
+将以上前三个文件与`CubicAIO_Tool.exe`放在同一个目录下，双击运行`CubicAIO_Tool.exe`，软件中选择最新的固件`HoloCubic_AIO_XXX.bin`，即可刷写固件。
 
 
 ### 功能切换说明：

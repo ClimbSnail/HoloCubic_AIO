@@ -14,30 +14,30 @@ if __name__ == '__main__':
         if ratio == "":
             raise "输入错误"
 
-		#列出文件夹下所有的目录与文件
+        # 列出文件夹下所有的目录与文件
         list_file = os.listdir("./")
-        video_file_list = [ filename for filename in list_file if filename.split('.')[-1] in support_format]
+        video_file_list = [filename for filename in list_file if filename.split('.')[-1] in support_format]
 
         for file_name in video_file_list:
             name = file_name.split('.')
-            suffix = name[-1]   # 后缀名
+            suffix = name[-1]  # 后缀名
             # 生成的中间文件名
-            video_cache = name[0]+"_"+str(ratio)+"_cache."+suffix
+            video_cache = name[0] + "_" + str(ratio) + "_cache." + suffix
             video_middle_list.append(video_cache)
-            video_out = name[0]+"_9fps.rgb"
+            video_out = name[0] + "_9fps.rgb"
             video_out_list.append(video_out)
 
-            middle_cmd = cmd_resize%(file_name, ratio, ratio, video_cache)
+            middle_cmd = cmd_resize % (file_name, ratio, ratio, video_cache)
             print(middle_cmd)
 
-            out__cmd = cmd_to_rgb%(video_cache, ratio, ratio, ratio, video_out)
+            out__cmd = cmd_to_rgb % (video_cache, ratio, ratio, ratio, video_out)
             print(out__cmd)
-            os.system(middle_cmd)  
-            os.system(out__cmd)  
+            os.system(middle_cmd)
+            os.system(out__cmd)
 
     except Exception as err:
         print(err)
-	
+
     print("\n\n生成的中间文件为-------> ", video_middle_list)
 
     print("生成的最终文件为-------> ", video_out_list)

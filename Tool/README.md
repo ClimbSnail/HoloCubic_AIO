@@ -22,8 +22,6 @@
 * 1152000
 
 ### 打包程序
-使用pyinstaller打包程序`pyinstaller -F cubic_tool.py esptool.py`
-
 使用pyinstaller打包程序`pyinstaller -F video_player_tool.py`
 
-使用pyinstaller打包程序`pyinstaller -F CubicTool.py esptool.py`
+使用pyinstaller打包程序`pyinstaller --icon ./holo_256.ico -w -F CubicAIO_Tool.py`
