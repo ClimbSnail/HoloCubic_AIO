@@ -47,7 +47,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 其中`HoloCubic_AIO_XXX.bin`文件随着每次版本更新而更新，其他三个文件基本不会变动。
 
-将以上四个文件与`cubic_tool.exe`放在同一个目录下，双击运行`cubic_tool.exe`即可刷写固件。
+将以上前三个文件与`CubicAIO_Tool.exe`放在同一个目录下，双击运行`CubicAIO_Tool.exe`，软件中选择最新的固件`HoloCubic_AIO_XXX.bin`，即可刷写固件。
 
 
 ### 功能切换说明：
@@ -96,8 +96,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pic的Arduino平台开发。
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 开发时，需要修改platformIO上对esp32的默认分区（否则编译大小超限，强制报错）。需要修改的文件为`.platformio/packages/framework-arduinoespressif32/boards.txt`，修改其中的`pico32.upload.maximum_size`字段的值为`2097152`（2M）够用就行。
-4. 然后这里需要修改一个官方库文件才能正常使用：
+3. 然后这里需要修改一个官方库文件才能正常使用：
 
 首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。然后在安装的支持包的`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
 
@@ -117,9 +116,12 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=2
 
-关于UI的设计可以自行关注下`gui-guider`工具。
+关于UI的设计可以自行关注下`Edgeline
+`、`gui-guider`等工具。
 
-应用图标：可以下载阿里矢量图 https://www.iconfont.cn/
+应用图标(64*64)：可以下载阿里矢量图 https://www.iconfont.cn/
+
+调试过程中报错定位代码：`xtensa-esp32-elf-addr2line -pfiaC -e .elf`
 
 ### 资料
 ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403

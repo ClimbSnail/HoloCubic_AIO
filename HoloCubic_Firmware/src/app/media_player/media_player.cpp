@@ -51,6 +51,7 @@ bool start_video(bool create_new)
         Serial.print("RGB565 video start --------> ");
         Serial.println(file_name);
         file = SD.open(file_name);
+        tft->initDMA();
         tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
         return true;
     }
@@ -156,22 +157,23 @@ void media_player_process(AppController *sys,
 
         // Serial.println(F("---------->\n"));
         // Play video
-        display_buf = (uint8_t *)DMADrawer::getNextBuffer();
-        l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        Serial.println("DMADrawer::draw");
-        DMADrawer::draw((240 - VIDEO_WIDTH) / 2,
-                        (240 - VIDEO_HEIGHT) / 2,
-                        VIDEO_WIDTH, VIDEO_HEIGHT/4);
+        // display_buf = (uint8_t *)DMADrawer::getNextBuffer();
+        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
+        // Serial.println("DMADrawer::draw");
+        // DMADrawer::draw((240 - VIDEO_WIDTH) / 2,
+        //                 (240 - VIDEO_HEIGHT) / 2,
+        //                 VIDEO_WIDTH, VIDEO_HEIGHT/4);
         // Serial.println(F("<----------\n"));
 
-        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        // tft->pushColors(display_buf, l);
-        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        // tft->pushColors(display_buf, l);
-        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        // tft->pushColors(display_buf, l);
-        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        // tft->pushColors(display_buf, l);
+        l = file.read(display_buf, RGB565_BUFFER_SIZE);
+        tft->pushColors(display_buf, l);
+        //tft->pushImageDMA();
+        l = file.read(display_buf, RGB565_BUFFER_SIZE);
+        tft->pushColors(display_buf, l);
+        l = file.read(display_buf, RGB565_BUFFER_SIZE);
+        tft->pushColors(display_buf, l);
+        l = file.read(display_buf, RGB565_BUFFER_SIZE);
+        tft->pushColors(display_buf, l);
 
         // tft->endWrite();
     }
@@ -194,7 +196,8 @@ void media_player_exit_callback(void)
         display_buf = NULL;
     }
     release_file_info(movie_file);
-    DMADrawer::close();
+    // DMADrawer::close();
+    tft->deInitDMA();
 
     // 恢复RGB灯  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV,

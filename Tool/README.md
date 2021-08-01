@@ -22,8 +22,12 @@
 * 1152000
 
 ### 打包程序
-使用pyinstaller打包程序`pyinstaller -F cubic_tool.py esptool.py`
-
 使用pyinstaller打包程序`pyinstaller -F video_player_tool.py`
 
-使用pyinstaller打包程序`pyinstaller -F CubicTool.py esptool.py`
+使用pyinstaller打包程序`pyinstaller --icon ./holo_256.ico -w -F CubicAIO_Tool.py`
+
+
+## 图片转化开发要点
+https://lvgl.io/assets/images/logo_lvgl.png
+
+利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 图片则可以转换成（True color with alpha 选择Binary RGB565）bin文件存储到SD卡中
