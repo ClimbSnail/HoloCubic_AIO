@@ -7,12 +7,14 @@ from convertor_core import _const
 from widget_base import EntryWithPlaceholder
 from PIL import Image
 
+ROOT_PATH = "OutFile"
+CACHE_PATH = "Cache"
 
 FLAG = _const()
 
 color_dict = {
     'CF_TRUE_COLOR': FLAG.CF_TRUE_COLOR,
-    'CF_TRUE_COLOR_ALPHA':  FLAG.CF_TRUE_COLOR_ALPHA,
+    'CF_TRUE_COLOR_ALPHA': FLAG.CF_TRUE_COLOR_ALPHA,
     'CF_TRUE_COLOR_CHROMA': FLAG.CF_TRUE_COLOR_CHROMA,
     'CF_INDEXED_1_BIT': FLAG.CF_INDEXED_1_BIT,
     'CF_INDEXED_2_BIT': FLAG.CF_INDEXED_2_BIT,
@@ -27,12 +29,12 @@ color_dict = {
     'CF_RAW_CHROMA': FLAG.CF_RAW_CHROMA
 }
 
-
 output_dict = {
-    'CF_TRUE_COLOR_332': FLAG.CF_TRUE_COLOR_332,
-    'CF_TRUE_COLOR_565':  FLAG.CF_TRUE_COLOR_565,
-    'CF_TRUE_COLOR_565_SWAP': FLAG.CF_TRUE_COLOR_565_SWAP,
-    'CF_TRUE_COLOR_888': FLAG.CF_TRUE_COLOR_888
+    'C_array': -1,
+    'Binary_332': FLAG.CF_TRUE_COLOR_332,
+    'Binary_565': FLAG.CF_TRUE_COLOR_565,
+    'Binary_565_SWAP': FLAG.CF_TRUE_COLOR_565_SWAP,
+    'Binary_888': FLAG.CF_TRUE_COLOR_888
 }
 
 
@@ -51,6 +53,7 @@ class ImagesChanger(object):
         """
         self.m_engine = engine  # 负责各个组件之间数据调度的引擎
         self.m_father = father  # 保存父窗口
+
         self.m_select_frame = tk.Frame(self.m_father, bg=father["bg"])
         self.init_setting(self.m_select_frame)
         self.m_select_frame.pack(side=tk.TOP, pady=5)
@@ -58,7 +61,10 @@ class ImagesChanger(object):
         self.m_path_frame = tk.Frame(self.m_father, bg=father["bg"])
         self.init_image_path(self.m_path_frame)
         self.m_path_frame.pack(side=tk.TOP, pady=5)
-        
+
+        self.m_info_frame = tk.Frame(self.m_father, bg=father["bg"])
+        self.init_info(self.m_info_frame)
+        self.m_info_frame.pack(side=tk.TOP, pady=5)
 
     def init_setting(self, father):
         """
@@ -91,9 +97,9 @@ class ImagesChanger(object):
                                        # font=self.my_ft1,
                                        bg=father['bg'])
         self.m_output_label.pack(side=tk.LEFT)
-        self.m_output_select = ttk.Combobox(output_frame, width=20, state='readonly')
-        self.m_output_select["value"] = ('C array', 'CF_TRUE_COLOR_332', 'CF_TRUE_COLOR_565',
-                                         'CF_TRUE_COLOR_565_SWAP', 'CF_TRUE_COLOR_888')
+        self.m_output_select = ttk.Combobox(output_frame, width=15, state='readonly')
+        self.m_output_select["value"] = ('C_array', 'Binary_332', 'Binary_565',
+                                         'Binary_565_SWAP', 'Binary_888')
         # 设置默认值，即默认下拉框中的内容
         self.m_output_select.current(2)
         self.m_output_select.pack(side=tk.LEFT, padx=border_padx)
@@ -108,17 +114,16 @@ class ImagesChanger(object):
         # 创建宽输入框
         self.m_width_val = tk.StringVar()
         self.m_width_entry = EntryWithPlaceholder(out_ratio_frame, width=6, highlightcolor="LightGrey",
-                                                            placeholder="宽", placeholder_color="grey",
-                                                            textvariable=self.m_width_val)
+                                                  placeholder="宽", placeholder_color="grey",
+                                                  textvariable=self.m_width_val)
         self.m_width_entry.pack(side=tk.LEFT, padx=5)
         # 创建高输入框
         self.m_height_val = tk.StringVar()
         self.m_height_entry = EntryWithPlaceholder(out_ratio_frame, width=6, highlightcolor="LightGrey",
-                                                            placeholder="高", placeholder_color="grey",
-                                                            textvariable=self.m_height_val)
+                                                   placeholder="高", placeholder_color="grey",
+                                                   textvariable=self.m_height_val)
         self.m_height_entry.pack(side=tk.LEFT, padx=5)
         out_ratio_frame.pack(side=tk.LEFT, pady=5)
-
 
         # 设置默认值输出分辨率
         self.default_ratio()
@@ -144,24 +149,23 @@ class ImagesChanger(object):
         # 创建路径输入框
         self.m_image_path_val = tk.StringVar()
         self.m_image_path_entry = EntryWithPlaceholder(image_path_frame, width=80, highlightcolor="LightGrey",
-                                                           placeholder="选择要转化的图片路径", placeholder_color="grey",
-                                                           textvariable=self.m_image_path_val)
+                                                       placeholder="选择要转化的图片路径", placeholder_color="grey",
+                                                       textvariable=self.m_image_path_val)
         self.m_image_path_entry.pack(side=tk.LEFT, padx=border_padx)
         # 原视频输入按钮
         self.m_image_path_botton = tk.Button(image_path_frame, text="选择", fg='black',
-                                                 command=self.choose_image_file, width=6, height=1)
+                                             command=self.choose_image_files, width=6, height=1)
 
         self.m_image_path_botton.pack(side=tk.LEFT, fill=tk.X, padx=5)
 
         # 转化按钮
         self.m_trans_botton = tk.Button(image_path_frame, text="开始转化", fg='black',
-                                                 command=self.trans_images, width=8, height=1)
+                                        command=self.trans_images, width=8, height=1)
 
         self.m_trans_botton.pack(side=tk.LEFT, fill=tk.X, padx=5)
         image_path_frame.pack(side=tk.LEFT, pady=5)
 
-
-    def choose_image_file(self):
+    def choose_image_files(self):
         """
         点击"user_data"文件触发的函数
         :return:
@@ -169,36 +173,96 @@ class ImagesChanger(object):
         # 打开文件对话框 获取文件路径
         # defaultextension 为选取保存类型中的拓展名为文件名
         # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
-            title='选择一个图片',
+        filepath = tk.filedialog.askopenfilenames(
+            title='选择若干个图片',
             defaultextension=".espace",
             filetypes=[('JPG', '.jpg .JPG')])
         if filepath == None or filepath == "":
             return None
         else:
-            self.m_image_path_entry.delete(0, tk.END)  # 清空文本框
-            self.m_image_path_entry.insert(tk.END, filepath)
-    
+            filepaths = ";".join(filepath)
+            self.m_image_path_val.set(filepaths)
+            # self.m_image_path_entry.delete(0, tk.END)  # 清空文本框
+            # self.m_image_path_entry.insert(tk.END, filepath)
+
     def trans_images(self):
         """
         转化图片
         """
-        image_path = self.m_image_path_entry.get().strip()
-        if image_path == None:  
+        images_path = self.m_image_path_val.get().strip()
+        if images_path == None:
             print("Error: could not load image")
             return 0
-        
-        try:
-            width = int(self.m_output_width.get().strip())
-            height = int(self.m_output_height.get().strip())
-            self.img: Image.Image = Image.open(image_path).resize((width, height))
-        except Exception as err:
-            print(err)
 
-        color_format = color_dict[self.m_color_select.get()]
-        output_format = output_dict[self.m_output_select.get()]
+        # 设计的图片地址栏如果是选择的话只有一张图片
+        # 如果是批量拉取到界面中，则地址栏为多个图片地址的组合字符串(分号分隔)，如：path1;path2;path3
+        for img_path in images_path.strip().split(";"):
+            # 循环处理每张照片
+            img_path = img_path.strip()
+            if img_path == "":
+                print("路径为空")
+                return False
 
-        for i, img_path in enumerate(sys.argv[1:]):
-            print("正在转换图片{} ...".format(os.path.basename(img_path)))
-            c = Convertor(img_path, output_format)
-            c.get_bin_file()
+            input_path = None  # 真正参与转化的图片
+            try:
+                width = int(self.m_width_val.get().strip())
+                height = int(self.m_height_val.get().strip())
+                src_im: Image.Image = Image.open(img_path)
+                new_im = None
+                if src_im.height == height and src_im.width == width:
+                    new_im = src_im
+                    input_path = img_path
+                else:
+                    new_filename = os.path.basename(img_path).split('.')[0] + '.png'
+                    input_path = os.path.join(ROOT_PATH, CACHE_PATH, new_filename)
+                    new_im = src_im.resize((width, height))
+                    new_im.save(input_path, 'JPEG', quality=95)
+            except Exception as err:
+                print(err)
+
+            color_format = color_dict[self.m_color_select.get()]
+            output_format = output_dict[self.m_output_select.get()]
+            print("color_format = ", color_format)
+            print("output_format = ", output_format)
+            print("正在转换图片{} ...".format(os.path.basename(images_path)))
+            if output_format == -1:
+                out_obj = Convertor(input_path, color_format)
+                out_obj.get_c_code_file(outpath=ROOT_PATH)
+            else:
+                out_obj = Convertor(input_path, output_format)
+                out_obj.get_bin_file(outpath=ROOT_PATH)
+
+            print("转化完成")
+
+    def init_info(self, father):
+        """
+        初始化信息打印框
+        :param father: 父容器
+        :return: None
+        """
+        info_width = father.winfo_width()
+        info_height = father.winfo_height() / 2
+
+        info = '''
+        本功能为LVGL图片转化工具  输入任意分辨率图片，转成你所指定的分辨率的图片。
+        可以同时选择多张图片，进行批量转换。转化完毕的照片存在本软件同级目录的OutFile文件夹下。
+        注：OutFilr/Cache为缓存目录，可自行删除。
+
+        若转为存在内存卡中的照片请选择：
+            ColorFormat：CF_TRUE_COLOR_ALPHA    OutputFormat：Binary_565
+
+        若转为存在Flash固件中的数组代码请选择：
+            ColorFormat：CF_INDEXED_4_BIT    OutputFormat：C_array
+        '''
+
+        self.m_project_info = tk.Text(father, height=30, width=140)
+        self.m_project_info.tag_configure('bold_italics',
+                                          font=('Arial', 12, 'bold', 'italic'))
+        self.m_project_info.tag_configure('big', font=('Verdana', 16, 'bold'))
+        self.m_project_info.tag_configure('color', foreground='#476042',
+                                          font=('Tempus Sans ITC', 12, 'bold'))
+
+        self.m_project_info.pack()
+        self.m_project_info.config(state=tk.NORMAL)
+        self.m_project_info.insert(tk.END, info, 'big')
+        self.m_project_info.config(state=tk.DISABLED)

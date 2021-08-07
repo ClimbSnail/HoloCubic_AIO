@@ -4,7 +4,6 @@ from PIL import Image
 import struct
 import os.path
 
-
 def getColorFromPalette(palette, index):
     return [palette[3 * index + i] for i in range(3)]
 
@@ -303,18 +302,18 @@ const lv_img_dsc_t {self.out_name} = {{
             }.get(cf, "") + f"\n  .data = {self.out_name}_map,\n}}\n"
         return c_footer
 
-    def get_c_code_file(self, cf=-1, content="") -> AnyStr:
+    def get_c_code_file(self, cf=-1, content="", outpath='') -> AnyStr:
         if len(content) < 1: content = self.format_to_c_array()
         if cf < 0: cf = self.cf
         out = self._get_c_header() + content + self._get_c_footer(cf)
 
-        with open(self.out_name + ".h", "w", encoding='utf-8') as f:
+        with open(os.path.join(outpath, self.out_name + ".h"), "w", encoding='utf-8') as f:
             f.write(str(out))
             f.close()
 
         return out
 
-    def get_bin_file(self, cf=-1, content=None) -> bytes:
+    def get_bin_file(self, cf=-1, content=None, outpath='') -> bytes:
         if not content: content = self.d_out
         if cf < 0: cf = self.cf
 
@@ -336,7 +335,7 @@ const lv_img_dsc_t {self.out_name} = {{
         header_bin = struct.pack("<L", header)
         content = struct.pack(f"<{len(content)}B", *content)
 
-        with open(self.out_name + ".bin", "wb") as f:
+        with open(os.path.join(outpath, self.out_name + ".bin"), "wb") as f:
             f.write(header_bin + content)
             f.close()
 

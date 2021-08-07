@@ -1,4 +1,5 @@
 import sys
+import os
 import tkinter as tk
 import tkutils as tku
 from tkinter import ttk
@@ -11,7 +12,7 @@ from tfmanager import TfManager
 from tkinter import messagebox
 import massagehead as mh
 
-VERSION = "Ver1.0"
+VERSION = "Ver1.2"
 
 
 class Engine(object):
@@ -27,6 +28,12 @@ class Engine(object):
         self.root = root
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.root.iconbitmap("./holo_64.ico")  # 窗体图标
+        # 文件转化的创建输出目录
+        try:
+            dir_path = os.path.join("OutFile", "Cache")
+            os.makedirs(dir_path)
+        except Exception as e:
+            pass
 
         self.width = 700
         self.height = 500

@@ -31,3 +31,5 @@
 https://lvgl.io/assets/images/logo_lvgl.png
 
 利用lvgl的官方转换器 https://lvgl.io/tools/imageconverter 图片则可以转换成（True color with alpha 选择Binary RGB565）bin文件存储到SD卡中
+
+若转为代码请选择 CF_INDEXED_4_BIT C_array

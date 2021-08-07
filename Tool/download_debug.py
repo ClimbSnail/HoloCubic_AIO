@@ -55,6 +55,7 @@ class DownloadDebug(object):
         self.m_engine = engine  # 负责各个组件之间数据调度的引擎
         self.m_father = father  # 保存父窗口
         self.ser = None  # 串口
+        self.run_thread = None  # 下载线程对象
 
         # 连接器相关控件
         # 使用LabelFrame控件 框出连接相关的控件
@@ -100,9 +101,9 @@ class DownloadDebug(object):
         boot_frame = tk.Frame(father, bg=father["bg"])
         CheckVar1 = tk.IntVar()
         # , bg=father["bg"]
-        self.m_boot_enable = tk.Checkbutton(boot_frame, text = "", bg=father["bg"], variable = CheckVar1, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 1)
+        self.m_boot_enable = tk.Checkbutton(boot_frame, text="", bg=father["bg"], variable=CheckVar1, \
+                                            onvalue=1, offvalue=0, height=1, \
+                                            width=1)
         self.m_boot_enable.pack(side=tk.LEFT)
         # 创建地址输入框
         self.m_boot_addr_val = tk.StringVar()
@@ -126,9 +127,9 @@ class DownloadDebug(object):
         partitions_frame = tk.Frame(father, bg=father["bg"])
         CheckVar2 = tk.IntVar()
         # , bg=father["bg"]
-        self.m_partitions_enable = tk.Checkbutton(partitions_frame, text = "", bg=father["bg"], variable = CheckVar2, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 1)
+        self.m_partitions_enable = tk.Checkbutton(partitions_frame, text="", bg=father["bg"], variable=CheckVar2, \
+                                                  onvalue=1, offvalue=0, height=1, \
+                                                  width=1)
         self.m_partitions_enable.pack(side=tk.LEFT)
         # 创建地址输入框
         self.m_partitions_addr_val = tk.StringVar()
@@ -152,9 +153,9 @@ class DownloadDebug(object):
         boot_app0_frame = tk.Frame(father, bg=father["bg"])
         CheckVar3 = tk.IntVar()
         # , bg=father["bg"]
-        self.m_boot_app0_enable = tk.Checkbutton(boot_app0_frame, text = "", bg=father["bg"], variable = CheckVar3, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 1)
+        self.m_boot_app0_enable = tk.Checkbutton(boot_app0_frame, text="", bg=father["bg"], variable=CheckVar3, \
+                                                 onvalue=1, offvalue=0, height=1, \
+                                                 width=1)
         self.m_boot_app0_enable.pack(side=tk.LEFT)
         # 创建地址输入框
         self.m_boot_app0_addr_val = tk.StringVar()
@@ -179,9 +180,9 @@ class DownloadDebug(object):
         user_data_frame = tk.Frame(father, bg=father["bg"])
         CheckVar4 = tk.IntVar()
         # , bg=father["bg"]
-        self.m_user_data_enable = tk.Checkbutton(user_data_frame, text = "", bg=father["bg"], variable = CheckVar4, \
-                 onvalue = 1, offvalue = 0, height=1, \
-                 width = 1)
+        self.m_user_data_enable = tk.Checkbutton(user_data_frame, text="", bg=father["bg"], variable=CheckVar4, \
+                                                 onvalue=1, offvalue=0, height=1, \
+                                                 width=1)
         self.m_user_data_enable.pack(side=tk.LEFT)
         # 创建地址输入框
         self.m_user_data_addr_val = tk.StringVar()
@@ -331,7 +332,7 @@ class DownloadDebug(object):
                ]
 
         run_thread = threading.Thread(target=self.down,
-                                        args=(cmd, ))
+                                      args=(cmd,))
         run_thread.start()
 
     def down(self, cmd):
@@ -572,11 +573,11 @@ class DownloadDebug(object):
             if self.ser != None:
                 self.ser.close()  # 关闭串口
             self.ser = serial.Serial(param["port"], param["baud"], timeout=10)
-    
+
             # 判断是否打开成功
             if self.ser.is_open:
                 self.run_thread = threading.Thread(target=self.read_data,
-                                                args=(self.ser, ))
+                                                   args=(self.ser,))
                 self.run_thread.start()
                 BOOL = True  # 读取标志位
 

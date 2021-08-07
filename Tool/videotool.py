@@ -5,6 +5,9 @@ from tkinter import ttk
 from tkinter import simpledialog
 from tkinter import filedialog
 
+ROOT_PATH = "OutFile"
+CACHE_PATH = "Cache"
+
 
 class VideoTool(object):
     """
@@ -71,10 +74,13 @@ class VideoTool(object):
         self.m_dst_path_entry = tk.Entry(dst_frame, width=80, highlightcolor="LightGrey")
         # self.m_dst_path_entry["state"] = tk.DISABLED
         self.m_dst_path_entry.pack(side=tk.LEFT, padx=border_padx)
+        defualt_outpath = os.path.join(os.getcwd(), ROOT_PATH)
+        self.m_dst_path_entry.delete(0, tk.END)  # 清空文本框
+        self.m_dst_path_entry.insert(tk.END, defualt_outpath)
         # 原视频输入按钮
         self.dst_path_botton = tk.Frame(father, bg=father["bg"])
         self.dst_path_botton = tk.Button(dst_frame, text="输出路径", fg='black',
-                                         command=self.choose_dst_file, width=8, height=1)
+                                         command=self.choose_dst_path, width=8, height=1)
 
         self.dst_path_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
 
@@ -111,15 +117,13 @@ class VideoTool(object):
             self.m_src_path_entry.insert(tk.END, filepath)
             # self.m_src_path_entry["state"] = tk.DISABLED
 
-    def choose_dst_file(self):
+    def choose_dst_path(self):
 
         # 打开文件对话框 获取文件路径
         # defaultextension 为选取保存类型中的拓展名为文件名
         # filetypes为文件拓展名
-        filepath = tk.filedialog.asksaveasfilename(
-            title='',
-            # defaultextension =".espace",
-            filetypes=[('rgb', 'rgb')])
+        tk.filedialog
+        filepath = tk.filedialog.askdirectory()
         if filepath == None or filepath == "":
             return None
         else:
@@ -130,28 +134,34 @@ class VideoTool(object):
         """
         格式转化
         """
+        cur_dir = os.getcwd()  # 当前目录
         self.trans_botton["text"] = "正在转换"
         param = self.get_output_param()
         cmd_resize = "ffmpeg -i %s -vf scale=%s:%s %s"
         cmd_to_rgb = 'ffmpeg -i %s -vf "fps=9,scale=-1:%s:flags=lanczos,crop=%s:in_h:(in_w-%s)/2:0" -c:v rawvideo -pix_fmt rgb565be %s'
 
-        name = param["src_path"].split('.')
-        suffix = name[-1]  # 后缀名
+        name_suffix = os.path.basename(param["src_path"]).split(".")
+        suffix = name_suffix[-1]  # 后缀名
         # 生成的中间文件名
-        video_cache = name[0] + "_" + param["width"] + "x" + param["height"] + "_cache." + suffix
+        video_cache_name = name_suffix[0] + "_" + param["width"] + "x" + param["height"] + "_cache." + suffix
+        # 带上路径
+        video_cache = os.path.join(cur_dir, ROOT_PATH, CACHE_PATH, video_cache_name)
+        # 最终输出的文件
+        final_out = os.path.join(param["dst_path"],
+                                 name_suffix[0] + "_" + param["width"] + "x" + param["height"] + ".rgb")
+
+        # 清理之前的记录
+        try:
+            os.remove(video_cache)
+            os.remove(final_out)
+        except Exception as err:
+            pass
 
         middle_cmd = cmd_resize % (param["src_path"], param["width"],
                                    param["width"], video_cache)
         print(middle_cmd)
-        try:
-            os.remove(video_cache)
-            os.remove(param["dst_path"])
-        except Exception as err:
-            pass
-            # print(err)
-
         out_cmd = cmd_to_rgb % (video_cache, param["width"], param["width"],
-                                param["width"], param["dst_path"])
+                                param["width"], final_out)
         print(out_cmd)
         os.system(middle_cmd)
         os.system(out_cmd)
