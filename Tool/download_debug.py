@@ -1,13 +1,27 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
+from widget_base import EntryWithPlaceholder
+
 import os
+import time
 import serial
 import tkinter as tk
 import tkutils as tku
 from tkinter import ttk
+from tkinter import filedialog
 from tool_esptoolpy import esptool
 import threading
 import ctypes
 import inspect
-from widget_base import EntryWithPlaceholder
+import traceback
 
 STRGLO = ""  # 读取的数据
 BOOL = True  # 读取标志位
@@ -52,32 +66,49 @@ class DownloadDebug(object):
         :param lock:线程锁
         :return:None
         """
-        self.m_engine = engine  # 负责各个组件之间数据调度的引擎
-        self.m_father = father  # 保存父窗口
+        self.__engine = engine  # 负责各个组件之间数据调度的引擎
+        self.__father = father  # 保存父窗口
         self.ser = None  # 串口
-        self.run_thread = None  # 下载线程对象
+        self.receive_thread = None  # 串口接收线程对象
+        self.download_thread = None  # 下载线程对象
+        self.progress_bar_thread = None  # 进度条线程对象
 
         # 连接器相关控件
         # 使用LabelFrame控件 框出连接相关的控件
-        self.connor_grid_frame = tk.LabelFrame(self.m_father, text="串口设置",
+        self.connor_grid_frame = tk.LabelFrame(self.__father, text="串口设置",
                                                labelanchor="nw", bg="white")
         # self.connor_grid_frame.place(anchor="ne", relx=1.0, rely=0.0)
         # self.connor_grid_frame.grid(row=0, column=1)
-        self.connor_grid_frame.place(x=self.m_father.winfo_width() + 10, y=10)
+        self.connor_grid_frame.place(x=self.__father.winfo_width() + 10, y=10)
         self.connor_grid_frame.update()
         self.create_com(self.connor_grid_frame)
 
         # 连接器相关控件
-        # 使用LabelFrame控件 框出连接相关的控件
-        self.connor_firmware_frame = tk.LabelFrame(self.m_father, text="固件刷写",
+        cur_dir = os.getcwd()
+        # 固件下载框默认值
+        self.__pre_down_param_list = [
+            {"bin_addr": "0x1000", "bin_path": os.path.join(cur_dir, 'bootloader_dio_40m.bin'),
+             "placeholder": "选择Bootloader的bin文件"},
+
+            {"bin_addr": "0x8000", "bin_path": os.path.join(cur_dir, 'partitions.bin'),
+             "placeholder": "选择partitions的bin文件"},
+
+            {"bin_addr": "0xe000", "bin_path": os.path.join(cur_dir, 'boot_app0.bin'),
+             "placeholder": "选择boot_app0的bin文件"},
+
+            {"bin_addr": "0x10000", "bin_path": "",
+             "placeholder": "选择user_data的bin文件(AIO固件必选项)"}
+        ]
+        # 使用LabelFrame控件 框出刷写的控件
+        self.connor_firmware_frame = tk.LabelFrame(self.__father, text="固件刷写",
                                                    labelanchor="nw", bg="white")
         self.connor_firmware_frame.place(x=200, y=10)
         self.connor_firmware_frame.update()
         self.init_firmware(self.connor_firmware_frame)
 
         # 连接器相关控件
-        # 使用LabelFrame控件 框出连接相关的控件
-        self.connor_log_frame = tk.LabelFrame(self.m_father, text="操作日志",
+        # 使用LabelFrame控件 框出日志相关的控件
+        self.connor_log_frame = tk.LabelFrame(self.__father, text="操作日志",
                                               labelanchor="nw", bg="white")
         self.connor_log_frame.place(x=685, y=10)
         self.connor_log_frame.update()
@@ -85,9 +116,9 @@ class DownloadDebug(object):
 
         # 连接器相关控件
         # 使用LabelFrame控件 框出连接相关的控件
-        self.connor_info_frame = tk.LabelFrame(self.m_father, text="串口接收",
+        self.connor_info_frame = tk.LabelFrame(self.__father, text="串口接收",
                                                labelanchor="nw", bg="white")
-        self.connor_info_frame.place(x=self.m_father.winfo_width() + 10, y=240)
+        self.connor_info_frame.place(x=self.__father.winfo_width() + 10, y=240)
         self.connor_info_frame.update()
         self.init_serial_receive(self.connor_info_frame)
 
@@ -96,111 +127,55 @@ class DownloadDebug(object):
         固件操作
         """
         border_padx = 5  # 两个控件的间距
+        border_pady = 3  # 两行控件的间距
 
-        # bootloader文件
-        boot_frame = tk.Frame(father, bg=father["bg"])
-        CheckVar1 = tk.IntVar()
-        # , bg=father["bg"]
-        self.m_boot_enable = tk.Checkbutton(boot_frame, text="", bg=father["bg"], variable=CheckVar1, \
-                                            onvalue=1, offvalue=0, height=1, \
-                                            width=1)
-        self.m_boot_enable.pack(side=tk.LEFT)
-        # 创建地址输入框
-        self.m_boot_addr_val = tk.StringVar()
-        self.m_boot_addr_entry = tk.Entry(boot_frame, width=9,
-                                          highlightcolor="LightGrey", textvariable=self.m_boot_addr_val)
-        self.m_boot_addr_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 创建路径输入框
-        self.m_boot_path_val = tk.StringVar()
-        self.m_boot_path_entry = EntryWithPlaceholder(boot_frame, width=40, highlightcolor="LightGrey",
-                                                      placeholder="选择Bootloader的bin文件", placeholder_color="grey",
-                                                      textvariable=self.m_boot_path_val)
-        self.m_boot_path_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 选择按钮
-        self.boot_choose_botton = tk.Button(boot_frame, text="选择", fg='black',
-                                            command=self.choose_boot_file, width=6, height=1)
+        firmware_num = 4
+        firmware_frame = [None for cnt in range(firmware_num)]
+        self.__firmware_enable_val = [None for cnt in range(firmware_num)]
+        self.__firmware_enable = [None for cnt in range(firmware_num)]
+        self.__firmware_addr_val = [None for cnt in range(firmware_num)]
+        self.__firmware_addr_entry = [None for cnt in range(firmware_num)]
+        self.__firmware_path_val = [None for cnt in range(firmware_num)]
+        self.__firmware_path_entry = [None for cnt in range(firmware_num)]
+        self.__firmware_choose_botton = [None for cnt in range(firmware_num)]
 
-        self.boot_choose_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
-        boot_frame.pack(side=tk.TOP, pady=5)
+        for pos in range(firmware_num):
+            firmware_frame[pos] = tk.Frame(father, bg=father["bg"])
+            # 勾选框的键值对象
+            self.__firmware_enable_val[pos] = tk.IntVar()
+            self.__firmware_enable_val[pos].set(1)
+            # 勾选框
+            self.__firmware_enable[pos] = tk.Checkbutton(firmware_frame[pos], text="", bg=father["bg"],
+                                                         variable=self.__firmware_enable_val[pos],
+                                                         onvalue=1, offvalue=0, height=1,
+                                                         width=1)
+            self.__firmware_enable[pos].pack(side=tk.LEFT)
+            # 创建地址输入框
+            self.__firmware_addr_val[pos] = tk.StringVar()
+            self.__firmware_addr_entry[pos] = tk.Entry(firmware_frame[pos], width=9,
+                                                       highlightcolor="LightGrey",
+                                                       textvariable=self.__firmware_addr_val[pos])
 
-        # partitions文件
-        partitions_frame = tk.Frame(father, bg=father["bg"])
-        CheckVar2 = tk.IntVar()
-        # , bg=father["bg"]
-        self.m_partitions_enable = tk.Checkbutton(partitions_frame, text="", bg=father["bg"], variable=CheckVar2, \
-                                                  onvalue=1, offvalue=0, height=1, \
-                                                  width=1)
-        self.m_partitions_enable.pack(side=tk.LEFT)
-        # 创建地址输入框
-        self.m_partitions_addr_val = tk.StringVar()
-        self.m_partitions_addr_entry = tk.Entry(partitions_frame, width=9, highlightcolor="LightGrey",
-                                                textvariable=self.m_partitions_addr_val)
-        self.m_partitions_addr_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 创建路径输入框
-        self.m_partitions_path_val = tk.StringVar()
-        self.m_partitions_path_entry = EntryWithPlaceholder(partitions_frame, width=40, highlightcolor="LightGrey",
-                                                            placeholder="选择partitions的bin文件", placeholder_color="grey",
-                                                            textvariable=self.m_partitions_path_val)
-        self.m_partitions_path_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 原视频输入按钮
-        self.partitions_choose_botton = tk.Button(partitions_frame, text="选择", fg='black',
-                                                  command=self.choose_partitions_file, width=6, height=1)
+            self.__firmware_addr_val[pos].set(self.__pre_down_param_list[pos]["bin_addr"])
+            self.__firmware_addr_entry[pos].pack(side=tk.LEFT, padx=border_padx)
+            # 创建路径输入框
+            self.__firmware_path_val[pos] = tk.StringVar()
+            self.__firmware_path_entry[pos] = EntryWithPlaceholder(firmware_frame[pos], width=40,
+                                                                   highlightcolor="LightGrey",
+                                                                   placeholder=self.__pre_down_param_list[pos][
+                                                                       "placeholder"],
+                                                                   placeholder_color="grey",
+                                                                   textvariable=self.__firmware_path_val[pos])
 
-        self.partitions_choose_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
-        partitions_frame.pack(side=tk.TOP, pady=5)
+            self.__firmware_path_val[pos].set(self.__pre_down_param_list[pos]["bin_path"])
+            self.__firmware_path_entry[pos].pack(side=tk.LEFT, padx=border_padx)
+            self.__firmware_path_entry[pos].refresh()
+            # 选择按钮
+            self.__firmware_choose_botton[pos] = tk.Button(firmware_frame[pos], text="选择", fg='black',
+                                                           command=lambda: self.choose_file(pos), width=6, height=1)
 
-        # boot_app0文件
-        boot_app0_frame = tk.Frame(father, bg=father["bg"])
-        CheckVar3 = tk.IntVar()
-        # , bg=father["bg"]
-        self.m_boot_app0_enable = tk.Checkbutton(boot_app0_frame, text="", bg=father["bg"], variable=CheckVar3, \
-                                                 onvalue=1, offvalue=0, height=1, \
-                                                 width=1)
-        self.m_boot_app0_enable.pack(side=tk.LEFT)
-        # 创建地址输入框
-        self.m_boot_app0_addr_val = tk.StringVar()
-        self.m_boot_app0_addr_entry = tk.Entry(boot_app0_frame, width=9,
-                                               highlightcolor="LightGrey", textvariable=self.m_boot_app0_addr_val)
-        self.m_boot_app0_addr_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 创建路径输入框
-        self.m_boot_app0_path_val = tk.StringVar()
-        self.m_boot_app0_path_entry = EntryWithPlaceholder(boot_app0_frame, width=40, highlightcolor="LightGrey",
-                                                           placeholder="选择boot_app0的bin文件(核心固件)",
-                                                           placeholder_color="grey",
-                                                           textvariable=self.m_boot_app0_path_val)
-        self.m_boot_app0_path_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 原视频输入按钮
-        self.boot_app0_choose_botton = tk.Button(boot_app0_frame, text="选择", fg='black',
-                                                 command=self.choose_boot_app0_file, width=6, height=1)
-
-        self.boot_app0_choose_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
-        boot_app0_frame.pack(side=tk.TOP, pady=5)
-
-        # user_data文件
-        user_data_frame = tk.Frame(father, bg=father["bg"])
-        CheckVar4 = tk.IntVar()
-        # , bg=father["bg"]
-        self.m_user_data_enable = tk.Checkbutton(user_data_frame, text="", bg=father["bg"], variable=CheckVar4, \
-                                                 onvalue=1, offvalue=0, height=1, \
-                                                 width=1)
-        self.m_user_data_enable.pack(side=tk.LEFT)
-        # 创建地址输入框
-        self.m_user_data_addr_val = tk.StringVar()
-        self.m_user_data_addr_entry = tk.Entry(user_data_frame, width=9, highlightcolor="LightGrey",
-                                               textvariable=self.m_user_data_addr_val)
-        self.m_user_data_addr_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 创建路径输入框
-        self.m_user_data_path_val = tk.StringVar()
-        self.m_user_data_path_entry = EntryWithPlaceholder(user_data_frame, width=40, highlightcolor="LightGrey",
-                                                           placeholder="选择user_data的bin文件", placeholder_color="grey",
-                                                           textvariable=self.m_user_data_path_val)
-        self.m_user_data_path_entry.pack(side=tk.LEFT, padx=border_padx)
-        # 原视频输入按钮
-        self.user_data_choose_botton = tk.Button(user_data_frame, text="选择", fg='black',
-                                                 command=self.choose_user_data_file, width=6, height=1)
-
-        self.user_data_choose_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
-        user_data_frame.pack(side=tk.TOP, pady=5)
+            self.__firmware_choose_botton[pos].pack(side=tk.RIGHT, fill=tk.X, padx=5)
+            firmware_frame[pos].pack(side=tk.TOP, pady=border_pady)
 
         # botton组件
         botton_group_frame = tk.Frame(father, bg=father["bg"])
@@ -211,164 +186,185 @@ class DownloadDebug(object):
         self.m_clean_flash_botton.pack(side=tk.LEFT, fill=tk.X, padx=border_padx)
         # 下载按钮
         self.m_download_botton = tk.Button(botton_group_frame, text="刷写固件", fg='black',
-                                           command=self.download_firmware, width=8, height=1)
+                                           command=self.down_and_canle, width=8, height=1)
 
-        self.m_download_botton.pack(side=tk.RIGHT, fill=tk.X, padx=5)
+        self.m_download_botton.pack(side=tk.RIGHT, fill=tk.X, padx=0)
         botton_group_frame.pack(side=tk.TOP, pady=5)
 
-        # 设置默认值
-        self.default_firmware()
+        # 设置下载进度条组件
+        progress_frame = tk.Frame(father, bg=father["bg"])
+        self.progress_bar = tk.Canvas(progress_frame, width=450, height=15, bg="white")
+        # 进度条的矩形框
+        self.progress_bar_circle = self.progress_bar.create_rectangle(3, 3, 450, 14, outline="green", width=1)
+        self.progress_bar_fill = self.progress_bar.create_rectangle(3, 3, 20, 14, outline="", width=1, fill="green")
+        self.progress_bar.coords(self.progress_bar_fill, (3, 3, 0, 25))
+        self.progress_bar.pack(side=tk.TOP, pady=0)
+        progress_frame.pack(side=tk.TOP, pady=0)
 
-    def choose_bin_file(self, event):
+    def schedule_display(self, all_time, update_interval):
         """
-        点击"bin"文件触发的函数
-        :return:
+        进度条处理动画，原则上启动一个线程来执行本函数
+        all_time：进度条的总时间(s)
+        update_interval：更新时间间隔(s)
         """
-        widget = event.widget  # 当前的组件
-        value = widget.get()  # 选中的值
-        print(value)
+        cycle_number = int(all_time / update_interval)
+        print("all_time", all_time)
+        for num in range(cycle_number - 1):
+            self.progress_bar.coords(self.progress_bar_fill, (3, 3, (num / cycle_number) * 440, 14))
+            self.__father.update()
+            time.sleep(update_interval)
 
-    def choose_boot_file(self):
+    def choose_file(self, num):
         """
-        点击"boot0"文件触发的函数
+        点击"选择"文件触发的函数
+        :pos: 为触发”选择“按钮的编号
         :return:
         """
         # 打开文件对话框 获取文件路径
         # defaultextension 为选取保存类型中的拓展名为文件名
         # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
+        filepath = filedialog.askopenfilename(
             title='选择一个bin文件',
             defaultextension=".espace",
             filetypes=[('BIN', '.bin .Bin')])
         if filepath == None or filepath == "":
             return None
         else:
-            self.m_boot_path_entry.delete(0, tk.END)  # 清空文本框
-            self.m_boot_path_entry.insert(tk.END, filepath)
-
-    def choose_partitions_file(self):
-        """
-        点击"partitions"文件触发的函数
-        :return:
-        """
-        # 打开文件对话框 获取文件路径
-        # defaultextension 为选取保存类型中的拓展名为文件名
-        # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
-            title='选择一个bin文件',
-            defaultextension=".espace",
-            filetypes=[('BIN', '.bin .Bin')])
-        if filepath == None or filepath == "":
-            return None
-        else:
-            self.m_partitions_path_entry.delete(0, tk.END)  # 清空文本框
-            self.m_partitions_path_entry.insert(tk.END, filepath)
-
-    def choose_boot_app0_file(self):
-        """
-        点击"boot0"文件触发的函数
-        :return:
-        """
-        # 打开文件对话框 获取文件路径
-        # defaultextension 为选取保存类型中的拓展名为文件名
-        # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
-            title='选择一个bin文件',
-            defaultextension=".espace",
-            filetypes=[('BIN', '.bin .Bin')])
-        if filepath == None or filepath == "":
-            return None
-        else:
-            self.m_boot_app0_path_entry.delete(0, tk.END)  # 清空文本框
-            self.m_boot_app0_path_entry.insert(tk.END, filepath)
-
-    def choose_user_data_file(self):
-        """
-        点击"user_data"文件触发的函数
-        :return:
-        """
-        # 打开文件对话框 获取文件路径
-        # defaultextension 为选取保存类型中的拓展名为文件名
-        # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
-            title='选择一个bin文件',
-            defaultextension=".espace",
-            filetypes=[('BIN', '.bin .Bin')])
-        if filepath == None or filepath == "":
-            return None
-        else:
-            self.m_user_data_path_entry.delete(0, tk.END)  # 清空文本框
-            self.m_user_data_path_entry.insert(tk.END, filepath)
+            self.__firmware_path_entry[num].delete(0, tk.END)  # 清空文本框
+            self.__firmware_path_entry[num].insert(tk.END, filepath)
 
     def clean_flash(self):
         """
         擦除闪存
         """
         self.m_clean_flash_botton["text"] = "清空中"
+        self.m_connect_button["state"] = tk.DISABLED
+        self.m_reboot_button["state"] = tk.DISABLED
         self.m_clean_flash_botton["state"] = tk.DISABLED
+        self.m_download_botton["state"] = tk.DISABLED
         self.print_log("清空芯片中.....")
-        self.m_father.update()
+        self.__father.update()
+
         cmd = ['erase_flash']
         esptool.main(cmd)
+
         self.m_clean_flash_botton["text"] = "清空芯片"
+        self.m_connect_button["state"] = tk.NORMAL
+        self.m_reboot_button["state"] = tk.NORMAL
         self.m_clean_flash_botton["state"] = tk.NORMAL
+        self.m_download_botton["state"] = tk.NORMAL
+        self.__father.update()
         self.print_log("清空芯片成功！")
+
+    def down_and_canle(self):
+        """
+        下载与取消按钮
+        """
+        if self.m_download_botton["text"] == "刷写固件":
+            self.download_firmware()
+        elif self.m_download_botton["text"] == "取消下载":
+            self.canle_download_firmware()
+
+    def canle_download_firmware(self):
+        """
+        取消下载固件
+        """
+        if self.download_thread != None:
+            try:
+                # 杀线程
+                _async_raise(self.download_thread)
+                self.download_thread = None
+            except Exception as err:
+                print(err)
+
+        self.m_download_botton["text"] = "刷写固件"
+        self.m_connect_button["state"] = tk.NORMAL
+        self.m_reboot_button["state"] = tk.NORMAL
+        self.m_clean_flash_botton["state"] = tk.NORMAL
+        self.m_download_botton["state"] = tk.NORMAL
+
+        if self.progress_bar_thread != None:
+            try:
+                # 杀线程
+                _async_raise(self.progress_bar_thread)
+                self.progress_bar_thread = None
+            except Exception as err:
+                print(err)
+
+        # 复位进度条
+        self.progress_bar.coords(self.progress_bar_fill, (3, 3, 0, 25))
 
     def download_firmware(self):
         """
         下载固件
         """
-        self.m_download_botton["text"] = "刷写中"
-        self.m_download_botton["state"] = tk.DISABLED
+        self.m_download_botton["text"] = "取消下载"
+        self.m_connect_button["state"] = tk.DISABLED
+        self.m_reboot_button["state"] = tk.DISABLED
+        self.m_clean_flash_botton["state"] = tk.DISABLED
+        self.m_download_botton["state"] = tk.NORMAL
         self.print_log("刷写中.....")
-        param = self.get_download_param()
+        down_flag, param = self.get_download_param()
+        if down_flag == "disable":
+            self.print_log("参数错误，刷写终止！")
+            self.canle_download_firmware()
+            return None
+
         cmd = ['--port', param["port"],
                '--baud', param["baud"],
-               'write_flash', '-fm', 'dio', '-fs', '4MB',
-               param["bootloader_addr"], param["bootloader_path"],
-               param["partitions_addr"], param["partitions_path"],
-               param["boot_app0_addr"], param["boot_app0_path"],
-               param["user_data_addr"], param["user_data_path"]
+               'write_flash', '-fm', 'dio', '-fs', '4MB'
                ]
 
-        run_thread = threading.Thread(target=self.down,
-                                      args=(cmd,))
-        run_thread.start()
+        all_time = 0  # 粗略认为连接并复位芯片需要0.5s钟
+        speed = int(param["baud"])
 
-    def down(self, cmd):
+        del param["port"]
+        del param["baud"]
 
+        for key, value in param.items():
+            cmd.append(key)
+            cmd.append(value)
+            try:
+                # 波特率中10或11个10个比特能传输一个字节，这里同意取10
+                all_time = all_time + os.path.getsize(value) * 10 / speed
+            except Exception as err:
+                print(err)
+
+        self.progress_bar_thread = threading.Thread(target=self.schedule_display,
+                                                    args=(all_time, 0.1,))
+        # 进度条进程要在下载进程之前启动（为了在下载失败时可以立即查杀进度条进程）
+        self.download_thread = threading.Thread(target=self.down_action,
+                                                args=(cmd,))
+        self.progress_bar_thread.start()
+        self.download_thread.start()
+
+    def down_action(self, cmd):
         cmd_str = ' '.join(cmd)
         self.print_log("-" * 15)
         self.print_log(cmd_str)
         self.print_log("-" * 15)
-        self.m_father.update()
+        self.__father.update()
 
-        esptool.main(cmd)
+        ret = esptool.main(cmd)
+
         self.m_download_botton["text"] = "刷写固件"
+        self.m_connect_button["state"] = tk.NORMAL
+        self.m_reboot_button["state"] = tk.NORMAL
+        self.m_clean_flash_botton["state"] = tk.NORMAL
         self.m_download_botton["state"] = tk.NORMAL
+
+        if self.progress_bar_thread != None:
+            try:
+                # 杀线程
+                _async_raise(self.progress_bar_thread)
+                self.progress_bar_thread = None
+            except Exception as err:
+                print(err)
+
+        # 复位进度条
+        self.progress_bar.coords(self.progress_bar_fill, (3, 3, 0, 25))
+
         self.print_log("刷写固件成功！")
-
-    def default_firmware(self):
-        """
-        默认的固件烧写地址
-        """
-        cur_dir = os.getcwd()
-
-        self.m_boot_addr_val.set('0x1000')
-        self.m_boot_path_val.set(os.path.join(cur_dir, 'bootloader_dio_40m.bin'))
-        self.m_boot_path_entry.refresh()
-
-        self.m_partitions_addr_val.set('0x8000')
-        self.m_partitions_path_val.set(os.path.join(cur_dir, 'partitions.bin'))
-        self.m_partitions_path_entry.refresh()
-
-        self.m_boot_app0_addr_val.set('0xe000')
-        self.m_boot_app0_path_val.set(os.path.join(cur_dir, 'boot_app0.bin'))
-        self.m_boot_app0_path_entry.refresh()
-
-        self.m_user_data_addr_val.set('0x10000')
-        # self.m_user_data_path_val.set(os.path.join(cur_dir, 'bootloader_dio_40m.bin'))
-        self.m_user_data_path_entry.refresh()
 
     def init_log(self, father):
         """
@@ -381,14 +377,15 @@ class DownloadDebug(object):
         self.m_log_scrollbar = tk.Scrollbar(father, width=12)
         # 信息文本框
         self.m_log = tk.Text(father, width=info_width,
-                             height=info_height, yscrollcommand=self.m_log_scrollbar.set,
+                             height=info_height,
+                             yscrollcommand=self.m_log_scrollbar.set,
                              state=tk.DISABLED)
         # 两个控件关联
         self.m_log_scrollbar.config(command=self.m_log.yview)
         self.m_log.pack(side=tk.LEFT, fill=tk.Y, padx=3, pady=3)
 
         # 清空按键
-        m_clear = tk.Button(father, text="X", command=self.log_clear,
+        m_clear = tk.Button(father, text="X", command=self.clear_log,
                             width=1, height=2, font=('Helvetica', '4'))
         m_clear.pack(side=tk.BOTTOM, fill=tk.X, pady=1)
 
@@ -400,7 +397,7 @@ class DownloadDebug(object):
         self.m_log.insert(tk.END, msg)
         self.m_log.config(state=tk.DISABLED)
 
-    def log_clear(self):
+    def clear_log(self):
         """
         清空日志按钮
         :return: None
@@ -419,20 +416,21 @@ class DownloadDebug(object):
         self.m_scrollbar = tk.Scrollbar(father, width=12)
         # 信息文本框
         self.m_msg = tk.Text(father, width=info_width,
-                             height=info_height, yscrollcommand=self.m_scrollbar.set,
+                             height=info_height,
+                             yscrollcommand=self.m_scrollbar.set,
                              state=tk.DISABLED)
         # 两个控件关联
         self.m_scrollbar.config(command=self.m_msg.yview)
         self.m_msg.pack(side=tk.LEFT, fill=tk.Y, padx=3, pady=3)
 
         # 清空按键
-        self.m_clear = tk.Button(father, text="X", command=self.msg_clear,
+        self.m_clear = tk.Button(father, text="X", command=self.clear_msg,
                                  width=1, height=2, font=('Helvetica', '4'))
         self.m_clear.pack(side=tk.BOTTOM, fill=tk.X, pady=1)
 
         self.m_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    def msg_clear(self):
+    def clear_msg(self):
         """
         清空日志按钮
         :return: None
@@ -463,7 +461,6 @@ class DownloadDebug(object):
 
         self.m_com_select = ttk.Combobox(com_frame, width=8, state='readonly')
         self.m_com_select["value"] = tuple(com_tuple)
-        # self.m_com_select.bind('<<ComboboxSelected>>', self.com_choose)
         self.m_com_select.bind("<FocusOut>", self.com_pull_down)
 
         # 设置默认值，即默认下拉框中的内容
@@ -526,24 +523,16 @@ class DownloadDebug(object):
 
         # 启停按钮
         botton_frame = tk.Frame(father, bg=father["bg"])
-        self.m_connect = tk.Button(botton_frame, text="打开串口", fg='black',
-                                   command=self.com_connect, width=12, height=1)
-        self.m_connect.pack(side=tk.LEFT, fill=tk.X, padx=5)
+        self.m_connect_button = tk.Button(botton_frame, text="打开串口", fg='black',
+                                          command=self.com_connect, width=12, height=1)
+        self.m_connect_button.pack(side=tk.LEFT, fill=tk.X, padx=5)
         # 重启按钮
-        self.m_reboot = tk.Button(botton_frame, text="重启", fg='black',
-                                  command=self.esp_reboot, width=8, height=1)
-        self.m_reboot.pack(side=tk.RIGHT, fill=tk.X, padx=5)
-        self.m_reboot["state"] = tk.NORMAL
+        self.m_reboot_button = tk.Button(botton_frame, text="重启", fg='black',
+                                         command=self.esp_reboot, width=8, height=1)
+        self.m_reboot_button.pack(side=tk.RIGHT, fill=tk.X, padx=5)
+        self.m_reboot_button["state"] = tk.NORMAL
 
         botton_frame.pack(side=tk.TOP, pady=5)
-
-    def com_choose(self, event):
-        """"
-        端口被选中的时候 触发
-        """
-        widget = event.widget  # 当前的组件
-        value = widget.get()  # 选中的值
-        print(value)
 
     def com_pull_down(self, event):
         """
@@ -567,51 +556,55 @@ class DownloadDebug(object):
     def com_connect(self):
         global STRGLO, BOOL
 
-        if self.m_connect["text"] == "打开串口":
+        if self.m_connect_button["text"] == "打开串口":
 
-            param = self.get_download_param()
+            down_flag, param = self.get_download_param()
             if self.ser != None:
                 self.ser.close()  # 关闭串口
             self.ser = serial.Serial(param["port"], param["baud"], timeout=10)
 
             # 判断是否打开成功
             if self.ser.is_open:
-                self.run_thread = threading.Thread(target=self.read_data,
-                                                   args=(self.ser,))
-                self.run_thread.start()
+                self.receive_thread = threading.Thread(target=self.read_data,
+                                                       args=(self.ser,))
+                self.receive_thread.start()
                 BOOL = True  # 读取标志位
 
-                self.m_connect["text"] = "关闭串口"
+                self.m_connect_button["text"] = "关闭串口"
                 self.m_com_select["state"] = tk.DISABLED
                 self.m_baud_select["state"] = tk.DISABLED
                 self.m_data_bit_select["state"] = tk.DISABLED
                 self.m_check_bit_select["state"] = tk.DISABLED
                 self.m_stop_bit_select["state"] = tk.DISABLED
-                self.m_reboot["state"] = tk.DISABLED
+                self.m_reboot_button["state"] = tk.DISABLED
+                self.m_clean_flash_botton["state"] = tk.DISABLED
+                self.m_download_botton["state"] = tk.DISABLED
         else:
-            self.m_connect["text"] = "打开串口"
+            self.m_connect_button["text"] = "打开串口"
             self.m_com_select["state"] = tk.NORMAL
             self.m_baud_select["state"] = tk.NORMAL
             self.m_data_bit_select["state"] = tk.NORMAL
             self.m_check_bit_select["state"] = tk.NORMAL
             self.m_stop_bit_select["state"] = tk.NORMAL
-            self.m_reboot["state"] = tk.NORMAL
+            self.m_reboot_button["state"] = tk.NORMAL
+            self.m_clean_flash_botton["state"] = tk.NORMAL
+            self.m_download_botton["state"] = tk.NORMAL
 
             if self.ser != None:
                 self.ser.close()  # 关闭串口
                 del self.ser
                 self.ser = None
                 # 杀线程
-                _async_raise(self.run_thread)
-                self.run_thread = None
-                print("self.run_thread stop")
+                _async_raise(self.receive_thread)
+                self.receive_thread = None
+                print("self.receive_thread stop")
                 STRGLO = ""  # 读取的数据
                 BOOL = False  # 读取标志位
 
     def read_data(self, ser):
         global STRGLO, BOOL
         # 循环接收数据，此为死循环，可用线程实现
-        print("self.run_thread start")
+        print("self.receive_thread start")
         while BOOL:
             if ser.in_waiting:
                 STRGLO = ser.read(ser.in_waiting).decode("utf8")
@@ -623,37 +616,45 @@ class DownloadDebug(object):
         """
         获取下载参数
         """
-        ret = {}
-        # if 
-        return {
-            "port": self.m_com_select.get(),
-            "baud": self.m_baud_select.get(),
+        data_map = {}
+        firmware_num = 4  # 四个下载项
+        for pos in range(firmware_num):
+            firmware_addr = self.__firmware_addr_val[pos].get().strip()
+            firmware_path = self.__firmware_path_entry[pos].get().strip()
+            if self.__firmware_enable_val[pos].get() == 1 and firmware_addr != "" and firmware_path != "":
+                data_map[firmware_addr] = firmware_path
 
-            "bootloader_addr": self.m_boot_addr_val.get(),
-            "bootloader_path": self.m_boot_path_val.get(),
+        if data_map == {}:  # 无下载内容
+            down_flag = "disable"
+        else:
+            down_flag = "enable"
 
-            "partitions_addr": self.m_partitions_addr_val.get(),
-            "partitions_path": self.m_partitions_path_val.get(),
+        data_map["port"] = self.m_com_select.get().strip()
+        data_map["baud"] = self.m_baud_select.get().strip()
+        if data_map["port"] == "" or data_map["baud"] == "":
+            # 串口信息为空
+            down_flag = "disable"
 
-            "boot_app0_addr": self.m_boot_app0_addr_val.get(),
-            "boot_app0_path": self.m_boot_app0_path_val.get(),
-
-            "user_data_addr": self.m_user_data_addr_val.get(),
-            "user_data_path": self.m_user_data_path_val.get(),
-        }
+        return down_flag, data_map
 
     def esp_reboot(self):
         """
         重启芯片
         """
-        self.m_connect["state"] = tk.DISABLED
-        param = self.get_download_param()
+        self.m_connect_button["state"] = tk.DISABLED
+        self.m_reboot_button["state"] = tk.DISABLED
+        self.m_clean_flash_botton["state"] = tk.DISABLED
+        self.m_download_botton["state"] = tk.DISABLED
+        down_flag, param = self.get_download_param()
         self.print_log("已发送重启指令！")
-        self.m_father.update()
+        self.__father.update()
         cmd = ['--port', param["port"], '--baud', param["baud"],
                '--after', 'hard_reset', "read_mac"]
         esptool.main(cmd)
-        self.m_connect["state"] = tk.NORMAL
+        self.m_connect_button["state"] = tk.NORMAL
+        self.m_reboot_button["state"] = tk.NORMAL
+        self.m_clean_flash_botton["state"] = tk.NORMAL
+        self.m_download_botton["state"] = tk.NORMAL
 
     def __del__(self):
         """"
@@ -662,6 +663,12 @@ class DownloadDebug(object):
         if self.ser != None:
             self.ser.close()  # 关闭串口
             self.ser = None
-        if self.run_thread != None:
+        if self.receive_thread != None:
             # 杀线程
-            _async_raise(self.run_thread)
+            _async_raise(self.receive_thread)
+        if self.download_thread != None:
+            # 杀线程
+            _async_raise(self.download_thread)
+        if self.progress_bar_thread != None:
+            # 杀线程
+            _async_raise(self.progress_bar_thread)

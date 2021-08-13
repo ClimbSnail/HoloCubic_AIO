@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
 # 模块名 M_
 M_ALL = "M_ALL"
 M_ENGINE = "M_ENGINE"

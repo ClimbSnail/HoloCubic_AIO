@@ -1,14 +1,23 @@
-import tkinter as tk
-import tkutils as tku
-from tkinter import ttk
-import os.path, sys, time
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
+from common import *
+from widget_base import EntryWithPlaceholder
 from convertor_core import Convertor
 from convertor_core import _const
-from widget_base import EntryWithPlaceholder
-from PIL import Image
+import tkutils as tku
 
-ROOT_PATH = "OutFile"
-CACHE_PATH = "Cache"
+import tkinter as tk
+from tkinter import ttk
+import os.path
+from PIL import Image
 
 FLAG = _const()
 
@@ -51,18 +60,18 @@ class ImagesChanger(object):
         :param lock:线程锁
         :return:None
         """
-        self.m_engine = engine  # 负责各个组件之间数据调度的引擎
-        self.m_father = father  # 保存父窗口
+        self.__engine = engine  # 负责各个组件之间数据调度的引擎
+        self.__father = father  # 保存父窗口
 
-        self.m_select_frame = tk.Frame(self.m_father, bg=father["bg"])
+        self.m_select_frame = tk.Frame(self.__father, bg=father["bg"])
         self.init_setting(self.m_select_frame)
         self.m_select_frame.pack(side=tk.TOP, pady=5)
 
-        self.m_path_frame = tk.Frame(self.m_father, bg=father["bg"])
+        self.m_path_frame = tk.Frame(self.__father, bg=father["bg"])
         self.init_image_path(self.m_path_frame)
         self.m_path_frame.pack(side=tk.TOP, pady=5)
 
-        self.m_info_frame = tk.Frame(self.m_father, bg=father["bg"])
+        self.m_info_frame = tk.Frame(self.__father, bg=father["bg"])
         self.init_info(self.m_info_frame)
         self.m_info_frame.pack(side=tk.TOP, pady=5)
 
@@ -163,6 +172,13 @@ class ImagesChanger(object):
                                         command=self.trans_images, width=8, height=1)
 
         self.m_trans_botton.pack(side=tk.LEFT, fill=tk.X, padx=5)
+
+        # 提示文字
+        self.m_tip_label = tk.Label(image_path_frame, text="点击转化",
+                                          fg="green",
+                                          bg=father['bg'])
+        self.m_tip_label.pack(side=tk.LEFT, padx=border_padx)
+
         image_path_frame.pack(side=tk.LEFT, pady=5)
 
     def choose_image_files(self):
@@ -189,6 +205,8 @@ class ImagesChanger(object):
         """
         转化图片
         """
+        self.m_tip_label.configure(text="正在转化")
+        self.__father.update()
         images_path = self.m_image_path_val.get().strip()
         if images_path == None:
             print("Error: could not load image")
@@ -231,7 +249,7 @@ class ImagesChanger(object):
             else:
                 out_obj = Convertor(input_path, output_format)
                 out_obj.get_bin_file(outpath=ROOT_PATH)
-
+            self.m_tip_label.configure(text="转化完成")
             print("转化完成")
 
     def init_info(self, father):
@@ -246,7 +264,7 @@ class ImagesChanger(object):
         info = '''
         本功能为LVGL图片转化工具  输入任意分辨率图片，转成你所指定的分辨率的图片。
         可以同时选择多张图片，进行批量转换。转化完毕的照片存在本软件同级目录的OutFile文件夹下。
-        注：OutFilr/Cache为缓存目录，可自行删除。
+        注：OutFile/Cache为缓存目录，可自行删除。
 
         若转为存在内存卡中的照片请选择：
             ColorFormat：CF_TRUE_COLOR_ALPHA    OutputFormat：Binary_565

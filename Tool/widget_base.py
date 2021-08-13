@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
 
 import tkinter as tk
 
@@ -13,6 +22,11 @@ class EntryWithPlaceholder(tk.Entry):
 
         self.bind("<FocusIn>", self.foc_in)
         self.bind("<FocusOut>", self.foc_out)
+
+    def get(self):
+        if super().get().strip() == self.placeholder:
+            return ""
+        return super().get().strip()
 
     def refresh(self):
         """

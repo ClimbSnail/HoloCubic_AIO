@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
 from typing import *
 import math
 from PIL import Image

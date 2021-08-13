@@ -1,12 +1,20 @@
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
+from common import *
+
 import os
 import tkinter as tk
 import tkutils as tku
 from tkinter import ttk
-from tkinter import simpledialog
 from tkinter import filedialog
-
-ROOT_PATH = "OutFile"
-CACHE_PATH = "Cache"
 
 
 class VideoTool(object):
@@ -105,7 +113,7 @@ class VideoTool(object):
         # 打开文件对话框 获取文件路径
         # defaultextension 为选取保存类型中的拓展名为文件名
         # filetypes为文件拓展名
-        filepath = tk.filedialog.askopenfilename(
+        filepath = filedialog.askopenfilename(
             title='选择一个视频文件',
             defaultextension=".espace",
             filetypes=[('mp4', '.mp4 .MP4'), ('avi', '.avi .AVI'), ('mov', '.mov .MOV')])
@@ -122,8 +130,7 @@ class VideoTool(object):
         # 打开文件对话框 获取文件路径
         # defaultextension 为选取保存类型中的拓展名为文件名
         # filetypes为文件拓展名
-        tk.filedialog
-        filepath = tk.filedialog.askdirectory()
+        filepath = filedialog.askdirectory()
         if filepath == None or filepath == "":
             return None
         else:

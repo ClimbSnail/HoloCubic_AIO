@@ -1,18 +1,27 @@
-import sys
-import os
-import tkinter as tk
-import tkutils as tku
-from tkinter import ttk
+# -*- coding: utf-8 -*-
+################################################################################
+#
+# Author: ClimbSnail(HQ)
+# original source is here.
+#   https://github.com/ClimbSnail/HoloCubic_AIO
+# 
+#
+################################################################################
+
+from common import *
+import massagehead as mh
 from videotool import VideoTool
 from download_debug import DownloadDebug
 from setting import Setting
 from help import Helper
 from imagechange import ImagesChanger
 from tfmanager import TfManager
-from tkinter import messagebox
-import massagehead as mh
 
-VERSION = "Ver1.2"
+import os
+import tkinter as tk
+import tkutils as tku
+from tkinter import ttk
+from tkinter import messagebox
 
 
 class Engine(object):
@@ -84,7 +93,7 @@ class Engine(object):
         """
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
-            
+
             del self.m_debug_tab_windows
             self.m_debug_tab_windows = None
 
@@ -107,6 +116,7 @@ class Engine(object):
         """
         del self.m_debug_tab_windows
         self.m_debug_tab_windows = None
+
 
 if __name__ == '__main__':
     tool_windows = tk.Tk()  # 创建窗口对象的背景色
