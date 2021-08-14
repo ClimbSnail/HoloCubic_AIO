@@ -7,6 +7,7 @@ struct Config
     String ssid;
     String password;
     String cityname;    // 显示的城市
+    String UID;         // Bilibili UID
     String language;    // 天气查询的地址编码
     String weather_key; // 知心天气api_key（秘钥）
 };

@@ -1,7 +1,9 @@
 #include "network.h"
 #include "common.h"
 #include "HardwareSerial.h"
+#include "app/server/web_setting.h"
 
+WebServer server(80);
 IPAddress local_ip(192, 168, 4, 2); // Set your server's fixed IP address here
 IPAddress gateway(192, 168, 4, 1);  // Set your network Gateway usually your Router base address
 IPAddress subnet(255, 255, 255, 0); // Set your network sub-network mask here
@@ -23,6 +25,7 @@ Network::Network()
 {
     ap_status = AP_DISABLE;
     m_preWifiClickMillis = 0;
+    m_web_start = 0;
 }
 
 void Network::init(String ssid, String password)
@@ -253,6 +256,40 @@ Weather Network::getWeather(String url)
     http.end();
 
     return m_weather;
+}
+
+void Network::start_web_config()
+{
+    //首页
+    server.on("/", HomePage);
+
+    init_page_header();
+    init_page_footer();
+    server.on("/download", File_Download);
+    server.on("/upload", File_Upload);
+    server.on("/delete", File_Delete);
+    server.on("/delete_result", delete_result);
+    server.on("/setting", Setting);
+    server.on(
+    	"/fupload", HTTP_POST,
+    	[]()
+    	{ server.send(200); },
+    	handleFileUpload);
+
+    //连接
+    server.on("/saveConf", save_config);
+
+    server.begin();
+    // MDNS.addService("http", "tcp", 80);
+    Serial.println("HTTP server started");
+    m_web_start = 1;
+}
+
+void Network::stop_web_config()
+{
+    m_web_start = 0;
+    server.stop();
+    server.close();
 }
 
 void restCallback(TimerHandle_t xTimer)

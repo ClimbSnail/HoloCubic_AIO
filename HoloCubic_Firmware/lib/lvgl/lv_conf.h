@@ -381,7 +381,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
  * https://fonts.google.com/specimen/Montserrat  */
 #define LV_FONT_MONTSERRAT_8     0
 #define LV_FONT_MONTSERRAT_10    0
-#define LV_FONT_MONTSERRAT_12    0
+#define LV_FONT_MONTSERRAT_12    1
 #define LV_FONT_MONTSERRAT_14    1
 #define LV_FONT_MONTSERRAT_16    0
 #define LV_FONT_MONTSERRAT_18    0
@@ -390,9 +390,9 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_FONT_MONTSERRAT_24    1
 #define LV_FONT_MONTSERRAT_26    0
 #define LV_FONT_MONTSERRAT_28    0
-#define LV_FONT_MONTSERRAT_30    0
+#define LV_FONT_MONTSERRAT_30    1
 #define LV_FONT_MONTSERRAT_32    0
-#define LV_FONT_MONTSERRAT_34    0
+#define LV_FONT_MONTSERRAT_34    1
 #define LV_FONT_MONTSERRAT_36    0
 #define LV_FONT_MONTSERRAT_38    0
 #define LV_FONT_MONTSERRAT_40    1
@@ -405,7 +405,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_FONT_MONTSERRAT_12_SUBPX      0
 #define LV_FONT_MONTSERRAT_28_COMPRESSED 0  /*bpp = 3*/
 #define LV_FONT_DEJAVU_16_PERSIAN_HEBREW 0  /*Hebrew, Arabic, PErisan letters and all their forms*/
-#define LV_FONT_SIMSUN_16_CJK            0  /*1000 most common CJK radicals*/
+#define LV_FONT_SIMSUN_16_CJK            1  /*1000 most common CJK radicals*/
 
 /*Pixel perfect monospace font
  * http://pelulamu.net/unscii/ */

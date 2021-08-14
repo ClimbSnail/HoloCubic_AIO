@@ -19,19 +19,4 @@ boolean doDelayMillisTime(unsigned long interval,
                           unsigned long *previousMillis,
                           boolean state);
 
-#define GFX 0
-
-#if GFX
-#include <Arduino_GFX_Library.h>
-extern Arduino_HWSPI *bus;
-extern Arduino_ST7789 *tft;
-
-#else
-#include <TFT_eSPI.h>
-/*
-TFT pins should be set in path/to/Arduino/libraries/TFT_eSPI/User_Setups/Setup24_ST7789.h
-*/
-extern TFT_eSPI *tft;
-#endif
-
 #endif

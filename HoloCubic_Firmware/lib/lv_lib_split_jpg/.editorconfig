@@ -1,0 +1,24 @@
+root = true
+
+[*]
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# CRLF breaks shebang.
+[*.{sh}]
+end_of_line = lf
+
+[*.{js,py}]
+charset = utf-8
+
+[*.{cc,c,h,txt}]
+indent_style = space
+indent_size = unset
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+indent_size = 8

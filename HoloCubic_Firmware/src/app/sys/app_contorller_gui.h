@@ -12,7 +12,6 @@ extern "C"
         lv_task_handler(); //等待动画完成
 
     void app_control_gui_init(void);
-    void display_app_scr_release(void);
     void display_app_scr_init(const void *src_img);
     void app_contorl_display_scr(const void *src_img,
                                  lv_scr_load_anim_t anim_type, bool force);

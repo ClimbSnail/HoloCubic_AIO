@@ -1,0 +1,9 @@
+* text=auto
+
+# CRLF breaks shebang.
+*.sh text eol=lf
+
+# Known binary file types.
+*.png binary
+*.jpg binary
+*.sjpg binary

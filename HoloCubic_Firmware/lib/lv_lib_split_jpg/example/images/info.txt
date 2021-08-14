@@ -1,0 +1,2 @@
+small_image = 320 x 240 - 565
+walpaper = 640 x 480 	- 565

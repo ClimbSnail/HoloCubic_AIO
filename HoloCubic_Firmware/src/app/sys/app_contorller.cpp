@@ -13,20 +13,11 @@ AppController::AppController()
     appList = new APP_OBJ[APP_MAX_NUM];
     app_control_gui_init();
     appList[0].app_image = &app_loading;
-    app_contorl_display_scr(appList[cur_app_index].app_image,
-                            LV_SCR_LOAD_ANIM_NONE, true);
-    // 初始化RGB灯 HSV色彩模式
-    RgbParam rgb_setting = {LED_MODE_HSV,
-                            1, 32, 255,
-                            255, 255, 255,
-                            1, 1, 1,
-                            0.05, 0.5, 0.001, 30};
-    rgb_thread_init(&rgb_setting);
+    app_contorl_display_scr(appList[cur_app_index].app_image, LV_SCR_LOAD_ANIM_NONE, true);
 }
 
 AppController::~AppController()
 {
-    rgb_thread_del();
 }
 
 int AppController::app_is_legal(const APP_OBJ *app_obj)
@@ -95,12 +86,8 @@ int AppController::main_process(Imu_Action *act_info)
                 (*(appList[cur_app_index].app_init))(); // 执行APP初始化
             }
         }
-
-        if (GO_FORWORD != act_info->active)
-        {
-            app_contorl_display_scr(appList[cur_app_index].app_image, anim_type, false);
-            delay(300);
-        }
+        app_contorl_display_scr(appList[cur_app_index].app_image, anim_type, false);
+        delay(300);
     }
     else
     {
@@ -126,6 +113,5 @@ void AppController::app_exit()
         // 执行APP退出回调
         (*(appList[cur_app_index].exit_callback))();
     }
-
     app_contorl_display_scr(appList[cur_app_index].app_image, LV_SCR_LOAD_ANIM_NONE, true);
 }

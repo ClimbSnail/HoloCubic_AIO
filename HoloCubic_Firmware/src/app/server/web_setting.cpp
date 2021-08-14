@@ -3,7 +3,6 @@
 
 #include "network.h"
 #include "common.h"
-#include "server.h"
 #include "web_setting.h"
 #include "FS.h"
 #include "HardwareSerial.h"
@@ -53,6 +52,7 @@ String file_size(int bytes)
                 "<label class=\"input\"><span>WiFi SSID</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"                  \
                 "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                \
                 "<label class=\"input\"><span>City Name</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"              \
+                "<label class=\"input\"><span>Bilibili UID</span><input type=\"text\"name=\"UID\"value=\"%s\"></label>"              \
                 "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>" \
                 "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"          \
                 "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"Submie\"></form>"
@@ -77,18 +77,18 @@ void init_page_header()
     webpage_header += F("table{font-family:arial,sans-serif;font-size:0.9em;border-collapse:collapse;width:85%;}");
     webpage_header += F("th,td {border:0.06em solid #dddddd;text-align:left;padding:0.3em;border-bottom:0.06em solid #dddddd;}");
     webpage_header += F("tr:nth-child(odd) {background-color:#eeeeee;}");
-    webpage_header += F(".rcorners_n {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:20%;color:white;font-size:75%;}");
-    webpage_header += F(".rcorners_m {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:50%;color:white;font-size:75%;}");
-    webpage_header += F(".rcorners_w {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:70%;color:white;font-size:75%;}");
-    webpage_header += F(".column{float:left;width:50%;height:45%;}");
+    webpage_header += F(".rcorners_n {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:20%; color:white;font-size:75%;}");
+    webpage_header += F(".rcorners_m {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:50%; color:white;font-size:75%;}");
+    webpage_header += F(".rcorners_w {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:70%; color:white;font-size:75%;}");
+    webpage_header += F(".column{float:left;width:50%; height:45%;}");
     webpage_header += F(".row:after{content:'';display:table;clear:both;}");
     webpage_header += F("*{box-sizing:border-box;}");
     webpage_header += F("footer{background-color:#eedfff; text-align:center;padding:0.3em 0.3em;border-radius:0.375em;font-size:60%;}");
-    webpage_header += F("button{border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:20%;color:white;font-size:130%;}");
-    webpage_header += F(".buttons {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:15%;color:white;font-size:80%;}");
+    webpage_header += F("button{border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:20%; color:white;font-size:130%;}");
+    webpage_header += F(".buttons {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:15%; color:white;font-size:80%;}");
     webpage_header += F(".buttonsm{border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:9%; color:white;font-size:70%;}");
-    webpage_header += F(".buttonm {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:15%;color:white;font-size:70%;}");
-    webpage_header += F(".buttonw {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:40%;color:white;font-size:70%;}");
+    webpage_header += F(".buttonm {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:15%; color:white;font-size:70%;}");
+    webpage_header += F(".buttonw {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:40%; color:white;font-size:70%;}");
     webpage_header += F("a{font-size:75%;}");
     webpage_header += F("p{font-size:75%;}");
 
@@ -106,7 +106,16 @@ void init_page_header()
 }
 
 void init_page_footer()
-{ 
+{ // Saves repeating many lines of code for HTML page footers
+    //   webpage_footer += F("<ul>");
+    //   webpage_footer += F("<li><a href='/'>Home</a></li>"); // Lower Menu bar command entries
+    //   webpage_footer += F("<li><a href='/download'>Download</a></li>");
+    //   webpage_footer += F("<li><a href='/upload'>Upload</a></li>");
+    //   webpage_footer += F("<li><a href='/setting'>Setting</a></li>");
+    //   webpage_footer += F("</ul>");
+    // webpage_footer += "<footer>&copy;" + String(char(byte(0x40 >> 1))) + String(char(byte(0x88 >> 1))) + String(char(byte(0x5c >> 1))) + String(char(byte(0x98 >> 1))) + String(char(byte(0x5c >> 1)));
+    // webpage_footer += String(char((0x84 >> 1))) + String(char(byte(0xd2 >> 1))) + String(char(0xe4 >> 1)) + String(char(0xc8 >> 1)) + String(char(byte(0x40 >> 1)));
+    // webpage_footer += String(char(byte(0x64 / 2))) + String(char(byte(0x60 >> 1))) + String(char(byte(0x62 >> 1))) + String(char(0x70 >> 1)) + "</footer>";
     webpage_footer = "<footer>&copy;ClimbSnail 2021</footer>";
     webpage_footer += F("</body></html>");
 }
@@ -126,7 +135,7 @@ void Setting()
     // config_read("/wifi.txt", &g_cfg);
     char buf[1024];
     sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
-            g_cfg.cityname.c_str(), g_cfg.language.c_str(),
+            g_cfg.cityname.c_str(), g_cfg.UID.c_str(), g_cfg.language.c_str(),
             g_cfg.weather_key.c_str());
     webpage = buf;
     Send_HTML(webpage);
@@ -141,6 +150,7 @@ void save_config(void)
     g_cfg.ssid = server.arg("ssid");
     g_cfg.password = server.arg("pass");
     g_cfg.cityname = server.arg("cityname");
+    g_cfg.UID = server.arg("UID");
     g_cfg.language = server.arg("language");
     g_cfg.weather_key = server.arg("weatherKey");
     config_save("/wifi.txt", &g_cfg); // 更新配置文件

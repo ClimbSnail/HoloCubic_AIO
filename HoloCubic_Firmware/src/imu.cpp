@@ -1,14 +1,10 @@
 #include "imu.h"
-#include "common.h"
 
 void IMU::init()
 {
     Wire.begin(IMU_I2C_SDA, IMU_I2C_SCL);
     Wire.setClock(400000);
-    unsigned long timeout = 5000;
-    unsigned long preMillis = millis();
-
-    while (!imu.testConnection() && !doDelayMillisTime(timeout, &preMillis, 0))
+    while (!imu.testConnection())
         ;
     imu.initialize();
     action_info.active = UNKNOWN;
