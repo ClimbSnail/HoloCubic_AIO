@@ -90,7 +90,7 @@ int AppController::main_process(Imu_Action *act_info)
         else if (GO_FORWORD == act_info->active)
         {
             app_exit_flag = 1; // 进入app
-            if (NULL != appList[cur_app_index].exit_callback)
+            if (NULL != appList[cur_app_index].app_init)
             {
                 (*(appList[cur_app_index].app_init))(); // 执行APP初始化
             }

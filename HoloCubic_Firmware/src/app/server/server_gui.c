@@ -11,6 +11,8 @@ lv_obj_t *title_label;
 static lv_style_t default_style;
 static lv_style_t label_style5;
 
+LV_FONT_DECLARE(lv_font_montserrat_24);
+
 void server_gui_init()
 {
     lv_style_init(&default_style);

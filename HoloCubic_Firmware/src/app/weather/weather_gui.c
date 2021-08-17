@@ -4,7 +4,7 @@
 #include "lv_port_indev.h"
 #include "lvgl.h"
 
-lv_obj_t *wc_scr[4];
+lv_obj_t *wc_scr[3];
 
 lv_obj_t *weather_image = NULL;
 lv_obj_t *cityname_label = NULL;
@@ -27,9 +27,11 @@ static lv_style_t label_style2;
 static lv_style_t label_style3;
 static lv_style_t label_style4;
 
-lv_font_declare(lv_font_montserrat_20);
-lv_font_declare(lv_font_montserrat_24);
-lv_font_declare(lv_font_montserrat_40);
+// LV_FONT_DECLARE(font_unicode_kai_40);
+// LV_FONT_DECLARE(font_unicode);
+LV_FONT_DECLARE(lv_font_montserrat_20);
+LV_FONT_DECLARE(lv_font_montserrat_24);
+LV_FONT_DECLARE(lv_font_montserrat_40);
 
 // 天气图标路径的映射关系
 const void *image_map[] = {&Sunny, &Clear, "S:/weather/2.bin", "S:/weather/3.bin",
@@ -46,7 +48,6 @@ int map_index[] = {0, 1, 2, 3, 4, 5, 5, 5, 5, 6,
                    7, 8, 9, 10, 11, 12, 12, 12, 12, 13,
                    14, 15, 16, 7, 17, 17, 18, 19, 20, 21,
                    22, 23, 24, 25, 26, 27, 28, 29, 30};
-
 
 void weather_obj_del(void);
 
@@ -65,6 +66,7 @@ void weather_gui_init(void)
     lv_style_set_text_opa(&label_style1, LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_style_set_text_color(&label_style1, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_text_font(&label_style1, LV_STATE_DEFAULT, &lv_font_montserrat_24);
+    // lv_style_set_text_font(&label_style1, LV_STATE_DEFAULT, &font_unicode_kai_40);
     lv_style_init(&label_style2);
     lv_style_set_text_opa(&label_style2, LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_style_set_text_color(&label_style2, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -77,7 +79,7 @@ void weather_gui_init(void)
     lv_style_set_text_opa(&label_style3, LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_style_set_text_color(&label_style3, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_text_font(&label_style3, LV_STATE_DEFAULT, &lv_font_montserrat_40);
-
+    
     // 硬件信息页初始化
     wc_scr[2] = lv_obj_create(NULL, NULL);
     lv_obj_add_style(wc_scr[2], LV_BTN_PART_MAIN, &default_style);
@@ -237,9 +239,9 @@ void weather_gui_del(void)
 {
     weather_obj_del();
 
-    for(int pos=0; pos<4; ++pos)
+    for (int pos = 0; pos < 3; ++pos)
     {
-        if(NULL != wc_scr[0])
+        if (NULL != wc_scr[0])
         {
             lv_obj_clean(wc_scr[0]); // 清空此前页面
             wc_scr[0] = NULL;

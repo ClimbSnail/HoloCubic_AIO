@@ -14,7 +14,8 @@ void config_read(const char *file_path, Config *cfg)
     prefs.begin("Config"); // 打开命名空间mynamespace
     cfg->ssid = prefs.getString("ssid", "");
     cfg->password = prefs.getString("password", "");
-    cfg->cityname = prefs.getString("cityname", "Beijing");
+    cfg->cityname = prefs.getString("cityname", "BeiJing");
+    // cfg->cityname = prefs.getString("cityname", "北京");
     cfg->language = prefs.getString("language", "zh-Hans");
     cfg->weather_key = prefs.getString("weather_key", "");
     prefs.end(); // 关闭当前命名空间

@@ -1,7 +1,7 @@
 #ifndef WEB_SETTING_H
 #define WEB_SETTING_H
 
-#define SERVER_VERSION "1.0"
+#define SERVER_VERSION "1.5.x"
 
 #include <WString.h>
 

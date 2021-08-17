@@ -11,10 +11,6 @@
 #define RGB565_BUFFER_SIZE 28850 // (57600)
 #define MOVIE_PATH "/movie"
 
-// #define VIDEO_WIDTH 180L
-// #define VIDEO_HEIGHT 180L
-// #define RGB565_BUFFER_SIZE 16200 // 32400
-
 #define TFT_MISO -1
 #define TFT_MOSI 23
 #define TFT_SCLK 18
@@ -51,7 +47,7 @@ bool start_video(bool create_new)
         Serial.print("RGB565 video start --------> ");
         Serial.println(file_name);
         file = SD.open(file_name);
-        tft->initDMA();
+        // tft->initDMA();
         tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
         return true;
     }
@@ -93,13 +89,13 @@ void media_player_init(void)
 
     // Serial.println("ESP.getFreeHeap()--------->");
     // Serial.println(ESP.getFreeHeap());
-    // display_buf = (uint8_t *)malloc(RGB565_BUFFER_SIZE);
+    display_buf = (uint8_t *)malloc(RGB565_BUFFER_SIZE);
     // Serial.println(ESP.getFreeHeap());
     // Serial.println("<---------ESP.getFreeHeap()");
 
-    DMADrawer::setup(RGB565_BUFFER_SIZE, 40000000,
-                     TFT_MOSI, TFT_MISO,
-                     TFT_SCLK, TFT_CS, TFT_DC);
+    // DMADrawer::setup(RGB565_BUFFER_SIZE, 40000000,
+    //                  TFT_MOSI, TFT_MISO,
+    //                  TFT_SCLK, TFT_CS, TFT_DC);
 
     Serial.print("heap_caps_get_free_size(): ");
     Serial.println((unsigned long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
@@ -117,7 +113,7 @@ void media_player_process(AppController *sys,
         sys->app_exit(); // 退出APP
         return;
     }
-
+    
     if (true == movie_is_empty)
     {
         return;
@@ -152,7 +148,7 @@ void media_player_process(AppController *sys,
     {
         // Read video
         uint32_t l = 0;
-        // tft->startWrite();
+        tft->startWrite();
         // tft->writeBytes(display_buf, l);
 
         // Serial.println(F("---------->\n"));
@@ -175,7 +171,7 @@ void media_player_process(AppController *sys,
         l = file.read(display_buf, RGB565_BUFFER_SIZE);
         tft->pushColors(display_buf, l);
 
-        // tft->endWrite();
+        tft->endWrite();
     }
     else
     {
@@ -195,6 +191,7 @@ void media_player_exit_callback(void)
         free(display_buf);
         display_buf = NULL;
     }
+    // 释放
     release_file_info(movie_file);
     // DMADrawer::close();
     tft->deInitDMA();

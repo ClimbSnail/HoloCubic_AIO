@@ -12,6 +12,7 @@
 #include "app/screen_share/screen_share.h"
 #include "app/server/server.h"
 #include "app/weather/weather.h"
+#include "app/idea_anim/idea.h"
 
 /*** Component objects **7*/
 Display screen;
@@ -50,7 +51,7 @@ void setup()
 
     /*** Init on-board RGB ***/
     rgb.init();
-    rgb.setBrightness(0.1).setRGB(0, 122, 204);
+    rgb.setBrightness(0.05).setRGB(0, 122, 204);
 
     /*** Init ambient-light sensor ***/
     ambLight.init(ONE_TIME_H_RESOLUTION_MODE);
@@ -61,14 +62,13 @@ void setup()
     config_read(NULL, &g_cfg);
 
     app_contorller = new AppController(); // APP控制器
-    app_contorller->app_register(&media_app);
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
     app_contorller->app_register(&media_app);
     app_contorller->app_register(&bilibili_app);
-    app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);
     app_contorller->app_register(&server_app);
+    app_contorller->app_register(&idea_app);
 
     /*** Read WiFi info in SD-Card, then scan & connect WiFi ***/
     g_network.init(g_cfg.ssid, g_cfg.password);
@@ -81,7 +81,7 @@ void loop()
     screen.routine();
     app_contorller->main_process(act_info); // 运行当前进程
     act_info = mpu.update(200);
-
+    // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);
     wifi_auto_process(); // 任务调度
     // malloc(2);
