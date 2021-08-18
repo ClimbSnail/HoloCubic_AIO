@@ -93,7 +93,8 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 ##### 特效动画
 1. 运行APP条件：无。内置的几种特效动画。
-注：移植群友的功能，在此感谢！
+
+注：移植群友小飞侠的功能，在此感谢！
 
 
 ##### BiliBili APP
