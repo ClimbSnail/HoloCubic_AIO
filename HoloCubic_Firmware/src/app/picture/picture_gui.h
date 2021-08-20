@@ -1,7 +1,7 @@
 #ifndef APP_PICTURE_GUI_H
 #define APP_PICTURE_GUI_H
 
-#define PHOTO_PATH "S:/image/%s.bin"
+#define FILENAME_MAX_LEN 50
 
 #ifdef __cplusplus
 extern "C"

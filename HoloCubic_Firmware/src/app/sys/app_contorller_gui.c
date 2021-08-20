@@ -2,9 +2,9 @@
 // #include "lvgl.h"
 
 // 必须定义为全局或者静态
-lv_obj_t *app_scr;
-lv_obj_t *pre_app_image;
-lv_obj_t *now_app_image;
+static lv_obj_t *app_scr = NULL;
+static lv_obj_t *pre_app_image = NULL;
+static lv_obj_t *now_app_image = NULL;
 const void *pre_img_path = NULL;
 
 // static lv_group_t *g;
@@ -23,7 +23,7 @@ void app_control_gui_init(void)
     lv_obj_add_style(app_scr, LV_BTN_PART_MAIN, &default_style);
 }
 
-void display_app_scr_init(const void *src_img)
+void display_app_scr_init(const void *src_img_path)
 {
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == app_scr)
@@ -32,10 +32,10 @@ void display_app_scr_init(const void *src_img)
         lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
         return;
     }
-    pre_img_path = src_img;
     lv_obj_clean(act_obj); // 清空此前页面
     pre_app_image = lv_img_create(app_scr, NULL);
-    lv_img_set_src(pre_app_image, src_img);
+    lv_img_set_src(pre_app_image, src_img_path);
+    pre_img_path = src_img_path;
     lv_obj_align(pre_app_image, NULL, LV_ALIGN_CENTER, 0, 0);
     lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
 }
@@ -43,11 +43,12 @@ void display_app_scr_init(const void *src_img)
 void app_contorl_display_scr(const void *src_img, lv_scr_load_anim_t anim_type, bool force)
 {
     // force为是否强制刷新页面 true为强制刷新
-    if (force == true)
+    if (true == force)
     {
         display_app_scr_init(src_img);
         return;
     }
+    
     if (src_img == pre_img_path)
     {
         return;

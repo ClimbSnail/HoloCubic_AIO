@@ -18,12 +18,12 @@
 #define TFT_DC 2
 #define TFT_RST 4 // Connect reset to ensure display initialises
 
-uint8_t *display_buf;
+static uint8_t *display_buf;
 File file;
-int movie_pos_increate = 0;
-File_Info *movie_file = NULL; // movie文件夹下的文件指针头
-File_Info *pfile = NULL;      // 指向当前播放的文件节点
-bool movie_is_empty = true;   // 标志文件是否为空
+static int movie_pos_increate = 0;
+static File_Info *movie_file = NULL; // movie文件夹下的文件指针头
+static File_Info *pfile = NULL;      // 指向当前播放的文件节点
+static bool movie_is_empty = true;   // 标志文件是否为空
 
 bool start_video(bool create_new)
 {

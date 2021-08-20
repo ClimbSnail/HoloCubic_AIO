@@ -36,7 +36,7 @@ struct Imu_Action
 class IMU
 {
 private:
-    MPU6050 imu;
+    MPU6050 mpu;
     int flag;
     long last_update_time;
 
@@ -44,6 +44,7 @@ public:
     Imu_Action action_info;
 
 public:
+    IMU();
     void init();
     Imu_Action *update(int interval);
 };

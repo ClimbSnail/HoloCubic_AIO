@@ -81,8 +81,8 @@ struct RgbParam
         uint8_t step_v;
     };
 
-    float min_brightness; // 背光的最大亮度
-    float max_brightness; // 背光的最小亮度
+    float min_brightness; // 背光的最小亮度
+    float max_brightness; // 背光的最大亮度
     float brightness_step;
 
     int time; // 定时器的时间

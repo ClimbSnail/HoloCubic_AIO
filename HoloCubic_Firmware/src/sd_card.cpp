@@ -2,7 +2,7 @@
 #include <string.h>
 
 int photo_file_num = 0;
-char file_name_list[IMAGE_FILE_NUM][IMAGE_FILE_NAME_MAX_LEN];
+char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
 void release_file_info(File_Info *info)
 {
@@ -74,7 +74,7 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
     int dir_len = strlen(dirname) + 1;
 
     File file = root.openNextFile();
-    while (file && photo_file_num < IMAGE_FILE_NUM)
+    while (file && photo_file_num < DIR_FILE_NUM)
     {
         if (file.isDirectory())
         {
@@ -89,7 +89,7 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
         {
             Serial.print("  FILE: ");
             // 只取文件名 保存到file_name_list中
-            strncpy(file_name_list[photo_file_num], file.name() + dir_len, IMAGE_FILE_NAME_MAX_LEN - 1);
+            strncpy(file_name_list[photo_file_num], file.name() + dir_len, DIR_FILE_NAME_MAX_LEN - 1);
             file_name_list[photo_file_num][strlen(file_name_list[photo_file_num]) - 4] = 0;
 
             char file_name[30] = {0};

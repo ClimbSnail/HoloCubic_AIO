@@ -4,11 +4,11 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
-#define IMAGE_FILE_NUM 50
-#define IMAGE_FILE_NAME_MAX_LEN 20
+#define DIR_FILE_NUM 10
+#define DIR_FILE_NAME_MAX_LEN 20
 
 extern int photo_file_num;
-extern char file_name_list[IMAGE_FILE_NUM][IMAGE_FILE_NAME_MAX_LEN];
+extern char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
 struct File_Info
 {

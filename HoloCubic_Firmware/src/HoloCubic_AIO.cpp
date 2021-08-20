@@ -1,3 +1,14 @@
+/***************************************************
+  HoleCubic多功能固件源码
+
+  聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、
+  浏览器文件修改。（各APP具体使用参考说明书）
+
+  Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
+
+  Last review/edit by ClimbSnail: 2021/08/21
+ ****************************************************/
+
 #include "display.h"
 #include "ambient.h"
 #include "lv_port_indev.h"
@@ -33,25 +44,15 @@ void wifi_auto_process()
 
 void setup()
 {
-
-    Serial.print("Stack: ");
-    Serial.println(uxTaskGetStackHighWaterMark(NULL));
-    Serial.print("Free heap: ");
-    Serial.println(esp_get_free_heap_size());
-
     Serial.begin(115200);
 
     /*** Init screen ***/
     screen.init();
     screen.setBackLight(1.0);
 
-    /*** Init IMU as input device ***/
-    lv_port_indev_init();
-    mpu.init();
-
     /*** Init on-board RGB ***/
     rgb.init();
-    rgb.setBrightness(0.05).setRGB(0, 122, 204);
+    rgb.setBrightness(0.05).setRGB(0, 64, 64);
 
     /*** Init ambient-light sensor ***/
     ambLight.init(ONE_TIME_H_RESOLUTION_MODE);
@@ -60,7 +61,7 @@ void setup()
     tf.init();
     lv_fs_if_init();
     config_read(NULL, &g_cfg);
-
+    
     app_contorller = new AppController(); // APP控制器
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
@@ -70,19 +71,32 @@ void setup()
     app_contorller->app_register(&server_app);
     app_contorller->app_register(&idea_app);
 
+    // 优先显示屏幕 加快视觉上的开机时间
+    app_contorller->main_process(&mpu.action_info);
+
+    /*** Init IMU as input device ***/
+    lv_port_indev_init();
+    mpu.init();  // 初始化比较耗时
+
+    /*** 以此作为MPU6050初始化完成的标志 ***/
+    // 初始化RGB灯 HSV色彩模式
+    RgbParam rgb_setting = {LED_MODE_HSV,
+                            1, 32, 255,
+                            255, 255, 255,
+                            1, 1, 1,
+                            0.05, 0.5, 0.001, 30};
+    rgb_thread_init(&rgb_setting);
+
     /*** Read WiFi info in SD-Card, then scan & connect WiFi ***/
     g_network.init(g_cfg.ssid, g_cfg.password);
-
-    act_info = mpu.update(200);
 }
 
 void loop()
 {
     screen.routine();
-    app_contorller->main_process(act_info); // 运行当前进程
     act_info = mpu.update(200);
+    app_contorller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);
     wifi_auto_process(); // 任务调度
-    // malloc(2);
 }
