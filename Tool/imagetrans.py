@@ -18,6 +18,8 @@ import tkinter as tk
 from tkinter import ttk
 import os.path
 from PIL import Image
+import os
+import shutil
 
 FLAG = _const()
 
@@ -82,6 +84,20 @@ class ImagesChanger(object):
         :return: None
         """
         border_padx = 15  # 两个控件的间距
+
+        self.m_jpg_label = tk.Label(father, text="JPG格式输出",
+                                      # font=self.my_ft1,
+                                      bg=father['bg'])
+        self.m_jpg_label.pack(side=tk.LEFT)
+        # 勾选框的键值对象
+        self.__jpg_enable_val = tk.IntVar()
+        self.__jpg_enable_val.set(1)
+        # 勾选框
+        self.__jpg_enable = tk.Checkbutton(father, text="", bg=father["bg"],
+                                        variable=self.__jpg_enable_val,
+                                        onvalue=1, offvalue=0, height=1,
+                                        width=1, command=self.enable_jpg)
+        self.__jpg_enable.pack(side=tk.LEFT)
         # 色彩格式
         color_frame = tk.Frame(father, bg=father["bg"])
         self.m_color_label = tk.Label(color_frame, text="ColorFormat",
@@ -95,6 +111,7 @@ class ImagesChanger(object):
                                         'CF_ALPHA_1_BIT', 'CF_ALPHA_2_BIT',
                                         'CF_ALPHA_4_BIT', 'CF_ALPHA_8_BIT',
                                         'CF_RAW', 'CF_RAW_ALPHA', 'CF_RAW_CHROMA')
+        self.m_color_select["state"] = tk.DISABLED
         # 设置默认值，即默认下拉框中的内容
         self.m_color_select.current(1)
         self.m_color_select.pack(side=tk.RIGHT, padx=border_padx)
@@ -109,6 +126,7 @@ class ImagesChanger(object):
         self.m_output_select = ttk.Combobox(output_frame, width=15, state='readonly')
         self.m_output_select["value"] = ('C_array', 'Binary_332', 'Binary_565',
                                          'Binary_565_SWAP', 'Binary_888')
+        self.m_output_select["state"] = tk.DISABLED
         # 设置默认值，即默认下拉框中的内容
         self.m_output_select.current(2)
         self.m_output_select.pack(side=tk.LEFT, padx=border_padx)
@@ -133,6 +151,7 @@ class ImagesChanger(object):
                                                    textvariable=self.m_height_val)
         self.m_height_entry.pack(side=tk.LEFT, padx=5)
         out_ratio_frame.pack(side=tk.LEFT, pady=5)
+
 
         # 设置默认值输出分辨率
         self.default_ratio()
@@ -181,6 +200,14 @@ class ImagesChanger(object):
 
         image_path_frame.pack(side=tk.LEFT, pady=5)
 
+    def enable_jpg(self):
+        if self.__jpg_enable_val.get() == 1:
+            self.m_color_select["state"] = tk.DISABLED
+            self.m_output_select["state"] = tk.DISABLED
+        else:
+            self.m_color_select["state"] = tk.NORMAL
+            self.m_output_select["state"] = tk.NORMAL
+
     def choose_image_files(self):
         """
         点击"user_data"文件触发的函数
@@ -192,7 +219,7 @@ class ImagesChanger(object):
         filepath = tk.filedialog.askopenfilenames(
             title='选择若干个图片',
             defaultextension=".espace",
-            filetypes=[('JPG', '.jpg .JPG')])
+            filetypes=[('JPG', '.jpg .JPG'), ('所有文件', '.* .*')])
         if filepath == None or filepath == "":
             return None
         else:
@@ -237,18 +264,21 @@ class ImagesChanger(object):
                     new_im.save(input_path, 'JPEG', quality=95)
             except Exception as err:
                 print(err)
-
-            color_format = color_dict[self.m_color_select.get()]
-            output_format = output_dict[self.m_output_select.get()]
-            print("color_format = ", color_format)
-            print("output_format = ", output_format)
+            
             print("正在转换图片{} ...".format(os.path.basename(images_path)))
-            if output_format == -1:
-                out_obj = Convertor(input_path, color_format)
-                out_obj.get_c_code_file(outpath=ROOT_PATH)
+            if self.__jpg_enable_val.get() == 1:
+                shutil.move(input_path, ROOT_PATH)
             else:
-                out_obj = Convertor(input_path, output_format)
-                out_obj.get_bin_file(outpath=ROOT_PATH)
+                color_format = color_dict[self.m_color_select.get()]
+                output_format = output_dict[self.m_output_select.get()]
+                print("color_format = ", color_format)
+                print("output_format = ", output_format)
+                if output_format == -1:
+                    out_obj = Convertor(input_path, color_format)
+                    out_obj.get_c_code_file(outpath=ROOT_PATH)
+                else:
+                    out_obj = Convertor(input_path, output_format)
+                    out_obj.get_bin_file(outpath=ROOT_PATH)
             self.m_tip_label.configure(text="转化完成")
             print("转化完成")
 
@@ -266,10 +296,12 @@ class ImagesChanger(object):
         可以同时选择多张图片，进行批量转换。转化完毕的照片存在本软件同级目录的OutFile文件夹下。
         注：OutFile/Cache为缓存目录，可自行删除。
 
-        若转为存在内存卡中的照片请选择：
+        若转为存在内存卡中的jpg照片请勾选："JPG格式输出"
+
+        若转为存在内存卡中的bin照片请去掉"JPG格式输出"勾选，后选择：
             ColorFormat：CF_TRUE_COLOR_ALPHA    OutputFormat：Binary_565
 
-        若转为存在Flash固件中的数组代码请选择：
+        若转为存在Flash固件中的数组代码请去掉"JPG格式输出"勾选，后选择：
             ColorFormat：CF_INDEXED_4_BIT    OutputFormat：C_array
         '''
 
