@@ -59,8 +59,8 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 ### 功能切换说明：
 1. TF卡的文件系统为fat32。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
 2. 插不插tf内存卡都不影响开机，但影响某些APP的功能（各自APP介绍里会说明）。
-3. 左右摇晃即可切换界面。
-4. 向前倾斜1s钟即可切换第二功能，今后还会整合更多功能，同样前倾1s即切换。
+3. 左右摇晃即可切换选择各类APP。
+4. 向前倾斜1s钟即可进入当前页的APP应用，今后还会整合更多功能，同样后仰1s即退出该APP。
 
 ### APP介绍
 
@@ -110,7 +110,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
 3. 然后这里需要修改一个官方库文件才能正常使用：
 
-首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。然后在安装的支持包的`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
+首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
 
     if(sck == -1 && miso == -1 && mosi == -1 && ss == -1) {
         _sck = (_spi_num == VSPI) ? SCK : 14;
@@ -143,8 +143,12 @@ ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 
 ### 版本更新日志
 
-##### HoloCubic_AIO固件_v1.5.bin
+##### HoloCubic_AIO固件_v1.5.x.bin
 1. 新增视频播放(持续改进中)。
+2. 新增MPU6050校准，实现对带倾角底座的兼容。
+3. 相册功能支持jpg、bin双格式。
+4. 新增思维动画APP。
+5. 加速开机显示。
 
 ##### HoloCubic_AIO固件_v1.4.bin
 1. 大量修改程序框架。

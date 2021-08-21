@@ -258,16 +258,18 @@ class ImagesChanger(object):
                     new_im = src_im
                     input_path = img_path
                 else:
-                    new_filename = os.path.basename(img_path).split('.')[0] + '.png'
+                    new_filename = os.path.basename(img_path).split('.')[0] + '.jpg'
+                    print(new_filename)
                     input_path = os.path.join(ROOT_PATH, CACHE_PATH, new_filename)
                     new_im = src_im.resize((width, height))
-                    new_im.save(input_path, 'JPEG', quality=95)
+                    new_im.save(input_path, quality=95)
+                    # new_im.save(input_path, 'JPEG', quality=95)
             except Exception as err:
                 print(err)
             
-            print("正在转换图片{} ...".format(os.path.basename(images_path)))
+            print("正在转换图片 {} ...".format(os.path.basename(images_path)))
             if self.__jpg_enable_val.get() == 1:
-                shutil.move(input_path, ROOT_PATH)
+                shutil.copy(input_path, ROOT_PATH)
             else:
                 color_format = color_dict[self.m_color_select.get()]
                 output_format = output_dict[self.m_output_select.get()]
