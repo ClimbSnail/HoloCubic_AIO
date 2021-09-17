@@ -18,7 +18,7 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 7. 提供上位机软件。
 
 ### 本固件基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
-B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
+B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 [^_^]:
 	![HomePage](Image/holocubic_1080x1080.jpg)
@@ -45,7 +45,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 ![AIO_TOOL](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_aio_tool.png)
 
-### 固件刷写（提供一键刷机工具，无需搭建任何IDE环境）
+### 固件刷写工具（无需搭建任何IDE环境）
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
 3. `boot_app0.bin`
@@ -55,6 +55,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 
 将以上前三个文件与`CubicAIO_Tool.exe`放在同一个目录下，双击运行`CubicAIO_Tool.exe`，软件中选择最新的固件`HoloCubic_AIO_XXX.bin`，即可刷写固件。
 
+上位机操作演示视频链接 https://b23.tv/5e6uDh
 
 ### 功能切换说明：
 1. TF卡的文件系统为fat32。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
@@ -71,7 +72,7 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。
 
 ##### 相册
-1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片）。
+1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
 2. 将需要播放的图片转化成一定格式（.jpg或.bin），再保存在`image/`目录中。
 3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
 
@@ -108,7 +109,8 @@ B站功能演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pic的Arduino平台开发。
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 然后这里需要修改一个官方库文件才能正常使用：
+3. TFT_eSpi库开机花屏，需要将`ST7789_Init.h`文件最下面的`writecommand(ST7789_DISPON);    //Display on`注释掉，放到初始化的代码后第一次显示之后。
+4. 然后这里需要修改一个官方库文件才能正常使用：
 
 首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
 
@@ -131,17 +133,24 @@ AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=2
 关于UI的设计可以自行关注下`Edgeline
 `、`gui-guider`等工具。
 
+platformIO模拟器 https://github.com/lvgl/lv_platformio
+
 应用图标(128*128)：可以下载阿里矢量图 https://www.iconfont.cn/
 
 调试过程中报错定位代码：`xtensa-esp32-elf-addr2line -pfiaC -e 固件名.elf Backtrace地址信息`
 
-字体生成可以使用：` LvglFontTool V0.4 `
+关于lvgl的学习参考：`http://lvgl.100ask.org`、`http://lvgl.100ask.net`
+
+lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 
 ### 资料
 ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 
 
 ### 版本更新日志
+##### HoloCubic_AIO固件_v1.6.x.bin
+1. 调整屏幕亮度、wifi的调度控制，降低功耗。
+2. 修改TFT_eSpi库消除开机之后的`花屏`。
 
 ##### HoloCubic_AIO固件_v1.5.x.bin
 1. 新增视频播放(持续改进中)。
