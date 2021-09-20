@@ -68,7 +68,7 @@ void UpdateTime_RTC(lv_scr_load_anim_t anim_type)
     time_t t;
     t = (time_t)(timestamp / 1000);
     time_struct = gmtime(&t);
-    strftime(date, sizeof(date), "%y-%m-%d", time_struct);
+    strftime(date, sizeof(date), "%Y-%m-%d", time_struct);
     strftime(time, sizeof(time), "%H:%M", time_struct);
 
     display_time(date, time, anim_type);
