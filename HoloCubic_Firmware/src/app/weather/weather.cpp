@@ -56,10 +56,22 @@ void UpdateTime_RTC(lv_scr_load_anim_t anim_type)
     }
 
     g_rtc.setTime(timestamp / 1000);
-    String date = g_rtc.getDate(String("%Y-%m-%d"));
-    String time = g_rtc.getTime(String("%H:%M"));
 
-    display_time(date.c_str(), time.c_str(), anim_type);
+    //阻塞时间太长（高达10S）
+    // String date = g_rtc.getDate(String("%Y-%m-%d"));
+    // String time = g_rtc.getTime(String("%H:%M"));
+    
+    //底层调用时间转换
+    struct tm *time_struct;
+    char date[30];
+    char time[30];
+    time_t t;
+    t = (time_t)(timestamp / 1000);
+    time_struct = gmtime(&t);
+    strftime(date, sizeof(date), "%y-%m-%d", time_struct);
+    strftime(time, sizeof(time), "%H:%M", time_struct);
+
+    display_time(date, time, anim_type);
 }
 
 void weather_init(void)
