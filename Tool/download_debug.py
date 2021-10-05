@@ -208,7 +208,7 @@ class DownloadDebug(object):
         update_interval：更新时间间隔(s)
         """
         cycle_number = int(all_time / update_interval)
-        self.print_log("all_time", all_time)
+        self.print_log("all_time: "+str(all_time))
         for num in range(cycle_number - 1):
             self.progress_bar.coords(self.progress_bar_fill, (3, 3, (num / cycle_number) * 440, 14))
             self.__father.update()
@@ -392,10 +392,11 @@ class DownloadDebug(object):
         self.m_log_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     def print_log(self, msg):
-        msg = msg + "\n"
+        msg = str(msg) + "\n"
         self.m_log.config(state=tk.NORMAL)
         self.m_log.insert(tk.END, msg)
         self.m_log.config(state=tk.DISABLED)
+        self.m_log.yview_moveto(1)
 
     def clear_log(self):
         """
@@ -413,7 +414,7 @@ class DownloadDebug(object):
         info_height = 27
 
         # 滑动条
-        self.m_scrollbar = tk.Scrollbar(father, width=12)
+        self.m_scrollbar = tk.Scrollbar(father, width=12, orient="vertical")
         # 信息文本框
         self.m_msg = tk.Text(father, width=info_width,
                              height=info_height,
@@ -565,10 +566,10 @@ class DownloadDebug(object):
 
             # 判断是否打开成功
             if self.ser.is_open:
+                BOOL = True  # 读取标志位
                 self.receive_thread = threading.Thread(target=self.read_data,
                                                        args=(self.ser,))
                 self.receive_thread.start()
-                BOOL = True  # 读取标志位
 
                 self.m_connect_button["text"] = "关闭串口"
                 self.m_com_select["state"] = tk.DISABLED
@@ -611,6 +612,7 @@ class DownloadDebug(object):
                 self.m_msg.config(state=tk.NORMAL)
                 self.m_msg.insert(tk.END, STRGLO)
                 self.m_msg.config(state=tk.DISABLED)
+                self.m_msg.yview_moveto(1)
 
     def get_download_param(self):
         """

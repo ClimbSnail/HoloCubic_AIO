@@ -144,8 +144,9 @@ class VideoTool(object):
         cur_dir = os.getcwd()  # 当前目录
         self.trans_botton["text"] = "正在转换"
         param = self.get_output_param()
-        cmd_resize = "ffmpeg -i %s -vf scale=%s:%s %s"
-        cmd_to_rgb = 'ffmpeg -i %s -vf "fps=9,scale=-1:%s:flags=lanczos,crop=%s:in_h:(in_w-%s)/2:0" -c:v rawvideo -pix_fmt rgb565be %s'
+        cmd_resize = "ffmpeg -i %s -vf scale=%s:%s %s"  # 缩放转化
+        cmd_to_rgb = 'ffmpeg -i %s -vf "fps=%s,scale=-1:%s:flags=lanczos,crop=%s:in_h:(in_w-%s)/2:0" -c:v rawvideo -pix_fmt rgb565be %s'
+        cmd_to_mjpeg = 'ffmpeg -i %s -vf "fps=%s,scale=-1:%s:flags=lanczos,crop=%s:in_h:(in_w-%s)/2:0" -q:v 9 %s'
 
         name_suffix = os.path.basename(param["src_path"]).split(".")
         suffix = name_suffix[-1]  # 后缀名
@@ -154,8 +155,17 @@ class VideoTool(object):
         # 带上路径
         video_cache = os.path.join(cur_dir, ROOT_PATH, CACHE_PATH, video_cache_name)
         # 最终输出的文件
+        if param["format"] == 'rgb565be':
+            out_format_tail = ".rgb"
+            trans_cmd = cmd_to_rgb  # 最后的转换命令
+        elif param["format"] == 'MJPEG':
+            out_format_tail = ".mjpeg"
+            trans_cmd = cmd_to_mjpeg  # 最后的转换命令
+        else:
+            out_format_tail = ".mjpeg"
+            trans_cmd = cmd_to_mjpeg  # 最后的转换命令
         final_out = os.path.join(param["dst_path"],
-                                 name_suffix[0] + "_" + param["width"] + "x" + param["height"] + ".rgb")
+                                 name_suffix[0] + "_" + param["width"] + "x" + param["height"] + out_format_tail)
 
         # 清理之前的记录
         try:
@@ -165,10 +175,10 @@ class VideoTool(object):
             pass
 
         middle_cmd = cmd_resize % (param["src_path"], param["width"],
-                                   param["width"], video_cache)
+                                   param["height"], video_cache)
         print(middle_cmd)
-        out_cmd = cmd_to_rgb % (video_cache, param["width"], param["width"],
-                                param["width"], final_out)
+        out_cmd = trans_cmd % (video_cache, param["fps"], param["height"], 
+                                param["width"], param["width"], final_out)
         print(out_cmd)
         os.system(middle_cmd)
         os.system(out_cmd)
@@ -198,7 +208,7 @@ class VideoTool(object):
 
         # 分辨率(长宽)
         ratio_frame = tk.Frame(father, bg=father["bg"])
-        self.m_ratio_label = tk.Label(ratio_frame, text="分辨率（长x宽）",
+        self.m_ratio_label = tk.Label(ratio_frame, text="分辨率（宽x高）",
                                       # font=self.my_ft1,
                                       bg=father['bg'])
         self.m_ratio_label.pack(side=tk.LEFT, padx=border_padx)
@@ -219,7 +229,7 @@ class VideoTool(object):
         # 创建输入框
         # self.m_fps_entry = tk.Entry(father, font=self.my_ft1, width=5, highlightcolor="LightGrey")
         self.m_fps_entry = tk.Entry(fps_frame, width=5, highlightcolor="LightGrey")
-        self.m_fps_entry.insert(tk.END, '9')
+        self.m_fps_entry.insert(tk.END, '20')
         # self.m_pre_val_text = "1500"    # 保存修改前m_val_text输入框中的内容，供错误输入时使用
         # self.m_fps_entry.bind("<Return>", self.change_val)  # 绑定enter键的触发
         self.m_fps_entry.pack(side=tk.RIGHT, padx=border_padx)
@@ -232,7 +242,7 @@ class VideoTool(object):
                                        bg=father['bg'])
         self.m_format_label.pack(side=tk.LEFT, padx=border_padx)
         self.m_format_select = ttk.Combobox(format_frame, width=10, state='readonly')
-        self.m_format_select["value"] = ('rgb565be', 'MJPEG', 'GIF')
+        self.m_format_select["value"] = ('MJPEG', 'rgb565be')   # , 'GIF'
         # 设置默认值，即默认下拉框中的内容
         self.m_format_select.current(0)
         self.m_format_select.pack(side=tk.RIGHT, padx=border_padx)
