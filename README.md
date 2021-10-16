@@ -144,5 +144,10 @@ platformIO模拟器 https://github.com/lvgl/lv_platformio
 
 lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 
-### 资料
-ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
+### 致谢
+* ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
+* 视频播放 https://github.com/moononournation/RGB565_video
+* 固件下载工具 https://github.com/espressif/esptool
+* 视频转码工具 https://github.com/FFmpeg/FFmpeg
+* LVGL离线转换工具 https://github.com/zhangjingxun12/Lvgl_image_convert_tool
+* 感谢`lib`目录下所用到的开源库相关的作者

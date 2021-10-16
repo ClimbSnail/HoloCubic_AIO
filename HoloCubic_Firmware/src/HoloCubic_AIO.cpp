@@ -1,7 +1,7 @@
 /***************************************************
   HoloCubic多功能固件源码
 
-  聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、
+  聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、视频投影、
   浏览器文件修改。（各APP具体使用参考说明书）
 
   Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
