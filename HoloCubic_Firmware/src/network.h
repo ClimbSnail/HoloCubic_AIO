@@ -11,6 +11,7 @@
 // wifi是否连接标志
 #define AP_DISABLE 0
 #define AP_ENABLE 1
+
 // Set your server's logical name here e.g. if 'myserver' then address is http://myserver.local/
 #define SERVER_NAME "fileserver"
 
@@ -27,6 +28,17 @@
 #include <HTTPClient.h>
 #endif
 
+// #ifdef __cplusplus
+// extern "C"
+// {
+// #endif
+
+// #include "WiFiGeneric.h"
+
+// #ifdef __cplusplus
+// } /* extern "C" */
+// #endif
+
 extern IPAddress local_ip; // Set your server's fixed IP address here
 extern IPAddress gateway;  // Set your network Gateway usually your Router base address
 extern IPAddress subnet;   // Set your network sub-network mask here
@@ -35,38 +47,20 @@ extern IPAddress dns;      // Set your network DNS usually your Router base addr
 extern const char *AP_SSID; //热点名称
 extern const char *AP_PASS; //密码
 
-struct Weather
-{
-    int weather_code;
-    int temperature;
-};
-
 void restCallback(TimerHandle_t xTimer);
 
 class Network
 {
 public:
-    unsigned long m_preWifiClickMillis;        // 保存上一回的时间戳
-    unsigned long m_wifiClickInterval = 15000; // 日期时钟更新的时间间隔
-    long long m_preNetTimestamp = 0;           // 上一次的网络时间戳
-    long long m_preLocalTimestamp = 0;         // 上一次的本地机器时间戳
-    Weather m_weather;                         // 保存天气状况
+    unsigned long m_preDisWifiConnInfoMillis; // 保存上一回显示连接状态的时间戳
 
 public:
     Network();
-    void init(String ssid, String password);
     void search_wifi(void);
-    String get_localIp(void);
-    String get_softAPIP(void);
-    static boolean start_conn_wifi(const char *ssid, const char *password);
+    boolean start_conn_wifi(const char *ssid, const char *password);
     boolean end_conn_wifi(void);
+    boolean close_wifi(void);
     boolean open_ap(const char *ap_ssid = AP_SSID, const char *ap_password = NULL);
-    wl_status_t get_wifi_sta_status(void);
-    long long getTimestamp(String url);
-    long long getTimestamp(void);
-    Weather getWeather(String url);
-    Weather getWeather(void);
-    boolean getApStatus(void);
 };
 
 #endif

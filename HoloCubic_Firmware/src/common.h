@@ -1,10 +1,14 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define AIO_VERSION "1.7.5"
+
 #include "sd_card.h"
 #include "Arduino.h"
 #include "rgb_led.h"
 #include "config.h"
+#include "display.h"
+#include "ambient.h"
 #include "imu.h"
 #include "network.h"
 #include <Preferences.h>
@@ -14,6 +18,8 @@ extern Pixel rgb;
 extern Config g_cfg;      // 全局配置文件
 extern Network g_network; // 网络连接
 extern Preferences prefs; // 声明Preferences对象
+extern Display screen;    // 屏幕对象
+extern Ambient ambLight;  // 光纤传感器对象
 
 boolean doDelayMillisTime(unsigned long interval,
                           unsigned long *previousMillis,
@@ -22,6 +28,12 @@ boolean doDelayMillisTime(unsigned long interval,
 #define GFX 0
 
 #if GFX
+#define TFT_MISO 19
+#define TFT_MOSI 23
+#define TFT_SCLK 18
+#define TFT_CS -1 // Not connected
+#define TFT_DC 2
+#define TFT_RST 4 // Connect reset to ensure display initialises
 #include <Arduino_GFX_Library.h>
 extern Arduino_HWSPI *bus;
 extern Arduino_ST7789 *tft;

@@ -3,57 +3,67 @@
 #include "../sys/app_contorller.h"
 #include "../../common.h"
 #include "../../sd_card.h"
-#include <SD.h>
+#include "docoder.h"
 #include "DMADrawer.h"
+
+#include <SD.h>
 
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L
-#define RGB565_BUFFER_SIZE 28850 // (57600)
 #define MOVIE_PATH "/movie"
 
-#define TFT_MISO -1
-#define TFT_MOSI 23
-#define TFT_SCLK 18
-#define TFT_CS -1 // Not connected
-#define TFT_DC 2
-#define TFT_RST 4 // Connect reset to ensure display initialises
-
-static uint8_t *display_buf;
-File file;
-static int movie_pos_increate = 0;
-static File_Info *movie_file = NULL; // movie文件夹下的文件指针头
-static File_Info *pfile = NULL;      // 指向当前播放的文件节点
-static bool movie_is_empty = true;   // 标志文件是否为空
-
-bool start_video(bool create_new)
+struct MediaAppRunDate
 {
-    if (false == movie_is_empty)
-    {
+    PlayDocoderBase *player_docoder;
+    int movie_pos_increate;
+    File_Info *movie_file; // movie文件夹下的文件指针头
+    File_Info *pfile;      // 指向当前播放的文件节点
+    File file;
+};
 
-        if (true == create_new)
-        {
-            if (NULL == pfile->next_node)
-            {
-                pfile = movie_file->next_node;
-            }
-            else
-            {
-                pfile = pfile->next_node;
-            }
-        }
+static MediaAppRunDate *run_data = NULL;
 
-        char file_name[30] = {0};
-        sprintf(file_name, "%s/%s", movie_file->file_name, pfile->file_name);
-        Serial.print("RGB565 video start --------> ");
-        Serial.println(file_name);
-        file = SD.open(file_name);
-        // tft->initDMA();
-        tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2, (tft->height() - VIDEO_HEIGHT) / 2, VIDEO_WIDTH, VIDEO_HEIGHT);
-        return true;
-    }
-    else
+bool video_start(bool create_new)
+{
+    if (NULL == run_data->pfile)
     {
+        // 视频文件夹空 就跳出去
         return false;
+    }
+
+    if (true == create_new)
+    {
+        run_data->pfile = run_data->movie_pos_increate == 1 ? run_data->pfile->next_node : run_data->pfile->front_node;
+    }
+
+    char file_name[FILENAME_MAX_LEN] = {0};
+    snprintf(file_name, FILENAME_MAX_LEN, "%s/%s", run_data->movie_file->file_name, run_data->pfile->file_name);
+
+    run_data->file = SD.open(file_name);
+    if (NULL != strstr(run_data->pfile->file_name, ".mjpeg") || NULL != strstr(run_data->pfile->file_name, ".MJPEG"))
+    {
+        // 直接解码mjpeg格式的视频
+        run_data->player_docoder = new MjpegPlayDocoder(&run_data->file, true);
+        Serial.print(F("MJPEG video start --------> "));
+    }
+    else if (NULL != strstr(run_data->pfile->file_name, ".rgb") || NULL != strstr(run_data->pfile->file_name, ".RGB"))
+    {
+        // 使用RGB格式的视频
+        run_data->player_docoder = new RgbPlayDocoder(&run_data->file, true);
+        Serial.print(F("RGB565 video start --------> "));
+    }
+
+    Serial.println(file_name);
+    return true;
+}
+
+void release_player_docoder(void)
+{
+    // 释放具体的播放对象
+    if (NULL != run_data->player_docoder)
+    {
+        delete run_data->player_docoder;
+        run_data->player_docoder = NULL;
     }
 }
 
@@ -63,46 +73,29 @@ void media_player_init(void)
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
-                            0.05, 0.5, 0.001, 30};
+                            0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
 
-    movie_file = tf.listDir(MOVIE_PATH);
-    if (NULL != movie_file)
+    // 初始化运行时参数
+    // run_data = (MediaAppRunDate *)malloc(sizeof(MediaAppRunDate));
+    // memset(run_data, 0, sizeof(MediaAppRunDate));
+    run_data = (MediaAppRunDate *)calloc(1, sizeof(MediaAppRunDate));
+    run_data->player_docoder = NULL;
+    run_data->movie_pos_increate = 0;
+    run_data->movie_file = NULL; // movie文件夹下的文件指针头
+    run_data->pfile = NULL;      // 指向当前播放的文件节点
+
+    run_data->movie_file = tf.listDir(MOVIE_PATH);
+    if (NULL != run_data->movie_file && NULL != run_data->movie_file->next_node)
     {
-        pfile = movie_file->next_node;
-        if (NULL != pfile)
-        {
-            movie_is_empty = false;
-        }
+        run_data->pfile = run_data->movie_file->next_node;
     }
 
-    Serial.print("Stack: ");
-    Serial.println(uxTaskGetStackHighWaterMark(NULL));
+    // 设置CPU主频
+    setCpuFrequencyMhz(240);
 
-    Serial.print("heap_caps_get_free_size(): ");
-    Serial.println((unsigned long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
-    Serial.print("heap_caps_get_largest_free_block() :");
-    Serial.println((unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-
-    // Serial.print("heap_caps_dump_all() :");
-    // heap_caps_dump_all();
-
-    // Serial.println("ESP.getFreeHeap()--------->");
-    // Serial.println(ESP.getFreeHeap());
-    display_buf = (uint8_t *)malloc(RGB565_BUFFER_SIZE);
-    // Serial.println(ESP.getFreeHeap());
-    // Serial.println("<---------ESP.getFreeHeap()");
-
-    // DMADrawer::setup(RGB565_BUFFER_SIZE, 40000000,
-    //                  TFT_MOSI, TFT_MISO,
-    //                  TFT_SCLK, TFT_CS, TFT_DC);
-
-    Serial.print("heap_caps_get_free_size(): ");
-    Serial.println((unsigned long)heap_caps_get_free_size(MALLOC_CAP_8BIT));
-    Serial.print("heap_caps_get_largest_free_block() :");
-    Serial.println((unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
     // 创建播放
-    start_video(false);
+    video_start(false);
 }
 
 void media_player_process(AppController *sys,
@@ -113,99 +106,75 @@ void media_player_process(AppController *sys,
         sys->app_exit(); // 退出APP
         return;
     }
-    
-    if (true == movie_is_empty)
+
+    if (NULL == run_data->pfile)
     {
+        Serial.println(F("Not Found File."));
         return;
     }
 
     if (TURN_RIGHT == act_info->active)
     {
-        movie_pos_increate = 1;
+        run_data->movie_pos_increate = 1;
     }
     else if (TURN_LEFT == act_info->active)
     {
-        movie_pos_increate = -1;
+        run_data->movie_pos_increate = -1;
     }
 
     if (TURN_RIGHT == act_info->active || TURN_LEFT == act_info->active)
     {
-        file.close(); // 尝试关闭文件
+        // 结束播放
+        release_player_docoder();
+        run_data->file.close(); // 尝试关闭文件
 
         // 创建播放
-        start_video(true);
+        video_start(true);
     }
 
-    if (!file)
+    if (!run_data->file)
     {
-        Serial.println("Failed to open file for reading");
+        Serial.println(F("Failed to open file for reading"));
         return;
     }
 
-    // Serial.print("Read from file: ");
-
-    if (file.available())
+    if (run_data->file.available())
     {
-        // Read video
-        uint32_t l = 0;
-        tft->startWrite();
-        // tft->writeBytes(display_buf, l);
-
-        // Serial.println(F("---------->\n"));
-        // Play video
-        // display_buf = (uint8_t *)DMADrawer::getNextBuffer();
-        // l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        // Serial.println("DMADrawer::draw");
-        // DMADrawer::draw((240 - VIDEO_WIDTH) / 2,
-        //                 (240 - VIDEO_HEIGHT) / 2,
-        //                 VIDEO_WIDTH, VIDEO_HEIGHT/4);
-        // Serial.println(F("<----------\n"));
-
-        l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        tft->pushColors(display_buf, l);
-        //tft->pushImageDMA();
-        l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        tft->pushColors(display_buf, l);
-        l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        tft->pushColors(display_buf, l);
-        l = file.read(display_buf, RGB565_BUFFER_SIZE);
-        tft->pushColors(display_buf, l);
-
-        tft->endWrite();
+        // 播放一帧数据
+        run_data->player_docoder->video_play_screen();
     }
     else
     {
-        file.close();
-        Serial.println(F("RGB565 video end"));
+        // 结束播放
+        release_player_docoder();
+        run_data->file.close();
         // 创建播放(重复播放)
-        start_video(false);
+        video_start(false);
     }
-    // delay(300);
 }
 
 void media_player_exit_callback(void)
 {
-    file.close(); // 退出时关闭文件
-    if (NULL != display_buf)
-    {
-        free(display_buf);
-        display_buf = NULL;
-    }
-    // 释放
-    release_file_info(movie_file);
-    // DMADrawer::close();
-    tft->deInitDMA();
+    // 结束播放
+    release_player_docoder();
+
+    run_data->file.close(); // 退出时关闭文件
+    // 释放文件循环队列
+    release_file_info(run_data->movie_file);
+
+    free(run_data);
+    run_data = NULL;
 
     // 恢复RGB灯  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV,
                             1, 32, 255,
                             255, 255, 255,
                             1, 1, 1,
-                            0.05, 0.5, 0.001, 30};
+                            0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
 }
 
-void media_player_event_notification(APP_EVENT event)
+void media_player_event_notification(APP_EVENT event, int event_id)
 {
 }
 

@@ -49,12 +49,14 @@ String file_size(int bytes)
                    ".input input {height: 30px;width: 200px;}"                                          \
                    ".btn {width: 120px;height: 35px;background-color: #000000;border: 0px;color: #ffffff;margin-top: 15px;margin-left: auto;}" // margin-left: 100px;
 
-#define SETTING "<form method=\"GET\" action=\"saveConf\">"                                                                            \
-                "<label class=\"input\"><span>WiFi SSID</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"                  \
-                "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                \
-                "<label class=\"input\"><span>City Name</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"              \
-                "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>" \
-                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"          \
+#define SETTING "<form method=\"GET\" action=\"saveConf\">"                                                                                \
+                "<label class=\"input\"><span>WiFi SSID (2.4G)</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"               \
+                "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                    \
+                "<label class=\"input\"><span>City Name</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                  \
+                "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"     \
+                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"              \
+                "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"   \
+                "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>" \
                 "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"Submie\"></form>"
 
 void init_page_header()
@@ -95,7 +97,7 @@ void init_page_header()
     webpage_header += F("</style></head><body>");
 
     webpage_header += F("<h1>HoloCubic_AIO ");
-    webpage_header += String(SERVER_VERSION) + "</h1>";
+    webpage_header += F(AIO_VERSION "</h1>");
     webpage_header += F("<ul>");
     webpage_header += F("<li><a href='/'>Home</a></li>"); // Lower Menu bar command entries
     webpage_header += F("<li><a href='/download'>Download</a></li>");
@@ -106,8 +108,8 @@ void init_page_header()
 }
 
 void init_page_footer()
-{ 
-    webpage_footer = "<footer>&copy;ClimbSnail 2021</footer>";
+{
+    webpage_footer = F("<footer>&copy;ClimbSnail 2021</footer>");
     webpage_footer += F("</body></html>");
 }
 
@@ -127,15 +129,14 @@ void Setting()
     char buf[1024];
     sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
             g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-            g_cfg.weather_key.c_str());
+            g_cfg.weather_key.c_str(), g_cfg.backLight, g_cfg.rotation);
     webpage = buf;
     Send_HTML(webpage);
 }
 
 void save_config(void)
 {
-    webpage = "<h1>Successd! You can continue to operate.</h1>";
-    Send_HTML(webpage);
+    Send_HTML(F("<h1>Successd! You can continue to operate.</h1>"));
 
     //获取输入的WIFI账户和密码
     g_cfg.ssid = server.arg("ssid");
@@ -143,17 +144,19 @@ void save_config(void)
     g_cfg.cityname = server.arg("cityname");
     g_cfg.language = server.arg("language");
     g_cfg.weather_key = server.arg("weatherKey");
+    g_cfg.backLight = server.arg("backLight").toInt();
+    g_cfg.rotation = server.arg("rotation").toInt();
     config_save("/wifi.txt", &g_cfg); // 更新配置文件
 }
 
 void File_Delete()
 {
-    webpage = "<h3>Enter filename to delete</h3>"
-              "<form action='/delete_result' method='post'>"
-              "<input type='text' name='delete_filepath' placeHolder='绝对路径 /image/...'><br>"
-              "</label><input class=\"btn\" type=\"submit\" name=\"Submie\" value=\"确认删除\"></form>"
-              "<a href='/'>[Back]</a>";
-    Send_HTML(webpage);
+    Send_HTML(
+        F("<h3>Enter filename to delete</h3>"
+          "<form action='/delete_result' method='post'>"
+          "<input type='text' name='delete_filepath' placeHolder='绝对路径 /image/...'><br>"
+          "</label><input class=\"btn\" type=\"submit\" name=\"Submie\" value=\"确认删除\"></form>"
+          "<a href='/'>[Back]</a>"));
 }
 
 void delete_result(void)
@@ -229,7 +232,7 @@ void handleFileUpload()
         // String filename = uploadFileStream.filename;
         // if (!filename.startsWith("/image"))
         filename = "/image/" + filename;
-        Serial.print("Upload File Name: ");
+        Serial.print(F("Upload File Name: "));
         Serial.println(filename);
         tf.deleteFile(filename);                    // Remove a previous version, otherwise data is appended the file again
         UploadFile = tf.open(filename, FILE_WRITE); // Open the file for writing in SPIFFS (create it, if doesn't exist)
@@ -244,7 +247,7 @@ void handleFileUpload()
         if (UploadFile) // If the file was successfully created
         {
             UploadFile.close(); // Close the file again
-            Serial.print("Upload Size: ");
+            Serial.print(F("Upload Size: "));
             Serial.println(uploadFileStream.totalSize);
             webpage = webpage_header;
             webpage += F("<h3>File was successfully uploaded</h3>");

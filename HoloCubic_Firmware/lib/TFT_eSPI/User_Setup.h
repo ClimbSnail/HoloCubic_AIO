@@ -36,7 +36,7 @@
 //#define RPI_DISPLAY_TYPE // 20MHz maximum SPI
 
 // Only define one driver, the other ones must be commented out
-#define ILI9341_DRIVER
+// #define ILI9341_DRIVER
 //#define ST7735_DRIVER      // Define additional parameters below for this display
 //#define ILI9163_DRIVER     // Define additional parameters below for this display
 //#define S6D02A1_DRIVER
@@ -45,7 +45,7 @@
 //#define ILI9481_DRIVER
 //#define ILI9486_DRIVER
 //#define ILI9488_DRIVER     // WARNING: Do not connect ILI9488 display SDO to MISO if other devices share the SPI bus (TFT SDO does NOT tristate when CS is high)
-//#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
+#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
 //#define ST7789_2_DRIVER    // Minimal configuration option, define additional parameters below for this display
 //#define R61581_DRIVER
 //#define RM68140_DRIVER
@@ -307,10 +307,10 @@
 // #define SPI_FREQUENCY   5000000
 // #define SPI_FREQUENCY  10000000
 // #define SPI_FREQUENCY  20000000
-#define SPI_FREQUENCY  27000000
+// #define SPI_FREQUENCY  27000000
 // #define SPI_FREQUENCY  40000000
 // #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
-// #define SPI_FREQUENCY  80000000
+#define SPI_FREQUENCY  80000000
 
 // Optional reduced SPI frequency for reading TFT
 #define SPI_READ_FREQUENCY  20000000

@@ -6,13 +6,18 @@
 // Include the jpeg decoder library
 #include <TJpg_Decoder.h>
 
-static boolean enableTftSwapBytes;
-static unsigned long pic_perMillis = 0;          // 图片上一回更新的时间
-static unsigned long picRefreshInterval = 10000; // 图片播放的时间间隔(5s)
+struct PictureAppRunDate
+{
+    unsigned long pic_perMillis;      // 图片上一回更新的时间
+    unsigned long picRefreshInterval; // 图片播放的时间间隔(10s)
 
-static File_Info *image_file = NULL; // movie文件夹下的文件指针头
-static File_Info *pfile = NULL;      // 指向当前播放的文件节点
-static bool images_is_empty = true;  // 标志文件是否为空
+    File_Info *image_file; // movie文件夹下的文件指针头
+    File_Info *pfile;      // 指向当前播放的文件节点
+    bool images_is_empty;  // 标志文件是否为空
+    bool tftSwapStatus;
+};
+
+static PictureAppRunDate *run_data = NULL;
 
 // This next function will be called during decoding of the jpeg file to
 // render each block to the TFT.  If you use a different TFT library
@@ -36,19 +41,25 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 void picture_init(void)
 {
     photo_gui_init();
-
+    // 初始化运行时参数
+    run_data = (PictureAppRunDate *)malloc(sizeof(PictureAppRunDate));
+    run_data->pic_perMillis = 0;
+    run_data->picRefreshInterval = 10000;
+    run_data->image_file = NULL;
+    run_data->pfile = NULL;
+    run_data->images_is_empty = true;
     // 保存系统的tft设置参数 用于退出时恢复设置
-    enableTftSwapBytes = tft->getSwapBytes();
+    run_data->tftSwapStatus = tft->getSwapBytes();
     tft->setSwapBytes(true); // We need to swap the colour bytes (endianess)
 
-    image_file = tf.listDir(IMAGE_PATH);
-    if (NULL != image_file)
+    run_data->image_file = tf.listDir(IMAGE_PATH);
+    if (NULL != run_data->image_file)
     {
-        pfile = image_file->next_node;
-        if (NULL != pfile)
+        run_data->pfile = run_data->image_file->next_node;
+        if (NULL != run_data->pfile)
         {
-            Serial.println(pfile->file_name);
-            images_is_empty = false;
+            Serial.println(run_data->pfile->file_name);
+            run_data->images_is_empty = false;
         }
     }
 
@@ -74,39 +85,32 @@ void picture_process(AppController *sys,
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_RIGHT;
         image_pos_increate = 1;
-        pic_perMillis = millis() - picRefreshInterval; // 间接强制更新
+        run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_LEFT;
         image_pos_increate = -1;
-        pic_perMillis = millis() - picRefreshInterval; // 间接强制更新
+        run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
     }
 
-    if (doDelayMillisTime(picRefreshInterval, &pic_perMillis, false) == true)
+    if (doDelayMillisTime(run_data->picRefreshInterval, &run_data->pic_perMillis, false) == true)
     {
-        if (false == images_is_empty)
+        if (false == run_data->images_is_empty)
         {
-            if (NULL == pfile->next_node)
-            {
-                pfile = image_file->next_node;
-            }
-            else
-            {
-                pfile = pfile->next_node;
-            }
+            run_data->pfile = image_pos_increate == 1 ? run_data->pfile->next_node : run_data->pfile->front_node;
         }
-        char file_name[FILENAME_MAX_LEN] = {0};
-        sprintf(file_name, "%s/%s", image_file->file_name, pfile->file_name);
+        char file_name[PIC_FILENAME_MAX_LEN] = {0};
+        snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s", run_data->image_file->file_name, run_data->pfile->file_name);
         // Draw the image, top left at 0,0
         Serial.print(F("Decode image: "));
         Serial.println(file_name);
-        if (NULL != strstr(file_name, ".jpg"))
+        if (NULL != strstr(file_name, ".jpg") || NULL != strstr(file_name, ".JPG"))
         {
             // 直接解码jpg格式的图片
             TJpgDec.drawSdJpg(0, 0, file_name);
         }
-        else if (NULL != strstr(file_name, ".bin"))
+        else if (NULL != strstr(file_name, ".bin") || NULL != strstr(file_name, ".BIN"))
         {
             // 使用LVGL的bin格式的图片
             display_photo(file_name, anim_type);
@@ -119,12 +123,16 @@ void picture_exit_callback(void)
 {
     photo_gui_del();
     // 释放文件名链表
-    release_file_info(image_file);
+    release_file_info(run_data->image_file);
     // 恢复此前的驱动参数
-    tft->setSwapBytes(enableTftSwapBytes);
+    tft->setSwapBytes(run_data->tftSwapStatus);
+
+    // 释放运行数据
+    free(run_data);
+    run_data = NULL;
 }
 
-void picture_event_notification(APP_EVENT event)
+void picture_event_notification(APP_EVENT event, int event_id)
 {
 }
 

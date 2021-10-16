@@ -1,7 +1,6 @@
 #include "imu.h"
 #include "common.h"
 
-
 IMU::IMU()
 {
     action_info.isValid = true;
@@ -16,6 +15,7 @@ void IMU::init()
     unsigned long timeout = 5000;
     unsigned long preMillis = millis();
     mpu = MPU6050(0x68);
+    Serial.print(F("Initialization MPU6050 now, Please don't move.\n"));
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, 0))
         ;
     mpu.initialize();
@@ -31,6 +31,7 @@ void IMU::init()
     mpu.CalibrateAccel(7);
     mpu.CalibrateGyro(7);
     mpu.PrintActiveOffsets();
+    Serial.print(F("Initialization MPU6050 success.\n"));
 }
 
 Imu_Action *IMU::update(int interval)
@@ -86,6 +87,12 @@ Imu_Action *IMU::update(int interval)
             action_info.isValid = 0;
         }
         last_update_time = millis();
+
+        // 操作方向进行调整
+        if (UNKNOWN != action_info.active)
+        {
+            action_info.active = (ACTIVE_TYPE)((action_info.active + 0) % UNKNOWN);
+        }
     }
     return &action_info;
 }

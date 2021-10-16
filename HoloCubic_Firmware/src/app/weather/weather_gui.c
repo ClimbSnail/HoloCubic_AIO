@@ -9,6 +9,7 @@ lv_obj_t *wc_scr[3];
 lv_obj_t *weather_image = NULL;
 lv_obj_t *cityname_label = NULL;
 lv_obj_t *temperature_label = NULL;
+lv_obj_t *temperature_symbol = NULL;
 
 lv_obj_t *time_image = NULL;
 lv_obj_t *date_label = NULL;
@@ -79,7 +80,7 @@ void weather_gui_init(void)
     lv_style_set_text_opa(&label_style3, LV_STATE_DEFAULT, LV_OPA_COVER);
     lv_style_set_text_color(&label_style3, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_style_set_text_font(&label_style3, LV_STATE_DEFAULT, &lv_font_montserrat_40);
-    
+
     // 硬件信息页初始化
     wc_scr[2] = lv_obj_create(NULL, NULL);
     lv_obj_add_style(wc_scr[2], LV_BTN_PART_MAIN, &default_style);
@@ -99,6 +100,7 @@ void display_weather_init()
     weather_image = lv_img_create(wc_scr[0], NULL);
     cityname_label = lv_label_create(wc_scr[0], NULL);
     temperature_label = lv_label_create(wc_scr[0], NULL);
+    temperature_symbol = lv_label_create(wc_scr[0], NULL);
 }
 
 void display_weather(const char *cityname, const char *temperature, int weathercode, lv_scr_load_anim_t anim_type)
@@ -114,17 +116,29 @@ void display_weather(const char *cityname, const char *temperature, int weatherc
         path = image_map[31];
     }
     lv_img_set_src(weather_image, path);
-    lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 140);
+    lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);
 
     lv_obj_add_style(cityname_label, LV_LABEL_PART_MAIN, &label_style1);
     lv_label_set_text(cityname_label, cityname);
-    lv_obj_align(cityname_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 20, -65);
+    lv_obj_align(cityname_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 20, -45);
 
     lv_obj_add_style(temperature_label, LV_LABEL_PART_MAIN, &label_style2);
-    lv_label_set_text_fmt(temperature_label, "%s°C", temperature);
-    lv_obj_align(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
+    lv_label_set_text_fmt(temperature_label, "%s", temperature);
+    lv_obj_align(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
+    // LV_ALIGN_OUT_RIGHT_MID
 
-    lv_scr_load_anim(wc_scr[0], anim_type, 300, 300, false);
+    lv_obj_add_style(temperature_symbol, LV_LABEL_PART_MAIN, &label_style1);
+    lv_label_set_text_fmt(temperature_symbol, "°C");
+    lv_obj_align(temperature_symbol, temperature_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
+
+    if (LV_SCR_LOAD_ANIM_NONE != anim_type)
+    {
+        lv_scr_load_anim(wc_scr[0], anim_type, 300, 300, false);
+    }
+    else
+    {
+        lv_scr_load(wc_scr[0]);
+    }
 }
 
 void display_time_init()
@@ -148,13 +162,20 @@ void display_time(const char *date, const char *time, lv_scr_load_anim_t anim_ty
 
     lv_obj_add_style(date_label, LV_LABEL_PART_MAIN, &label_style3);
     lv_label_set_text(date_label, date);
-    lv_obj_align(date_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 15, -95);
+    lv_obj_align(date_label, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -95);
 
     lv_obj_add_style(time_label, LV_LABEL_PART_MAIN, &label_style3);
     lv_label_set_text(time_label, time);
-    lv_obj_align(time_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 65, -50);
+    lv_obj_align(time_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 40, -50);
 
-    lv_scr_load_anim(wc_scr[1], anim_type, 300, 300, false);
+    if (LV_SCR_LOAD_ANIM_NONE != anim_type)
+    {
+        lv_scr_load_anim(wc_scr[1], anim_type, 300, 300, false);
+    }
+    else
+    {
+        lv_scr_load(wc_scr[1]);
+    }
 }
 
 void display_hardware_init()
@@ -205,9 +226,11 @@ void weather_obj_del(void)
         lv_obj_clean(weather_image);
         lv_obj_clean(cityname_label);
         lv_obj_clean(temperature_label);
+        lv_obj_clean(temperature_symbol);
         weather_image = NULL;
         cityname_label = NULL;
         temperature_label = NULL;
+        temperature_symbol = NULL;
     }
 
     if (NULL != time_image)
@@ -241,10 +264,10 @@ void weather_gui_del(void)
 
     for (int pos = 0; pos < 3; ++pos)
     {
-        if (NULL != wc_scr[0])
+        if (NULL != wc_scr[pos])
         {
-            lv_obj_clean(wc_scr[0]); // 清空此前页面
-            wc_scr[0] = NULL;
+            lv_obj_clean(wc_scr[pos]); // 清空此前页面
+            wc_scr[pos] = NULL;
         }
     }
 }

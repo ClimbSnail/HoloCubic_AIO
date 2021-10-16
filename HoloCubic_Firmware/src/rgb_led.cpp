@@ -100,7 +100,10 @@ void led_hsvOnTimer(TimerHandle_t xTimer)
         g_rgb.step_v = (-1) * g_rgb.step_v;
         rgb_status.current_v = g_rgb.min_value_v;
     }
-    rgb_status.current_brightness = rgb_status.current_v;
+    
+    // 计算当前背光值
+    count_cur_brightness();
+    // rgb_status.current_brightness = g_rgb.max_brightness;
 
     // 设置HSV状态
     rgb.setHVS(rgb_status.current_h,

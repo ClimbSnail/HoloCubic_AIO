@@ -6,13 +6,23 @@ char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
 void release_file_info(File_Info *info)
 {
-    File_Info *tmp;
-    for (tmp = info; info != NULL;)
+    File_Info *cur_node = NULL;    // 记录当前节点
+    if( NULL ==  info)
     {
-        info = info->next_node;
-        free(tmp);
-        tmp = info;
+        return ;
     }
+    for (cur_node = info->next_node; NULL != cur_node;)
+    {
+        // 判断是不是循环一圈回来了
+        if( info->next_node == cur_node )
+        {
+            break;
+        }
+        File_Info *tmp = cur_node;  // 保存准备删除的节点
+        cur_node = cur_node->next_node;
+        free(tmp);
+    }
+    free(info);
 }
 
 void SdCard::init()
@@ -92,7 +102,7 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
             strncpy(file_name_list[photo_file_num], file.name() + dir_len, DIR_FILE_NAME_MAX_LEN - 1);
             file_name_list[photo_file_num][strlen(file_name_list[photo_file_num]) - 4] = 0;
 
-            char file_name[30] = {0};
+            char file_name[FILENAME_MAX_LEN] = {0};
             sprintf(file_name, "%s/%s.bin", dirname, file_name_list[photo_file_num]);
             Serial.print(file_name);
             ++photo_file_num;
@@ -122,13 +132,13 @@ File_Info *SdCard::listDir(const char *dirname)
 
     int dir_len = strlen(dirname) + 1;
 
-    // 头节点的创建
+    // 头节点的创建（头节点用来记录此文件夹）
     File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
     head_file->file_name = (char *)malloc(dir_len);
-    head_file->next_node = NULL;
     // 将文件夹名赋值给头节点（当作这个节点的文件名）
     strncpy(head_file->file_name, dirname, dir_len - 1);
     head_file->file_name[dir_len - 1] = 0;
+    head_file->front_node = NULL;
     head_file->next_node = NULL;
 
     File_Info *file_node = head_file;
@@ -150,6 +160,9 @@ File_Info *SdCard::listDir(const char *dirname)
             int filename_len = strlen(file.name()) + 1 - dir_len;
             // 创建新节点
             file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
+            // 让下一个节点指向当前节点
+            // （此时第一个节点的front_next会指向head节点，等遍历结束再调一下）
+            file_node->next_node->front_node = file_node;
             // file_node指针移向节点
             file_node = file_node->next_node;
             // 船家创建新节点的文件名
@@ -159,7 +172,11 @@ File_Info *SdCard::listDir(const char *dirname)
             // 下一个节点赋空
             file_node->next_node = NULL;
 
-            char file_name[30] = {0};
+            if (filename_len > FILENAME_MAX_LEN - 10)
+            {
+                Serial.println("Filename is too long.");
+            }
+            char file_name[FILENAME_MAX_LEN] = {0};
             sprintf(file_name, "%s/%s", dirname, file_node->file_name);
 
             Serial.print("  FILE: ");
@@ -168,6 +185,14 @@ File_Info *SdCard::listDir(const char *dirname)
             Serial.println(file.size());
         }
         file = root.openNextFile();
+    }
+
+    if (NULL != head_file->next_node)
+    {
+        // 将最后一个节点的next_node指针指向 head_file->next_node
+        file_node->next_node = head_file->next_node;
+        // 调整第一个数据节点的front_node指针（非head节点）
+        head_file->next_node->front_node = file_node;
     }
     return head_file;
 }

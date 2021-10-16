@@ -14,16 +14,16 @@ extern lv_indev_state_t encoder_state;
 enum ACTIVE_TYPE
 {
     TURN_RIGHT = 0,
-    TURN_LEFT,
     RETURN,
+    TURN_LEFT,
     GO_FORWORD,
     UNKNOWN
 };
 
 struct Imu_Action
 {
-    boolean isValid;
     ACTIVE_TYPE active;
+    boolean isValid;
     boolean long_time;
     int16_t ax;
     int16_t ay;

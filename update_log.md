@@ -1,7 +1,14 @@
 ### 版本更新日志
+
+##### HoloCubic_AIO固件_v1.7.x.bin
+1. 增加屏幕分享。增加Setting应用。
+2. 增加应用名。
+3. 新增WebServer里对屏幕亮度、方向的调节。
+
 ##### HoloCubic_AIO固件_v1.6.x.bin
 1. 调整屏幕亮度、wifi的调度控制，降低功耗。
 2. 修改TFT_eSpi库消除开机之后的`花屏`。
+3. 在原有rgb播放功能不变的前提下，增加mjpeg的视频播放功能，提高视频帧率到20fps。
 
 ##### HoloCubic_AIO固件_v1.5.x.bin
 1. 新增视频播放(持续改进中)。

@@ -67,18 +67,18 @@ struct RgbParam
 
     union
     {
-        uint8_t step_r;
-        uint8_t step_h;
+        int8_t step_r;
+        int8_t step_h;
     };
     union
     {
-        uint8_t step_g;
-        uint8_t step_s;
+        int8_t step_g;
+        int8_t step_s;
     };
     union
     {
-        uint8_t step_b;
-        uint8_t step_v;
+        int8_t step_b;
+        int8_t step_v;
     };
 
     float min_brightness; // 背光的最小亮度

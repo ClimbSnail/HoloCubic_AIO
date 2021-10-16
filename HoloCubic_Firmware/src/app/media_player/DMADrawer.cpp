@@ -29,7 +29,10 @@ static void lcd_spi_pre_transfer_callback(spi_transaction_t *t)
 {
     int dc = (int)t->user;
     gpio_set_level(tft_dc_pin, dc);
-    gpio_set_level(tft_cs_pin, 0);
+    if (-1 != tft_cs_pin)
+    {
+        gpio_set_level(tft_cs_pin, 0);
+    }
 }
 static void lcd_spi_post_transfer_callback(spi_transaction_t *t)
 {

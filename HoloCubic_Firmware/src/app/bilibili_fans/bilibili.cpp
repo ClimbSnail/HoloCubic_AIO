@@ -3,9 +3,19 @@
 #include "../sys/app_contorller.h"
 #include "../../common.h"
 
+struct BilibiliAppRunDate
+{
+    unsigned int val1;
+    unsigned int val2;
+    unsigned int val3;
+};
+
+static BilibiliAppRunDate *run_data = NULL;
 
 void bilibili_init(void)
 {
+    // 初始化运行时参数
+    run_data = (BilibiliAppRunDate *)malloc(sizeof(BilibiliAppRunDate));
 }
 
 void bilibili_process(AppController *sys,
@@ -25,7 +35,7 @@ void bilibili_exit_callback(void)
 {
 }
 
-void bilibili_event_notification(APP_EVENT event)
+void bilibili_event_notification(APP_EVENT event, int event_id)
 {
 }
 

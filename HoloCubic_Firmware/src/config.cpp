@@ -18,6 +18,8 @@ void config_read(const char *file_path, Config *cfg)
     // cfg->cityname = prefs.getString("cityname", "北京");
     cfg->language = prefs.getString("language", "zh-Hans");
     cfg->weather_key = prefs.getString("weather_key", "");
+    cfg->backLight = prefs.getUChar("backLight", 80);
+    cfg->rotation = prefs.getUChar("rotation", 4);
     prefs.end(); // 关闭当前命名空间
 }
 
@@ -35,5 +37,12 @@ void config_save(const char *file_path, Config *cfg)
     prefs.putString("cityname", cfg->cityname);
     prefs.putString("language", cfg->language);
     prefs.putString("weather_key", cfg->weather_key);
+    prefs.putUChar("backLight", cfg->backLight);
+    prefs.putUChar("rotation", cfg->rotation);
     prefs.end(); // 关闭当前命名空间
+
+    config_read("/wifi.txt", &g_cfg);
+    // 立即更改屏幕方向
+    screen.setBackLight(g_cfg.backLight/100.0);
+    tft->setRotation(g_cfg.rotation);
 }

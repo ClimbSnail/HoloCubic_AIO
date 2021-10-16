@@ -1,7 +1,8 @@
 #ifndef APP_PICTURE_GUI_H
 #define APP_PICTURE_GUI_H
 
-#define FILENAME_MAX_LEN 50
+
+#define PIC_FILENAME_MAX_LEN 100
 
 #ifdef __cplusplus
 extern "C"

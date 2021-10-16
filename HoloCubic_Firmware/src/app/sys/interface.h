@@ -3,9 +3,12 @@
 
 enum APP_EVENT
 {
-    APP_EVENT_WIFI_CONN = 0,
-    APP_EVENT_WIFI_DISCONN,
-    APP_EVENT_UPDATE_TIME
+    APP_EVENT_WIFI_CONN = 0, // 开启连接
+    APP_EVENT_WIFI_AP,       // 开启AP事件
+    APP_EVENT_WIFI_ALIVE,    // wifi开关的心跳维持
+    APP_EVENT_WIFI_DISCONN,  // 连接断开
+    APP_EVENT_UPDATE_TIME,
+    APP_EVENT_NONE
 };
 
 class AppController;
@@ -19,7 +22,7 @@ struct APP_OBJ
     void (*main_process)(AppController *sys,
                          const Imu_Action *act_info); // APP的主程序函数入口指针
     void (*exit_callback)();                          // 退出之前需要处理的回调函数 可为空
-    void (*event_notification)(APP_EVENT event);      // 事件通知
+    void (*on_event)(APP_EVENT event, int event_id);  // 事件通知
 };
 
 #endif

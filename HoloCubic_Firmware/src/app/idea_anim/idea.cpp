@@ -85,11 +85,13 @@ void idea_process(AppController *sys,
     {
         choose = (choose + 1) % 4;
         screen_clear(0x0000);
+        delay(500);
     }
     else if (TURN_LEFT == action->active)
     {
         choose = (choose + 4 - 1) % 4;
         screen_clear(0x0000);
+        delay(500);
     }
 
     //清屏，以黑色作为背景
@@ -107,7 +109,7 @@ void idea_exit_callback(void)
     }
 }
 
-void idea_event_notification(APP_EVENT event)
+void idea_event_notification(APP_EVENT event, int event_id)
 {
 }
 

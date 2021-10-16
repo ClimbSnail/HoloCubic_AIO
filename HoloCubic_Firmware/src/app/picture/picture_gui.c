@@ -33,7 +33,7 @@ void display_photo_init()
 void display_photo(const char *file_name, lv_scr_load_anim_t anim_type)
 {
     display_photo_init();
-    char lv_file_name[FILENAME_MAX_LEN] = {0};
+    char lv_file_name[PIC_FILENAME_MAX_LEN] = {0};
     sprintf(lv_file_name, "S:%s", file_name);
     lv_img_set_src(photo_image, lv_file_name);
     lv_obj_align(photo_image, NULL, LV_ALIGN_CENTER, 0, 0);

@@ -9,7 +9,7 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
 ### 主要特点
-1. 聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、浏览器文件修改。（各APP具体使用参考说明书）
+1. 聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、电脑投屏、浏览器文件修改。（各APP具体使用参考说明书）
 2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动。
 3. 程序相对模块化，低耦合。
 4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
@@ -66,10 +66,11 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 ### APP介绍
 
 ##### Web Server服务
-1. 运行条件：无。如：wifi等信息是保存在flash中，内存卡完全不影响wifi功能的连接。
+1. 运行条件：无。注：wifi等信息是保存在flash中，内存卡完全不影响wifi功能的连接。
 2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
-4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。
+4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
+5. 网页里可设置屏幕方向。
 
 ##### 相册
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
@@ -84,6 +85,10 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`movie/`目录。
 2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件（mjpeg或者rgb格式都可），存放在`movie/`目录下。
 2. 运行播放器APP后，将会读取`movie/`目录下的视频文件。
+
+##### 屏幕分享（电脑投屏）
+1. 运行APP条件：无需内存卡，但需要利用`Web Server服务`app设置wifi密码（确保能连上路由器）。
+2. 上位机目前使用第三方软件，后期会独立编写投屏上位机，提高性能。
 
 ##### 天气、时钟
 1. 运行APP条件：必须是已经联网状态。不插内存卡大多数情况能正常工作。
@@ -100,10 +105,6 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 
 ##### BiliBili APP
 目前还在开发中。
-
-
-### 硬件相关
-**注意：硬件部分C7电容换成1uF左右就可以实现自动下载。**
 
 
 ### 关于编译工程代码
