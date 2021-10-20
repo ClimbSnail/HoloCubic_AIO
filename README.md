@@ -15,7 +15,7 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
 5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
 6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
-7. 提供上位机软件。
+7. 提供全套上位机软件，并开源上位机源码。 https://github.com/ClimbSnail/HoloCubic_AIO_Tool
 
 ### 本固件基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
 B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
@@ -40,12 +40,8 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 
 ![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
-[^_^]:
-	![AIO_TOOL](Image/holocubic_aio_tool.png)
-
-![AIO_TOOL](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_aio_tool.png)
-
 ### 固件刷写工具（无需搭建任何IDE环境）
+下载群中的上位机进行刷机。
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
 3. `boot_app0.bin`
@@ -56,6 +52,13 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 将以上前三个文件与`CubicAIO_Tool.exe`放在同一个目录下，双击运行`CubicAIO_Tool.exe`，软件中选择最新的固件`HoloCubic_AIO_XXX.bin`，即可刷写固件。
 
 上位机操作演示视频链接 https://b23.tv/5e6uDh
+
+本上位机与AIO固件一样，坚持开源，开源地址：https://github.com/ClimbSnail/HoloCubic_AIO_Tool
+
+[^_^]:
+	![AIO_TOOL](Image/holocubic_aio_tool.png)
+
+![AIO_TOOL](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_aio_tool.png)
 
 ### 功能切换说明：
 1. TF卡的文件系统为fat32。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
@@ -147,7 +150,4 @@ lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 ### 致谢
 * ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 * 视频播放 https://github.com/moononournation/RGB565_video
-* 固件下载工具 https://github.com/espressif/esptool
-* 视频转码工具 https://github.com/FFmpeg/FFmpeg
-* LVGL离线转换工具 https://github.com/zhangjingxun12/Lvgl_image_convert_tool
 * 感谢`lib`目录下所用到的开源库相关的作者
