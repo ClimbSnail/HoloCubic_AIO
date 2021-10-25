@@ -23,6 +23,26 @@ struct MediaAppRunDate
 
 static MediaAppRunDate *run_data = NULL;
 
+File_Info *get_next_file(File_Info *p_cur_file, int direction)
+{
+    // 得到 p_cur_file 的下一个 类型为FILE_TYPE_FILE 的文件（即下一个非文件夹文件）
+    if (NULL == p_cur_file)
+    {
+        return NULL;
+    }
+
+    File_Info *pfile = direction == 1 ? p_cur_file->next_node : p_cur_file->front_node;
+    while (pfile != p_cur_file)
+    {
+        if (FILE_TYPE_FILE ==pfile->file_type)
+        {
+            break;
+        }
+        pfile = direction == 1 ? pfile->next_node : pfile->front_node;
+    }
+    return pfile;
+}
+
 bool video_start(bool create_new)
 {
     if (NULL == run_data->pfile)
@@ -33,7 +53,7 @@ bool video_start(bool create_new)
 
     if (true == create_new)
     {
-        run_data->pfile = run_data->movie_pos_increate == 1 ? run_data->pfile->next_node : run_data->pfile->front_node;
+        run_data->pfile = get_next_file(run_data->pfile, run_data->movie_pos_increate);
     }
 
     char file_name[FILENAME_MAX_LEN] = {0};
@@ -81,14 +101,14 @@ void media_player_init(void)
     // memset(run_data, 0, sizeof(MediaAppRunDate));
     run_data = (MediaAppRunDate *)calloc(1, sizeof(MediaAppRunDate));
     run_data->player_docoder = NULL;
-    run_data->movie_pos_increate = 0;
+    run_data->movie_pos_increate = 1;
     run_data->movie_file = NULL; // movie文件夹下的文件指针头
     run_data->pfile = NULL;      // 指向当前播放的文件节点
 
     run_data->movie_file = tf.listDir(MOVIE_PATH);
-    if (NULL != run_data->movie_file && NULL != run_data->movie_file->next_node)
+    if (NULL != run_data->movie_file)
     {
-        run_data->pfile = run_data->movie_file->next_node;
+        run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
     }
 
     // 设置CPU主频
@@ -110,6 +130,7 @@ void media_player_process(AppController *sys,
     if (NULL == run_data->pfile)
     {
         Serial.println(F("Not Found File."));
+        sys->app_exit(); // 退出APP
         return;
     }
 
@@ -130,6 +151,13 @@ void media_player_process(AppController *sys,
 
         // 创建播放
         video_start(true);
+    }
+
+    if (NULL == run_data->pfile)
+    {
+        // 不存在可以播放的文件
+        sys->app_exit(); // 退出APP
+        return;
     }
 
     if (!run_data->file)

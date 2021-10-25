@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "1.7.5"
+#define AIO_VERSION "1.8.0"
 
 #include "sd_card.h"
 #include "Arduino.h"

@@ -19,18 +19,34 @@ void IMU::init()
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, 0))
         ;
     mpu.initialize();
-    // supply your own gyro offsets here, scaled for min sensitivity
-    // mpu.setXGyroOffset(220);
-    // mpu.setYGyroOffset(76);
-    // mpu.setZGyroOffset(-85);
-    // mpu.setXAccelOffset(-1788);
-    // mpu.setYAccelOffset(1788);
-    // mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
 
-    // 7次循环自动校正
-    mpu.CalibrateAccel(7);
-    mpu.CalibrateGyro(7);
-    mpu.PrintActiveOffsets();
+    if (g_cfg.auto_calibration_mpu == 0)
+    {
+        // supply your own gyro offsets here, scaled for min sensitivity
+        mpu.setXGyroOffset(g_cfg.mpu_config.x_gyro_offset);
+        mpu.setYGyroOffset(g_cfg.mpu_config.y_gyro_offset);
+        mpu.setZGyroOffset(g_cfg.mpu_config.z_gyro_offset);
+        mpu.setXAccelOffset(g_cfg.mpu_config.x_accel_offset);
+        mpu.setYAccelOffset(g_cfg.mpu_config.y_accel_offset);
+        mpu.setZAccelOffset(g_cfg.mpu_config.z_accel_offset); // 1688 factory default for my test chip
+    }
+    else
+    {
+        // 启动自动校准
+        // 7次循环自动校正
+        mpu.CalibrateAccel(7);
+        mpu.CalibrateGyro(7);
+        mpu.PrintActiveOffsets();
+
+        g_cfg.mpu_config.x_gyro_offset = mpu.getXGyroOffset();
+        g_cfg.mpu_config.y_gyro_offset = mpu.getYGyroOffset();
+        g_cfg.mpu_config.z_gyro_offset = mpu.getZGyroOffset();
+        g_cfg.mpu_config.x_accel_offset = mpu.getXAccelOffset();
+        g_cfg.mpu_config.y_accel_offset = mpu.getYAccelOffset();
+        g_cfg.mpu_config.z_accel_offset = mpu.getZAccelOffset();
+        mpu_config_save(NULL, &g_cfg); // 保存mup校准数据
+    }
+
     Serial.print(F("Initialization MPU6050 success.\n"));
 }
 

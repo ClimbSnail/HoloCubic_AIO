@@ -12,14 +12,26 @@
 extern int photo_file_num;
 extern char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
+enum FILE_TYPE : unsigned char
+{
+    FILE_TYPE_UNKNOW = 0,
+    FILE_TYPE_FILE,
+    FILE_TYPE_FOLDER
+};
+
 struct File_Info
 {
     char *file_name;
-    File_Info *front_node;  // 上一个节点
-    File_Info *next_node;   // 下一个节点
+    FILE_TYPE file_type;
+    File_Info *front_node; // 上一个节点
+    File_Info *next_node;  // 下一个节点
 };
 
-void release_file_info(File_Info* info);
+void release_file_info(File_Info *info);
+
+void join_path(char *dst_path, const char *pre_path, const char *rear_path);
+
+int get_filename_len(const char *path);
 
 class SdCard
 {

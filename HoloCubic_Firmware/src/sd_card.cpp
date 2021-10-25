@@ -6,23 +6,64 @@ char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
 void release_file_info(File_Info *info)
 {
-    File_Info *cur_node = NULL;    // 记录当前节点
-    if( NULL ==  info)
+    File_Info *cur_node = NULL; // 记录当前节点
+    if (NULL == info)
     {
-        return ;
+        return;
     }
     for (cur_node = info->next_node; NULL != cur_node;)
     {
         // 判断是不是循环一圈回来了
-        if( info->next_node == cur_node )
+        if (info->next_node == cur_node)
         {
             break;
         }
-        File_Info *tmp = cur_node;  // 保存准备删除的节点
+        File_Info *tmp = cur_node; // 保存准备删除的节点
         cur_node = cur_node->next_node;
         free(tmp);
     }
     free(info);
+}
+
+void join_path(char *dst_path, const char *pre_path, const char *rear_path)
+{
+    while (*pre_path != 0)
+    {
+        *dst_path = *pre_path;
+        ++dst_path;
+        ++pre_path;
+    }
+    if (*(pre_path - 1) != '/')
+    {
+        *dst_path = '/';
+        ++dst_path;
+    }
+
+    if (*rear_path == '/')
+    {
+        ++rear_path;
+    }
+    while (*rear_path != 0)
+    {
+        *dst_path = *rear_path;
+        ++dst_path;
+        ++rear_path;
+    }
+    *dst_path = 0;
+}
+
+int get_filename_len(const char *path)
+{
+    // 获取最后一个'/'所在的下标
+    int index = -1;
+    for (int cnt = 0; path[cnt] != 0; ++cnt)
+    {
+        if (path[cnt] == '/')
+        {
+            index = cnt;
+        }
+    }
+    return index;
 }
 
 void SdCard::init()
@@ -134,6 +175,7 @@ File_Info *SdCard::listDir(const char *dirname)
 
     // 头节点的创建（头节点用来记录此文件夹）
     File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
+    head_file->file_type = FILE_TYPE_FOLDER;
     head_file->file_name = (char *)malloc(dir_len);
     // 将文件夹名赋值给头节点（当作这个节点的文件名）
     strncpy(head_file->file_name, dirname, dir_len - 1);
@@ -146,44 +188,53 @@ File_Info *SdCard::listDir(const char *dirname)
     File file = root.openNextFile();
     while (file)
     {
+        // if (levels)
+        // {
+        //     listDir(file.name(), levels - 1);
+        // }
+        int index = get_filename_len(file.name());
+        // 字符数组长度为实际字符串长度+1
+        int filename_len = strlen(file.name()) - (index + 1) + 1;
+        if (filename_len > FILENAME_MAX_LEN - 10)
+        {
+            Serial.println("Filename is too long.");
+        }
+
+        // 创建新节点
+        file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
+        // 让下一个节点指向当前节点
+        // （此时第一个节点的front_next会指向head节点，等遍历结束再调一下）
+        file_node->next_node->front_node = file_node;
+        // file_node指针移向节点
+        file_node = file_node->next_node;
+
+        // 船家创建新节点的文件名
+        file_node->file_name = (char *)calloc(1, filename_len);
+        strncpy(file_node->file_name, file.name() + (index + 1), filename_len); //
+        file_node->file_name[filename_len - 1] = 0;                             //
+        // 下一个节点赋空
+        file_node->next_node = NULL;
+
+        char tmp_file_name[FILENAME_MAX_LEN] = {0};
+        // sprintf(tmp_file_name, "%s/%s", dirname, file_node->file_name);
+        join_path(tmp_file_name, dirname, file_node->file_name);
         if (file.isDirectory())
         {
+            file_node->file_type = FILE_TYPE_FOLDER;
+            // 类型为文件夹
             Serial.print("  DIR : ");
-            Serial.println(file.name());
-            // if (levels)
-            // {
-            //     listDir(file.name(), levels - 1);
-            // }
+            Serial.println(tmp_file_name);
         }
         else
         {
-            int filename_len = strlen(file.name()) + 1 - dir_len;
-            // 创建新节点
-            file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
-            // 让下一个节点指向当前节点
-            // （此时第一个节点的front_next会指向head节点，等遍历结束再调一下）
-            file_node->next_node->front_node = file_node;
-            // file_node指针移向节点
-            file_node = file_node->next_node;
-            // 船家创建新节点的文件名
-            file_node->file_name = (char *)malloc(filename_len);
-            strncpy(file_node->file_name, file.name() + dir_len, filename_len);
-            file_node->file_name[filename_len - 1] = 0; //
-            // 下一个节点赋空
-            file_node->next_node = NULL;
-
-            if (filename_len > FILENAME_MAX_LEN - 10)
-            {
-                Serial.println("Filename is too long.");
-            }
-            char file_name[FILENAME_MAX_LEN] = {0};
-            sprintf(file_name, "%s/%s", dirname, file_node->file_name);
-
+            file_node->file_type = FILE_TYPE_FILE;
+            // 类型为文件
             Serial.print("  FILE: ");
-            Serial.print(file_name);
+            Serial.print(tmp_file_name);
             Serial.print("  SIZE: ");
             Serial.println(file.size());
         }
+
         file = root.openNextFile();
     }
 

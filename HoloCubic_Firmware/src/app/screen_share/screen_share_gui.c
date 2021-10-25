@@ -62,7 +62,7 @@ void display_screen_share(const char *title, const char *ip,
 
     lv_obj_add_style(title_label, LV_LABEL_PART_MAIN, &label_style5);
     lv_label_set_text(title_label, title);
-    lv_obj_align(title_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -200);
+    lv_obj_align(title_label, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -220);
 
     lv_obj_add_style(local_ip_label, LV_LABEL_PART_MAIN, &label_style5);
     lv_label_set_text(local_ip_label, ip);

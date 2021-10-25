@@ -305,8 +305,8 @@ void screen_event_notification(APP_EVENT event, int event_id)
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         tcp_start = 1;
-        screen_share_server.begin(HTTP_PORT); //服务器启动监听端口号
-        screen_share_server.setNoDelay(true);
+        // screen_share_server.begin(HTTP_PORT); //服务器启动监听端口号
+        // screen_share_server.setNoDelay(true);
     }
     break;
     case APP_EVENT_WIFI_ALIVE:
