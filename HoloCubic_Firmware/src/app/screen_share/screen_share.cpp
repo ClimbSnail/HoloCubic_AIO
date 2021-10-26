@@ -244,22 +244,22 @@ void screen_share_process(AppController *sys,
 void screen_exit_callback(void)
 {
     screen_share_gui_del();
-    if (NULL == recvBuf)
+    if (NULL != recvBuf)
     {
         free(recvBuf);
         recvBuf = NULL;
     }
-    if (NULL == jpegBuf)
+    if (NULL != jpegBuf)
     {
         free(jpegBuf);
         jpegBuf = NULL;
     }
-    if (NULL == displayBufWithDma[0])
+    if (NULL != displayBufWithDma[0])
     {
         free(displayBufWithDma[0]);
         displayBufWithDma[0] = NULL;
     }
-    if (NULL == displayBufWithDma[1])
+    if (NULL != displayBufWithDma[1])
     {
         free(displayBufWithDma[1]);
         displayBufWithDma[1] = NULL;

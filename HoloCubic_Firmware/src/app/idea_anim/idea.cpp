@@ -95,6 +95,7 @@ void idea_process(AppController *sys,
     }
 
     //清屏，以黑色作为背景
+    screen_clear(0x0000);    //增加清除旧显存的代码
     ui_update(choose);                                               //ui更新//最终所有的特效调用都在这里面
     tft->pushImage(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, screen_buf); //显示图像
     delay(20);                                                       //改变这个延时函数就能改变特效播放的快慢
@@ -102,7 +103,7 @@ void idea_process(AppController *sys,
 
 void idea_exit_callback(void)
 {
-    if (NULL == screen_buf)
+    if (NULL != screen_buf)
     {
         free(screen_buf);
         screen_buf = NULL;
