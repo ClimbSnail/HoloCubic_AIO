@@ -1,7 +1,7 @@
 #include "settings.h"
 #include "settings_gui.h"
-#include "../sys/app_contorller.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "common.h"
 
 struct SettingsAppRunDate
 {

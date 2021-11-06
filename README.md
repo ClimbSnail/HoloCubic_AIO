@@ -68,14 +68,14 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 
 ### APP介绍
 
-##### Web Server服务
+##### 网页配置服务（Web Server）
 1. 运行条件：无。注：wifi等信息是保存在flash中，内存卡完全不影响wifi功能的连接。
 2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
 4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
 5. 网页里可设置屏幕方向。
 
-##### 相册
+##### 相册（Picture）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
 2. 将需要播放的图片转化成一定格式（.jpg或.bin），再保存在`image/`目录中。
 3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
@@ -84,45 +84,53 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 * 常用的天气图片，转换为c数组，格式为Indexed 16 colors 选择 C array。
 * 不常用的图片则可以转换成（True color with alpha 选择Binary RGB565）bin文件存储到SD卡中，这样可以省下一些程序存储空间用来增加功能。支持转化为jpg图片。
 
-##### 视频播放
+##### 视频播放（Media）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`movie/`目录。
 2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件（mjpeg或者rgb格式都可），存放在`movie/`目录下。
 2. 运行播放器APP后，将会读取`movie/`目录下的视频文件。
 
-##### 屏幕分享（电脑投屏）
-1. 运行APP条件：无需内存卡，但需要利用`Web Server服务`app设置wifi密码（确保能连上路由器）。
+##### 屏幕分享、电脑投屏（Screen share）
+1. 运行APP条件：无需内存卡，但需要利用`Web Server服务`app设置wifi密码（确保能连上路由器）。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
 2. 上位机目前使用第三方软件，后期会独立编写投屏上位机，提高性能。
 
-##### 天气、时钟
+##### 天气、时钟（Weather）
 1. 运行APP条件：必须是已经联网状态。不插内存卡大多数情况能正常工作。
 2. 一般情况下不插内存卡也可以工作，但部分天气图标是存在内存卡中（由于内部flash不够用）的，需要将固件附带的`weather/`文件夹复制到tf卡根目录。
 3. 需要再"Web Server"服务中修改知心天气的地址、key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
 
 注：即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
-##### 特效动画
+##### 特效动画（Idea）
 1. 运行APP条件：无。内置的几种特效动画。
 
 注：移植群友"小飞侠"的功能，在此感谢！
 
+
+##### 文件管理器（File Manager）
+1. 运行APP条件：必须是已经正常配置wifi。必须插内存卡。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
+2. 进入`Holocubic`文件管理器后会自动连接已配置的wifi，并显示出IP地址。
+3. 在上位机的文件管理器软件中填入自己`Holocubic`的IP地址（端口可以不用改），点击连接。
+
+目前部分功能还在开发中。
 
 ##### BiliBili APP
 目前还在开发中。
 
 
 ### 关于编译工程代码
-1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pic的Arduino平台开发。
+1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
 3. TFT_eSpi库开机花屏，需要将`ST7789_Init.h`文件最下面的`writecommand(ST7789_DISPON);    //Display on`注释掉，放到初始化的代码后第一次显示之后。
 4. 然后这里需要修改一个官方库文件才能正常使用：
 
-首先非PlatformIO开发（自带包了）的用户需安装ESP32的Arduino支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
-
+PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
+```
     if(sck == -1 && miso == -1 && mosi == -1 && ss == -1) {
         _sck = (_spi_num == VSPI) ? SCK : 14;
         _miso = (_spi_num == VSPI) ? MISO : 12; // 需要改为26
         _mosi = (_spi_num == VSPI) ? MOSI : 13;
         _ss = (_spi_num == VSPI) ? SS : 15;
+```
 这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
 
 ### 程序框架图

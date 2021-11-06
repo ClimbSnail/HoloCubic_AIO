@@ -1,8 +1,7 @@
 #include "idea.h"
-#include "../sys/app_contorller.h"
-#include "../../network.h"
-#include "../../common.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "network.h"
+#include "common.h"
 #include <stdint.h>
 #include "ui_animation.h"
 

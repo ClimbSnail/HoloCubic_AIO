@@ -1,6 +1,6 @@
 #include "bilibili_gui.h"
 
-#include "lv_port_indev.h"
+#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 lv_obj_t *bilibili_gui = NULL;

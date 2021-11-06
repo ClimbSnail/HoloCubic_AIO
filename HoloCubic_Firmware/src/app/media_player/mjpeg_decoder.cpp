@@ -1,5 +1,5 @@
 #include "docoder.h"
-#include "../../common.h"
+#include "common.h"
 #include <TJpg_Decoder.h>
 // #include "MjpegClass.h"
 // static MjpegClass mjpeg;

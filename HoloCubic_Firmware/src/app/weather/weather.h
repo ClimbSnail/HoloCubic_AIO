@@ -1,7 +1,7 @@
 #ifndef APP_WEATHER_H
 #define APP_WEATHER_H
 
-#include "../sys/interface.h"
+#include "sys/interface.h"
 
 struct Weather
 {

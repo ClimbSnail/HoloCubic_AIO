@@ -2,7 +2,7 @@
 #include "screen_share_gui.h"
 #include "common.h"
 #include <TJpg_Decoder.h>
-#include "../sys/app_contorller.h"
+#include "sys/app_contorller.h"
 
 #define JPEG_BUFFER_SIZE 1     // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
 #define RECV_BUFFER_SIZE 50000 // 理论上是JPEG_BUFFER_SIZE的两倍就够了

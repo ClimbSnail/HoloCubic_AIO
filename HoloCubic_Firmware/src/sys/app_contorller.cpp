@@ -1,7 +1,7 @@
 #include "app_contorller.h"
 #include "app_contorller_gui.h"
 #include "common.h"
-#include "../sys/interface.h"
+#include "interface.h"
 #include "Arduino.h"
 
 AppController::AppController()

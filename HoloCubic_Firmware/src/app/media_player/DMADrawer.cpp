@@ -15,7 +15,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "../../common.h"
+#include "common.h"
 
 static spi_device_handle_t _spi = NULL;
 static spi_transaction_t trans[6];

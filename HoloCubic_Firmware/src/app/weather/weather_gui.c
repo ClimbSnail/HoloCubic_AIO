@@ -1,7 +1,7 @@
 #include "weather_gui.h"
 #include "weather_image.h"
 
-#include "lv_port_indev.h"
+#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 lv_obj_t *wc_scr[3];

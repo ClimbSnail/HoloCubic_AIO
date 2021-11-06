@@ -1,7 +1,7 @@
 #ifndef APP_IDEA_H
 #define APP_IDEA_H
 
-#include "../sys/interface.h"
+#include "sys/interface.h"
 
 
 

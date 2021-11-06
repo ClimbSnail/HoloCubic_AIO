@@ -1,8 +1,8 @@
 #include "media_player.h"
 #include "media_gui.h"
-#include "../sys/app_contorller.h"
-#include "../../common.h"
-#include "../../sd_card.h"
+#include "sys/app_contorller.h"
+#include "common.h"
+#include "driver/sd_card.h"
 #include "docoder.h"
 #include "DMADrawer.h"
 

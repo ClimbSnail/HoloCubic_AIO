@@ -1,7 +1,7 @@
 #include "example.h"
 #include "example_gui.h"
-#include "../sys/app_contorller.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "common.h"
 
 struct ExampleAppRunDate
 {

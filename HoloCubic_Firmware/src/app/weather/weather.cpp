@@ -1,9 +1,9 @@
 #include "weather.h"
 #include "weather_gui.h"
 #include "ESP32Time.h"
-#include "../sys/app_contorller.h"
-#include "../../network.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "network.h"
+#include "common.h"
 
 #define WEATHER_PAGE_SIZE 2
 

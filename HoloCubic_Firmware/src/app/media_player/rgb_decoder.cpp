@@ -1,5 +1,5 @@
 #include "docoder.h"
-#include "../../common.h"
+#include "common.h"
 
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L

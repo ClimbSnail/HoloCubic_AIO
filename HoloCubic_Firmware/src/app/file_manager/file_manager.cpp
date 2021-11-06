@@ -1,17 +1,19 @@
 #include "file_msg.h"
 #include "file_manager.h"
 #include "file_manager_gui.h"
-#include "../sys/app_contorller.h"
-#include "../../network.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "network.h"
+#include "common.h"
+#include "ESP32FtpServer.h"
 
 #define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
 #define RECV_BUFFER_SIZE 2000                //
 #define SEND_BUFFER_SIZE 2000                //
 #define HTTP_PORT 8081                       //设置监听端口
 
-WiFiServer file_manager_server; //服务端
-WiFiClient file_manager_client; // 客户端
+// WiFiServer file_manager_server; //服务端
+// WiFiClient file_manager_client; // 客户端
+FtpServer ftpSrv;               // 定义FTP服务端
 
 struct FileManagerAppRunDate
 {
@@ -66,9 +68,11 @@ void file_maneger_process(AppController *sys,
         // return ;
         // 发送wifi维持的心跳
         sys->req_event(&file_manager_app, APP_EVENT_WIFI_ALIVE, 0);
+#if 0
         if (NULL != file_manager_client)
         {
             // 如果客户端处于连接状态 client.connected()
+            file_manager_server.hasClient();
             if (file_manager_client.connected() || file_manager_client.available())
             {
                 if (file_manager_client.available())
@@ -93,11 +97,12 @@ void file_maneger_process(AppController *sys,
                             int index = 0;
                             do
                             {
-                                if(FILE_TYPE_FILE == p->file_type)
+                                if (FILE_TYPE_FILE == p->file_type)
                                 {
                                     index += sprintf(&dir_info[index], "%s\t", p->file_name);
                                 }
-                                else{
+                                else
+                                {
                                     index += sprintf(&dir_info[index], "%s/\t", p->file_name);
                                 }
                                 p = p->next_node;
@@ -133,7 +138,10 @@ void file_maneger_process(AppController *sys,
                 uint32_t len = fs_msg.encode(msg);
                 file_manager_client.write(msg, len); // 向上位机发送下一帧发送指令
             }
-        }
+    }
+#else
+        ftpSrv.handleFTP(); // make sure in loop you call handleFTP()!!
+#endif
     }
 }
 
@@ -153,19 +161,8 @@ void file_maneger_exit_callback(void)
         run_data->sendBuf = NULL;
     }
 
-    file_manager_server.close();
+    // file_manager_server.close();
 
-    // if (NULL == run_data->client)
-    // {
-    //     free(run_data->client);
-    //     run_data->client = NULL;
-    // }
-
-    // if (NULL == run_data->file_manager_server)
-    // {
-    //     free(run_data->file_manager_server);
-    //     run_data->file_manager_server = NULL;
-    // }
     // 释放运行时参数
     free(run_data);
     run_data = NULL;
@@ -185,8 +182,9 @@ void file_maneger_event_notification(APP_EVENT event, int event_id)
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
-        file_manager_server.begin(HTTP_PORT); //服务器启动监听端口号
-        file_manager_server.setNoDelay(true);
+        // file_manager_server.begin(HTTP_PORT); //服务器启动监听端口号
+        // file_manager_server.setNoDelay(true);
+        ftpSrv.begin("esp32", "esp32");
     }
     break;
     case APP_EVENT_WIFI_AP:
@@ -199,8 +197,6 @@ void file_maneger_event_notification(APP_EVENT event, int event_id)
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
-        // run_data->file_manager_server.begin(HTTP_PORT); //服务器启动监听端口号
-        // run_data->file_manager_server.setNoDelay(true);
     }
     break;
     case APP_EVENT_WIFI_ALIVE:

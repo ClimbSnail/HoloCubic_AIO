@@ -1,7 +1,7 @@
 #ifndef APP_SERVER_H
 #define APP_SERVER_H
 
-#include "../sys/interface.h"
+#include "sys/interface.h"
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>      // Built-in

@@ -1,4 +1,4 @@
-#include "app/sys/app_contorller_gui.h"
+#include "app_contorller_gui.h"
 // #include "lvgl.h"
 
 // 必须定义为全局或者静态

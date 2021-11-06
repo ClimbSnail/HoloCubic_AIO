@@ -1,5 +1,5 @@
 #include "common.h"
-#include "config.h"
+#include "sys/config.h"
 #include "network.h"
 
 SdCard tf;

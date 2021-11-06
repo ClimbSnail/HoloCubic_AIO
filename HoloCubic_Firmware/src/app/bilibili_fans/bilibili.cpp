@@ -1,7 +1,7 @@
 #include "bilibili.h"
 #include "bilibili_gui.h"
-#include "../sys/app_contorller.h"
-#include "../../common.h"
+#include "sys/app_contorller.h"
+#include "common.h"
 
 struct BilibiliAppRunDate
 {

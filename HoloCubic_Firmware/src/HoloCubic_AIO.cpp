@@ -9,12 +9,12 @@
   Last review/edit by ClimbSnail: 2021/08/21
  ****************************************************/
 
-#include "lv_port_indev.h"
-#include "lv_port_fatfs.h"
+#include "driver/lv_port_indev.h"
+#include "driver/lv_port_fatfs.h"
 #include "common.h"
-#include "config.h"
 
-#include "app/sys/app_contorller.h"
+#include "sys/app_contorller.h"
+
 #include "app/weather/weather.h"
 #include "app/picture/picture.h"
 #include "app/media_player/media_player.h"
