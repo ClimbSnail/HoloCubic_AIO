@@ -23,7 +23,7 @@ struct MediaAppRunDate
 
 static MediaAppRunDate *run_data = NULL;
 
-File_Info *get_next_file(File_Info *p_cur_file, int direction)
+static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 {
     // 得到 p_cur_file 的下一个 类型为FILE_TYPE_FILE 的文件（即下一个非文件夹文件）
     if (NULL == p_cur_file)

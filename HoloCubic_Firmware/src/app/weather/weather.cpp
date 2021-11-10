@@ -14,7 +14,7 @@ struct WeatherAppRunDate
     unsigned long weatherUpdataInterval; // 天气更新的时间间隔
     unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(900s)
     long long m_preNetTimestamp;         // 上一次的网络时间戳
-    long long m_errorNetTimestamp;         // 网络到显示过程中的时间误差
+    long long m_errorNetTimestamp;       // 网络到显示过程中的时间误差
     long long m_preLocalTimestamp;       // 上一次的本地机器时间戳
     int clock_page;                      // 时钟桌面的播放记录
 
@@ -101,7 +101,7 @@ long long getTimestamp(String url)
             int time_index = (payload.indexOf("data")) + 12;
             time = payload.substring(time_index, payload.length() - 3);
             // 以网络时间戳为准
-            run_data->m_preNetTimestamp = atoll(time.c_str())+run_data->m_errorNetTimestamp;
+            run_data->m_preNetTimestamp = atoll(time.c_str()) + run_data->m_errorNetTimestamp;
             run_data->m_preLocalTimestamp = millis();
         }
     }
@@ -141,8 +141,8 @@ void weather_init(void)
     run_data->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔(900s)
     run_data->m_preNetTimestamp = 0;          // 上一次的网络时间戳
     run_data->m_errorNetTimestamp = 2;
-    run_data->m_preLocalTimestamp = 0;        // 上一次的本地机器时间戳
-    run_data->clock_page = 0;                 // 时钟桌面的播放记录
+    run_data->m_preLocalTimestamp = 0; // 上一次的本地机器时间戳
+    run_data->clock_page = 0;          // 时钟桌面的播放记录
     // 变相强制更新
     run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
     run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
@@ -162,21 +162,21 @@ void weather_process(AppController *sys,
 
     if (TURN_RIGHT == act_info->active)
     {
-        // 切换界面时，变相强制更新
-        run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-        run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
         run_data->clock_page = (run_data->clock_page + 1) % WEATHER_PAGE_SIZE;
     }
     else if (TURN_LEFT == act_info->active)
     {
-        // 切换界面时，变相强制更新
-        run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-        run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
         anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
         // 以下等效与 clock_page = (clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
         run_data->clock_page = (run_data->clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
+    }
+    else if (GO_FORWORD == act_info->active)
+    {
+        // 切换界面时，变相强制更新
+        run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
+        run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
     }
 
     if (0 == run_data->clock_page) // 更新天气
@@ -193,7 +193,7 @@ void weather_process(AppController *sys,
     if (1 == run_data->clock_page) // 更新时钟
     {
         // 使用本地的机器时钟
-        long long timestamp = getTimestamp() + TIMEZERO_OFFSIZE; //nowapi时间API
+        long long timestamp = getTimestamp() + TIMEZERO_OFFSIZE; // nowapi时间API
         UpdateTime_RTC(timestamp, anim_type);
         // 以下减少网络请求的压力
         if (doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
@@ -221,7 +221,9 @@ void weather_exit_callback(void)
 
 void weather_event_notification(APP_EVENT event, int event_id)
 {
-    if (event == APP_EVENT_WIFI_CONN)
+    switch (event)
+    {
+    case APP_EVENT_WIFI_CONN:
     {
         Serial.print(millis());
         Serial.print(F("----->weather_event_notification\n"));
@@ -235,9 +237,16 @@ void weather_event_notification(APP_EVENT event, int event_id)
         }
         else if (1 == run_data->clock_page && run_data->clock_page == event_id)
         {
-            long long timestamp = getTimestamp(time_api) + TIMEZERO_OFFSIZE; //nowapi时间API
+            long long timestamp = getTimestamp(time_api) + TIMEZERO_OFFSIZE; // nowapi时间API
             UpdateTime_RTC(timestamp, LV_SCR_LOAD_ANIM_NONE);
         }
+    }
+    break;
+    case APP_EVENT_WIFI_AP:
+    {
+    }
+    default:
+        break;
     }
 }
 

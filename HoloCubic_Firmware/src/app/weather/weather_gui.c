@@ -1,5 +1,12 @@
+#define LV_ATTRIBUTE_IMG_WEATHER_VERSION 1
+
 #include "weather_gui.h"
-#include "weather_image.h"
+
+#if LV_ATTRIBUTE_IMG_WEATHER_VERSION == 1
+#include "weather_image_1.h"
+#else
+#include "weather_image_2.h"
+#endif
 
 #include "driver/lv_port_indev.h"
 #include "lvgl.h"
@@ -28,27 +35,49 @@ static lv_style_t label_style2;
 static lv_style_t label_style3;
 static lv_style_t label_style4;
 
-// LV_FONT_DECLARE(font_unicode_kai_40);
 // LV_FONT_DECLARE(font_unicode);
 LV_FONT_DECLARE(lv_font_montserrat_20);
 LV_FONT_DECLARE(lv_font_montserrat_24);
 LV_FONT_DECLARE(lv_font_montserrat_40);
 
 // 天气图标路径的映射关系
-const void *image_map[] = {&Sunny, &Clear, "S:/weather/2.bin", "S:/weather/3.bin",
-                           &Cloudy, &PartlyCloudy, &Overcast, &ModerateSnow,
-                           &Thundershower, "S:/weather/12.bin", &LightRain,
-                           &ModerateRain, &HeavyRain, "S:/weather/19.bin",
-                           &Sleet, &SnowFlurry, &LightSnow, &HeavySnow,
-                           "S:/weather/26.bin", "S:/weather/27.bin", "S:/weather/28.bin",
-                           "S:/weather/29.bin", "S:/weather/30.bin", "S:/weather/31.bin",
-                           "S:/weather/32.bin", "S:/weather/33.bin", "S:/weather/34.bin",
-                           "S:/weather/35.bin", "S:/weather/36.bin", "S:/weather/37.bin",
-                           "S:/weather/38.bin", "S:/weather/99.bin"};
-int map_index[] = {0, 1, 2, 3, 4, 5, 5, 5, 5, 6,
-                   7, 8, 9, 10, 11, 12, 12, 12, 12, 13,
-                   14, 15, 16, 7, 17, 17, 18, 19, 20, 21,
-                   22, 23, 24, 25, 26, 27, 28, 29, 30};
+
+#if LV_ATTRIBUTE_IMG_WEATHER_VERSION == 1
+const void *image_map[] = {&Sunny, &Clear, "S:/weather/Fair_2.bin", "S:/weather/Fair_3.bin",
+                           &Cloudy, &PartlyCloudy, &PartlyCloudy,
+                           "S:/weather/MostlyCloudy_7.bin", "S:/weather/MostlyCloudy_8.bin",
+                           &Overcast, "S:/weather/Shower_10.bin", &Thundershower,
+                           "S:/weather/ThundershowerWithHail_12.bin", &LightRain,
+                           &ModerateRain, &HeavyRain, "S:/weather/Storm_16.bin",
+                           "S:/weather/HeavyStorm_17.bin", "S:/weather/SevereStorm_18.bin",
+                           "S:/weather/IceRain_19.bin", &Sleet, &SnowFlurry, &LightSnow,
+                           &ModerateSnow, &HeavySnow, "S:/weather/Snowstorm_25.bin",
+                           "S:/weather/Dust_26.bin", "S:/weather/Sand_27.bin", "S:/weather/Duststorm_28.bin",
+                           "S:/weather/Sandstorm_29.bin", "S:/weather/Foggy_30.bin", "S:/weather/Haze_31.bin",
+                           "S:/weather/Windy_32.bin", "S:/weather/Blustery_33.bin", "S:/weather/Hurricane_34.bin",
+                           "S:/weather/TropicalStorm_35.bin", "S:/weather/Tornado_36.bin", "S:/weather/Cold_37.bin",
+                           "S:/weather/Hot_38.bin", "S:/weather/Unknown_99.bin"};
+#else
+const void *image_map[] = {&Sunny_100, &Clear_150, "S:/weather/Fair_2.bin", "S:/weather/Fair_3.bin",
+                           &Cloudy_101, &PartlyCloudy_103, &PartlyCloudy_153,
+                           "S:/weather/MostlyCloudy_7.bin", "S:/weather/MostlyCloudy_8.bin",
+                           &Overcast_104, "S:/weather/Shower_10.bin", &Thundershower_302,
+                           "S:/weather/ThundershowerWithHail_304.bin", &LightRain_305,
+                           &ModerateRain_306, &HeavyRain_307, "S:/weather/Storm_310.bin",
+                           "S:/weather/HeavyStorm_311.bin", "S:/weather/SevereStorm_312.bin",
+                           "S:/weather/IceRain_19.bin", &Sleet_404, &SnowFlurry_407, &LightSnow_400,
+                           &ModerateSnow_401, &HeavySnow_402, "S:/weather/Snowstorm_403.bin",
+                           "S:/weather/Dust_504.bin", "S:/weather/Sand_503.bin", "S:/weather/Duststorm_507.bin",
+                           "S:/weather/Sandstorm_508.bin", "S:/weather/Foggy_501.bin", "S:/weather/Haze_502.bin",
+                           "S:/weather/Windy_32.bin", "S:/weather/Blustery_33.bin", "S:/weather/Hurricane_34.bin",
+                           "S:/weather/TropicalStorm_35.bin", "S:/weather/Tornado_36.bin", "S:/weather/Cold_901.bin",
+                           "S:/weather/Hot_900.bin", "S:/weather/Unknown_999.bin"};
+#endif
+const int map_index[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                         10, 11, 12, 13, 14, 15, 16, 17,
+                         18, 19, 20, 21, 22, 23, 24, 25,
+                         26, 27, 28, 29, 30, 31, 32, 33,
+                         34, 35, 36, 37, 38, 99};
 
 void weather_obj_del(void);
 
@@ -106,14 +135,14 @@ void display_weather_init()
 void display_weather(const char *cityname, const char *temperature, int weathercode, lv_scr_load_anim_t anim_type)
 {
     display_weather_init();
-    const void *path = image_map[map_index[weathercode]];
+    const void *path = NULL;
     if (weathercode < 39)
     {
         path = image_map[map_index[weathercode]];
     }
     else
     {
-        path = image_map[31];
+        path = image_map[39];
     }
     lv_img_set_src(weather_image, path);
     lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);

@@ -15,9 +15,16 @@ void IMU::init()
     unsigned long timeout = 5000;
     unsigned long preMillis = millis();
     mpu = MPU6050(0x68);
-    Serial.print(F("Initialization MPU6050 now, Please don't move.\n"));
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, 0))
         ;
+    
+    if(!mpu.testConnection())
+    {
+        Serial.print(F("Unable to connect to MPU6050.\n"));
+        return ;
+    }
+
+    Serial.print(F("Initialization MPU6050 now, Please don't move.\n"));
     mpu.initialize();
 
     if (g_cfg.auto_calibration_mpu == 0)

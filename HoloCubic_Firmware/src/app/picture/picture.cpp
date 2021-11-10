@@ -11,9 +11,9 @@ struct PictureAppRunDate
     unsigned long pic_perMillis;      // 图片上一回更新的时间
     unsigned long picRefreshInterval; // 图片播放的时间间隔(10s)
 
-    File_Info *image_file; // movie文件夹下的文件指针头
-    File_Info *pfile;      // 指向当前播放的文件节点
-    bool images_is_empty;  // 标志文件是否为空
+    File_Info *image_file;      // movie文件夹下的文件指针头
+    File_Info *pfile;           // 指向当前播放的文件节点
+    int image_pos_increate = 1; // 文件的遍历方向
     bool tftSwapStatus;
 };
 
@@ -38,6 +38,26 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
     return 1;
 }
 
+static File_Info *get_next_file(File_Info *p_cur_file, int direction)
+{
+    // 得到 p_cur_file 的下一个 类型为FILE_TYPE_FILE 的文件（即下一个非文件夹文件）
+    if (NULL == p_cur_file)
+    {
+        return NULL;
+    }
+
+    File_Info *pfile = direction == 1 ? p_cur_file->next_node : p_cur_file->front_node;
+    while (pfile != p_cur_file)
+    {
+        if (FILE_TYPE_FILE == pfile->file_type)
+        {
+            break;
+        }
+        pfile = direction == 1 ? pfile->next_node : pfile->front_node;
+    }
+    return pfile;
+}
+
 void picture_init(void)
 {
     photo_gui_init();
@@ -47,7 +67,7 @@ void picture_init(void)
     run_data->picRefreshInterval = 10000;
     run_data->image_file = NULL;
     run_data->pfile = NULL;
-    run_data->images_is_empty = true;
+    run_data->image_pos_increate = 1;
     // 保存系统的tft设置参数 用于退出时恢复设置
     run_data->tftSwapStatus = tft->getSwapBytes();
     tft->setSwapBytes(true); // We need to swap the colour bytes (endianess)
@@ -55,12 +75,7 @@ void picture_init(void)
     run_data->image_file = tf.listDir(IMAGE_PATH);
     if (NULL != run_data->image_file)
     {
-        run_data->pfile = run_data->image_file->next_node;
-        if (NULL != run_data->pfile)
-        {
-            Serial.println(run_data->pfile->file_name);
-            run_data->images_is_empty = false;
-        }
+        run_data->pfile = get_next_file(run_data->image_file->next_node, 1);
     }
 
     // The jpeg image can be scaled by a factor of 1, 2, 4, or 8
@@ -73,7 +88,6 @@ void picture_process(AppController *sys,
                      const Imu_Action *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
-    static int image_pos_increate = 1;
 
     if (RETURN == act_info->active)
     {
@@ -84,21 +98,27 @@ void picture_process(AppController *sys,
     if (TURN_RIGHT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_RIGHT;
-        image_pos_increate = 1;
+        run_data->image_pos_increate = 1;
         run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_LEFT;
-        image_pos_increate = -1;
+        run_data->image_pos_increate = -1;
         run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
+    }
+
+    if (NULL == run_data->image_file)
+    {
+        sys->app_exit();
+        return;
     }
 
     if (doDelayMillisTime(run_data->picRefreshInterval, &run_data->pic_perMillis, false) == true)
     {
-        if (false == run_data->images_is_empty)
+        if (NULL != run_data->image_file)
         {
-            run_data->pfile = image_pos_increate == 1 ? run_data->pfile->next_node : run_data->pfile->front_node;
+            run_data->pfile = get_next_file(run_data->image_file->next_node, run_data->image_pos_increate);
         }
         char file_name[PIC_FILENAME_MAX_LEN] = {0};
         snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s", run_data->image_file->file_name, run_data->pfile->file_name);

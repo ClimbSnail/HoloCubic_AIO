@@ -1,5 +1,5 @@
-#ifndef APP_SERVER_GUI_H
-#define APP_SERVER_GUI_H
+#ifndef APP_FILE_MANAGER_GUI_H
+#define APP_FILE_MANAGER_GUI_H
 
 // #include "lv_port_indev.h"
 
@@ -30,7 +30,7 @@ extern "C"
 #endif
 
 #include "lvgl.h"
-    extern const lv_img_dsc_t app_file_maneger;
+    extern const lv_img_dsc_t app_file_manager;
 
 #ifdef __cplusplus
 } /* extern "C" */
