@@ -4,9 +4,9 @@
 #include "lv_demo_encoder.h"
 #include "common.h"
 
+#define LV_HOR_RES_MAX_LEN 10 // 24
 static lv_disp_buf_t disp_buf;
-// static lv_color_t buf[LV_HOR_RES_MAX * 10];
-static lv_color_t buf[LV_HOR_RES_MAX * 24];
+static lv_color_t buf[LV_HOR_RES_MAX * LV_HOR_RES_MAX_LEN];
 
 void my_print(lv_log_level_t level, const char *file, uint32_t line, const char *fun, const char *dsc)
 {
@@ -52,7 +52,7 @@ void Display::init()
 
     setBackLight(g_cfg.backLight / 100.0);  // 设置亮度
 
-    lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 24);
+    lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * LV_HOR_RES_MAX_LEN);
 
     /*Initialize the display*/
     lv_disp_drv_t disp_drv;

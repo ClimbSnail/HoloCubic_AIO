@@ -39,6 +39,6 @@ void bilibili_event_notification(APP_EVENT event, int event_id)
 {
 }
 
-APP_OBJ bilibili_app = {"Bili", &app_bilibili, bilibili_init,
+APP_OBJ bilibili_app = {"Bili", &app_bilibili, "", bilibili_init,
                         bilibili_process, bilibili_exit_callback,
                         bilibili_event_notification};

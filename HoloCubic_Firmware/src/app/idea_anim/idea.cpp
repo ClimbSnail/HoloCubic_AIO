@@ -113,6 +113,6 @@ void idea_event_notification(APP_EVENT event, int event_id)
 {
 }
 
-APP_OBJ idea_app = {"Idea", &app_idea, idea_init,
+APP_OBJ idea_app = {"Idea", &app_idea, "", idea_init,
                     idea_process, idea_exit_callback,
                     idea_event_notification};

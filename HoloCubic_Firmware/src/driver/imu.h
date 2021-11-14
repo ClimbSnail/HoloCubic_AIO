@@ -16,6 +16,8 @@ enum ACTIVE_TYPE
     TURN_RIGHT = 0,
     RETURN,
     TURN_LEFT,
+    UP,
+    DOWN,
     GO_FORWORD,
     UNKNOWN
 };

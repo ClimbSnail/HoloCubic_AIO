@@ -18,6 +18,7 @@ struct APP_OBJ
 {
     const char *app_name;  // 应用程序名称 及title
     const void *app_image; // APP的图片存放地址    APP应用图标 128*128
+    const char *app_info;  // 应用程序的其他信息 如作者、版本号等等
     void (*app_init)();    // APP的初始化函数 也可以为空或什么都不做（作用等效于arduino setup()函数）
     void (*main_process)(AppController *sys,
                          const Imu_Action *act_info); // APP的主程序函数入口指针

@@ -174,7 +174,7 @@ void weather_process(AppController *sys,
     }
     else if (GO_FORWORD == act_info->active)
     {
-        // 切换界面时，变相强制更新
+        // 后仰时，变相强制更新
         run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
         run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
     }
@@ -250,6 +250,6 @@ void weather_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ weather_app = {"Weather", &app_weather, weather_init,
+APP_OBJ weather_app = {"Weather", &app_weather, "", weather_init,
                        weather_process, weather_exit_callback,
                        weather_event_notification};

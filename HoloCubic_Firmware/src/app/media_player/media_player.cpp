@@ -206,6 +206,6 @@ void media_player_event_notification(APP_EVENT event, int event_id)
 {
 }
 
-APP_OBJ media_app = {"Media", &app_movie, media_player_init,
+APP_OBJ media_app = {"Media", &app_movie, "", media_player_init,
                      media_player_process, media_player_exit_callback,
                      media_player_event_notification};

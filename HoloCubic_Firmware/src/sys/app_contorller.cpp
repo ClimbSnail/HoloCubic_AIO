@@ -64,6 +64,7 @@ int AppController::app_register(const APP_OBJ *app) // 将APP注册到app_contro
 
     appList[app_num].app_name = app->app_name;
     appList[app_num].app_image = app->app_image;
+    appList[app_num].app_info = app->app_info;
     appList[app_num].app_init = app->app_init;
     appList[app_num].main_process = app->main_process;
     appList[app_num].exit_callback = app->exit_callback;

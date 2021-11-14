@@ -207,9 +207,6 @@ void screen_share_process(AppController *sys,
                     {
                         receive_time = millis() - start_time;
                         deal_time = millis();
-                        // recvBuf[frame_size - 3] = 0;
-                        // recvBuf[frame_size - 2] = 0;
-                        // recvBuf[frame_size - 1] = 0; // 清除标志位
                         // tft->startWrite();                              // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
                         TJpgDec.drawJpg(0, 0, recvBuf, frame_size - 3); // 在左上角的0,0处绘制图像——在这个草图中，DMA请求在回调tft_output()中处理
                         // tft->endWrite();                                // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
@@ -319,6 +316,6 @@ void screen_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ screen_share_app = {"Screen share", &app_screen, screen_share_init,
+APP_OBJ screen_share_app = {"Screen share", &app_screen, "", screen_share_init,
                             screen_share_process, screen_exit_callback,
                             screen_event_notification};

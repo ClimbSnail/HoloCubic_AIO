@@ -209,6 +209,6 @@ void file_maneger_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ file_manager_app = {"File Manager", &app_file_manager, file_maneger_init,
+APP_OBJ file_manager_app = {"File Manager", &app_file_manager, "", file_maneger_init,
                             file_maneger_process, file_maneger_exit_callback,
                             file_maneger_event_notification};

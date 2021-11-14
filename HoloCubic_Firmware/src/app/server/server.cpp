@@ -139,6 +139,6 @@ void server_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ server_app = {"WebServer", &app_server, server_init,
+APP_OBJ server_app = {"WebServer", &app_server, "", server_init,
                       server_process, server_exit_callback,
                       server_event_notification};

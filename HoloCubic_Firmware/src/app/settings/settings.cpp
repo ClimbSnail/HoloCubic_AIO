@@ -74,6 +74,6 @@ void settings_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ settings_app = {"Settings", &app_settings, settings_init,
+APP_OBJ settings_app = {"Settings", &app_settings, "", settings_init,
                         settings_process, settings_exit_callback,
                         settings_event_notification};

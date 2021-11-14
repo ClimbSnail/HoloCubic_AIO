@@ -118,7 +118,7 @@ void picture_process(AppController *sys,
     {
         if (NULL != run_data->image_file)
         {
-            run_data->pfile = get_next_file(run_data->image_file->next_node, run_data->image_pos_increate);
+            run_data->pfile = get_next_file(run_data->pfile, run_data->image_pos_increate);
         }
         char file_name[PIC_FILENAME_MAX_LEN] = {0};
         snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s", run_data->image_file->file_name, run_data->pfile->file_name);
@@ -156,6 +156,6 @@ void picture_event_notification(APP_EVENT event, int event_id)
 {
 }
 
-APP_OBJ picture_app = {"Picture", &app_picture, picture_init,
+APP_OBJ picture_app = {"Picture", &app_picture, "", picture_init,
                        picture_process, picture_exit_callback,
                        picture_event_notification};

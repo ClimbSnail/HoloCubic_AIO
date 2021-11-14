@@ -71,6 +71,6 @@ void example_event_notification(APP_EVENT event, int event_id)
     }
 }
 
-APP_OBJ example_app = {"Example", &app_example, example_init,
+APP_OBJ example_app = {"Example", &app_example, "Author HQ\nVersion 1.8.0\n", example_init,
                         example_process, example_exit_callback,
                         example_event_notification};
