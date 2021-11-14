@@ -4,6 +4,11 @@
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
+# 开发人员
+* AIO框架开发和部分APP编写：[ClimbSnail](https://github.com/ClimbSnail)
+* 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
+* 开发人员持续加入中。。。。
+
 _**欢迎加入AIO内测QQ讨论群 755143193**_
 
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
@@ -116,12 +121,15 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 ##### BiliBili APP
 目前还在开发中。
 
+##### 2048 APP
+1. `2048`游戏由群友`AndyXFuture`编写，并同意合入AIO固件。原项目链接为`https://github.com/AndyXFuture/HoloCubic-2048-anim`
+2. 运行APP条件：无。基本屏幕能亮就行。
+
 
 ### 关于编译工程代码
-1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。
+1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. TFT_eSpi库开机花屏，需要将`ST7789_Init.h`文件最下面的`writecommand(ST7789_DISPON);    //Display on`注释掉，放到初始化的代码后第一次显示之后。
-4. 然后这里需要修改一个官方库文件才能正常使用：
+3. 然后这里需要修改一个官方库文件才能正常使用：
 
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
 ```
