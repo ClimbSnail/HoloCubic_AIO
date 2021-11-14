@@ -1,4 +1,4 @@
-#define LV_ATTRIBUTE_IMG_WEATHER_VERSION 1
+#define LV_ATTRIBUTE_IMG_WEATHER_VERSION 2
 
 #include "weather_gui.h"
 
@@ -58,14 +58,14 @@ const void *image_map[] = {&Sunny, &Clear, "S:/weather/Fair_2.bin", "S:/weather/
                            "S:/weather/TropicalStorm_35.bin", "S:/weather/Tornado_36.bin", "S:/weather/Cold_37.bin",
                            "S:/weather/Hot_38.bin", "S:/weather/Unknown_99.bin"};
 #else
-const void *image_map[] = {&Sunny_100, &Clear_150, "S:/weather/Fair_2.bin", "S:/weather/Fair_3.bin",
+const void *image_map[] = {&Sunny_100, &Clear_150, "S:/weather/Clear_150.bin", "S:/weather/Clear_150.bin",
                            &Cloudy_101, &PartlyCloudy_103, &PartlyCloudy_153,
-                           "S:/weather/MostlyCloudy_7.bin", "S:/weather/MostlyCloudy_8.bin",
-                           &Overcast_104, "S:/weather/Shower_10.bin", &Thundershower_302,
+                           "S:/weather/PartlyCloudy_153.bin", "S:/weather/PartlyCloudy_153.bin",
+                           &Overcast_104, "S:/weather/ShowerRain_300.bin", &Thundershower_302,
                            "S:/weather/ThundershowerWithHail_304.bin", &LightRain_305,
                            &ModerateRain_306, &HeavyRain_307, "S:/weather/Storm_310.bin",
                            "S:/weather/HeavyStorm_311.bin", "S:/weather/SevereStorm_312.bin",
-                           "S:/weather/IceRain_19.bin", &Sleet_404, &SnowFlurry_407, &LightSnow_400,
+                           "S:/weather/FreezingRain_313.bin", &Sleet_404, &SnowFlurry_407, &LightSnow_400,
                            &ModerateSnow_401, &HeavySnow_402, "S:/weather/Snowstorm_403.bin",
                            "S:/weather/Dust_504.bin", "S:/weather/Sand_503.bin", "S:/weather/Duststorm_507.bin",
                            "S:/weather/Sandstorm_508.bin", "S:/weather/Foggy_501.bin", "S:/weather/Haze_502.bin",
@@ -144,6 +144,8 @@ void display_weather(const char *cityname, const char *temperature, int weatherc
     {
         path = image_map[39];
     }
+    // path = image_map[16];
+
     lv_img_set_src(weather_image, path);
     lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);
 
