@@ -24,6 +24,7 @@
 #include "app/idea_anim/idea.h"
 #include "app/settings/settings.h"
 #include "app/file_manager/file_manager.h"
+#include "app/game_2048/game_2048.h"
 
 /*** Component objects **7*/
 IMU mpu;
@@ -53,7 +54,6 @@ void setup()
     lv_fs_if_init();
 
     app_contorller = new AppController(); // APP控制器
-    app_contorller->app_register(&file_manager_app);
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
     app_contorller->app_register(&media_app);
@@ -62,6 +62,8 @@ void setup()
     app_contorller->app_register(&idea_app);
     app_contorller->app_register(&bilibili_app);
     app_contorller->app_register(&settings_app);
+    app_contorller->app_register(&game_2048_app);
+    app_contorller->app_register(&file_manager_app);
 
     // 优先显示屏幕 加快视觉上的开机时间
     app_contorller->main_process(&mpu.action_info);

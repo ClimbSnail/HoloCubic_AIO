@@ -11,8 +11,8 @@
 #define SEND_BUFFER_SIZE 2000                //
 #define HTTP_PORT 8081                       //设置监听端口
 
-// WiFiServer file_manager_server; //服务端
-// WiFiClient file_manager_client; // 客户端
+WiFiServer file_manager_server; //服务端
+WiFiClient file_manager_client; // 客户端
 FtpServer ftpSrv;               // 定义FTP服务端
 
 struct FileManagerAppRunDate
@@ -68,7 +68,7 @@ void file_maneger_process(AppController *sys,
         // return ;
         // 发送wifi维持的心跳
         sys->req_event(&file_manager_app, APP_EVENT_WIFI_ALIVE, 0);
-#if 0
+#if 1
         if (NULL != file_manager_client)
         {
             // 如果客户端处于连接状态 client.connected()
@@ -161,7 +161,7 @@ void file_maneger_exit_callback(void)
         run_data->sendBuf = NULL;
     }
 
-    // file_manager_server.close();
+    file_manager_server.close();
 
     // 释放运行时参数
     free(run_data);
@@ -182,9 +182,9 @@ void file_maneger_event_notification(APP_EVENT event, int event_id)
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
-        // file_manager_server.begin(HTTP_PORT); //服务器启动监听端口号
-        // file_manager_server.setNoDelay(true);
-        ftpSrv.begin("esp32", "esp32");
+        file_manager_server.begin(HTTP_PORT); //服务器启动监听端口号
+        file_manager_server.setNoDelay(true);
+        // ftpSrv.begin("esp32", "esp32");
     }
     break;
     case APP_EVENT_WIFI_AP:
