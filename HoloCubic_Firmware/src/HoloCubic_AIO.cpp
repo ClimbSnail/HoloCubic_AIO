@@ -35,9 +35,10 @@ void setup()
 {
     Serial.begin(115200);
 
-    Serial.println(F("\nAIO (All in one) version "AIO_VERSION"\n"));
-    
+    Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
+
     config_read(NULL, &g_cfg);
+    g_time_utile.init();
 
     /*** Init screen ***/
     screen.init();

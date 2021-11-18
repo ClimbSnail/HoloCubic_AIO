@@ -26,8 +26,9 @@ void config_read(const char *file_path, Config *cfg)
 
     // if (0 == cfg->auto_calibration_mpu)
     // {
-        // 读取mup的校准数据
-        mpu_config_read(file_path, cfg);
+    // 读取mup的校准数据
+    mpu_config_read(file_path, cfg);
+    time_read(file_path, cfg);
     // }
 }
 
@@ -79,5 +80,20 @@ void mpu_config_save(const char *file_path, Config *cfg)
     prefs.putInt("y_accel_offset", cfg->mpu_config.y_accel_offset);
     prefs.putInt("z_accel_offset", cfg->mpu_config.z_accel_offset);
 
+    prefs.end(); // 关闭当前命名空间
+}
+
+void time_read(const char *file_path, Config *cfg)
+{
+    prefs.begin("Time"); // 打开命名空间mynamespace
+    //初始化本地时间，2021-11-18 14:00:00 UTC +8:00
+    cfg->last_time = prefs.getLong64("last_time", 1637215200l);
+    prefs.end(); // 关闭当前命名空间
+}
+
+void time_save(const char *file_path, Config *cfg)
+{
+    prefs.begin("Time"); // 打开命名空间mynamespace
+    prefs.putLong64("last_time", cfg->last_time);
     prefs.end(); // 关闭当前命名空间
 }

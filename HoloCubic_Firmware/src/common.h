@@ -10,16 +10,18 @@
 #include "driver/display.h"
 #include "driver/ambient.h"
 #include "driver/imu.h"
+#include "driver/timeUtile.h"
 #include "network.h"
 #include <Preferences.h>
 
 extern SdCard tf;
 extern Pixel rgb;
-extern Config g_cfg;      // 全局配置文件
-extern Network g_network; // 网络连接
-extern Preferences prefs; // 声明Preferences对象
-extern Display screen;    // 屏幕对象
-extern Ambient ambLight;  // 光纤传感器对象
+extern Config g_cfg;           // 全局配置文件
+extern Network g_network;      // 网络连接
+extern Preferences prefs;      // 声明Preferences对象
+extern Display screen;         // 屏幕对象
+extern Ambient ambLight;       // 光纤传感器对象
+extern TimeUtile g_time_utile; //时间管理对象
 
 boolean doDelayMillisTime(unsigned long interval,
                           unsigned long *previousMillis,

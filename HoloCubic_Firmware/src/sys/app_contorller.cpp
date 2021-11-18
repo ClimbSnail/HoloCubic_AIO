@@ -86,6 +86,17 @@ int AppController::main_process(Imu_Action *act_info)
         Serial.print(F("act_info->active: "));
         Serial.println(act_info->active);
     }
+
+    if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC == g_network.end_conn_wifi())
+    {
+        //如果STA模式连上网了，且全局时间没有联网更新过，那么强制更新一次
+        if (g_time_utile.is_net == false)
+        {
+            g_time_utile.force_update();
+        }
+    }
+
+    g_time_utile.update_time(); //每一个循环都更新时间
     // 扫描事件
     req_event_deal();
 

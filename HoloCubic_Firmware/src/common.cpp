@@ -4,11 +4,12 @@
 
 SdCard tf;
 Pixel rgb;
-Config g_cfg;      // 全局配置文件
-Network g_network; // 网络连接
-Preferences prefs; // 声明Preferences对象
-Display screen;    // 屏幕对象
-Ambient ambLight;  // 光纤传感器对象
+Config g_cfg;           // 全局配置文件
+Network g_network;      // 网络连接
+Preferences prefs;      // 声明Preferences对象
+Display screen;         // 屏幕对象
+Ambient ambLight;       // 光纤传感器对象
+TimeUtile g_time_utile; //时间管理对象
 
 boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis, boolean state)
 {

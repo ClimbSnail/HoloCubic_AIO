@@ -10,22 +10,15 @@
 struct WeatherAppRunDate
 {
     unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
-    unsigned long preTimeMillis;         // 更新时间计数器
     unsigned long weatherUpdataInterval; // 天气更新的时间间隔
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(900s)
-    long long m_preNetTimestamp;         // 上一次的网络时间戳
-    long long m_errorNetTimestamp;       // 网络到显示过程中的时间误差
-    long long m_preLocalTimestamp;       // 上一次的本地机器时间戳
-    int clock_page;                      // 时钟桌面的播放记录
+    int clock_page;
 
-    ESP32Time g_rtc; // 用于时间解码
     Weather weather; // 保存天气状况
 };
 
 static WeatherAppRunDate *run_data = NULL;
 
 String unit = "c";
-String time_api = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
 
 Weather getWeather(void)
 {
@@ -69,54 +62,6 @@ Weather getWeather(String url)
     return run_data->weather;
 }
 
-long long getTimestamp()
-{
-    // 使用本地的机器时钟
-    run_data->m_preNetTimestamp = run_data->m_preNetTimestamp + (millis() - run_data->m_preLocalTimestamp);
-    run_data->m_preLocalTimestamp = millis();
-
-    return run_data->m_preNetTimestamp;
-}
-
-long long getTimestamp(String url)
-{
-    if (WL_CONNECTED != WiFi.status())
-        return 0;
-
-    String time = "";
-    HTTPClient http;
-    http.setTimeout(1000);
-    http.begin(url);
-
-    // start connection and send HTTP headerFFF
-    int httpCode = http.GET();
-
-    // httpCode will be negative on error
-    if (httpCode > 0)
-    {
-        if (httpCode == HTTP_CODE_OK)
-        {
-            String payload = http.getString();
-            Serial.println(payload);
-            int time_index = (payload.indexOf("data")) + 12;
-            time = payload.substring(time_index, payload.length() - 3);
-            // 以网络时间戳为准
-            run_data->m_preNetTimestamp = atoll(time.c_str()) + run_data->m_errorNetTimestamp;
-            run_data->m_preLocalTimestamp = millis();
-        }
-    }
-    else
-    {
-        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-        // 得不到网络时间戳时
-        run_data->m_preNetTimestamp = run_data->m_preNetTimestamp + (millis() - run_data->m_preLocalTimestamp);
-        run_data->m_preLocalTimestamp = millis();
-    }
-    http.end();
-
-    return run_data->m_preNetTimestamp;
-}
-
 void UpdateWeather(Weather *weather, lv_scr_load_anim_t anim_type)
 {
     char temperature[10] = {0};
@@ -124,11 +69,11 @@ void UpdateWeather(Weather *weather, lv_scr_load_anim_t anim_type)
     display_weather(g_cfg.cityname.c_str(), temperature, weather->weather_code, anim_type);
 }
 
-void UpdateTime_RTC(long long timestamp, lv_scr_load_anim_t anim_type)
+void UpdateTime_RTC(ESP32Time g_rtc, lv_scr_load_anim_t anim_type)
 {
-    run_data->g_rtc.setTime(timestamp / 1000);
-    String date = run_data->g_rtc.getDate(String("%Y-%m-%d"));
-    String time = run_data->g_rtc.getTime(String("%H:%M:%S"));
+    String date = g_rtc.getDate(String("%Y-%m-%d"));
+    String time = g_rtc.getTime(String("%H:%M:%S"));
+
     display_time(date.c_str(), time.c_str(), anim_type);
 }
 
@@ -138,14 +83,11 @@ void weather_init(void)
     // 初始化运行时参数
     run_data = (WeatherAppRunDate *)malloc(sizeof(WeatherAppRunDate));
     run_data->weatherUpdataInterval = 900000; // 天气更新的时间间隔
-    run_data->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔(900s)
-    run_data->m_preNetTimestamp = 0;          // 上一次的网络时间戳
-    run_data->m_errorNetTimestamp = 2;
-    run_data->m_preLocalTimestamp = 0; // 上一次的本地机器时间戳
-    run_data->clock_page = 0;          // 时钟桌面的播放记录
+    run_data->clock_page = 0;                 // 时钟桌面的播放记录
+
     // 变相强制更新
     run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-    run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
+    g_time_utile.force_update();
 
     run_data->weather = {0, 0};
 }
@@ -176,7 +118,7 @@ void weather_process(AppController *sys,
     {
         // 后仰时，变相强制更新
         run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-        run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
+        g_time_utile.force_update();
     }
 
     if (0 == run_data->clock_page) // 更新天气
@@ -192,17 +134,8 @@ void weather_process(AppController *sys,
 
     if (1 == run_data->clock_page) // 更新时钟
     {
-        // 使用本地的机器时钟
-        long long timestamp = getTimestamp() + TIMEZERO_OFFSIZE; // nowapi时间API
-        UpdateTime_RTC(timestamp, anim_type);
-        // 以下减少网络请求的压力
-        if (doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
-        {
-            // 尝试同步网络上的时钟
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, run_data->clock_page);
-        }
+        UpdateTime_RTC(g_time_utile.g_rtc, anim_type);
     }
-
     if (2 == run_data->clock_page) // NULL后期可以是具体数据
     {
         display_hardware(NULL, anim_type);
@@ -234,11 +167,6 @@ void weather_event_notification(APP_EVENT event, int event_id)
                                          g_cfg.weather_key + "&location=" + g_cfg.cityname + "&language=" +
                                          g_cfg.language + "&unit=" + unit);
             UpdateWeather(&weather, LV_SCR_LOAD_ANIM_NONE);
-        }
-        else if (1 == run_data->clock_page && run_data->clock_page == event_id)
-        {
-            long long timestamp = getTimestamp(time_api) + TIMEZERO_OFFSIZE; // nowapi时间API
-            UpdateTime_RTC(timestamp, LV_SCR_LOAD_ANIM_NONE);
         }
     }
     break;
