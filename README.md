@@ -4,7 +4,7 @@
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
-# 开发人员
+### 开发人员
 * AIO框架开发和部分APP编写：[ClimbSnail](https://github.com/ClimbSnail)
 * 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
 * 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)

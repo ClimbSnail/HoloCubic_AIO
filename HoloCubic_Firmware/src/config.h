@@ -20,6 +20,8 @@ struct Config
     String cityname;              // 显示的城市
     String language;              // 天气查询的地址编码
     String weather_key;           // 知心天气api_key（秘钥）
+    String tianqi_appid;          // tianqiapid 的 appid
+    String tianqi_appsecret;      // tianqiapid 的 appsecret
     uint8_t backLight;            // 屏幕亮度（1-100）
     uint8_t rotation;             // 屏幕旋转方向
     uint8_t auto_calibration_mpu; // 是否自动校准陀螺仪 0关闭自动校准 1打开自动校准
