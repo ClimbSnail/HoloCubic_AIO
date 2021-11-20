@@ -137,9 +137,9 @@ void weather_init(void)
     weather_gui_init();
     // 初始化运行时参数
     run_data = (WeatherAppRunDate *)malloc(sizeof(WeatherAppRunDate));
-    run_data->weatherUpdataInterval = 900000; // 天气更新的时间间隔
-    run_data->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔(900s)
-    run_data->m_preNetTimestamp = 0;          // 上一次的网络时间戳
+    run_data->weatherUpdataInterval = 900000;    // 天气更新的时间间隔
+    run_data->timeUpdataInterval = 900000;       // 日期时钟更新的时间间隔(900s)
+    run_data->m_preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化围殴2020-01-01 00:00:00
     run_data->m_errorNetTimestamp = 2;
     run_data->m_preLocalTimestamp = 0; // 上一次的本地机器时间戳
     run_data->clock_page = 0;          // 时钟桌面的播放记录
