@@ -1,13 +1,7 @@
 #ifndef APP_WEATHER_H
 #define APP_WEATHER_H
 
-#include "sys/interface.h"
-
-struct Weather
-{
-    int weather_code;
-    int temperature;
-};
+#include "../sys/interface.h"
 
 extern APP_OBJ weather_app;
 
