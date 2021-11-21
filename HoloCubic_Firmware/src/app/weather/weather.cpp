@@ -21,8 +21,7 @@ struct WeatherAppRunDate
     long long preNetTimestamp;           // 上一次的网络时间戳
     long long errorNetTimestamp;         // 网络到显示过程中的时间误差
     long long preLocalTimestamp;         // 上一次的本地机器时间戳
-    int state_flag;                      //
-    bool isUpdating;                     // 当前是否有更新任务
+    unsigned int coactusUpdateFlag;      // 强制更新标志
     int clock_page;
 
     ESP32Time g_rtc; // 用于时间解码
@@ -83,8 +82,6 @@ static void getWeather(void)
             strcpy(run_data->wea.windDir, sk["win"].as<String>().c_str());
             run_data->wea.windLevel = windLevelAnalyse(sk["win_speed"].as<String>());
             run_data->wea.airQulity = airQulityLevel(sk["air"].as<int>());
-            run_data->state_flag |= 0x01;
-            run_data->preWeatherMillis = millis();
         }
     }
     else
@@ -124,8 +121,6 @@ static long long getTimestamp(String url)
             // 以网络时间戳为准
             run_data->preNetTimestamp = atoll(time.c_str()) + run_data->errorNetTimestamp + TIMEZERO_OFFSIZE;
             run_data->preLocalTimestamp = millis();
-            run_data->preTimeMillis = millis();
-            run_data->isUpdating = false;
         }
     }
     else
@@ -167,7 +162,6 @@ static void getDaliyWeather(short maxT[], short minT[])
                 maxT[gDW_i] = sk["data"][gDW_i]["tem_day"].as<int>();
                 minT[gDW_i] = sk["data"][gDW_i]["tem_night"].as<int>();
             }
-            run_data->state_flag |= 0x10;
         }
     }
     else
@@ -188,59 +182,33 @@ static void UpdateTime_RTC(long long timestamp)
     t.second = run_data->g_rtc.getSecond();
     t.weekday = run_data->g_rtc.getDayofWeek();
     // Serial.printf("time : %d-%d-%d\n",t.hour, t.minute, t.second);
-    display_time(t);
-}
-
-static void switch_wea_scr(AppController *sys, lv_scr_load_anim_t anim_type)
-{
-    if (run_data->clock_page == 0)
-    {
-        display_weather_init(anim_type);
-
-        if (run_data->state_flag & 0x01)
-        {
-            display_weather(run_data->wea);
-        }
-    }
-    else if (run_data->clock_page == 1)
-    {
-        // 仅在切换界面时获取一次未来天气
-        display_curve_init(anim_type);
-        ANIEND;
-        if (run_data->state_flag & 0x10)
-        {
-            display_curve(run_data->wea.daily_max, run_data->wea.daily_min);
-        }
-        else
-        {
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_DAILY);
-        }
-    }
+    display_time(t, LV_SCR_LOAD_ANIM_NONE);
 }
 
 static void weather_init(void)
 {
     tft->setSwapBytes(true);
     weather_gui_init();
-    display_weather_init(LV_SCR_LOAD_ANIM_NONE);
     // 初始化运行时参数
-    run_data = (WeatherAppRunDate *)malloc(sizeof(WeatherAppRunDate));
+    run_data = (WeatherAppRunDate *)calloc(1, sizeof(WeatherAppRunDate));
+    memset((char *)&run_data->wea, 0, sizeof(Weather));
     run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔
     run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔(900s)
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
     run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
-    run_data->state_flag = 0x00;            //
-    run_data->isUpdating = false;
     run_data->clock_page = 0;
-    // 强制更新
     run_data->preWeatherMillis = 0;
     run_data->preTimeMillis = 0;
+    // 强制更新
+    run_data->coactusUpdateFlag = 0x01;
 }
 
 static void weather_process(AppController *sys,
                             const Imu_Action *act_info)
 {
+    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
+
     if (RETURN == act_info->active)
     {
         sys->app_exit();
@@ -248,39 +216,50 @@ static void weather_process(AppController *sys,
     }
     else if (GO_FORWORD == act_info->active)
     {
-        run_data->preWeatherMillis = 0;
-        run_data->preTimeMillis = 0;
+        // 间接强制更新
+        run_data->coactusUpdateFlag = 0x01;
+        delay(500); // 以防间接强制更新后，生产很多请求 使显示卡顿
     }
     else if (TURN_RIGHT == act_info->active)
     {
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
         run_data->clock_page = (run_data->clock_page + 1) % WEATHER_PAGE_SIZE;
-        switch_wea_scr(sys, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
     }
     else if (TURN_LEFT == act_info->active)
     {
+        anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
         // 以下等效与 clock_page = (clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
         // +3为了不让数据溢出成负数，而导致取模逻辑错误
         run_data->clock_page = (run_data->clock_page + WEATHER_PAGE_SIZE - 1) % WEATHER_PAGE_SIZE;
-        switch_wea_scr(sys, LV_SCR_LOAD_ANIM_MOVE_LEFT);
     }
 
+    // 界面刷新
     if (run_data->clock_page == 0)
     {
-        if (((millis() - run_data->preTimeMillis) > run_data->timeUpdataInterval || run_data->preTimeMillis == 0) && !run_data->isUpdating)
+        display_weather(run_data->wea, anim_type);
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+        {
+            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NOW);
+            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_DAILY);
+        }
+
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
         {
             // 尝试同步网络上的时钟
-            run_data->isUpdating = true;
             sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NTP);
         }
-        else if (millis() - run_data->preLocalTimestamp > 1000)
+        else if (millis() - run_data->preLocalTimestamp > 400)
         {
             UpdateTime_RTC(getTimestamp());
         }
-        if (((millis() - run_data->preWeatherMillis) > run_data->weatherUpdataInterval || run_data->preWeatherMillis == 0) && !run_data->isUpdating)
-        {
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NOW);
-        }
+        run_data->coactusUpdateFlag = 0x00; // 取消强制更新标志
         display_space();
+    }
+    else if (run_data->clock_page == 1)
+    {
+        // 仅在切换界面时获取一次未来天气
+        display_curve(run_data->wea.daily_max, run_data->wea.daily_min, anim_type);
+        delay(300);
     }
 
     delay(30);
@@ -298,31 +277,41 @@ static void weather_event_notification(APP_EVENT event, int event_id)
 {
     if (event == APP_EVENT_WIFI_CONN)
     {
-        Serial.print(millis());
-        Serial.print(F("----->weather_event_notification "));
-        if (event_id == UPDATE_NOW)
+        Serial.println(F("----->weather_event_notification"));
+        switch (event_id)
+        {
+        case UPDATE_NOW:
         {
             Serial.print(F("weather update.\n"));
             getWeather();
-            if (run_data->state_flag & 0x01)
+            if (run_data->clock_page == 0)
             {
-                display_weather(run_data->wea);
+                display_weather(run_data->wea, LV_SCR_LOAD_ANIM_NONE);
             }
-        }
-        else if (event_id == UPDATE_NTP)
+        };
+        break;
+        case UPDATE_NTP:
         {
             Serial.print(F("ntp update.\n"));
             long long timestamp = getTimestamp(TIME_API); // nowapi时间API
-            UpdateTime_RTC(timestamp);
-        }
-        else if (event_id == UPDATE_DAILY)
+            if (run_data->clock_page == 0)
+            {
+                UpdateTime_RTC(timestamp);
+            }
+        };
+        break;
+        case UPDATE_DAILY:
         {
             Serial.print(F("daliy update.\n"));
             getDaliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
-            if (run_data->state_flag & 0x10)
+            if (run_data->clock_page == 1)
             {
-                display_curve(run_data->wea.daily_max, run_data->wea.daily_min);
+                display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
             }
+        };
+        break;
+        default:
+            break;
         }
     }
 }

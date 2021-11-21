@@ -126,10 +126,17 @@ void display_weather_old_init()
         return;
     weather_old_obj_del();
     lv_obj_clean(act_obj); // 清空此前页面
+
     weather_image = lv_img_create(wc_scr[0], NULL);
+
     cityname_label = lv_label_create(wc_scr[0], NULL);
+    lv_obj_add_style(cityname_label, LV_LABEL_PART_MAIN, &label_style1);
+
     temperature_label = lv_label_create(wc_scr[0], NULL);
+    lv_obj_add_style(temperature_label, LV_LABEL_PART_MAIN, &label_style2);
+
     temperature_symbol = lv_label_create(wc_scr[0], NULL);
+    lv_obj_add_style(temperature_symbol, LV_LABEL_PART_MAIN, &label_style1);
 }
 
 void display_weather_old(const char *cityname, const char *temperature, int weathercode, lv_scr_load_anim_t anim_type)
@@ -144,22 +151,16 @@ void display_weather_old(const char *cityname, const char *temperature, int weat
     {
         path = image_map[39];
     }
-    // path = image_map[16];
 
     lv_img_set_src(weather_image, path);
-    lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);
-
-    lv_obj_add_style(cityname_label, LV_LABEL_PART_MAIN, &label_style1);
     lv_label_set_text(cityname_label, cityname);
-    lv_obj_align(cityname_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 20, -45);
-
-    lv_obj_add_style(temperature_label, LV_LABEL_PART_MAIN, &label_style2);
     lv_label_set_text_fmt(temperature_label, "%s", temperature);
-    lv_obj_align(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
     // LV_ALIGN_OUT_RIGHT_MID
-
-    lv_obj_add_style(temperature_symbol, LV_LABEL_PART_MAIN, &label_style1);
     lv_label_set_text_fmt(temperature_symbol, "°C");
+
+    lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);
+    lv_obj_align(cityname_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 20, -45);
+    lv_obj_align(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
     lv_obj_align(temperature_symbol, temperature_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
 
     if (LV_SCR_LOAD_ANIM_NONE != anim_type)
@@ -181,7 +182,9 @@ void display_time_old_init()
     lv_obj_clean(act_obj); // 清空此前页面
     time_image = lv_img_create(wc_scr[1], NULL);
     date_label = lv_label_create(wc_scr[1], NULL);
+    lv_obj_add_style(date_label, LV_LABEL_PART_MAIN, &label_style3);
     time_label = lv_label_create(wc_scr[1], NULL);
+    lv_obj_add_style(time_label, LV_LABEL_PART_MAIN, &label_style3);
 }
 
 void display_time_old(const char *date, const char *time, lv_scr_load_anim_t anim_type)
@@ -191,11 +194,9 @@ void display_time_old(const char *date, const char *time, lv_scr_load_anim_t ani
     lv_img_set_src(time_image, &rocket);
     lv_obj_align(time_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 110);
 
-    lv_obj_add_style(date_label, LV_LABEL_PART_MAIN, &label_style3);
     lv_label_set_text(date_label, date);
     lv_obj_align(date_label, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -95);
 
-    lv_obj_add_style(time_label, LV_LABEL_PART_MAIN, &label_style3);
     lv_label_set_text(time_label, time);
     lv_obj_align(time_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 40, -50);
 
@@ -217,35 +218,33 @@ void display_hardware_old_init()
     weather_old_obj_del();
     lv_obj_clean(act_obj); // 清空此前页面
     cpu_temp_label = lv_label_create(wc_scr[2], NULL);
+    lv_obj_add_style(cpu_temp_label, LV_LABEL_PART_MAIN, &label_style4);
     cpu_used_label = lv_label_create(wc_scr[2], NULL);
+    lv_obj_add_style(cpu_used_label, LV_LABEL_PART_MAIN, &label_style4);
     mem_used_label = lv_label_create(wc_scr[2], NULL);
+    lv_obj_add_style(mem_used_label, LV_LABEL_PART_MAIN, &label_style4);
     net_upload_label = lv_label_create(wc_scr[2], NULL);
+    lv_obj_add_style(net_upload_label, LV_LABEL_PART_MAIN, &label_style4);
     net_download_label = lv_label_create(wc_scr[2], NULL);
+    lv_obj_add_style(net_download_label, LV_LABEL_PART_MAIN, &label_style4);
+
+    // 绘制
+    lv_obj_align(cpu_temp_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 30);
+    lv_obj_align(cpu_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 60);
+    lv_obj_align(mem_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 90);
+    lv_obj_align(net_upload_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 120);
+    lv_obj_align(net_download_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 150);
 }
 
 void display_hardware_old(const char *info, lv_scr_load_anim_t anim_type)
 {
     display_hardware_old_init();
 
-    lv_obj_add_style(cpu_temp_label, LV_LABEL_PART_MAIN, &label_style4);
     lv_label_set_text_fmt(cpu_temp_label, "CPU Temp: %d °C", 0);
-    lv_obj_align(cpu_temp_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 30);
-
-    lv_obj_add_style(cpu_used_label, LV_LABEL_PART_MAIN, &label_style4);
     lv_label_set_text_fmt(cpu_used_label, "CPU Used: %d北京\%", 0);
-    lv_obj_align(cpu_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 60);
-
-    lv_obj_add_style(mem_used_label, LV_LABEL_PART_MAIN, &label_style4);
     lv_label_set_text_fmt(mem_used_label, "Mem Used: %dMB", 0);
-    lv_obj_align(mem_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 90);
-
-    lv_obj_add_style(net_upload_label, LV_LABEL_PART_MAIN, &label_style4);
     lv_label_set_text_fmt(net_upload_label, "Net Upload: %dKB/s", 0);
-    lv_obj_align(net_upload_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 120);
-
-    lv_obj_add_style(net_download_label, LV_LABEL_PART_MAIN, &label_style4);
     lv_label_set_text_fmt(net_download_label, "Net Download: %dKB/s", 0);
-    lv_obj_align(net_download_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 150);
 
     lv_scr_load_anim(wc_scr[2], anim_type, 300, 300, false);
 }

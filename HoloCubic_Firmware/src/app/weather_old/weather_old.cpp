@@ -24,6 +24,7 @@ struct WeatherAppRunDate
     long long m_preNetTimestamp;         // 上一次的网络时间戳
     long long m_errorNetTimestamp;       // 网络到显示过程中的时间误差
     long long m_preLocalTimestamp;       // 上一次的本地机器时间戳
+    unsigned int coactusUpdateFlag;      // 强制更新标志
     int clock_page;                      // 时钟桌面的播放记录
 
     ESP32Time g_rtc; // 用于时间解码
@@ -141,7 +142,7 @@ static void weather_init(void)
 {
     weather_old_gui_init();
     // 初始化运行时参数
-    run_data = (WeatherAppRunDate *)malloc(sizeof(WeatherAppRunDate));
+    run_data = (WeatherAppRunDate *)calloc(1, sizeof(WeatherAppRunDate));
     run_data->weatherUpdataInterval = 900000;    // 天气更新的时间间隔
     run_data->timeUpdataInterval = 900000;       // 日期时钟更新的时间间隔(900s)
     run_data->m_preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化围殴2020-01-01 00:00:00
@@ -151,12 +152,13 @@ static void weather_init(void)
     // 变相强制更新
     run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
     run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
+    run_data->coactusUpdateFlag = 0x01;
 
     run_data->weather = {0, 0};
 }
 
 static void weather_process(AppController *sys,
-                     const Imu_Action *act_info)
+                            const Imu_Action *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
@@ -180,8 +182,7 @@ static void weather_process(AppController *sys,
     else if (GO_FORWORD == act_info->active)
     {
         // 后仰时，变相强制更新
-        run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-        run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
+        run_data->coactusUpdateFlag = 0x01;
     }
 
     if (0 == run_data->clock_page) // 更新天气
@@ -189,29 +190,32 @@ static void weather_process(AppController *sys,
         Weather weather = getWeather();
         UpdateWeather(&weather, anim_type);
         // 以下减少网络请求的压力
-        if (doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
         {
             sys->req_event(&weather_old_app, APP_EVENT_WIFI_CONN, run_data->clock_page);
+            run_data->coactusUpdateFlag = 0x00;
         }
     }
 
+    // 界面刷新
     if (1 == run_data->clock_page) // 更新时钟
     {
         // 使用本地的机器时钟
         long long timestamp = getTimestamp() + TIMEZERO_OFFSIZE; // nowapi时间API
         UpdateTime_RTC(timestamp, anim_type);
         // 以下减少网络请求的压力
-        if (doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
         {
             // 尝试同步网络上的时钟
             sys->req_event(&weather_old_app, APP_EVENT_WIFI_CONN, run_data->clock_page);
+            run_data->coactusUpdateFlag = 0x00;
         }
     }
-
-    if (2 == run_data->clock_page) // NULL后期可以是具体数据
+    else if (2 == run_data->clock_page) // NULL后期可以是具体数据
     {
         display_hardware_old(NULL, anim_type);
     }
+
     delay(300);
 }
 
