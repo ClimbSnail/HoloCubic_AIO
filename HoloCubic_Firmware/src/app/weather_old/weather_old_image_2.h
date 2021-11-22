@@ -1,5 +1,5 @@
-#ifndef IMAGES_H
-#define IMAGES_H
+#ifndef WEATHER_OLD_IMAGES_2_H
+#define WEATHER_OLD_IMAGES_2_H
 
 #include "lvgl.h"
 

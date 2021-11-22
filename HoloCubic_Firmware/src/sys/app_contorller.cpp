@@ -10,9 +10,7 @@ AppController::AppController()
     app_exit_flag = 0;
     cur_app_index = 0;
     pre_app_index = 0;
-    appList = new APP_OBJ[APP_MAX_NUM];
-    m_app_req = NULL;
-    m_app_event_type = APP_EVENT_NONE;
+    // appList = new APP_OBJ[APP_MAX_NUM];
     m_wifi_status = false;
     m_preWifiReqMillis = millis();
     // 设置CPU主频
@@ -23,10 +21,11 @@ AppController::AppController()
     Serial.println(freq);
 
     app_control_gui_init();
-    appList[0].app_image = &app_loading;
-    appList[0].app_name = "None";
-    app_contorl_display_scr(appList[cur_app_index].app_image,
-                            appList[cur_app_index].app_name,
+    appList[0] = new APP_OBJ();
+    appList[0]->app_image = &app_loading;
+    appList[0]->app_name = "None";
+    app_contorl_display_scr(appList[cur_app_index]->app_image,
+                            appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
     // Display();
 }
@@ -34,8 +33,8 @@ AppController::AppController()
 void AppController::Display()
 {
     // appList[0].app_image = &app_loading;
-    app_contorl_display_scr(appList[cur_app_index].app_image,
-                            appList[cur_app_index].app_name,
+    app_contorl_display_scr(appList[cur_app_index]->app_image,
+                            appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
 }
 
@@ -54,7 +53,7 @@ int AppController::app_is_legal(const APP_OBJ *app_obj)
     return 0;
 }
 
-int AppController::app_register(const APP_OBJ *app) // 将APP注册到app_controller中
+int AppController::app_register(APP_OBJ *app) // 将APP注册到app_controller中
 {
     int ret_code = app_is_legal(app);
     if (0 != ret_code)
@@ -62,13 +61,7 @@ int AppController::app_register(const APP_OBJ *app) // 将APP注册到app_contro
         return ret_code;
     }
 
-    appList[app_num].app_name = app->app_name;
-    appList[app_num].app_image = app->app_image;
-    appList[app_num].app_info = app->app_info;
-    appList[app_num].app_init = app->app_init;
-    appList[app_num].main_process = app->main_process;
-    appList[app_num].exit_callback = app->exit_callback;
-    appList[app_num].on_event = app->on_event;
+    appList[app_num] = app;
     ++app_num;
     return 0; //注册成功
 }
@@ -104,13 +97,13 @@ int AppController::main_process(Imu_Action *act_info)
     {
         // 当前没有进入任何app
         lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
-        if (TURN_RIGHT == act_info->active)
+        if (TURN_LEFT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
             pre_app_index = cur_app_index;
             cur_app_index = (cur_app_index + 1) % app_num;
         }
-        else if (TURN_LEFT == act_info->active)
+        else if (TURN_RIGHT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
             pre_app_index = cur_app_index;
@@ -121,19 +114,16 @@ int AppController::main_process(Imu_Action *act_info)
         else if (GO_FORWORD == act_info->active)
         {
             app_exit_flag = 1; // 进入app
-            if (NULL != appList[cur_app_index].app_init)
+            if (NULL != appList[cur_app_index]->app_init)
             {
-                (*(appList[cur_app_index].app_init))(); // 执行APP初始化
+                (*(appList[cur_app_index]->app_init))(); // 执行APP初始化
             }
         }
 
         if (GO_FORWORD != act_info->active) // && UNKNOWN != act_info->active
         {
-            // uint32_t freq = getCpuFrequencyMhz(); // In MHz
-            // Serial.print("getXtalFrequencyMhz: ");
-            // Serial.println(freq);
-            app_contorl_display_scr(appList[cur_app_index].app_image,
-                                    appList[cur_app_index].app_name,
+            app_contorl_display_scr(appList[cur_app_index]->app_image,
+                                    appList[cur_app_index]->app_name,
                                     anim_type, false);
             delay(300);
         }
@@ -141,7 +131,7 @@ int AppController::main_process(Imu_Action *act_info)
     else
     {
         // 运行APP进程 等效于把控制权交给当前APP
-        (*(appList[cur_app_index].main_process))(this, act_info);
+        (*(appList[cur_app_index]->main_process))(this, act_info);
     }
     act_info->active = UNKNOWN;
     act_info->isValid = 0;
@@ -152,9 +142,13 @@ int AppController::main_process(Imu_Action *act_info)
 int AppController::req_event(const APP_OBJ *from, APP_EVENT event, int event_id)
 {
     // 更新事件的请求者
-    m_app_req = from;
-    m_app_event_id = event_id;
-    m_app_event_type = event;
+    if(eventList.size() > EVENT_LIST_MAX_LENGTH)
+    {
+        return 1;
+    }
+    EVENT_OBJ new_event = {from, event, event_id};
+    eventList.push_back(new_event);
+
     switch (event)
     {
     case APP_EVENT_WIFI_CONN:
@@ -200,46 +194,55 @@ int AppController::req_event(const APP_OBJ *from, APP_EVENT event, int event_id)
 
 int AppController::req_event_deal(void)
 {
-    // wifi事件
-    if (false == m_wifi_status)
+    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
     {
-        return 0;
-    }
-    if (millis() - m_preWifiReqMillis > WIFI_LIFE_CYCLE)
-    {
-        g_network.close_wifi();
-        m_wifi_status = false; // 标志位
-        return true;
-    }
+        // wifi事件
+        if (false == m_wifi_status)
+        {
+            return 0;
+        }
+        if (millis() - m_preWifiReqMillis > WIFI_LIFE_CYCLE)
+        {
+            g_network.close_wifi();
+            m_wifi_status = false; // 标志位
+            return true;
+        }
 
-    if (NULL == m_app_req || APP_EVENT_WIFI_ALIVE <= m_app_event_type)
-        return 0;
+        if (NULL == (*event).req || APP_EVENT_WIFI_ALIVE <= (*event).type)
+            continue;
 
-    if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC != g_network.end_conn_wifi())
-    {
-        // 在STA模式下 并且还没连接上wifi
-        return 0;
+        if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC != g_network.end_conn_wifi())
+        {
+            // 在STA模式下 并且还没连接上wifi
+            continue;
+        }
+        // 事件回调
+        (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
+        eventList.erase(event); // 删除该响应完成的事件
     }
-    // 事件回调
-    (*(appList[cur_app_index].on_event))(m_app_event_type, m_app_event_id);
-    // 取消回调标志
-    m_app_req = NULL;
-    m_app_event_id = 0;
-    m_app_event_type = APP_EVENT_NONE;
     return 0;
 }
 
 void AppController::app_exit()
 {
     app_exit_flag = 0; // 退出APP
-    m_app_req = NULL;  // 事件对象赋空
-    if (NULL != appList[cur_app_index].exit_callback)
+
+    // 清空该对象的所有请求
+    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    {
+        if (appList[cur_app_index] == (*event).req)
+        {
+            eventList.erase(event); // 删除该响应完成的事件
+        }
+    }
+
+    if (NULL != appList[cur_app_index]->exit_callback)
     {
         // 执行APP退出回调
-        (*(appList[cur_app_index].exit_callback))();
+        (*(appList[cur_app_index]->exit_callback))();
     }
-    app_contorl_display_scr(appList[cur_app_index].app_image,
-                            appList[cur_app_index].app_name,
+    app_contorl_display_scr(appList[cur_app_index]->app_image,
+                            appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
     // 设置CPU主频
     setCpuFrequencyMhz(80);
