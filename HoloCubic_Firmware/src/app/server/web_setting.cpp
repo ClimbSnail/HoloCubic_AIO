@@ -56,7 +56,9 @@ String file_size(int bytes)
                 "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                                                                                                                                            \
                 "<label class=\"input\"><span>City Name</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                                          \
                 "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"                                                                                                                             \
-                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                      \
+                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                         \
+                "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqiAppId\"value=\"%s\"></label>"                                                                                                                                        \
+                "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqiAppSecret\"value=\"%s\"></label>"                                                                                                                                     \
                 "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
                 "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
                 "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
@@ -135,15 +137,15 @@ void Setting()
     {
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.backLight, g_cfg.rotation,
-                "checked=\"checked\"", "");
+                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), 
+                g_cfg.backLight, g_cfg.rotation,  "checked=\"checked\"", "");
     }
     else
     {
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.backLight, g_cfg.rotation,
-                "", "checked=\"checked\"");
+                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), 
+                g_cfg.backLight, g_cfg.rotation, "", "checked=\"checked\"");
     }
     webpage = buf;
     Send_HTML(webpage);
@@ -159,6 +161,8 @@ void save_config(void)
     g_cfg.cityname = server.arg("cityname");
     g_cfg.language = server.arg("language");
     g_cfg.weather_key = server.arg("weatherKey");
+    g_cfg.tianqi_appid = server.arg("tianqiAppId");
+    g_cfg.tianqi_appsecret = server.arg("tianqiAppSecret");
     g_cfg.backLight = server.arg("backLight").toInt();
     g_cfg.rotation = server.arg("rotation").toInt();
     g_cfg.auto_calibration_mpu = server.arg("auto_calibration_mpu").toInt();

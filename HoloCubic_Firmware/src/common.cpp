@@ -36,5 +36,5 @@ Arduino_ST7789 *tft = new Arduino_ST7789(bus, TFT_RST /* RST */, 3 /* rotation *
 /*
 TFT pins should be set in path/to/Arduino/libraries/TFT_eSPI/User_Setups/Setup24_ST7789.h
 */
-TFT_eSPI *tft = new TFT_eSPI(240, 240);
+TFT_eSPI *tft = new TFT_eSPI(240, 280);
 #endif

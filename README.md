@@ -4,9 +4,10 @@
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
 * 或者 https://gitee.com/ClimbSnailQ/HoloCubic_AIO
 
-# 开发人员
+### 开发人员
 * AIO框架开发和部分APP编写：[ClimbSnail](https://github.com/ClimbSnail)
 * 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
+* 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群 755143193**_
@@ -100,10 +101,16 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 3. 本投屏上位机使用的是[大大怪](https://gitee.com/superddg123/esp32-TFT/tree/master)的上位机。
 
 ##### 天气、时钟（Weather）
-1. UI设计模仿了[CWEIB](https://github.com/CWEIB)
-2. 运行APP条件：必须是已经联网状态。不插内存卡大多数情况能正常工作。
+一共有两款天气时钟APP
+###### 新版 weather
+1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
+2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`。
+2. 使用新版天气时钟，需要再"Web Server"服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.tianqiapi.com ）
+###### 旧版 weather old
+1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
+2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
 3. 一般情况下不插内存卡也可以工作，但部分天气图标是存在内存卡中（由于内部flash不够用）的，需要将固件附带的`weather/`文件夹复制到tf卡根目录。
-4. 需要再"Web Server"服务中修改知心天气的地址、key（私钥）。（申请地址 https://seniverse.com ，文件里附带key是范例，无法直接使用。程序默认使用的是v3版本的api）
+4. 使用旧版天气时钟，需要再"Web Server"服务中修改知心天气的`地址`、`key（私钥）`。（申请地址 https://seniverse.com 。程序默认使用的是v3版本的api）
 
 注：即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
