@@ -2,7 +2,6 @@
 #include "bilibili_gui.h"
 #include "sys/app_contorller.h"
 #include "../../common.h"
-#include "fans.h"
 
 unsigned int fans_num = 0;
 unsigned int follow_num = 0;
@@ -14,7 +13,32 @@ struct BilibiliAppRunDate
     unsigned long refresh_time_millis;
 };
 
+struct HttpResult
+{
+    int httpCode = 0;
+    String httpResponse = "";
+};
+
 static BilibiliAppRunDate *run_data = NULL;
+
+HttpResult *http_request(String uid = "344470052")
+{
+    String url = "http://www.dtmb.top/api/fans/index?id=" + uid;
+    HTTPClient *httpClient = new HTTPClient();
+    httpClient->setTimeout(1000);
+    bool status = httpClient->begin(url);
+    if (status == false)
+    {
+        return NULL;
+    }
+    int httpCode = httpClient->GET();
+    String httpResponse = httpClient->getString();
+    httpClient->end();
+    HttpResult *result = new HttpResult;
+    result->httpCode = httpCode;
+    result->httpResponse = httpResponse;
+    return result;
+}
 
 void bilibili_init(void)
 {
@@ -62,14 +86,17 @@ void bilibili_exit_callback(void)
 
 void update_fans_num()
 {
-    Fans fans;
-    fans.init();
-    fans.send();
-    if (fans.httpCode > 0)
+    HttpResult *result = http_request();
+    if (result == NULL)
     {
-        if (fans.httpCode == HTTP_CODE_OK || fans.httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+        Serial.println("[HTTP] Http request failed.");
+        return;
+    }
+    if (result->httpCode > 0)
+    {
+        if (result->httpCode == HTTP_CODE_OK || result->httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-            String payload = fans.httpResponse;
+            String payload = result->httpResponse;
             Serial.println("[HTTP] OK");
             Serial.println(payload);
             int startIndex_1 = payload.indexOf("follower") + 10;
@@ -104,4 +131,3 @@ void bilibili_event_notification(APP_EVENT event, int event_id)
 APP_OBJ bilibili_app = {"Bili", &app_bilibili, "", bilibili_init,
                         bilibili_process, bilibili_exit_callback,
                         bilibili_event_notification};
-
