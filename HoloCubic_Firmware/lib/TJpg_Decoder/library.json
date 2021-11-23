@@ -1,0 +1,24 @@
+{
+  "name": "TJpg_Decoder",
+
+  "version": "0.0.3",
+
+  "keywords": "arduino, jpeg, jpg, decoder, tft, display, STM32, ESP8266, ESP32, M5Stack, ILI9341",
+
+  "description": "A JPEG decoder library based on Tiny JPEG Decompressor",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/Bodmer/TJpg_Decoder"
+  },
+  "authors":
+  [
+    {
+        "name": "Bodmer",
+        "email": "bodmer@anola.net",
+        "maintainer": true
+    }
+  ],
+  "frameworks": "arduino",
+  "platforms": "espressif8266, espressif32, atmelavr, stm32"
+}
