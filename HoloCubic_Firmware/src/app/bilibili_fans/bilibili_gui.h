@@ -12,13 +12,13 @@ extern "C"
         lv_task_handler(); //等待动画完成
 
     void bilibili_gui_init(void);
-    void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type);
+    void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type, unsigned int, unsigned int);
+    void bilibili_obj_del(void);
     void bilibili_gui_del(void);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
 
 #ifdef __cplusplus
 extern "C"
@@ -27,6 +27,7 @@ extern "C"
 
 #include "lvgl.h"
     extern const lv_img_dsc_t app_bilibili;
+    extern const lv_img_dsc_t bilibili_logo_ico;
 
 #ifdef __cplusplus
 } /* extern "C" */
