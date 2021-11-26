@@ -1,9 +1,6 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-// 时区偏移(小时) 8*60*60
-#define TIMEZERO_OFFSIZE (28800000)
-
 #define CONN_SUCC 0
 #define CONN_ERROR 1
 #define CONN_ERR_TIMEOUT 15 // 连接WiFi的超时时间（s）
