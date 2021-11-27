@@ -9,14 +9,14 @@
 
 WebServer server(80);
 
-struct ServerAppRunDate
+struct ServerAppRunData
 {
     boolean web_start;                    // 标志是否开启web server服务，0为关闭 1为开启
     boolean req_sent;                     // 标志是否发送wifi请求服务，0为关闭 1为开启
     unsigned long serverReflushPreMillis; // 上一回更新的时间
 };
 
-static ServerAppRunDate *run_data = NULL;
+static ServerAppRunData *run_data = NULL;
 
 void start_web_config()
 {
@@ -56,7 +56,7 @@ void server_init(void)
 {
     server_gui_init();
     // 初始化运行时参数
-    run_data = (ServerAppRunDate *)malloc(sizeof(ServerAppRunDate));
+    run_data = (ServerAppRunData *)malloc(sizeof(ServerAppRunData));
     run_data->web_start = 0;
     run_data->req_sent = 0;
     run_data->serverReflushPreMillis = 0;

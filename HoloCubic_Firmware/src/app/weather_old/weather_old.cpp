@@ -15,7 +15,7 @@ struct Weather
     int temperature;
 };
 
-struct WeatherAppRunDate
+struct WeatherAppRunData
 {
     unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
     unsigned long preTimeMillis;         // 更新时间计数器
@@ -31,7 +31,7 @@ struct WeatherAppRunDate
     Weather weather; // 保存天气状况
 };
 
-static WeatherAppRunDate *run_data = NULL;
+static WeatherAppRunData *run_data = NULL;
 
 static Weather getWeather(void)
 {
@@ -142,7 +142,7 @@ static void weather_init(void)
 {
     weather_old_gui_init();
     // 初始化运行时参数
-    run_data = (WeatherAppRunDate *)calloc(1, sizeof(WeatherAppRunDate));
+    run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
     run_data->weatherUpdataInterval = 900000;    // 天气更新的时间间隔
     run_data->timeUpdataInterval = 900000;       // 日期时钟更新的时间间隔(900s)
     run_data->m_preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化围殴2020-01-01 00:00:00

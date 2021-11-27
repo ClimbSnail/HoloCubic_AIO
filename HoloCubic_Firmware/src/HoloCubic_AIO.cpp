@@ -55,13 +55,14 @@ void setup()
     lv_fs_if_init();
 
     app_contorller = new AppController(); // APP控制器
+    app_contorller->app_register(&bilibili_app);
     app_contorller->app_register(&weather_app);
     app_contorller->app_register(&picture_app);
     app_contorller->app_register(&media_app);
     app_contorller->app_register(&screen_share_app);
     app_contorller->app_register(&server_app);
     app_contorller->app_register(&idea_app);
-    app_contorller->app_register(&bilibili_app);
+    // app_contorller->app_register(&bilibili_app);
     app_contorller->app_register(&settings_app);
     app_contorller->app_register(&game_2048_app);
     app_contorller->app_register(&file_manager_app);

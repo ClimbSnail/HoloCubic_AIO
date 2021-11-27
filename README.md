@@ -8,6 +8,7 @@
 * AIO框架开发和部分APP编写：[ClimbSnail](https://github.com/ClimbSnail)
 * 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
 * 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
+* BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群 755143193**_
@@ -19,7 +20,7 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动。
 3. 程序相对模块化，低耦合。
 4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
-5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic
+5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic （部分浏览器可能支持不好）
 6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
 7. 提供全套上位机软件，并开源上位机源码。 https://github.com/ClimbSnail/HoloCubic_AIO_Tool
 
@@ -126,13 +127,17 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 3. 在上位机的文件管理器软件中填入自己`Holocubic`的IP地址（端口可以不用改），点击连接。
 
 ##### 2048 APP
-1. `2048`游戏由群友`AndyXFuture`编写，并同意合入AIO固件。原项目链接为`https://github.com/AndyXFuture/HoloCubic-2048-anim`
+1. `2048`游戏由群友`AndyXFuture`编写并同意，由`ClimbSnail`合入AIO固件。原项目链接为`https://github.com/AndyXFuture/HoloCubic-2048-anim`
 2. 运行APP条件：无。基本屏幕能亮就行。
 3. 操作注意：游戏中`向上`和`向下`操作由于与原`进入`和`退出`为同一个动作，系统已操作时长为区分动作，游戏中`向上`和`向下`正常操作即可，`进入`和`退出`需要倾斜1秒中方可触发。
 
 ##### BiliBili APP
-1. 运行APP条件：必须是已经正常配置wifi。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。目前功能还在开发中。
+1. 运行APP条件：内存卡中必须要有名为`bilibili`的文件夹。必须是已经正常配置wifi。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
+2. `UID`查看方法：电脑浏览器上打开B站并登入账号，之后浏览器打开一个空白页粘贴回车这个网址 https://space.bilibili.com/ ，网址尾巴会自动多出一串纯数字码，此即为UID。
+3. 第一次使用之前，要先在`WebServer App`的网页上填写`UID`码。
+4. 需要在内存卡中名为`bilibili`的文件夹里添加一张自己B站的头像，分辨率为`100*100`的`bin`文件（可以使用AIO上位机转换）。
 
+注：程序由`cnzxo`编写。
 
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)

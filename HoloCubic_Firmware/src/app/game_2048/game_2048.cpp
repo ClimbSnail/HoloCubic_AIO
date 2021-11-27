@@ -31,7 +31,7 @@ void taskTwo(void *parameter)
 
 GAME2048 game;
 
-struct Game2048AppRunDate
+struct Game2048AppRunData
 {
     int Normal = 0;       //记录移动的方向
     int BornLocation = 0; //记录新棋子的位置
@@ -43,7 +43,7 @@ struct Game2048AppRunDate
     TaskHandle_t xHandle_task_two = NULL;
 };
 
-static Game2048AppRunDate *run_data = NULL;
+static Game2048AppRunData *run_data = NULL;
 
 void game_2048_init(void)
 {
@@ -52,7 +52,7 @@ void game_2048_init(void)
 
     randomSeed(analogRead(25));
     // 初始化运行时参数
-    run_data = (Game2048AppRunDate *)calloc(1, sizeof(Game2048AppRunDate));
+    run_data = (Game2048AppRunData *)calloc(1, sizeof(Game2048AppRunData));
     game.init();
     run_data->pBoard = game.getBoard();
     run_data->moveRecord = game.getMoveRecord();

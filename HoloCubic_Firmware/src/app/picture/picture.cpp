@@ -6,7 +6,7 @@
 // Include the jpeg decoder library
 #include <TJpg_Decoder.h>
 
-struct PictureAppRunDate
+struct PictureAppRunData
 {
     unsigned long pic_perMillis;      // 图片上一回更新的时间
     unsigned long picRefreshInterval; // 图片播放的时间间隔(10s)
@@ -17,7 +17,7 @@ struct PictureAppRunDate
     bool tftSwapStatus;
 };
 
-static PictureAppRunDate *run_data = NULL;
+static PictureAppRunData *run_data = NULL;
 
 // This next function will be called during decoding of the jpeg file to
 // render each block to the TFT.  If you use a different TFT library
@@ -62,7 +62,7 @@ void picture_init(void)
 {
     photo_gui_init();
     // 初始化运行时参数
-    run_data = (PictureAppRunDate *)malloc(sizeof(PictureAppRunDate));
+    run_data = (PictureAppRunData *)malloc(sizeof(PictureAppRunData));
     run_data->pic_perMillis = 0;
     run_data->picRefreshInterval = 10000;
     run_data->image_file = NULL;

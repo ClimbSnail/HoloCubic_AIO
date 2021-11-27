@@ -15,7 +15,7 @@ WiFiServer file_manager_server; //服务端
 WiFiClient file_manager_client; // 客户端
 FtpServer ftpSrv;               // 定义FTP服务端
 
-struct FileManagerAppRunDate
+struct FileManagerAppRunData
 {
     boolean tcp_start;                    // 标志是否开启web server服务，0为关闭 1为开启
     boolean req_sent;                     // 标志是否发送wifi请求服务，0为关闭 1为开启
@@ -24,12 +24,12 @@ struct FileManagerAppRunDate
     uint8_t *sendBuf;                     // 发送数据缓冲区
 };
 
-static FileManagerAppRunDate *run_data = NULL;
+static FileManagerAppRunData *run_data = NULL;
 void file_maneger_init(void)
 {
     file_maneger_gui_init();
     // 初始化运行时参数
-    run_data = (FileManagerAppRunDate *)calloc(1, sizeof(FileManagerAppRunDate));
+    run_data = (FileManagerAppRunData *)calloc(1, sizeof(FileManagerAppRunData));
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
     run_data->serverReflushPreMillis = 0;

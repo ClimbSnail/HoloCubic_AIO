@@ -12,7 +12,7 @@
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp"
 #define WEATHER_PAGE_SIZE 2
 
-struct WeatherAppRunDate
+struct WeatherAppRunData
 {
     unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
     unsigned long preTimeMillis;         // 更新时间计数器
@@ -28,7 +28,7 @@ struct WeatherAppRunDate
     Weather wea;     // 保存天气状况
 };
 
-static WeatherAppRunDate *run_data = NULL;
+static WeatherAppRunData *run_data = NULL;
 
 enum wea_event_Id
 {
@@ -190,7 +190,7 @@ static void weather_init(void)
     tft->setSwapBytes(true);
     weather_gui_init();
     // 初始化运行时参数
-    run_data = (WeatherAppRunDate *)calloc(1, sizeof(WeatherAppRunDate));
+    run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
     memset((char *)&run_data->wea, 0, sizeof(Weather));
     run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔
     run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔(900s)
