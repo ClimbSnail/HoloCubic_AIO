@@ -3,21 +3,21 @@
 #include "sys/app_contorller.h"
 #include "common.h"
 
-struct ExampleAppRunDate
+struct ExampleAppRunData
 {
     unsigned int val1;
     unsigned int val2;
     unsigned int val3;
 };
 
-static ExampleAppRunDate *run_data = NULL;
+static ExampleAppRunData *run_data = NULL;
 
 void example_init(void)
 {
     // 初始化运行时的参数
     example_gui_init();
     // 初始化运行时参数
-    run_data = (ExampleAppRunDate *)calloc(1, sizeof(ExampleAppRunDate));
+    run_data = (ExampleAppRunData *)calloc(1, sizeof(ExampleAppRunData));
     run_data->val1 = 0;
     run_data->val2 = 0;
     run_data->val3 = 0;

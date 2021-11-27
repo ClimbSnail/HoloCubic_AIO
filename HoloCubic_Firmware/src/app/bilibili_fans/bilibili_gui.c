@@ -3,16 +3,18 @@
 #include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
-lv_obj_t *bilibili_gui = NULL;
+static lv_obj_t *bilibili_gui = NULL;
 
-lv_obj_t *fans_label = NULL;
-lv_obj_t *follow_label = NULL;
-lv_obj_t *logo_image = NULL;
-lv_obj_t *avatar_image = NULL;
+static lv_obj_t *fans_label = NULL;
+static lv_obj_t *follow_label = NULL;
+static lv_obj_t *logo_image = NULL;
+static lv_obj_t *avatar_image = NULL;
 
 static lv_style_t default_style;
 static lv_style_t fans_label_style;
 static lv_style_t follow_label_style;
+
+// static lv_img_decoder_dsc_t img_dc_dsc; // 图片解码器
 
 LV_FONT_DECLARE(lv_font_montserrat_40);
 LV_FONT_DECLARE(font_unicode_kai_16);
@@ -52,16 +54,26 @@ void display_bilibili_init(void)
     follow_label = lv_label_create(bilibili_gui, NULL);
     logo_image = lv_img_create(bilibili_gui, NULL);
     avatar_image = lv_img_create(bilibili_gui, NULL);
+
+    // static lv_res_t res;
+    // res = lv_img_decoder_open(&img_dc_dsc, &avatar_image, LV_COLOR_WHITE);
+
+    // if (res == LV_RES_OK)
+    // {
+    //     /*Do something with `dsc->img_data`*/
+    //     lv_img_decoder_close(&img_dc_dsc);
+    // }
 }
 
 /*
  * 其他函数请根据需要添加
  */
 
-void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type, unsigned int fans_num, unsigned int follow_num)
+void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type,
+                      unsigned int fans_num, unsigned int follow_num)
 {
     display_bilibili_init();
-    
+
     lv_obj_add_style(bilibili_gui, LV_BTN_PART_MAIN, &default_style);
 
     lv_obj_add_style(fans_label, LV_LABEL_PART_MAIN, &fans_label_style);
@@ -78,7 +90,8 @@ void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type, unsig
     lv_obj_align(logo_image, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
     lv_obj_set_size(logo_image, 200, 62);
 
-    lv_img_set_src(avatar_image, &avatar_ico);
+    lv_img_set_src(avatar_image, "S:/bilibili/avatar.bin");
+    // lv_img_set_src(avatar_image, &avatar_ico);
     lv_obj_align(avatar_image, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 20, -30);
     lv_obj_set_size(avatar_image, 100, 100);
 

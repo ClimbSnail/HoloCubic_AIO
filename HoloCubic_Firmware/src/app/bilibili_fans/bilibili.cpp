@@ -6,7 +6,7 @@
 unsigned int fans_num = 0;
 unsigned int follow_num = 0;
 
-struct BilibiliAppRunDate
+struct BilibiliAppRunData
 {
     unsigned int refresh_status;
     unsigned long refresh_interval;
@@ -19,7 +19,7 @@ struct HttpResult
     String httpResponse = "";
 };
 
-static BilibiliAppRunDate *run_data = NULL;
+static BilibiliAppRunData *run_data = NULL;
 
 HttpResult *http_request(String uid = "344470052")
 {
@@ -44,7 +44,7 @@ void bilibili_init(void)
 {
     bilibili_gui_init();
     // 初始化运行时参数
-    run_data = (BilibiliAppRunDate *)malloc(sizeof(BilibiliAppRunDate));
+    run_data = (BilibiliAppRunData *)malloc(sizeof(BilibiliAppRunData));
     run_data->refresh_status = 0;
     run_data->refresh_interval = 900000;
     run_data->refresh_time_millis = millis() - run_data->refresh_interval;
@@ -86,7 +86,7 @@ void bilibili_exit_callback(void)
 
 void update_fans_num()
 {
-    HttpResult *result = http_request();
+    HttpResult *result = http_request(g_cfg.bili_uid);
     if (result == NULL)
     {
         Serial.println("[HTTP] Http request failed.");

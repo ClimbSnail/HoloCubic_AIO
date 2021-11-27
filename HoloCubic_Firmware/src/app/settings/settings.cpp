@@ -3,14 +3,14 @@
 #include "sys/app_contorller.h"
 #include "common.h"
 
-struct SettingsAppRunDate
+struct SettingsAppRunData
 {
     unsigned int val1;
     unsigned int val2;
     unsigned int val3;
 };
 
-static SettingsAppRunDate *run_data = NULL;
+static SettingsAppRunData *run_data = NULL;
 
 void settings_init(void)
 {
@@ -20,7 +20,7 @@ void settings_init(void)
     display_settings(AIO_VERSION, "v 1.9.0", LV_SCR_LOAD_ANIM_NONE);
 
     // 初始化运行时参数
-    run_data = (SettingsAppRunDate *)calloc(1, sizeof(SettingsAppRunDate));
+    run_data = (SettingsAppRunData *)calloc(1, sizeof(SettingsAppRunData));
     run_data->val1 = 0;
     run_data->val2 = 0;
     run_data->val3 = 0;

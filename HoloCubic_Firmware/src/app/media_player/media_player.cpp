@@ -12,7 +12,7 @@
 #define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
 
-struct MediaAppRunDate
+struct MediaAppRunData
 {
     PlayDocoderBase *player_docoder;
     int movie_pos_increate;
@@ -21,7 +21,7 @@ struct MediaAppRunDate
     File file;
 };
 
-static MediaAppRunDate *run_data = NULL;
+static MediaAppRunData *run_data = NULL;
 
 static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 {
@@ -97,9 +97,9 @@ void media_player_init(void)
     set_rgb(&rgb_setting);
 
     // 初始化运行时参数
-    // run_data = (MediaAppRunDate *)malloc(sizeof(MediaAppRunDate));
-    // memset(run_data, 0, sizeof(MediaAppRunDate));
-    run_data = (MediaAppRunDate *)calloc(1, sizeof(MediaAppRunDate));
+    // run_data = (MediaAppRunData *)malloc(sizeof(MediaAppRunData));
+    // memset(run_data, 0, sizeof(MediaAppRunData));
+    run_data = (MediaAppRunData *)calloc(1, sizeof(MediaAppRunData));
     run_data->player_docoder = NULL;
     run_data->movie_pos_increate = 1;
     run_data->movie_file = NULL; // movie文件夹下的文件指针头
