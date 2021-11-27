@@ -12,6 +12,11 @@ void config_read(const char *file_path, Config *cfg)
     // return cfg->ssid+cfg->password+cfg->cityname+cfg->language+cfg->weather_key;
 
     prefs.begin("Config"); // 打开命名空间mynamespace
+    
+    cfg->backLight = prefs.getUChar("backLight", 80);
+    cfg->rotation = prefs.getUChar("rotation", 4);
+    cfg->auto_calibration_mpu = prefs.getUChar("auto_mpu", 1);
+
     cfg->ssid = prefs.getString("ssid", "");
     cfg->password = prefs.getString("password", "");
     cfg->cityname = prefs.getString("cityname", "BeiJing");
@@ -21,9 +26,6 @@ void config_read(const char *file_path, Config *cfg)
     cfg->tianqi_appid = prefs.getString("tianqi_aid", "");
     cfg->tianqi_appsecret = prefs.getString("tianqi_as", "");
     cfg->bili_uid = prefs.getString("bili_uid", "");
-    cfg->backLight = prefs.getUChar("backLight", 80);
-    cfg->rotation = prefs.getUChar("rotation", 4);
-    cfg->auto_calibration_mpu = prefs.getUChar("auto_mpu", 1);
 
     prefs.end(); // 关闭当前命名空间
 
@@ -43,6 +45,11 @@ void config_save(const char *file_path, Config *cfg)
     // tf.writeFile(file_path, res.c_str());
 
     prefs.begin("Config"); // 打开命名空间mynamespace
+
+    prefs.putUChar("backLight", cfg->backLight);
+    prefs.putUChar("rotation", cfg->rotation);
+    prefs.putUChar("auto_mpu", cfg->auto_calibration_mpu);
+
     prefs.putString("ssid", cfg->ssid);
     prefs.putString("password", cfg->password);
     prefs.putString("cityname", cfg->cityname);
@@ -51,9 +58,6 @@ void config_save(const char *file_path, Config *cfg)
     prefs.putString("tianqi_aid", cfg->tianqi_appid);
     prefs.putString("tianqi_as", cfg->tianqi_appsecret);
     prefs.putString("bili_uid", cfg->bili_uid);
-    prefs.putUChar("backLight", cfg->backLight);
-    prefs.putUChar("rotation", cfg->rotation);
-    prefs.putUChar("auto_mpu", cfg->auto_calibration_mpu);
     prefs.end(); // 关闭当前命名空间
 
     config_read("/wifi.txt", &g_cfg);

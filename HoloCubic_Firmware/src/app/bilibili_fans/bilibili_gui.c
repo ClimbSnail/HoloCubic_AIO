@@ -21,6 +21,11 @@ LV_FONT_DECLARE(font_unicode_kai_16);
 LV_IMG_DECLARE(bilibili_logo_ico);
 LV_IMG_DECLARE(avatar_ico);
 
+LV_IMG_DECLARE(imgbtn_green);
+LV_IMG_DECLARE(imgbtn_blue);
+static lv_style_t imgbtn_style;
+static lv_obj_t *imgbtn1;
+
 void bilibili_gui_init(void)
 {
     lv_style_init(&default_style);
@@ -57,7 +62,6 @@ void display_bilibili_init(void)
 
     // static lv_res_t res;
     // res = lv_img_decoder_open(&img_dc_dsc, &avatar_image, LV_COLOR_WHITE);
-
     // if (res == LV_RES_OK)
     // {
     //     /*Do something with `dsc->img_data`*/
@@ -109,7 +113,7 @@ void bilibili_obj_del(void)
         fans_label = NULL;
         follow_label = NULL;
         logo_image = NULL;
-        avatar_image = NULL;
+        imgbtn1 = NULL;
     }
 }
 
