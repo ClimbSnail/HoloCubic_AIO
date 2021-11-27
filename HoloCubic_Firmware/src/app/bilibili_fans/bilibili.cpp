@@ -3,11 +3,10 @@
 #include "sys/app_contorller.h"
 #include "../../common.h"
 
-unsigned int fans_num = 0;
-unsigned int follow_num = 0;
-
 struct BilibiliAppRunData
 {
+    unsigned int fans_num;
+    unsigned int follow_num;
     unsigned int refresh_status;
     unsigned long refresh_interval;
     unsigned long refresh_time_millis;
@@ -45,6 +44,8 @@ void bilibili_init(void)
     bilibili_gui_init();
     // 初始化运行时参数
     run_data = (BilibiliAppRunData *)malloc(sizeof(BilibiliAppRunData));
+    run_data->fans_num = 0;
+    run_data->follow_num = 0;
     run_data->refresh_status = 0;
     run_data->refresh_interval = 900000;
     run_data->refresh_time_millis = millis() - run_data->refresh_interval;
@@ -58,6 +59,28 @@ void bilibili_process(AppController *sys,
     {
         sys->app_exit(); // 退出APP
         return;
+    }
+
+    char fans_num[20] = {0};
+    char follow_num[20] = {0};
+    if (run_data->fans_num >= 10000)
+    {
+        // 粉丝过万的
+        snprintf(fans_num, 20, "%3.1fw", run_data->fans_num * 1.0 / 10000);
+    }
+    else
+    {
+        snprintf(fans_num, 20, "%d", run_data->fans_num);
+    }
+
+    if (run_data->follow_num >= 10000)
+    {
+        // 关注过万的
+        snprintf(follow_num, 20, "%3.1fw", run_data->follow_num * 1.0 / 10000);
+    }
+    else
+    {
+        snprintf(follow_num, 20, "%d", run_data->follow_num);
     }
 
     if (0 == run_data->refresh_status)
@@ -104,8 +127,8 @@ void update_fans_num()
             int startIndex_2 = payload.indexOf("following") + 11;
             int endIndex_2 = payload.indexOf(',', startIndex_2);
             String res = payload.substring(startIndex_1, endIndex_1);
-            fans_num = payload.substring(startIndex_1, endIndex_1).toInt();
-            follow_num = payload.substring(startIndex_2, endIndex_2).toInt();
+            run_data->fans_num = payload.substring(startIndex_1, endIndex_1).toInt();
+            run_data->follow_num = payload.substring(startIndex_2, endIndex_2).toInt();
             run_data->refresh_status = 1;
         }
     }

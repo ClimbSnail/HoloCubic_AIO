@@ -17,7 +17,6 @@ static lv_style_t follow_label_style;
 // static lv_img_decoder_dsc_t img_dc_dsc; // 图片解码器
 
 LV_FONT_DECLARE(lv_font_montserrat_40);
-LV_FONT_DECLARE(font_unicode_kai_16);
 LV_IMG_DECLARE(bilibili_logo_ico);
 LV_IMG_DECLARE(avatar_ico);
 
@@ -74,20 +73,19 @@ void display_bilibili_init(void)
  */
 
 void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type,
-                      unsigned int fans_num, unsigned int follow_num)
+                      const char *fans_num, const char *follow_num)
 {
     display_bilibili_init();
-
     lv_obj_add_style(bilibili_gui, LV_BTN_PART_MAIN, &default_style);
 
     lv_obj_add_style(fans_label, LV_LABEL_PART_MAIN, &fans_label_style);
     lv_label_set_recolor(fans_label, true);
-    lv_label_set_text_fmt(fans_label, "%d", fans_num);
+    lv_label_set_text_fmt(fans_label, "%s", fans_num);
     lv_obj_align(fans_label, NULL, LV_ALIGN_IN_BOTTOM_MID, 60, -90);
 
     lv_obj_add_style(follow_label, LV_LABEL_PART_MAIN, &fans_label_style);
     lv_label_set_recolor(follow_label, true);
-    lv_label_set_text_fmt(follow_label, "%d", follow_num);
+    lv_label_set_text_fmt(follow_label, "%s", follow_num);
     lv_obj_align(follow_label, NULL, LV_ALIGN_IN_BOTTOM_MID, 60, -30);
 
     lv_img_set_src(logo_image, &bilibili_logo_ico);
@@ -95,9 +93,11 @@ void display_bilibili(const char *file_name, lv_scr_load_anim_t anim_type,
     lv_obj_set_size(logo_image, 200, 62);
 
     lv_img_set_src(avatar_image, "S:/bilibili/avatar.bin");
-    // lv_img_set_src(avatar_image, &avatar_ico);
+    // lv_img_set_zoom(avatar_image, LV_IMG_ZOOM_NONE); // LV_IMG_ZOOM_NONE 为256，不放大不缩小
+    // lv_img_set_zoom(avatar_image, 106);
+    // lv_img_set_auto_size(avatar_image, true); // 开启自动尺寸 也是默认值
     lv_obj_align(avatar_image, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 20, -30);
-    lv_obj_set_size(avatar_image, 100, 100);
+    // lv_obj_set_size(avatar_image, 100, 100); // 设置图片尺寸
 
     lv_scr_load(bilibili_gui);
 }
