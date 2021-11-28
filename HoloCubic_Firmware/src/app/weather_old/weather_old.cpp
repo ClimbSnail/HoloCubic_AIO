@@ -228,9 +228,9 @@ static void weather_exit_callback(void)
     run_data = NULL;
 }
 
-static void weather_event_notification(APP_EVENT event, int event_id)
+static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
 {
-    switch (event)
+    switch (type)
     {
     case APP_EVENT_WIFI_CONN:
     {

@@ -168,9 +168,9 @@ void file_maneger_exit_callback(void)
     run_data = NULL;
 }
 
-void file_maneger_event_notification(APP_EVENT event, int event_id)
+void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
 {
-    switch (event)
+    switch (type)
     {
     case APP_EVENT_WIFI_CONN:
     {

@@ -54,12 +54,13 @@ String file_size(int bytes)
 #define SETTING "<form method=\"GET\" action=\"saveConf\">"                                                                                                                                                                                                        \
                 "<label class=\"input\"><span>WiFi SSID (2.4G)</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"                                                                                                                                       \
                 "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                                                                                                                                            \
-                "<label class=\"input\"><span>City Name</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                                          \
+                "<label class=\"input\"><span>知心天气 城市名（拼音）</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                                          \
                 "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"                                                                                                                             \
-                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                         \
-                "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqiAppId\"value=\"%s\"></label>"                                                                                                                              \
-                "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqiAppSecret\"value=\"%s\"></label>"                                                                                                                                         \
-                "<label class=\"input\"><span>Bili UID</span><input type=\"text\"name=\"biliUID\"value=\"%s\"></label>"                                                                                                                                                     \
+                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                      \
+                "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqiAppId\"value=\"%s\"></label>"                                                                                                                                    \
+                "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqiAppSecret\"value=\"%s\"></label>"                                                                                                                            \
+                "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqiAddr\"value=\"%s\"></label>"                                                                                                                               \
+                "<label class=\"input\"><span>Bili UID</span><input type=\"text\"name=\"biliUID\"value=\"%s\"></label>"                                                                                                                                            \
                 "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
                 "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
                 "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
@@ -73,13 +74,13 @@ void init_page_header()
     webpage_header += F("<meta http-equiv='Content-Type' name='viewport' content='user-scalable=yes,initial-scale=1.0,width=device-width; text/html; charset=utf-8' />");
     webpage_header += F("<style>");
     webpage_header += F(SETING_CSS);
-    webpage_header += F("body{max-width:65%;margin:0 auto;font-family:arial;font-size:105%;text-align:center;color:blue;background-color:#F7F2Fd;}");
-    webpage_header += F("ul{list-style-type:none;margin:0.1em;padding:0;border-radius:0.375em;overflow:hidden;background-color:#dcade6;font-size:1em;}");
+    webpage_header += F("body{max-width:65%;margin:0 auto;font-family:arial;font-size:105%;text-align:center;color:blue;background-color:#dbdadb;}");
+    webpage_header += F("ul{list-style-type:none;margin:0.1em;padding:0;border-radius:0.375em;overflow:hidden;background-color:#878588;font-size:1em;}");
     webpage_header += F("li{float:left;border-radius:0.375em;border-right:0.06em solid #bbb;}last-child {border-right:none;font-size:85%}");
     webpage_header += F("li a{display: block;border-radius:0.375em;padding:0.44em 0.44em;text-decoration:none;font-size:85%}");
     webpage_header += F("li a:hover{background-color:#EAE3EA;border-radius:0.375em;font-size:85%}");
     webpage_header += F("section {font-size:0.88em;}");
-    webpage_header += F("h1{color:white;border-radius:0.5em;font-size:1em;padding:0.2em 0.2em;background:#558ED5;}");
+    webpage_header += F("h1{color:white;border-radius:0.5em;font-size:1em;padding:0.2em 0.2em;background:#4c4c4d;}");
     webpage_header += F("h2{color:orange;font-size:1.0em;}");
     webpage_header += F("h3{font-size:0.8em;}");
     webpage_header += F("table{font-family:arial,sans-serif;font-size:0.9em;border-collapse:collapse;width:85%;}");
@@ -91,7 +92,7 @@ void init_page_header()
     webpage_header += F(".column{float:left;width:50%;height:45%;}");
     webpage_header += F(".row:after{content:'';display:table;clear:both;}");
     webpage_header += F("*{box-sizing:border-box;}");
-    webpage_header += F("footer{background-color:#eedfff; text-align:center;padding:0.3em 0.3em;border-radius:0.375em;font-size:60%;}");
+    webpage_header += F("footer{background-color:#b1b1b1; text-align:center;padding:0.3em 0.3em;border-radius:0.375em;font-size:60%;}");
     webpage_header += F("button{border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:20%;color:white;font-size:130%;}");
     webpage_header += F(".buttons {border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:15%;color:white;font-size:80%;}");
     webpage_header += F(".buttonsm{border-radius:0.5em;background:#558ED5;padding:0.3em 0.3em;width:9%; color:white;font-size:70%;}");
@@ -123,7 +124,7 @@ void init_page_footer()
 void HomePage()
 {
     // 指定 target='_blank' 设置新建页面
-    webpage = F("<a href='https://github.com/ClimbSnail/HoloCubic' target='_blank'><button>Github</button></a>");
+    webpage = F("<a href='https://github.com/ClimbSnail/HoloCubic_AIO' target='_blank'><button>Github</button></a>");
     webpage += F("<a href='https://space.bilibili.com/344470052?spm_id_from=333.788.b_765f7570696e666f.1' target='_blank'><button>BiliBili教程</button></a>");
     Send_HTML(webpage);
 }
@@ -132,20 +133,20 @@ void Setting()
 {
     // 实时读取配置文件
     // config_read("/wifi.txt", &g_cfg);
-    char buf[1536];
+    char buf[2048];
     // 主要为了处理启停MPU自动校准的单选框
     if (0 == g_cfg.auto_calibration_mpu)
     {
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), 
-                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation,  "checked=\"checked\"", "");
+                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
+                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, "checked=\"checked\"", "");
     }
     else
     {
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), 
+                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
                 g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, "", "checked=\"checked\"");
     }
     webpage = buf;
@@ -164,6 +165,7 @@ void save_config(void)
     g_cfg.weather_key = server.arg("weatherKey");
     g_cfg.tianqi_appid = server.arg("tianqiAppId");
     g_cfg.tianqi_appsecret = server.arg("tianqiAppSecret");
+    g_cfg.tianqi_addr = server.arg("tianqiAddr");
     g_cfg.bili_uid = server.arg("biliUID");
     g_cfg.backLight = server.arg("backLight").toInt();
     g_cfg.rotation = server.arg("rotation").toInt();

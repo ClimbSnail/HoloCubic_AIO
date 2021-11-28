@@ -138,9 +138,9 @@ void update_fans_num()
     }
 }
 
-void bilibili_event_notification(APP_EVENT event, int event_id)
+void bilibili_event_notification(APP_EVENT_TYPE type, int event_id)
 {
-    if (event == APP_EVENT_WIFI_CONN)
+    if (type == APP_EVENT_WIFI_CONN)
     {
         Serial.print(millis());
         Serial.println("[SYS] bilibili_event_notification");

@@ -22,6 +22,7 @@ struct Config
     String weather_key;           // 知心天气api_key（秘钥）
     String tianqi_appid;          // tianqiapid 的 appid
     String tianqi_appsecret;      // tianqiapid 的 appsecret
+    String tianqi_addr;           // tianqiapid 的地址（填中文）
     String bili_uid;              // bilibili的uid
     uint8_t backLight;            // 屏幕亮度（1-100）
     uint8_t rotation;             // 屏幕旋转方向

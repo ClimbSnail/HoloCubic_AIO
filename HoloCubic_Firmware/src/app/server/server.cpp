@@ -89,11 +89,12 @@ void server_process(AppController *sys,
     }
     else if (1 == run_data->web_start)
     {
-        // 发送wifi维持的心跳
-        sys->req_event(&server_app, APP_EVENT_WIFI_ALIVE, 0);
         server.handleClient(); // 一定需要放在循环里扫描
         if (doDelayMillisTime(SERVER_REFLUSH_INTERVAL, &run_data->serverReflushPreMillis, false) == true)
         {
+            // 发送wifi维持的心跳
+            sys->req_event(&server_app, APP_EVENT_WIFI_ALIVE, 0);
+            
             display_setting(
                 "WebServer Start",
                 "Domain: holocubic",
@@ -112,9 +113,9 @@ void server_exit_callback(void)
     run_data = NULL;
 }
 
-void server_event_notification(APP_EVENT event, int event_id)
+void server_event_notification(APP_EVENT_TYPE type, int event_id)
 {
-    switch (event)
+    switch (type)
     {
     case APP_EVENT_WIFI_AP:
     {

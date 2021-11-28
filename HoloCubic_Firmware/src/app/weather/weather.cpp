@@ -7,7 +7,7 @@
 #include "ArduinoJson.h"
 #include <map>
 
-#define WEATHER_NOW_API "https://www.tianqiapi.com/free/day?appid=%s&appsecret=%s&unescape=1"
+#define WEATHER_NOW_API "https://www.tianqiapi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"   // &city=%s 
 #define WEATHER_DALIY_API "https://www.tianqiapi.com/free/week?unescape=1&appid=%s&appsecret=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp"
 #define WEATHER_PAGE_SIZE 2
@@ -60,7 +60,7 @@ static void getWeather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = "";
-    snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret);
+    snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
     http.begin(api);
 
     int httpCode = http.GET();
@@ -273,9 +273,9 @@ static void weather_exit_callback(void)
     run_data = NULL;
 }
 
-static void weather_event_notification(APP_EVENT event, int event_id)
+static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
 {
-    if (event == APP_EVENT_WIFI_CONN)
+    if (type == APP_EVENT_WIFI_CONN)
     {
         Serial.println(F("----->weather_event_notification"));
         switch (event_id)

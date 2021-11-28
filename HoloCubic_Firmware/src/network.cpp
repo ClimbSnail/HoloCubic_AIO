@@ -61,7 +61,7 @@ boolean Network::start_conn_wifi(const char *ssid, const char *password)
     Serial.println("");
     Serial.print(F("Connecting: "));
     Serial.print(ssid);
-    Serial.print(F(" @"));
+    Serial.print(F(" @ "));
     Serial.println(password);
 
     //设置为STA模式并连接WIFI

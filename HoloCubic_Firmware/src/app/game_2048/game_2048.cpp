@@ -163,10 +163,10 @@ void game_2048_exit_callback(void)
     run_data = NULL;
 }
 
-void game_2048_event_notification(APP_EVENT event, int event_id)
+void game_2048_event_notification(APP_EVENT_TYPE type, int event_id)
 {
     // 目前事件主要是wifi开关类事件（用于功耗控制）
-    switch (event)
+    switch (type)
     {
     case APP_EVENT_WIFI_CONN:
     {

@@ -109,7 +109,7 @@ void idea_exit_callback(void)
     }
 }
 
-void idea_event_notification(APP_EVENT event, int event_id)
+void idea_event_notification(APP_EVENT_TYPE type, int event_id)
 {
 }
 
