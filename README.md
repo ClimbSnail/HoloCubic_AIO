@@ -105,13 +105,13 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 一共有两款天气时钟APP
 ###### 新版 weather
 1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
-2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`。
+2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`、`tianqi 城市名（中文）`。
 2. 使用新版天气时钟，需要再"Web Server"服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.tianqiapi.com ）
 ###### 旧版 weather old
 1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
 2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
 3. 一般情况下不插内存卡也可以工作，但部分天气图标是存在内存卡中（由于内部flash不够用）的，需要将固件附带的`weather/`文件夹复制到tf卡根目录。
-4. 使用旧版天气时钟，需要再"Web Server"服务中修改知心天气的`地址`、`key（私钥）`。（申请地址 https://seniverse.com 。程序默认使用的是v3版本的api）
+4. 使用旧版天气时钟，需要再"Web Server"服务中修改知心天气的`知心天气 城市名`、`key（私钥）`。（申请地址 https://seniverse.com 。程序默认使用的是v3版本的api）
 
 注：即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
@@ -135,7 +135,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 1. 运行APP条件：内存卡中必须要有名为`bilibili`的文件夹。必须是已经正常配置wifi。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
 2. `UID`查看方法：电脑浏览器上打开B站并登入账号，之后浏览器打开一个空白页粘贴回车这个网址 https://space.bilibili.com/ ，网址尾巴会自动多出一串纯数字码，此即为UID。
 3. 第一次使用之前，要先在`WebServer App`的网页上填写`UID`码。
-4. 需要在内存卡中名为`bilibili`的文件夹里添加一张自己B站的头像，分辨率为`100*100`的`bin`文件（可以使用AIO上位机转换）。
+4. 需要在内存卡中名为`bilibili`的文件夹里添加一张名为`avatar.bin`自己B站头像的图片，分辨率为`100*100`的`bin`文件（可以使用AIO上位机转换）。
 
 注：程序由`cnzxo`编写。
 
