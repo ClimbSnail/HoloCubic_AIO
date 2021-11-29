@@ -176,7 +176,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_img_set_zoom(tempImg, 180);
     tempBar = lv_bar_create(scr_1, NULL);
     lv_obj_add_style(tempBar, LV_BAR_TYPE_NORMAL, &bar_style);
-    lv_bar_set_range(tempBar, 0, 40);
+    lv_bar_set_range(tempBar, 0, 60);   // 设置进度条表示的温度为-20~40
     lv_obj_set_size(tempBar, 60, 12);
     lv_obj_set_style_local_bg_color(tempBar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     lv_bar_set_value(tempBar, 10, LV_ANIM_OFF);
@@ -195,7 +195,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_bar_set_value(humiBar, 49, LV_ANIM_OFF);
     humiLabel = lv_label_create(scr_1, NULL);
     lv_obj_add_style(humiLabel, LV_LABEL_PART_MAIN, &chFont_style);
-    lv_label_set_text(humiLabel, "49%");
+    lv_label_set_text(humiLabel, "50%");
 
     // 太空人图标
     spaceImg = lv_img_create(scr_1, NULL);
@@ -207,10 +207,10 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_obj_align(txtLabel, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 50);
     lv_obj_align(tempImg, NULL, LV_ALIGN_IN_LEFT_MID, 10, 70);
     lv_obj_align(tempBar, NULL, LV_ALIGN_IN_LEFT_MID, 35, 70);
-    lv_obj_align(tempLabel, NULL, LV_ALIGN_IN_LEFT_MID, 100, 70);
+    lv_obj_align(tempLabel, NULL, LV_ALIGN_IN_LEFT_MID, 103, 70);
     lv_obj_align(humiImg, NULL, LV_ALIGN_IN_LEFT_MID, 0, 100);
     lv_obj_align(humiBar, NULL, LV_ALIGN_IN_LEFT_MID, 35, 100);
-    lv_obj_align(humiLabel, NULL, LV_ALIGN_IN_LEFT_MID, 100, 100);
+    lv_obj_align(humiLabel, NULL, LV_ALIGN_IN_LEFT_MID, 103, 100);
     lv_obj_align(spaceImg, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
 
     lv_obj_align(clockLabel_1, NULL, LV_ALIGN_IN_LEFT_MID, 0, 10);
@@ -233,11 +233,13 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
 
     lv_label_set_text(cityLabel, weaInfo.cityname);
     lv_label_set_text(btnLabel, airQualityCh[weaInfo.airQulity]);
+    lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
     lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
                           weaInfo.minTemp, weaInfo.maxTmep, weaInfo.windDir, weaInfo.windLevel);
-    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_OFF);
+    lv_bar_set_value(tempBar, weaInfo.temperature+20, LV_ANIM_OFF);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);
-    lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
+    // lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_OFF);
+    // lv_label_set_text_fmt(humiLabel, "%d\%", weaInfo.humidity);
 
     // // 绘制图形
     // lv_obj_align(weatherImg, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);

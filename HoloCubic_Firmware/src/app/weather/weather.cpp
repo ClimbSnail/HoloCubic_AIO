@@ -5,6 +5,7 @@
 #include "network.h"
 #include "common.h"
 #include "ArduinoJson.h"
+#include <esp32-hal-timer.h>
 #include <map>
 
 #define WEATHER_NOW_API "https://www.tianqiapi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"   // &city=%s 
@@ -77,6 +78,7 @@ static void getWeather(void)
             strcpy(run_data->wea.cityname, sk["city"].as<String>().c_str());
             run_data->wea.weather_code = weatherMap[sk["wea_img"].as<String>()];
             run_data->wea.temperature = sk["tem"].as<int>();
+            run_data->wea.humidity = 50;
             run_data->wea.maxTmep = sk["tem_day"].as<int>();
             run_data->wea.minTemp = sk["tem_night"].as<int>();
             strcpy(run_data->wea.windDir, sk["win"].as<String>().c_str());
@@ -254,6 +256,7 @@ static void weather_process(AppController *sys,
         }
         run_data->coactusUpdateFlag = 0x00; // 取消强制更新标志
         display_space();
+        delay(30);
     }
     else if (run_data->clock_page == 1)
     {
@@ -261,8 +264,6 @@ static void weather_process(AppController *sys,
         display_curve(run_data->wea.daily_max, run_data->wea.daily_min, anim_type);
         delay(300);
     }
-
-    delay(30);
 }
 
 static void weather_exit_callback(void)

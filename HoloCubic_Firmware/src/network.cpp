@@ -69,6 +69,7 @@ boolean Network::start_conn_wifi(const char *ssid, const char *password)
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     WiFi.begin(ssid, password);
+    m_preDisWifiConnInfoMillis = millis();
 
     // if (!WiFi.config(local_ip, gateway, subnet, dns))
     // { //WiFi.config(ip, gateway, subnet, dns1, dns2);

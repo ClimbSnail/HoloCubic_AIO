@@ -147,18 +147,17 @@ int AppController::wifi_deal(APP_EVENT_TYPE type)
     case APP_EVENT_WIFI_CONN:
     {
         // 更新请求
-        m_preWifiReqMillis = millis();
-        /*** Read WiFi info in SD-Card, then scan & connect WiFi ***/
         g_network.start_conn_wifi(g_cfg.ssid.c_str(), g_cfg.password.c_str());
         m_wifi_status = true;
+        m_preWifiReqMillis = millis();
     }
     break;
     case APP_EVENT_WIFI_AP:
     {
         // 更新请求
-        m_preWifiReqMillis = millis();
         g_network.open_ap(AP_SSID);
         m_wifi_status = true;
+        m_preWifiReqMillis = millis();
     }
     break;
     case APP_EVENT_WIFI_ALIVE:
@@ -173,6 +172,7 @@ int AppController::wifi_deal(APP_EVENT_TYPE type)
     {
         g_network.close_wifi();
         m_wifi_status = false; // 标志位
+        m_preWifiReqMillis = millis()-WIFI_LIFE_CYCLE;
     }
     break;
     case APP_EVENT_UPDATE_TIME:
@@ -191,12 +191,13 @@ int AppController::req_event_deal(void)
     // 请求事件的处理
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
     {
+        wifi_deal((*event).type);
         // wifi事件
         if (false == m_wifi_status)
         {
-            wifi_deal((*event).type);
             continue;
         }
+        
         if (millis() - m_preWifiReqMillis > WIFI_LIFE_CYCLE)
         {
             g_network.close_wifi();
@@ -219,6 +220,7 @@ int AppController::req_event_deal(void)
         // 事件回调
         (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
         eventList.erase(event); // 删除该响应完成的事件
+        Serial.print(F("Add APP_EVENT_WIFI_ALIVE\n"));
     }
     return 0;
 }

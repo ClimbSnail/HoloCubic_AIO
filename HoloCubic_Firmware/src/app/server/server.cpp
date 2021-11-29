@@ -5,7 +5,7 @@
 #include "network.h"
 #include "common.h"
 
-#define SERVER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
+#define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
 
 WebServer server(80);
 
