@@ -89,7 +89,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 2. 进入`Holocubic`文件管理器后会自动连接已配置的wifi，并显示出IP地址。
 3. 未完成：在上位机的文件管理器软件中填入自己`Holocubic`的IP地址（端口可以不用改），点击连接。
 
-注：目前文件管理器临时使用`windows资源管理器`，在地址栏输入 ftp://HoloCubic:AIO@192.168.123.241 （192.168.123.241为我的小电视上显示的IP地址，如果提示开启访问，就开启）
+注：目前文件管理器临时使用`windows资源管理器`，在地址栏输入 ftp://holocubic:aio@192.168.123.241 （192.168.123.241为我的小电视上显示的IP地址，如果提示开启访问，就开启）
 
 
 ##### 相册（Picture）
@@ -183,4 +183,5 @@ lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 ### 致谢
 * ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 * 视频播放 https://github.com/moononournation/RGB565_video
+* 文件管理器的参考文档 https://blog.csdn.net/zhubao124/article/details/81662775
 * 感谢`lib`目录下所用到的开源库相关的作者

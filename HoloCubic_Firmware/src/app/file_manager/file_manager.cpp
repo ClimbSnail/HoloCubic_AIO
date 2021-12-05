@@ -55,7 +55,7 @@ void file_maneger_process(AppController *sys,
         display_file_manager(
             "File Manager",
             WiFi.softAPIP().toString().c_str(),
-            "8081",
+            "21",
             "Wait connect ....",
             LV_SCR_LOAD_ANIM_NONE);
         // 如果web服务没有开启 且 ap开启的请求没有发送 event_id这边没有作用（填0）
@@ -108,7 +108,7 @@ void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
-        ftpSrv.begin("HoloCubic", "AIO");
+        ftpSrv.begin("holocubic", "aio");
     }
     break;
     case APP_EVENT_WIFI_AP:
