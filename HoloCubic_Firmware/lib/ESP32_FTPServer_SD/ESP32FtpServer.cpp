@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 //  2017: modified by @robo8080
+//  2021: modified by @ClimbSnail
 
 #include "ESP32FtpServer.h"
 
@@ -28,10 +29,55 @@
 #include "SD.h"
 #include "SPI.h"
 
-#define FTP_DEBUG
-
 WiFiServer ftpServer(FTP_CTRL_PORT);
 WiFiServer dataServer(FTP_DATA_PORT_PASV);
+
+/*
+ * get file basename
+ */
+static const char *get_file_basename(const char *path)
+{
+    // 获取最后一个'/'所在的下标
+    const char *ret = path;
+    for (const char *cur = path; *cur != 0; ++cur)
+    {
+        if (*cur == '/')
+        {
+            ret = cur + 1;
+        }
+    }
+    return ret;
+}
+
+/*
+ * get file path
+ */
+static String get_file_cwd(const char *path)
+{
+    // 获取最后一个'/'所在的下标
+    const char *ret = path;
+    int len = 0;
+    char tmp[128] = {0};
+    for (const char *cur = path; *cur != 0; ++cur)
+    {
+        if (*cur == '/')
+        {
+            ret = cur;
+        }
+    }
+
+    if (ret == path)
+    {
+        len = 1;
+    }
+    else
+    {
+        len = ret - path;
+    }
+
+    memcpy(tmp, path, len);
+    return String(tmp);
+}
 
 void FtpServer::begin(String uname, String pword)
 {
@@ -104,11 +150,14 @@ void FtpServer::handleFTP()
     else if (readChar() > 0) // got response
     {
         if (cmdStatus == 3) // Ftp server waiting for user identity
+        {
             if (userIdentity())
                 cmdStatus = 4;
             else
                 cmdStatus = 0;
+        }
         else if (cmdStatus == 4) // Ftp server waiting for user registration
+        {
             if (userPassword())
             {
                 cmdStatus = 5;
@@ -116,11 +165,14 @@ void FtpServer::handleFTP()
             }
             else
                 cmdStatus = 0;
+        }
         else if (cmdStatus == 5) // Ftp server waiting for user command
+        {
             if (!processCommand())
                 cmdStatus = 0;
             else
                 millisEndConnection = millis() + millisTimeOut;
+        }
     }
     else if (!client.connected() || !client)
     {
@@ -196,7 +248,7 @@ boolean FtpServer::userPassword()
 #ifdef FTP_DEBUG
         Serial.println("OK. Waiting for commands.");
 #endif
-        client.println("230 OK.");
+        client.println("230 User logged in, proceed.");
         return true;
     }
     millisDelay = millis() + 100; // delay of 100 ms
@@ -217,6 +269,8 @@ boolean FtpServer::processCommand()
     //
     if (!strcmp(command, "CDUP"))
     {
+        String cwd = get_file_cwd(cwdName);
+        strncpy(cwdName, cwd.c_str(), FTP_CWD_SIZE);
         client.println("250 Ok. Current directory is " + String(cwdName));
     }
     //
@@ -224,20 +278,52 @@ boolean FtpServer::processCommand()
     //
     else if (!strcmp(command, "CWD"))
     {
-        Serial.println(cwdName);
+
         char path[FTP_CWD_SIZE];
-        if (strcmp(parameters, ".") == 0) // 'CWD .' is the same as PWD command
-            client.println("257 \"" + String(cwdName) + "\" is your current directory");
-        else
+        // 以下是兼容xftp
+        // if (strcmp(parameters, ".") == 0) // 'CWD .' is the same as PWD command
+        // {
+        //     client.println("257 \"" + String(cwdName) + "\" is your current directory");
+        // }
+        // // else if (strcmp(parameters, "/") == 0) // 'CWD .' is the same as PWD command
+        // else if (parameters[0] == '/') // 'CWD .' is the same as PWD command
+        // {
+        //     snprintf(cwdName, FTP_CWD_SIZE, "/");
+        //     client.println("257 \"" + String(cwdName) + "\" is your current directory");
+        // }
+        // else
+        // {
+        //     if (strcmp(cwdName, "/") == 0)
+        //     {
+        //         snprintf(cwdName, FTP_CWD_SIZE, "%s%s", cwdName, parameters);
+        //     }
+        //     else
+        //     {
+        //         snprintf(cwdName, FTP_CWD_SIZE, "%s/%s", cwdName, parameters);
+        //     }
+        //     client.println("257 \"" + String(cwdName) + "\" is your current directory");
+        // }
+        // // else
+        // // {
+        // //     client.println("250 Ok. Current directory is " + String(cwdName));
+        // // }
+
+        // 以下是兼容windows自带的ftp
+        if (makePath(path, NULL) && SD.exists(path))
         {
+            strcpy(cwdName, path);
             client.println("250 Ok. Current directory is " + String(cwdName));
         }
+        Serial.print("cwdName -> ");
+        Serial.println(cwdName);
     }
     //
     //  PWD - Print Directory
     //
     else if (!strcmp(command, "PWD"))
+    {
         client.println("257 \"" + String(cwdName) + "\" is your current directory");
+    }
     //
     //  QUIT
     //
@@ -379,14 +465,14 @@ boolean FtpServer::processCommand()
     else if (!strcmp(command, "LIST"))
     {
         if (!dataConnect())
+        {
             client.println("425 No data connection");
+        }
         else
         {
             client.println("150 Accepted data connection");
             uint16_t nm = 0;
-            //      Dir dir=SD.openDir(cwdName);
             File dir = SD.open(cwdName);
-            //      if( !SD.exists(cwdName))
             if ((!dir) || (!dir.isDirectory()))
                 client.println("550 Can't open directory " + String(cwdName));
             else
@@ -395,11 +481,9 @@ boolean FtpServer::processCommand()
                 while (file)
                 {
                     String fn, fs;
-                    fn = file.name();
-                    fn.remove(0, 1);
+                    fn = get_file_basename(file.name());
 #ifdef FTP_DEBUG
                     Serial.println("File Name = " + fn);
-                    Serial.println(cwdName);
 #endif
                     fs = String(file.size());
                     if (file.isDirectory())
@@ -571,14 +655,43 @@ boolean FtpServer::processCommand()
     //
     else if (!strcmp(command, "MKD"))
     {
-        client.println("550 Can't create \"" + String(parameters)); // not support on espyet
+        char path[FTP_CWD_SIZE] = {0};
+        if (makePath(path))
+        {
+            if (SD.exists(path))
+            {
+                client.println("521 Can't create \"" + String(parameters) + ", Directory exists");
+            }
+            else
+            {
+                if (SD.mkdir(path))
+                {
+                    client.println("257 Directory created.\r\n");
+                }
+                else
+                {
+                    client.println("550 Can't create " + String(parameters)); // not support on espyet
+                }
+            }
+        }
     }
     //
     //  RMD - Remove a Directory
     //
     else if (!strcmp(command, "RMD"))
     {
-        client.println("501 Can't delete \"" + String(parameters));
+        char path[FTP_CWD_SIZE] = {0};
+        if (makePath(path))
+        {
+            if (SD.rmdir(path))
+            {
+                client.println("450 Directory deleted.\r\n");
+            }
+            else
+            {
+                client.println("550 RMDIR failed Directory %s not exists.\r\n" + String(path));
+            }
+        }
     }
     //
     //  RNFR - Rename From
@@ -718,13 +831,16 @@ boolean FtpServer::dataConnect()
 
 boolean FtpServer::doRetrieve()
 {
-    // int16_t nb = file.readBytes((uint8_t*) buf, FTP_BUF_SIZE );
-    int16_t nb = file.readBytes(buf, FTP_BUF_SIZE);
-    if (nb > 0)
+    if (data.connected())
     {
-        data.write((uint8_t *)buf, nb);
-        bytesTransfered += nb;
-        return true;
+        // int16_t nb = file.readBytes((uint8_t*) buf, FTP_BUF_SIZE );
+        int16_t nb = file.readBytes(buf, FTP_BUF_SIZE);
+        if (nb > 0)
+        {
+            data.write((uint8_t *)buf, nb);
+            bytesTransfered += nb;
+            return true;
+        }
     }
     closeTransfer();
     return false;
@@ -833,9 +949,12 @@ int8_t FtpServer::readChar()
 
                             while (*(++parameters) == ' ')
                                 ;
-                            strncpy(cwdName, parameters, iCL-(parameters - cmdLine));
-                            Serial.print("cwdName ----> ");
-                            Serial.println(cwdName);
+#ifdef FTP_DEBUG
+                            Serial.print("command ----> ");
+                            Serial.print(command);
+                            Serial.print("\tparame ----> ");
+                            Serial.println(parameters);
+#endif
                         }
                     }
                     else if (strlen(cmdLine) > 4)
@@ -897,6 +1016,7 @@ boolean FtpServer::makePath(char *fullName, char *param)
     uint16_t strl = strlen(fullName) - 1;
     if (fullName[strl] == '/' && strl > 1)
         fullName[strl] = 0;
+
     if (strlen(fullName) < FTP_CWD_SIZE)
         return true;
 

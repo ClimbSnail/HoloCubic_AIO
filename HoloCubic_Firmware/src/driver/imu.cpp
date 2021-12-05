@@ -15,7 +15,7 @@ void IMU::init()
     unsigned long timeout = 5000;
     unsigned long preMillis = millis();
     mpu = MPU6050(0x68);
-    while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, 0))
+    while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, false))
         ;
 
     if (!mpu.testConnection())
@@ -78,6 +78,13 @@ Imu_Action *IMU::update(int interval)
                 action_info.isValid = 1;
                 action_info.active = TURN_RIGHT;
             }
+            else if (action_info.ay > 1000 || action_info.ay < -1000)
+            {
+                // 震动检测
+                encoder_diff--;
+                action_info.isValid = 1;
+                action_info.active = SHAKE;
+            }
             else
             {
                 action_info.isValid = 0;
@@ -125,7 +132,7 @@ Imu_Action *IMU::update(int interval)
 
         if (!action_info.isValid)
         {
-            if (action_info.ax > 5000 && !action_info.isValid)
+            if (action_info.ax > 5000)
             {
                 action_info.isValid = 1;
                 action_info.active = UP;
@@ -139,7 +146,7 @@ Imu_Action *IMU::update(int interval)
                     encoder_state = LV_INDEV_STATE_PR;
                 }
             }
-            else if (action_info.ax < -5000 && !action_info.isValid)
+            else if (action_info.ax < -5000)
             {
                 action_info.isValid = 1;
                 action_info.active = DOWN;
@@ -152,6 +159,12 @@ Imu_Action *IMU::update(int interval)
                     action_info.active = RETURN;
                     encoder_state = LV_INDEV_STATE_REL;
                 }
+            }
+            else if (action_info.ax > 1000 || action_info.ax < -1000)
+            {
+                // 震动检测
+                action_info.isValid = 1;
+                action_info.active = SHAKE;
             }
             else
             {

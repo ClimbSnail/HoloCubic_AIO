@@ -52,18 +52,21 @@ void join_path(char *dst_path, const char *pre_path, const char *rear_path)
     *dst_path = 0;
 }
 
-int get_filename_len(const char *path)
+/*
+ * get file basename
+ */
+static const char *get_file_basename(const char *path)
 {
     // 获取最后一个'/'所在的下标
-    int index = -1;
-    for (int cnt = 0; path[cnt] != 0; ++cnt)
+    const char *ret = path;
+    for (const char *cur = path; *cur != 0; ++cur)
     {
-        if (path[cnt] == '/')
+        if (*cur == '/')
         {
-            index = cnt;
+            ret = cur + 1;
         }
     }
-    return index;
+    return ret;
 }
 
 void SdCard::init()
@@ -192,9 +195,9 @@ File_Info *SdCard::listDir(const char *dirname)
         // {
         //     listDir(file.name(), levels - 1);
         // }
-        int index = get_filename_len(file.name());
+        const char *fn = get_file_basename(file.name());
         // 字符数组长度为实际字符串长度+1
-        int filename_len = strlen(file.name()) - (index + 1) + 1;
+        int filename_len = strlen(fn);
         if (filename_len > FILENAME_MAX_LEN - 10)
         {
             Serial.println("Filename is too long.");
@@ -209,9 +212,9 @@ File_Info *SdCard::listDir(const char *dirname)
         file_node = file_node->next_node;
 
         // 船家创建新节点的文件名
-        file_node->file_name = (char *)calloc(1, filename_len);
-        strncpy(file_node->file_name, file.name() + (index + 1), filename_len); //
-        file_node->file_name[filename_len - 1] = 0;                             //
+        file_node->file_name = (char *)malloc(filename_len);
+        strncpy(file_node->file_name, fn, filename_len); //
+        file_node->file_name[filename_len] = 0;                             //
         // 下一个节点赋空
         file_node->next_node = NULL;
 

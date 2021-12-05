@@ -29,8 +29,8 @@ public:
     void app_exit(void); // 提供给app退出的系统调用
     // 事件请求
     int req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event_id);
-    int req_event_deal(void);           // 事件处理
-    int wifi_deal(APP_EVENT_TYPE type); // wifi事件的处理
+    int req_event_deal(void);             // 事件处理
+    bool wifi_event(APP_EVENT_TYPE type); // wifi事件的处理
 
 private:
     int app_is_legal(const APP_OBJ *app_obj);

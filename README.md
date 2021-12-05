@@ -16,7 +16,7 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
 ### 主要特点
-1. 聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、电脑投屏、浏览器文件修改。（各APP具体使用参考说明书）
+1. 聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、电脑投屏、web设置等等。（各APP具体使用参考说明书）
 2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动。
 3. 程序相对模块化，低耦合。
 4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
@@ -24,8 +24,8 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 6. 提供web端的文件上传到SD卡（包括删除），无需拔插SD来更新图片。
 7. 提供全套上位机软件，并开源上位机源码。 https://github.com/ClimbSnail/HoloCubic_AIO_Tool
 
-### 本固件基于前人的UI与灵感，设计了一套低耦合框架，更有利于多功能的实现
-B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p=1
+### 本固件设计了一套低耦合框架，更有利于多功能的实现
+B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 [^_^]:
 	![HomePage](Image/holocubic_1080x1080.jpg)
@@ -68,7 +68,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 ![AIO_TOOL](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_aio_tool.png)
 
 ### 功能切换说明：
-1. TF卡的文件系统为fat32。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
+1. TF卡的文件系统为fat32。TF为非必须硬件，但相册、视频播放等功能需依赖与此。如果准备使用内存卡，在使用内存卡前最好将本工程中`放置到内存卡`目录里的所有文件和文件夹都放在TF卡的根目录。
 2. 插不插tf内存卡都不影响开机，但影响某些APP的功能（各自APP介绍里会说明）。
 3. 左右摇晃即可切换选择各类APP。
 4. 向前倾斜1s钟即可进入当前页的APP应用，今后还会整合更多功能，同样后仰1s即退出该APP。
@@ -79,8 +79,18 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 1. 运行条件：无。注：wifi等信息是保存在flash中，内存卡完全不影响wifi功能的连接。
 2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
-4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
+4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（ http://192.168.4.2 也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
 5. 网页里可设置屏幕方向。
+
+##### 文件管理器（File Manager）
+作用：通过无线网络管理内存卡上的文件。
+
+1. 运行APP条件：必须是已经正常配置wifi。必须插内存卡。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。目前部分功能还在开发中。
+2. 进入`Holocubic`文件管理器后会自动连接已配置的wifi，并显示出IP地址。
+3. 未完成：在上位机的文件管理器软件中填入自己`Holocubic`的IP地址（端口可以不用改），点击连接。
+
+注：目前文件管理器临时使用`windows资源管理器`，在地址栏输入 ftp://HoloCubic:AIO@192.168.123.241 （192.168.123.241为我的小电视上显示的IP地址，如果提示开启访问，就开启）
+
 
 ##### 相册（Picture）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
@@ -120,12 +130,6 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1jh411a7pV?p
 
 注：移植群友"小飞侠"的功能，在此感谢！
 
-
-##### 文件管理器（File Manager）
-1. 运行APP条件：必须是已经正常配置wifi。必须插内存卡。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。目前部分功能还在开发中。
-2. 进入`Holocubic`文件管理器后会自动连接已配置的wifi，并显示出IP地址。
-3. 在上位机的文件管理器软件中填入自己`Holocubic`的IP地址（端口可以不用改），点击连接。
-
 ##### 2048 APP
 1. `2048`游戏由群友`AndyXFuture`编写并同意，由`ClimbSnail`合入AIO固件。原项目链接为`https://github.com/AndyXFuture/HoloCubic-2048-anim`
 2. 运行APP条件：无。基本屏幕能亮就行。
@@ -161,7 +165,7 @@ PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度
 
 ![HoloCubic_AIO_Frame](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_AIO_Frame.png)
 
-AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=2
+AIO框架讲解链接 https://www.bilibili.com/video/BV1jh411a7pV?p=4
 
 关于UI的设计可以自行关注下`Edgeline
 `、`gui-guider`等工具。

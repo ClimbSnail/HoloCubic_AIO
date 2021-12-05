@@ -137,18 +137,52 @@ int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event
     }
     EVENT_OBJ new_event = {from, type, event_id};
     eventList.push_back(new_event);
+    Serial.print(F("Add APP_EVENT_WIFI_ALIVE -> "));
+    Serial.print(F("EventList Size: "));
+    Serial.println(eventList.size());
     return 0;
 }
 
-int AppController::wifi_deal(APP_EVENT_TYPE type)
+int AppController::req_event_deal(void)
+{
+    // 请求事件的处理
+    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    {
+        // 后期可以拓展其他事件的处理
+        bool ret = wifi_event((*event).type);
+        if(false == ret)
+        {
+            // 本事件没处理完成
+            continue;
+        }
+
+        // 事件回调
+        (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
+        Serial.print(F("Delete APP_EVENT_WIFI_ALIVE -> "));
+        eventList.erase(event); // 删除该响应完成的事件
+        Serial.print(F("EventList Size: "));
+        Serial.println(eventList.size());
+    }
+    return 0;
+}
+
+/**
+ *  wifi事件的处理
+ *  事件处理成功返回true 否则false
+ * */
+bool AppController::wifi_event(APP_EVENT_TYPE type)
 {
     switch (type)
     {
     case APP_EVENT_WIFI_CONN:
     {
         // 更新请求
-        g_network.start_conn_wifi(g_cfg.ssid.c_str(), g_cfg.password.c_str());
-        m_wifi_status = true;
+        // CONN_ERROR == g_network.end_conn_wifi() ||
+        if (false == m_wifi_status)
+        {
+            g_network.start_conn_wifi(g_cfg.ssid.c_str(), g_cfg.password.c_str());
+            m_wifi_status = true;
+        }
         m_preWifiReqMillis = millis();
     }
     break;
@@ -172,7 +206,7 @@ int AppController::wifi_deal(APP_EVENT_TYPE type)
     {
         g_network.close_wifi();
         m_wifi_status = false; // 标志位
-        m_preWifiReqMillis = millis()-WIFI_LIFE_CYCLE;
+        m_preWifiReqMillis = millis() - WIFI_LIFE_CYCLE;
     }
     break;
     case APP_EVENT_UPDATE_TIME:
@@ -183,46 +217,32 @@ int AppController::wifi_deal(APP_EVENT_TYPE type)
         break;
     }
 
-    return 0;
-}
-
-int AppController::req_event_deal(void)
-{
-    // 请求事件的处理
-    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    // wifi事件
+    if (false == m_wifi_status)
     {
-        wifi_deal((*event).type);
-        // wifi事件
-        if (false == m_wifi_status)
-        {
-            continue;
-        }
-        
-        if (millis() - m_preWifiReqMillis > WIFI_LIFE_CYCLE)
-        {
-            g_network.close_wifi();
-            m_wifi_status = false; // 标志位
-            continue;
-        }
-
-        // if (NULL == (*event).req || APP_EVENT_WIFI_ALIVE <= (*event).type)
-        // {
-        //     Serial.print(F("++++++++>\n"));
-        //     continue;
-        // }
-
-        if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC != g_network.end_conn_wifi())
-        {
-            // 在STA模式下 并且还没连接上wifi
-            continue;
-        }
-
-        // 事件回调
-        (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
-        eventList.erase(event); // 删除该响应完成的事件
-        Serial.print(F("Add APP_EVENT_WIFI_ALIVE\n"));
+        return false;
     }
-    return 0;
+
+    if (millis() - m_preWifiReqMillis > WIFI_LIFE_CYCLE && true == m_wifi_status)
+    {
+        g_network.close_wifi();
+        m_wifi_status = false; // 标志位
+        return false;
+    }
+
+    // if (NULL == (*event).req || APP_EVENT_WIFI_ALIVE <= (*event).type)
+    // {
+    //     Serial.print(F("++++++++>\n"));
+    //     continue;
+    // }
+
+    if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC != g_network.end_conn_wifi())
+    {
+        // 在STA模式下 并且还没连接上wifi
+        return false;
+    }
+
+    return true;
 }
 
 void AppController::app_exit()

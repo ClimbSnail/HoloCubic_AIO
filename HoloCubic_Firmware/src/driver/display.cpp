@@ -39,7 +39,7 @@ void Display::init()
 
     lv_log_register_print_cb(my_print); /* register print function for debugging */
 
-    setBackLight(0.01);  // 设置亮度 为了先不显示初始化时的"花屏"
+    setBackLight(0.0);  // 设置亮度 为了先不显示初始化时的"花屏"
 
     tft->begin(); /* TFT init */
     tft->fillScreen(TFT_BLACK);

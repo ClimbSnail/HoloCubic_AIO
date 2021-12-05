@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "1.8.6"
+#define AIO_VERSION "1.9.0"
 
 #include "Arduino.h"
 #include "config.h"

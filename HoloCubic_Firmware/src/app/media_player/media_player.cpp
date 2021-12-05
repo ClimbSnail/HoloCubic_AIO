@@ -11,10 +11,13 @@
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
+#define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
+#define NO_TRIGGER_ENTER_FREQ_80M 120000UL  // 无操作规定时间后进入设置160M主频（120s）
 
 struct MediaAppRunData
 {
     PlayDocoderBase *player_docoder;
+    unsigned long preTriggerKeyMillis; // 最近一回按键触发的时间戳
     int movie_pos_increate;
     File_Info *movie_file; // movie文件夹下的文件指针头
     File_Info *pfile;      // 指向当前播放的文件节点
@@ -34,7 +37,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     File_Info *pfile = direction == 1 ? p_cur_file->next_node : p_cur_file->front_node;
     while (pfile != p_cur_file)
     {
-        if (FILE_TYPE_FILE ==pfile->file_type)
+        if (FILE_TYPE_FILE == pfile->file_type)
         {
             break;
         }
@@ -104,6 +107,7 @@ void media_player_init(void)
     run_data->movie_pos_increate = 1;
     run_data->movie_file = NULL; // movie文件夹下的文件指针头
     run_data->pfile = NULL;      // 指向当前播放的文件节点
+    run_data->preTriggerKeyMillis = millis();
 
     run_data->movie_file = tf.listDir(MOVIE_PATH);
     if (NULL != run_data->movie_file)
@@ -126,6 +130,13 @@ void media_player_process(AppController *sys,
         sys->app_exit(); // 退出APP
         return;
     }
+    else if (UNKNOWN != act_info->active)
+    {
+        // 记录下操作的时间点
+        run_data->preTriggerKeyMillis = millis();
+        // 设置CPU主频
+        setCpuFrequencyMhz(240);
+    }
 
     if (NULL == run_data->pfile)
     {
@@ -134,17 +145,17 @@ void media_player_process(AppController *sys,
         return;
     }
 
-    if (TURN_RIGHT == act_info->active)
-    {
-        run_data->movie_pos_increate = 1;
-    }
-    else if (TURN_LEFT == act_info->active)
-    {
-        run_data->movie_pos_increate = -1;
-    }
-
     if (TURN_RIGHT == act_info->active || TURN_LEFT == act_info->active)
     {
+        // 切换方向
+        if (TURN_RIGHT == act_info->active)
+        {
+            run_data->movie_pos_increate = 1;
+        }
+        else if (TURN_LEFT == act_info->active)
+        {
+            run_data->movie_pos_increate = -1;
+        }
         // 结束播放
         release_player_docoder();
         run_data->file.close(); // 尝试关闭文件
@@ -158,6 +169,20 @@ void media_player_process(AppController *sys,
         // 不存在可以播放的文件
         sys->app_exit(); // 退出APP
         return;
+    }
+
+    // 主频控制 为了降低发热量
+    if (getCpuFrequencyMhz() > 80)
+    {
+        if (getCpuFrequencyMhz() > 160 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
+        {
+            // 设置CPU主频
+            setCpuFrequencyMhz(160);
+        }
+        else if (getCpuFrequencyMhz() > 80 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
+        {
+            setCpuFrequencyMhz(80);
+        }
     }
 
     if (!run_data->file)

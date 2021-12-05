@@ -4,29 +4,35 @@
 #include <TJpg_Decoder.h>
 #include "sys/app_contorller.h"
 
-#define JPEG_BUFFER_SIZE 1     // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
-#define RECV_BUFFER_SIZE 50000 // 理论上是JPEG_BUFFER_SIZE的两倍就够了
-#define DMA_BUFFER_SIZE 512    // (16*16*2)
+#define JPEG_BUFFER_SIZE 1       // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
+#define RECV_BUFFER_SIZE 50000   // 理论上是JPEG_BUFFER_SIZE的两倍就够了
+#define DMA_BUFFER_SIZE 512      // (16*16*2)
+#define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
 
-#define HTTP_PORT 8081          //设置监听端口
-WiFiServer screen_share_server; //服务端
-WiFiClient client;              // 客户端
+#define HTTP_PORT 8081 //设置监听端口
+WiFiServer ss_server;  //服务端 ss = screen_share
+WiFiClient ss_client;  // 客户端 ss = screen_share
 
-boolean tcp_start = 0;       // 标志是否开启web server服务，0为关闭 1为开启
-static boolean req_sent = 0; // 标志是否发送wifi请求服务，0为关闭 1为开启
+struct ScreenShareAppRunData
+{
+    // 数据量也不大，同时为了数据结构清晰 这里不对其进行内存对齐了
 
-int32_t read_count = 0;        //读取buff的长度
-uint8_t pack_size[2];          //用来装包大小字节
-uint32_t frame_size;           //当前帧大小
-float start_time, end_time;    //帧处理开始和结束时间
-float receive_time, deal_time; //帧接收和解码时间
+    boolean tcp_start; // 标志是否开启web server服务，0为关闭 1为开启
+    boolean req_sent;  // 标志是否发送wifi请求服务，0为关闭 1为开启
 
-uint8_t *recvBuf;    // 显示的
-uint8_t *jpegBuf;    // 用来给 jpeg 图片做缓冲，将此提交给jpeg解码器解码
-int32_t bufSaveTail; // 指向 jpegBuf 中所保存的最后一个数据所在下标
-uint8_t *displayBufWithDma[2];
-bool dmaBufferSel = false;
-static boolean tftSwapStatus;
+    uint8_t *recvBuf;              // 接收缓冲区
+    uint8_t *mjpeg_start;          // 指向一帧mpjeg的图片的开头
+    uint8_t *mjpeg_end;            // 指向一帧mpjeg的图片的结束
+    uint8_t *last_find_pos;        // 上回查找到的位置
+    int32_t bufSaveTail;           // 指向 recvBuf 中所保存的最后一个数据所在下标
+    uint8_t *displayBufWithDma[2]; // 用于FDMA的两个缓冲区
+    bool dmaBufferSel;             // dma的缓冲区切换标志
+    boolean tftSwapStatus;
+
+    unsigned long pre_wifi_alive_millis; // 上一次发送维持心跳的本地时间戳
+};
+
+static ScreenShareAppRunData *run_data = NULL;
 
 // This next function will be called during decoding of the jpeg file to render each
 // 16x16 or 8x8 image tile (Minimum Coding Unit) to the tft->
@@ -46,11 +52,11 @@ bool screen_share_tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint1
     // Double buffering is used, the bitmap is copied to the buffer by pushImageDMA() the
     // bitmap can then be updated by the jpeg decoder while DMA is in progress
     uint16_t *dmaBufferPtr;
-    if (dmaBufferSel)
-        dmaBufferPtr = (uint16_t *)displayBufWithDma[0];
+    if (run_data->dmaBufferSel)
+        dmaBufferPtr = (uint16_t *)run_data->displayBufWithDma[0];
     else
-        dmaBufferPtr = (uint16_t *)displayBufWithDma[1];
-    dmaBufferSel = !dmaBufferSel; // Toggle buffer selection
+        dmaBufferPtr = (uint16_t *)run_data->displayBufWithDma[1];
+    run_data->dmaBufferSel = !run_data->dmaBufferSel; // Toggle buffer selection
     //  pushImageDMA() will clip the image block at screen boundaries before initiating DMA
     tft->pushImageDMA(x, y, w, h, bitmap, dmaBufferPtr); // Initiate DMA - blocking only if last DMA is not complete
                                                          // The DMA transfer of image block to the TFT is now in progress...
@@ -59,43 +65,48 @@ bool screen_share_tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint1
     return 1;
 }
 
-uint32_t readJpegFromFile(WiFiClient *client)
+static bool readJpegFromBuffer(uint8_t *const end)
 {
-    int32_t read_size = 0;
-    int32_t pos = 0;
-    bool isFound = false;
-    while (true)
+    // 默认从 run_data->recvBuf 中读数据
+    // end标记的当前最后一个数据的地址
+    bool isFound = false;                     // 标志着是否找到一帧完整的mjpeg图像数据
+    uint8_t *pfind = run_data->last_find_pos; // 开始查找的指针
+    if (NULL == run_data->mjpeg_start)
     {
-        // 查找帧
-        for (; pos < bufSaveTail - 1; ++pos)
+        // 没找到帧头的时候执行
+        while (pfind < end)
         {
-            if (recvBuf[pos] == 0xFF && recvBuf[pos + 1] == 0xD9)
+            if (*pfind == 0xFF && *(pfind + 1) == 0xD8)
             {
+                run_data->mjpeg_start = pfind; // 帧头
+                break;
+            }
+            ++pfind;
+        }
+        run_data->last_find_pos = pfind;
+    }
+    else if (NULL == run_data->mjpeg_end)
+    {
+        // 找帧尾
+        while (pfind < end)
+        {
+            if (*pfind == 0xFF && *(pfind + 1) == 0xD9)
+            {
+                run_data->mjpeg_end = pfind + 1; // 帧头，标记的是最后一个0xD9
                 isFound = true;
                 break;
             }
+            ++pfind;
         }
-        if (isFound)
-        {
-            // 找到一帧数据
-            break;
-        }
-        read_size = client->read(&recvBuf[bufSaveTail], JPEG_BUFFER_SIZE);
-        bufSaveTail += read_size;
+        run_data->last_find_pos = pfind;
     }
-    memcpy(jpegBuf, recvBuf, pos + 2);
-    // 把多余数据（本次没用上的数据保存下来）
-    memcpy(recvBuf, &recvBuf[pos + 2], bufSaveTail - pos - 2);
-    // 保存数据 下次循环再使用
-    bufSaveTail = bufSaveTail - pos - 2;
-    // Serial.println(pos + 2);
-    return pos + 2;
+    return isFound;
 }
 
 void screen_share_init(void)
 {
     // 设置CPU主频
-    setCpuFrequencyMhz(240);
+    setCpuFrequencyMhz(160);
 
     // 调整RGB模式  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
@@ -105,13 +116,20 @@ void screen_share_init(void)
     set_rgb(&rgb_setting);
 
     screen_share_gui_init();
-    recvBuf = NULL;
-    jpegBuf = NULL;
-    bufSaveTail = 0;
-    recvBuf = (uint8_t *)malloc(RECV_BUFFER_SIZE);
-    jpegBuf = (uint8_t *)malloc(JPEG_BUFFER_SIZE);
-    displayBufWithDma[0] = (uint8_t *)heap_caps_malloc(DMA_BUFFER_SIZE, MALLOC_CAP_DMA);
-    displayBufWithDma[1] = (uint8_t *)heap_caps_malloc(DMA_BUFFER_SIZE, MALLOC_CAP_DMA);
+    // 初始化运行时参数
+    run_data = (ScreenShareAppRunData *)calloc(1, sizeof(ScreenShareAppRunData));
+    run_data->tcp_start = 0;
+    run_data->req_sent = 0;
+    run_data->recvBuf = (uint8_t *)malloc(RECV_BUFFER_SIZE);
+    run_data->mjpeg_start = NULL;
+    run_data->mjpeg_end = NULL;
+    run_data->last_find_pos = run_data->recvBuf;
+    run_data->bufSaveTail = 0;
+    run_data->displayBufWithDma[0] = (uint8_t *)heap_caps_malloc(DMA_BUFFER_SIZE, MALLOC_CAP_DMA);
+    run_data->displayBufWithDma[1] = (uint8_t *)heap_caps_malloc(DMA_BUFFER_SIZE, MALLOC_CAP_DMA);
+    run_data->dmaBufferSel = false;
+    run_data->pre_wifi_alive_millis = 0;
+
     tft->initDMA();
 
     // The decoder must be given the exact name of the rendering function above
@@ -120,18 +138,21 @@ void screen_share_init(void)
     // The jpeg image can be scaled down by a factor of 1, 2, 4, or 8
     TJpgDec.setJpgScale(1);
 
-    tftSwapStatus = tft->getSwapBytes();
+    run_data->tftSwapStatus = tft->getSwapBytes();
     tft->setSwapBytes(true);
     // 因为其他app里是对tft直接设置的，所以此处尽量了不要使用TJpgDec的setSwapBytes
     // TJpgDec.setSwapBytes(true);
+    
+    Serial.print(F("防止过热，目前为限制为中速档!\n"));
 }
 
 void stop_share_config()
 {
-    tcp_start = 0;
-    req_sent = 0;
-    screen_share_server.stop();
-    screen_share_server.close();
+    run_data->tcp_start = 0;
+    run_data->req_sent = 0;
+    // 关闭服务端
+    ss_server.stop();
+    ss_server.close();
 }
 
 void screen_share_process(AppController *sys,
@@ -141,12 +162,11 @@ void screen_share_process(AppController *sys,
 
     if (RETURN == action->active)
     {
-        stop_share_config();
         sys->app_exit();
         return;
     }
 
-    if (0 == tcp_start && 0 == req_sent)
+    if (0 == run_data->tcp_start && 0 == run_data->req_sent)
     {
         // 预显示
         display_screen_share(
@@ -159,80 +179,81 @@ void screen_share_process(AppController *sys,
         // sys->req_event(&screen_share_app, APP_EVENT_WIFI_AP, 0);
         // 使用STA模式
         sys->req_event(&screen_share_app, APP_EVENT_WIFI_CONN, 0);
-        req_sent = 1; // 标志为 ap开启请求已发送
+        run_data->req_sent = 1; // 标志为 ap开启请求已发送
     }
-    else if (1 == tcp_start)
+    else if (1 == run_data->tcp_start)
     {
-        // 发送wifi维持的心跳
-        sys->req_event(&screen_share_app, APP_EVENT_WIFI_ALIVE, 0);
-        if (client)
+        if (doDelayMillisTime(SHARE_WIFI_ALIVE, &run_data->pre_wifi_alive_millis, false))
         {
-            if (client.connected() || client.available()) // 如果客户端处于连接状态client.connected()
+            // 发送wifi维持的心跳
+            sys->req_event(&screen_share_app, APP_EVENT_WIFI_ALIVE, 0);
+        }
+
+        if (ss_client.connected())
+        {
+
+            if (ss_client.available()) // 如果客户端处于连接状态client.connected()
             {
-                if (client.available())
+                ss_client.write("no");                                                                 // 向上位机发送当前帧未写入完指令
+                int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); //向缓冲区读取数据
+                run_data->bufSaveTail += read_count;
+
+                unsigned long deal_time = millis();
+                bool get_mjpeg_ret = readJpegFromBuffer(run_data->recvBuf + run_data->bufSaveTail);
+
+                if (true == get_mjpeg_ret)
                 {
-                    // uint8_t *recvBuf;   // 显示的
-                    // uint8_t *jpegBuf;   //
-                    client.write("no"); // 向上位机发送当前帧未写入完指令
-                    // 检测缓冲区是否有数据
-                    if (bufSaveTail == 0)
-                    {
-                        start_time = millis();
-                        client.read(pack_size, 2); //读取帧大小
-                        frame_size = pack_size[0] + (pack_size[1] << 8);
-                    }
-                    bufSaveTail = 0;
-                    int time_cnt = 10000;
-                    while (bufSaveTail < frame_size && --time_cnt)
-                    {
-                        if (bufSaveTail > RECV_BUFFER_SIZE - 7000)
-                        {
-                            client.read(recvBuf, 10000);
-                            // 认定于接收失败 read_count清理
-                            Serial.println("bufSaveTail > RECV_BUFFER_SIZE - 7000");
-                            read_count = 0;
-                            break;
-                        }
-                        read_count = client.read(&recvBuf[bufSaveTail], 7000); //向缓冲区读取数据
-                        bufSaveTail += read_count;
-                    }
-                    bufSaveTail = 0;
-                    client.write("ok"); // 向上位机发送下一帧发送指令
-                    if (0 == read_count || time_cnt < 1)
-                    {
-                        return;
-                    }
-                    // 判断末尾数据是否当前帧校验位
-                    if (recvBuf[frame_size - 3] == 0xaa && recvBuf[frame_size - 2] == 0xbb && recvBuf[frame_size - 1] == 0xcc)
-                    {
-                        receive_time = millis() - start_time;
-                        deal_time = millis();
-                        // tft->startWrite();                              // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
-                        TJpgDec.drawJpg(0, 0, recvBuf, frame_size - 3); // 在左上角的0,0处绘制图像——在这个草图中，DMA请求在回调tft_output()中处理
-                        // tft->endWrite();                                // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
-                        end_time = millis(); // 计算mcu刷新一张图片的时间，从而算出1s能刷新多少张图，即得出最大刷新率
-                        Serial.printf("帧大小：%d ", frame_size);
-                        Serial.print("MCU处理速度：");
-                        Serial.print(1000 / (end_time - start_time), 2);
-                        Serial.print("Fps");
-                        Serial.printf("帧接收耗时:%.2fms,帧解码显示耗时:%.2fms\n", receive_time, (millis() - deal_time));
-                    }
+                    ss_client.write("ok"); // 向上位机发送下一帧发送指令
+                    tft->startWrite();   // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
+                    uint32_t frame_size = run_data->mjpeg_end - run_data->mjpeg_start + 1;
+                    // 在左上角的0,0处绘制图像——在这个草图中，DMA请求在回调tft_output()中处理
+                    JRESULT jpg_ret = TJpgDec.drawJpg(0, 0, run_data->mjpeg_start, frame_size);
+                    tft->endWrite();                                // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
+                    // 剩余帧大小
+                    uint32_t left_frame_size = &run_data->recvBuf[run_data->bufSaveTail] - run_data->mjpeg_end;
+                    memcpy(run_data->recvBuf, run_data->mjpeg_end + 1, left_frame_size);
+                    Serial.printf("帧大小：%d ", frame_size);
+                    Serial.print("MCU处理速度：");
+                    Serial.print(1000.0 / (millis() - deal_time), 2);
+                    Serial.print("Fps\n");
+
+                    run_data->last_find_pos = run_data->recvBuf;
+                    run_data->bufSaveTail = 0;
+                    // 数据清零
+                    run_data->mjpeg_start = NULL;
+                    run_data->mjpeg_end = NULL;
                 }
-            }
-            else if (!client.connected())
-            {
-                client.stop();
-                Serial.println("Controller was disconnect!");
+                else if (run_data->bufSaveTail > RECV_BUFFER_SIZE)
+                {
+                    run_data->last_find_pos = run_data->recvBuf;
+                    run_data->bufSaveTail = 0;
+                    // 数据清零
+                    run_data->mjpeg_start = NULL;
+                    run_data->mjpeg_end = NULL;
+                    ss_client.write("ok"); // 向上位机发送下一帧发送指令
+                }
             }
         }
         else
         {
             // 建立客户
-            client = screen_share_server.available();
-            if (client)
+            ss_client = ss_server.available();
+            if (ss_client.connected())
             {
-                Serial.println("Controller was connected!");
-                client.write("ok"); // 向上位机发送下一帧发送指令
+                Serial.println(F("Controller was connected!"));
+                ss_client.write("ok"); // 向上位机发送下一帧发送指令
+            }
+
+            unsigned long timeout = millis();
+            while (ss_client.available() == 0)
+            {
+                if (millis() - timeout > 2000)
+                {
+                    Serial.print(F("Controller was disconnect!"));
+                    Serial.println(F(" >>> Client Timeout !"));
+                    ss_client.stop();
+                    return;
+                }
             }
         }
     }
@@ -240,30 +261,27 @@ void screen_share_process(AppController *sys,
 
 void screen_exit_callback(void)
 {
+    stop_share_config();
     screen_share_gui_del();
-    if (NULL != recvBuf)
+    if (NULL != run_data->recvBuf)
     {
-        free(recvBuf);
-        recvBuf = NULL;
+        free(run_data->recvBuf);
+        run_data->recvBuf = NULL;
     }
-    if (NULL != jpegBuf)
+
+    if (NULL != run_data->displayBufWithDma[0])
     {
-        free(jpegBuf);
-        jpegBuf = NULL;
+        free(run_data->displayBufWithDma[0]);
+        run_data->displayBufWithDma[0] = NULL;
     }
-    if (NULL != displayBufWithDma[0])
+    if (NULL != run_data->displayBufWithDma[1])
     {
-        free(displayBufWithDma[0]);
-        displayBufWithDma[0] = NULL;
-    }
-    if (NULL != displayBufWithDma[1])
-    {
-        free(displayBufWithDma[1]);
-        displayBufWithDma[1] = NULL;
+        free(run_data->displayBufWithDma[1]);
+        run_data->displayBufWithDma[1] = NULL;
     }
 
     // 恢复此前的驱动参数
-    tft->setSwapBytes(tftSwapStatus);
+    tft->setSwapBytes(run_data->tftSwapStatus);
 
     // 恢复RGB灯  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV,
@@ -272,6 +290,10 @@ void screen_exit_callback(void)
                             1, 1, 1,
                             0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
+
+    // 释放运行时参数
+    free(run_data);
+    run_data = NULL;
 }
 
 void screen_event_notification(APP_EVENT_TYPE type, int event_id)
@@ -287,9 +309,9 @@ void screen_event_notification(APP_EVENT_TYPE type, int event_id)
             "8081",
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
-        tcp_start = 1;
-        screen_share_server.begin(HTTP_PORT); //服务器启动监听端口号
-        screen_share_server.setNoDelay(true);
+        run_data->tcp_start = 1;
+        ss_server.begin(HTTP_PORT); //服务器启动监听端口号
+        ss_server.setNoDelay(true);
     }
     break;
     case APP_EVENT_WIFI_AP:
@@ -301,9 +323,9 @@ void screen_event_notification(APP_EVENT_TYPE type, int event_id)
             "8081",
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
-        tcp_start = 1;
-        // screen_share_server.begin(HTTP_PORT); //服务器启动监听端口号
-        // screen_share_server.setNoDelay(true);
+        run_data->tcp_start = 1;
+        // ss_server.begin(HTTP_PORT); //服务器启动监听端口号
+        // ss_server.setNoDelay(true);
     }
     break;
     case APP_EVENT_WIFI_ALIVE:

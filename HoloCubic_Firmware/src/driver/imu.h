@@ -19,6 +19,7 @@ enum ACTIVE_TYPE
     UP,
     DOWN,
     GO_FORWORD,
+    SHAKE,
     UNKNOWN
 };
 

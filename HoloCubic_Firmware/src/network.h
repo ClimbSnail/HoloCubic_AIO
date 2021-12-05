@@ -51,7 +51,7 @@ void restCallback(TimerHandle_t xTimer);
 
 class Network
 {
-public:
+private:
     unsigned long m_preDisWifiConnInfoMillis; // 保存上一回显示连接状态的时间戳
 
 public:
