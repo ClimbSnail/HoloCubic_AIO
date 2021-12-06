@@ -61,7 +61,7 @@ static void getWeather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = "";
-    snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
+    snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr.c_str());
     http.begin(api);
 
     int httpCode = http.GET();
@@ -145,7 +145,7 @@ static void getDaliyWeather(short maxT[], short minT[])
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = "";
-    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret);
+    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret.c_str());
     http.begin(api);
 
     int httpCode = http.GET();

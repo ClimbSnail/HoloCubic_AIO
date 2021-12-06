@@ -128,14 +128,14 @@ int AppController::main_process(Imu_Action *act_info)
 }
 
 // 事件请求
-int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event_id)
+int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type,  int event_id)
 {
     // 更新事件的请求者
     if (eventList.size() > EVENT_LIST_MAX_LENGTH)
     {
         return 1;
     }
-    EVENT_OBJ new_event = {from, type, event_id};
+    EVENT_OBJ new_event = {from, type, (unsigned int)event_id};
     eventList.push_back(new_event);
     Serial.print(F("Add APP_EVENT_WIFI_ALIVE -> "));
     Serial.print(F("EventList Size: "));
@@ -145,24 +145,33 @@ int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event
 
 int AppController::req_event_deal(void)
 {
-    // 请求事件的处理
-    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    //没有app事件时，尝试关闭wifi
+    if(!eventList.size()) //(evnetList.size() ==0)
     {
-        // 后期可以拓展其他事件的处理
-        bool ret = wifi_event((*event).type);
-        if(false == ret)
-        {
-            // 本事件没处理完成
-            continue;
-        }
-
-        // 事件回调
-        (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
-        Serial.print(F("Delete APP_EVENT_WIFI_ALIVE -> "));
-        eventList.erase(event); // 删除该响应完成的事件
-        Serial.print(F("EventList Size: "));
-        Serial.println(eventList.size());
+        wifi_event(APP_EVENT_NONE);
     }
+    else
+    {
+            // 请求事件的处理
+        for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+        {
+            // 后期可以拓展其他事件的处理
+            bool ret = wifi_event((*event).type);
+            if(false == ret)
+            {
+                // 本事件没处理完成
+                continue;
+            }
+
+            // 事件回调
+            (*(appList[cur_app_index]->on_event))((*event).type, (*event).id);
+            Serial.print(F("Delete APP_EVENT_WIFI_ALIVE -> "));
+            eventList.erase(event); // 删除该响应完成的事件
+            Serial.print(F("EventList Size: "));
+            Serial.println(eventList.size());
+        }
+    }
+    
     return 0;
 }
 
