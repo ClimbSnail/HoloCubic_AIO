@@ -176,7 +176,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_img_set_zoom(tempImg, 180);
     tempBar = lv_bar_create(scr_1, NULL);
     lv_obj_add_style(tempBar, LV_BAR_TYPE_NORMAL, &bar_style);
-    lv_bar_set_range(tempBar, 0, 60);   // 设置进度条表示的温度为-20~40
+    lv_bar_set_range(tempBar, -50, 50);   // 设置进度条表示的温度为-20~50
     lv_obj_set_size(tempBar, 60, 12);
     lv_obj_set_style_local_bg_color(tempBar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     lv_bar_set_value(tempBar, 10, LV_ANIM_OFF);
@@ -234,12 +234,14 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     lv_label_set_text(cityLabel, weaInfo.cityname);
     lv_label_set_text(btnLabel, airQualityCh[weaInfo.airQulity]);
     lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
+    // 下面这行代码可能会出错
     lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
                           weaInfo.minTemp, weaInfo.maxTmep, weaInfo.windDir, weaInfo.windLevel);
-    lv_bar_set_value(tempBar, weaInfo.temperature+20, LV_ANIM_OFF);
+
+    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_OFF);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);
-    // lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_OFF);
-    // lv_label_set_text_fmt(humiLabel, "%d\%", weaInfo.humidity);
+    lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_OFF);
+    lv_label_set_text_fmt(humiLabel, "%d%%", weaInfo.humidity);
 
     // // 绘制图形
     // lv_obj_align(weatherImg, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 10);

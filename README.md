@@ -94,7 +94,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 ##### 相册（Picture）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
-2. 将需要播放的图片转化成一定格式（.jpg或.bin），再保存在`image/`目录中。
+2. 将需要播放的图片转化成一定格式（.jpg或.bin），再保存在`image/`目录中，图片文件名必须为英文字符或数字。
 3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
 
 关于图片转换：使用附带的上位机转化（分辨率随意，软件会自动压缩到指定分辨率）。
@@ -103,7 +103,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 ##### 视频播放（Media）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`movie/`目录。
-2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件（mjpeg或者rgb格式都可），存放在`movie/`目录下。
+2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件（mjpeg或者rgb格式都可），存放在`movie/`目录下，视频文件名必须为英文字符或数字。
 2. 运行播放器APP后，将会读取`movie/`目录下的视频文件。
 
 ##### 屏幕分享、电脑投屏（Screen share）
@@ -116,7 +116,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ###### 新版 weather
 1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
 2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`、`tianqi 城市名（中文）`。
-2. 使用新版天气时钟，需要再"Web Server"服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.tianqiapi.com ）
+2. 使用新版天气时钟，需要再"Web Server"服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.yiketianqi.com/user/login ）
 ###### 旧版 weather old
 1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
 2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
