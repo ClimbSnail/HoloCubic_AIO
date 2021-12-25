@@ -25,7 +25,7 @@ void taskTwo(void *parameter)
         screen.routine();
         delay(5);
     }
-    Serial.println("Ending task 1");
+    Serial.println("Ending task 2");
     vTaskDelete(NULL);
 }
 
