@@ -203,8 +203,8 @@ static void weather_init(void)
     // 初始化运行时参数
     run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
     memset((char *)&run_data->wea, 0, sizeof(Weather));
-    run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔
-    run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔(900s)
+    run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔900000(900s)
+    run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔900000(900s)
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
     run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
@@ -217,13 +217,13 @@ static void weather_init(void)
 
     // 目前更新数据的任务栈大小5000够用，4000不够用
     // 为了后期迭代新功能 当前设置为8000
-    run_data->xReturned_task_task_update = xTaskCreate(
-        task_update,                          /*任务函数*/
-        "Task_update",                        /*带任务名称的字符串*/
-        8000,                                /*堆栈大小，单位为字节*/
-        NULL,                                 /*作为任务输入传递的参数*/
-        1,                                    /*任务的优先级*/
-        &run_data->xHandle_task_task_update); /*任务句柄*/
+    // run_data->xReturned_task_task_update = xTaskCreate(
+    //     task_update,                          /*任务函数*/
+    //     "Task_update",                        /*带任务名称的字符串*/
+    //     8000,                                /*堆栈大小，单位为字节*/
+    //     NULL,                                 /*作为任务输入传递的参数*/
+    //     1,                                    /*任务的优先级*/
+    //     &run_data->xHandle_task_task_update); /*任务句柄*/
 }
 
 static void weather_process(AppController *sys,
@@ -301,41 +301,41 @@ static void weather_exit_callback(void)
     run_data = NULL;
 }
 
-static void task_update(void *parameter)
-{
-    // 数据更新任务
-    while (1)
-    {
-        if (run_data->update_type & UPDATE_WEATHER)
-        {
-            get_weather();
-            if (run_data->clock_page == 0)
-            {
-                display_weather(run_data->wea, LV_SCR_LOAD_ANIM_NONE);
-            }
-            run_data->update_type &= (~UPDATE_WEATHER);
-        }
-        if (run_data->update_type & UPDATE_TIME)
-        {
-            long long timestamp = get_timestamp(TIME_API); // nowapi时间API
-            if (run_data->clock_page == 0)
-            {
-                UpdateTime_RTC(timestamp);
-            }
-            run_data->update_type &= (~UPDATE_TIME);
-        }
-        if (run_data->update_type & UPDATE_DALIY_WEATHER)
-        {
-            get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
-            if (run_data->clock_page == 1)
-            {
-                display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
-            }
-            run_data->update_type &= (~UPDATE_DALIY_WEATHER);
-        }
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-    }
-}
+// static void task_update(void *parameter)
+// {
+//     // 数据更新任务
+//     while (1)
+//     {
+//         if (run_data->update_type & UPDATE_WEATHER)
+//         {
+//             get_weather();
+//             if (run_data->clock_page == 0)
+//             {
+//                 display_weather(run_data->wea, LV_SCR_LOAD_ANIM_NONE);
+//             }
+//             run_data->update_type &= (~UPDATE_WEATHER);
+//         }
+//         if (run_data->update_type & UPDATE_TIME)
+//         {
+//             long long timestamp = get_timestamp(TIME_API); // nowapi时间API
+//             if (run_data->clock_page == 0)
+//             {
+//                 UpdateTime_RTC(timestamp);
+//             }
+//             run_data->update_type &= (~UPDATE_TIME);
+//         }
+//         if (run_data->update_type & UPDATE_DALIY_WEATHER)
+//         {
+//             get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
+//             if (run_data->clock_page == 1)
+//             {
+//                 display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
+//             }
+//             run_data->update_type &= (~UPDATE_DALIY_WEATHER);
+//         }
+//         vTaskDelay(2000 / portTICK_PERIOD_MS);
+//     }
+// }
 
 static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
 {
@@ -349,11 +349,11 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             Serial.print(F("weather update.\n"));
             run_data->update_type |= UPDATE_WEATHER;
 
-            // get_weather();
-            // if (run_data->clock_page == 0)
-            // {
-            //     display_weather(run_data->wea, LV_SCR_LOAD_ANIM_NONE);
-            // }
+            get_weather();
+            if (run_data->clock_page == 0)
+            {
+                display_weather(run_data->wea, LV_SCR_LOAD_ANIM_NONE);
+            }
         };
         break;
         case UPDATE_NTP:
@@ -361,11 +361,11 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             Serial.print(F("ntp update.\n"));
             run_data->update_type |= UPDATE_TIME;
 
-            // long long timestamp = get_timestamp(TIME_API); // nowapi时间API
-            // if (run_data->clock_page == 0)
-            // {
-            //     UpdateTime_RTC(timestamp);
-            // }
+            long long timestamp = get_timestamp(TIME_API); // nowapi时间API
+            if (run_data->clock_page == 0)
+            {
+                UpdateTime_RTC(timestamp);
+            }
         };
         break;
         case UPDATE_DAILY:
@@ -373,11 +373,11 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             Serial.print(F("daliy update.\n"));
             run_data->update_type |= UPDATE_DALIY_WEATHER;
 
-            // get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
-            // if (run_data->clock_page == 1)
-            // {
-            //     display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
-            // }
+            get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
+            if (run_data->clock_page == 1)
+            {
+                display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
+            }
         };
         break;
         default:

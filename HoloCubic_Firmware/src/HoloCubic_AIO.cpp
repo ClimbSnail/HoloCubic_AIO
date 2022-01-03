@@ -22,11 +22,11 @@
 #include "app/idea_anim/idea.h"
 #include "app/settings/settings.h"
 #include "app/game_2048/game_2048.h"
-// #include "app/picture/picture.h"
-// #include "app/media_player/media_player.h"
-// #include "app/screen_share/screen_share.h"
-// #include "app/file_manager/file_manager.h"
-// #include "app/weather_old/weather_old.h"
+#include "app/picture/picture.h"
+#include "app/media_player/media_player.h"
+#include "app/screen_share/screen_share.h"
+#include "app/file_manager/file_manager.h"
+#include "app/weather_old/weather_old.h"
 
 /*** Component objects **7*/
 IMU mpu;
@@ -58,11 +58,11 @@ void setup()
     app_contorller = new AppController(); // APP控制器
     // 如果下面有些变量找不到，请直接注释该行
     app_contorller->app_register(&weather_app);
-    // app_contorller->app_register(&weather_old_app);
-    // app_contorller->app_register(&picture_app);
-    // app_contorller->app_register(&media_app);
-    // app_contorller->app_register(&screen_share_app);
-    // app_contorller->app_register(&file_manager_app);
+    app_contorller->app_register(&weather_old_app);
+    app_contorller->app_register(&picture_app);
+    app_contorller->app_register(&media_app);
+    app_contorller->app_register(&screen_share_app);
+    app_contorller->app_register(&file_manager_app);
     app_contorller->app_register(&server_app);
     app_contorller->app_register(&idea_app);
     app_contorller->app_register(&bilibili_app);
