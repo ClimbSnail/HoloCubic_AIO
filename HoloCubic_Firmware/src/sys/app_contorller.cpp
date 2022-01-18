@@ -157,6 +157,7 @@ int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event
 
 int AppController::req_event_deal(void)
 {
+    std::list<std::list<EVENT_OBJ>::iterator> eventDone;
     // 请求事件的处理
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
     {
@@ -174,9 +175,12 @@ int AppController::req_event_deal(void)
             (*((*event).from->on_event))((*event).type, (*event).id);
         }
         Serial.print("Delete EVENT -> " + String(app_event_type_info[(*event).type]));
-        eventList.erase(event); // 删除该响应完成的事件
+        eventDone.push_back(event);
         Serial.print(F("\tEventList Size: "));
         Serial.println(eventList.size());
+    }
+    for (auto item : eventDone) {
+        eventList.erase(item); // 删除该响应完成的事件
     }
     return 0;
 }
