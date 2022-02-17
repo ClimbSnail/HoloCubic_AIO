@@ -1,7 +1,7 @@
 #include "weather.h"
 #include "weather_gui.h"
 #include "ESP32Time.h"
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 #include "network.h"
 #include "common.h"
 #include "ArduinoJson.h"
@@ -9,7 +9,7 @@
 #include <map>
 
 #define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s" // &city=%s
-#define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s"
+#define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 #define WEATHER_PAGE_SIZE 2
 #define UPDATE_WEATHER 0x01       // 更新天气
@@ -154,7 +154,7 @@ static void get_daliyWeather(short maxT[], short minT[])
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = "";
-    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret);
+    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.cityname);
     http.begin(api);
 
     int httpCode = http.GET();

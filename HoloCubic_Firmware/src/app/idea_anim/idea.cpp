@@ -1,5 +1,5 @@
 #include "idea.h"
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 #include "network.h"
 #include "common.h"
 #include <stdint.h>

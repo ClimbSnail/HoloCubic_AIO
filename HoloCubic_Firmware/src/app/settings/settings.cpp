@@ -1,7 +1,7 @@
 #include "settings.h"
 #include "message.h"
 #include "settings_gui.h"
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 #include "common.h"
 
 #define RECV_BUF_LEN 128

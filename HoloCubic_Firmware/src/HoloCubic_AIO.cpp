@@ -13,7 +13,7 @@
 #include "driver/lv_port_fatfs.h"
 #include "common.h"
 
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 
 // 如果下面有些头文件找不到，请直接注释该行
 #include "app/weather/weather.h"
@@ -31,7 +31,7 @@
 /*** Component objects **7*/
 IMU mpu;
 Imu_Action *act_info;          // 存放mpu6050返回的数据
-AppController *app_contorller; // APP控制器
+AppController *app_controller; // APP控制器
 
 void setup()
 {
@@ -55,22 +55,22 @@ void setup()
     tf.init();
     lv_fs_if_init();
 
-    app_contorller = new AppController(); // APP控制器
+    app_controller = new AppController(); // APP控制器
     // 如果下面有些变量找不到，请直接注释该行
-    app_contorller->app_register(&weather_app);
-    app_contorller->app_register(&weather_old_app);
-    app_contorller->app_register(&picture_app);
-    app_contorller->app_register(&media_app);
-    app_contorller->app_register(&screen_share_app);
-    app_contorller->app_register(&file_manager_app);
-    app_contorller->app_register(&server_app);
-    app_contorller->app_register(&idea_app);
-    app_contorller->app_register(&bilibili_app);
-    app_contorller->app_register(&settings_app);
-    app_contorller->app_register(&game_2048_app);
+    app_controller->app_install(&weather_app);
+    app_controller->app_install(&weather_old_app);
+    app_controller->app_install(&picture_app);
+    app_controller->app_install(&media_app);
+    app_controller->app_install(&screen_share_app);
+    app_controller->app_install(&file_manager_app);
+    app_controller->app_install(&server_app);
+    app_controller->app_install(&idea_app);
+    app_controller->app_install(&bilibili_app);
+    app_controller->app_install(&settings_app);
+    app_controller->app_install(&game_2048_app);
 
     // 优先显示屏幕 加快视觉上的开机时间
-    app_contorller->main_process(&mpu.action_info);
+    app_controller->main_process(&mpu.action_info);
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
@@ -91,7 +91,7 @@ void loop()
 {
     screen.routine();
     act_info = mpu.update(200);
-    app_contorller->main_process(act_info); // 运行当前进程
+    app_controller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);
 }

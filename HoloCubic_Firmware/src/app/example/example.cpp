@@ -1,6 +1,6 @@
 #include "example.h"
 #include "example_gui.h"
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 #include "common.h"
 
 // 动态数据，APP的生命周期结束也需要释放它

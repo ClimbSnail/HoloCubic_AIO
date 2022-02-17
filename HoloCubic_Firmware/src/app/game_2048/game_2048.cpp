@@ -1,7 +1,7 @@
 #include "game_2048.h"
 #include "game_2048_gui.h"
 #include "game2048_contorller.h"
-#include "sys/app_contorller.h"
+#include "sys/app_controller.h"
 #include "common.h"
 #include <esp32-hal-timer.h>
 

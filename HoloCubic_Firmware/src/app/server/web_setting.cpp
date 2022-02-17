@@ -64,7 +64,7 @@ String file_size(int bytes)
                 "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
                 "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
                 "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
-                "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"Submie\"></form>"
+                "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 void init_page_header()
 {
@@ -155,7 +155,7 @@ void Setting()
 
 void save_config(void)
 {
-    Send_HTML(F("<h1>Successd! You can continue to operate.</h1>"));
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
 
     //获取输入的WIFI账户和密码
     g_cfg.ssid = server.arg("ssid");

@@ -9,7 +9,7 @@ void config_read(const char *file_path, Config *cfg)
     // return cfg->ssid+cfg->password+cfg->cityname+cfg->language+cfg->weather_key;
 
     prefs.begin("sys"); // 打开命名空间mynamespace
-    cfg->backLight = prefs.getUChar("backLight", 80);
+    cfg->backLight = prefs.getUChar("backLight", 10);
     cfg->rotation = prefs.getUChar("rotation", 4);
     cfg->auto_calibration_mpu = prefs.getUChar("auto_mpu", 1);
     cfg->ssid = prefs.getString("ssid", "");
