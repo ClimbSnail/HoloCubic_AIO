@@ -53,4 +53,7 @@ void photo_gui_del(void)
         lv_obj_clean(image_scr); // 清空此前页面
         image_scr = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
 }

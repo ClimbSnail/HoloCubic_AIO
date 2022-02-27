@@ -51,6 +51,9 @@ void game_2048_gui_del(void)
         lv_obj_clean(game_2048_gui);
         game_2048_gui = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
 }
 
 //用于宽高同时增加的lv_anim_exec_xcb_t动画参数

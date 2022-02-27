@@ -25,17 +25,27 @@ enum ACTIVE_TYPE
     UNKNOWN
 };
 
+// 方向类型
+enum MPU_DIR_TYPE
+{
+    NORMAL_DIR_TYPE = 0,
+    X_DIR_TYPE = 0x01,
+    Y_DIR_TYPE = 0x02,
+    Z_DIR_TYPE = 0x04,
+    XY_DIR_TYPE = 0x08
+};
+
 struct Imu_Action
 {
     ACTIVE_TYPE active;
     boolean isValid;
     boolean long_time;
-    int16_t ax;
-    int16_t ay;
-    int16_t az;
-    int16_t gx;
-    int16_t gy;
-    int16_t gz;
+    int16_t v_ax; // v表示虚拟参数（用于调整6050的初始方位）
+    int16_t v_ay;
+    int16_t v_az;
+    int16_t v_gx;
+    int16_t v_gy;
+    int16_t v_gz;
 };
 
 class IMU
@@ -44,14 +54,17 @@ private:
     MPU6050 mpu;
     int flag;
     long last_update_time;
+    uint8_t order; // 表示方位，x与y是否对换
 
 public:
     Imu_Action action_info;
 
 public:
     IMU();
-    void init();
+    void init(uint8_t order = 0);
+    void setOrder(uint8_t order); // 设置方向
     Imu_Action *update(int interval);
+    void getVirtureMotion6(Imu_Action *action_info);
 };
 
 #endif

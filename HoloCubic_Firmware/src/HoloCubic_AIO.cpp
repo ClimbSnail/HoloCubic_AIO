@@ -15,7 +15,6 @@
 
 #include "sys/app_controller.h"
 
-// 如果下面有些头文件找不到，请直接注释该行
 #include "app/weather/weather.h"
 #include "app/bilibili_fans/bilibili.h"
 #include "app/server/server.h"
@@ -29,7 +28,6 @@
 #include "app/weather_old/weather_old.h"
 
 /*** Component objects **7*/
-IMU mpu;
 Imu_Action *act_info;          // 存放mpu6050返回的数据
 AppController *app_controller; // APP控制器
 
@@ -56,7 +54,6 @@ void setup()
     lv_fs_if_init();
 
     app_controller = new AppController(); // APP控制器
-    // 如果下面有些变量找不到，请直接注释该行
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
     app_controller->app_install(&picture_app);
@@ -74,7 +71,7 @@ void setup()
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
-    mpu.init(); // 初始化比较耗时
+    mpu.init(g_cfg.mpu_order); // 初始化比较耗时
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     // 初始化RGB灯 HSV色彩模式

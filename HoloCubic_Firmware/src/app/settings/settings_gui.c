@@ -105,7 +105,7 @@ void display_settings(const char *cur_ver, const char *new_ver, lv_scr_load_anim
     lv_label_set_text(new_ver_label, "Please update your A");
     lv_label_set_recolor(new_ver_label, true); //先得使能文本重绘色功能
     lv_label_set_long_mode(new_ver_label, LV_LABEL_LONG_SROLL_CIRC);
-    if (strcmp(cur_ver, &new_ver[2])<0)
+    if (strcmp(cur_ver, &new_ver[2]) < 0)
     {
         lv_label_set_text_fmt(new_ver_label, "Please update your AIO to #ff0000 %s#", new_ver);
         lv_obj_align(new_ver_label, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -80);
@@ -136,4 +136,10 @@ void settings_gui_del(void)
         lv_obj_clean(settings_scr);
         settings_scr = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&title_style);
+    // lv_style_reset(&label_style);
+    // lv_style_reset(&info_style);
 }

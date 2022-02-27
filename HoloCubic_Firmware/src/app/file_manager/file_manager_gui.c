@@ -55,8 +55,8 @@ void display_file_manager_init(void)
 }
 
 void display_file_manager(const char *title, const char *domain,
-                     const char *info, const char *ap_ip,
-                     lv_scr_load_anim_t anim_type)
+                          const char *info, const char *ap_ip,
+                          lv_scr_load_anim_t anim_type)
 {
     display_file_manager_init();
 
@@ -100,4 +100,8 @@ void file_manager_gui_del(void)
         lv_obj_clean(file_manager_scr); // 清空此前页面
         file_manager_scr = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&label_style5);
 }

@@ -74,7 +74,7 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == scr_2)
         return;
-    weather_gui_del();
+    weather_gui_release();
     lv_obj_clean(act_obj); // 清空此前页面
 
     scr_2 = lv_obj_create(NULL, NULL);
@@ -94,7 +94,7 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     ser2 = lv_chart_add_series(chart, LV_COLOR_BLUE);
     lv_obj_set_style_local_pad_left(chart, LV_CHART_PART_BG, LV_STATE_DEFAULT, 40);
     lv_chart_set_y_tick_texts(chart, "40\n30\n20\n10\n0", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
-    
+
     // 绘制
     lv_obj_align(titleLabel, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
     lv_obj_align(chart, NULL, LV_ALIGN_CENTER, 0, 10);
@@ -128,7 +128,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == scr_1)
         return;
-    weather_gui_del();
+    weather_gui_release();
     lv_obj_clean(act_obj); // 清空此前页面
 
     scr_1 = lv_obj_create(NULL, NULL);
@@ -176,7 +176,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_img_set_zoom(tempImg, 180);
     tempBar = lv_bar_create(scr_1, NULL);
     lv_obj_add_style(tempBar, LV_BAR_TYPE_NORMAL, &bar_style);
-    lv_bar_set_range(tempBar, -50, 50);   // 设置进度条表示的温度为-20~50
+    lv_bar_set_range(tempBar, -50, 50); // 设置进度条表示的温度为-20~50
     lv_obj_set_size(tempBar, 60, 12);
     lv_obj_set_style_local_bg_color(tempBar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     lv_bar_set_value(tempBar, 10, LV_ANIM_OFF);
@@ -223,7 +223,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     // }
     // else
     // {
-        // lv_scr_load(scr_1);
+    // lv_scr_load(scr_1);
     // }
 }
 
@@ -333,6 +333,22 @@ void weather_obj_del(void)
     }
 }
 
+void weather_gui_release(void)
+{
+    weather_obj_del();
+    if (scr_1 != NULL)
+    {
+        lv_obj_clean(scr_1);
+        scr_1 = NULL;
+    }
+
+    if (scr_2 != NULL)
+    {
+        lv_obj_clean(scr_2);
+        scr_2 = NULL;
+    }
+}
+
 void weather_gui_del(void)
 {
     weather_obj_del();
@@ -341,12 +357,20 @@ void weather_gui_del(void)
         lv_obj_clean(scr_1);
         scr_1 = NULL;
     }
-    
+
     if (scr_2 != NULL)
     {
         lv_obj_clean(scr_2);
         scr_2 = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&chFont_style);
+    // lv_style_reset(&numberSmall_style);
+    // lv_style_reset(&numberBig_style);
+    // lv_style_reset(&btn_style);
+    // lv_style_reset(&bar_style);
 }
 
 void display_space(void)

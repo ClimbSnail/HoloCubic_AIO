@@ -54,15 +54,16 @@ String file_size(int bytes)
 #define SETTING "<form method=\"GET\" action=\"saveConf\">"                                                                                                                                                                                                        \
                 "<label class=\"input\"><span>WiFi SSID (2.4G)</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"                                                                                                                                       \
                 "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                                                                                                                                            \
-                "<label class=\"input\"><span>知心天气 城市名（拼音）</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                                          \
+                "<label class=\"input\"><span>知心天气 城市名（拼音）</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                 \
                 "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"                                                                                                                             \
                 "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                      \
                 "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqiAppId\"value=\"%s\"></label>"                                                                                                                                    \
                 "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqiAppSecret\"value=\"%s\"></label>"                                                                                                                            \
-                "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqiAddr\"value=\"%s\"></label>"                                                                                                                               \
+                "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqiAddr\"value=\"%s\"></label>"                                                                                                                     \
                 "<label class=\"input\"><span>Bili UID</span><input type=\"text\"name=\"biliUID\"value=\"%s\"></label>"                                                                                                                                            \
                 "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
                 "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
+                "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%u\"></label>"                                                                                                                      \
                 "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
                 "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
@@ -140,14 +141,14 @@ void Setting()
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
                 g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
-                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, "checked=\"checked\"", "");
+                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, g_cfg.mpu_order, "checked=\"checked\"", "");
     }
     else
     {
         sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
                 g_cfg.cityname.c_str(), g_cfg.language.c_str(),
                 g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
-                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, "", "checked=\"checked\"");
+                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, g_cfg.mpu_order, "", "checked=\"checked\"");
     }
     webpage = buf;
     Send_HTML(webpage);
@@ -169,6 +170,7 @@ void save_config(void)
     g_cfg.bili_uid = server.arg("biliUID");
     g_cfg.backLight = server.arg("backLight").toInt();
     g_cfg.rotation = server.arg("rotation").toInt();
+    g_cfg.mpu_order = server.arg("mpu_order").toInt();
     g_cfg.auto_calibration_mpu = server.arg("auto_calibration_mpu").toInt();
     config_save("/wifi.txt", &g_cfg); // 更新配置文件
 }

@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "1.9.4"
+#define AIO_VERSION "2.0.0 Beta"
 
 #include "Arduino.h"
 #include "config.h"
@@ -13,6 +13,7 @@
 #include "network.h"
 #include <Preferences.h>
 
+extern IMU mpu; // 原则上只提供给主程序调用
 extern SdCard tf;
 extern Pixel rgb;
 extern Config g_cfg;      // 全局配置文件

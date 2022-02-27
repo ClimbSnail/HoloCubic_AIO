@@ -9,7 +9,7 @@ lv_obj_t *domain_label;
 lv_obj_t *title_label;
 
 static lv_style_t default_style;
-static lv_style_t label_style5;
+static lv_style_t label_style;
 
 LV_FONT_DECLARE(lv_font_montserrat_24);
 
@@ -29,10 +29,10 @@ void server_gui_init(void)
     // 本地的ip地址
     main_scr = lv_obj_create(NULL, NULL);
     lv_obj_add_style(main_scr, LV_BTN_PART_MAIN, &default_style);
-    lv_style_init(&label_style5);
-    lv_style_set_text_opa(&label_style5, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&label_style5, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&label_style5, LV_STATE_DEFAULT, &lv_font_montserrat_24);
+    lv_style_init(&label_style);
+    lv_style_set_text_opa(&label_style, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_style_set_text_color(&label_style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_text_font(&label_style, LV_STATE_DEFAULT, &lv_font_montserrat_24);
 }
 
 void display_setting_init(void)
@@ -60,19 +60,19 @@ void display_setting(const char *title, const char *domain,
 {
     display_setting_init();
 
-    lv_obj_add_style(title_label, LV_LABEL_PART_MAIN, &label_style5);
+    lv_obj_add_style(title_label, LV_LABEL_PART_MAIN, &label_style);
     lv_label_set_text(title_label, title);
     lv_obj_align(title_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -200);
 
-    lv_obj_add_style(domain_label, LV_LABEL_PART_MAIN, &label_style5);
+    lv_obj_add_style(domain_label, LV_LABEL_PART_MAIN, &label_style);
     lv_label_set_text(domain_label, domain);
     lv_obj_align(domain_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -120);
 
-    lv_obj_add_style(local_ip_label, LV_LABEL_PART_MAIN, &label_style5);
+    lv_obj_add_style(local_ip_label, LV_LABEL_PART_MAIN, &label_style);
     lv_label_set_text(local_ip_label, info);
     lv_obj_align(local_ip_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -50);
 
-    lv_obj_add_style(ap_ip_label, LV_LABEL_PART_MAIN, &label_style5);
+    lv_obj_add_style(ap_ip_label, LV_LABEL_PART_MAIN, &label_style);
     lv_label_set_text(ap_ip_label, ap_ip);
     lv_obj_align(ap_ip_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 5, -80);
 
@@ -100,4 +100,8 @@ void setting_gui_del(void)
         lv_obj_clean(main_scr); // 清空此前页面
         main_scr = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&label_style);
 }

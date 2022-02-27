@@ -3,6 +3,9 @@
 #include "sys/app_controller.h"
 #include "../../common.h"
 
+#define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
+#define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
+
 struct BilibiliAppRunData
 {
     unsigned int fans_num;
@@ -12,7 +15,7 @@ struct BilibiliAppRunData
     unsigned long refresh_time_millis;
 };
 
-struct HttpResult
+struct MyHttpResult
 {
     int httpCode = 0;
     String httpResponse = "";
@@ -20,22 +23,24 @@ struct HttpResult
 
 static BilibiliAppRunData *run_data = NULL;
 
-HttpResult *http_request(String uid = "344470052")
+MyHttpResult http_request(String uid = "344470052")
 {
-    String url = "http://www.dtmb.top/api/fans/index?id=" + uid;
+    // String url = "http://www.dtmb.top/api/fans/index?id=" + uid;
+    MyHttpResult result;
+    String url = FANS_API + uid;
     HTTPClient *httpClient = new HTTPClient();
     httpClient->setTimeout(1000);
     bool status = httpClient->begin(url);
     if (status == false)
     {
-        return NULL;
+        result.httpCode = -1;
+        return result;
     }
     int httpCode = httpClient->GET();
     String httpResponse = httpClient->getString();
     httpClient->end();
-    HttpResult *result = new HttpResult;
-    result->httpCode = httpCode;
-    result->httpResponse = httpResponse;
+    result.httpCode = httpCode;
+    result.httpResponse = httpResponse;
     return result;
 }
 
@@ -109,17 +114,17 @@ void bilibili_exit_callback(void)
 
 void update_fans_num()
 {
-    HttpResult *result = http_request(g_cfg.bili_uid);
-    if (result == NULL)
+    MyHttpResult result = http_request(g_cfg.bili_uid);
+    if (-1 == result.httpCode)
     {
         Serial.println("[HTTP] Http request failed.");
         return;
     }
-    if (result->httpCode > 0)
+    if (result.httpCode > 0)
     {
-        if (result->httpCode == HTTP_CODE_OK || result->httpCode == HTTP_CODE_MOVED_PERMANENTLY)
+        if (result.httpCode == HTTP_CODE_OK || result.httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
-            String payload = result->httpResponse;
+            String payload = result.httpResponse;
             Serial.println("[HTTP] OK");
             Serial.println(payload);
             int startIndex_1 = payload.indexOf("follower") + 10;

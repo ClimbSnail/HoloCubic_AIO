@@ -2,6 +2,7 @@
 #include "sys/config.h"
 #include "network.h"
 
+IMU mpu;
 SdCard tf;
 Pixel rgb;
 Config g_cfg;      // 全局配置文件

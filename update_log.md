@@ -1,5 +1,17 @@
 ### 版本更新日志
-CurVersion:v1.9.2
+CurVersion:v2.0.0
+
+#### HoloCubic_AIO固件_v2.0.x.bin
+1. 修复7日天气只读北京问题、修改api，新增湿度。
+2. 支持调整mpu6050操作方向的映射
+3. 支持littlefs（转移现有的kv储存）
+4. SD卡支持SPI，SD双模式
+5. 新增参数设置
+6. 联合调整投屏上位机
+7. 修复2048
+8. 支持隐藏APP
+9. 修复BIilibili api，以及内存泄漏。
+10. 修复所有App使用lvgl时样式没lv_style_reset导致的内存泄露。
 
 ##### HoloCubic_AIO固件_v1.9.x.bin
 1. 大改屏幕分享APP，修复屏幕卡顿问题（防止过热，性能恒定为中等）。

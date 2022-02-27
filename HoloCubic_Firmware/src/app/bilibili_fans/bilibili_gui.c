@@ -27,6 +27,10 @@ static lv_obj_t *imgbtn1;
 
 void bilibili_gui_init(void)
 {
+    if(NULL == default_style.map)
+    {
+
+    }
     lv_style_init(&default_style);
     lv_style_set_bg_color(&default_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
     lv_style_set_bg_color(&default_style, LV_STATE_PRESSED, LV_COLOR_GRAY);
@@ -125,4 +129,9 @@ void bilibili_gui_del(void)
         lv_obj_clean(bilibili_gui);
         bilibili_gui = NULL;
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&fans_label_style);
+    // lv_style_reset(&follow_label_style);
 }

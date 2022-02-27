@@ -300,4 +300,11 @@ void weather_old_gui_del(void)
             wc_scr[pos] = NULL;
         }
     }
+
+    // 手动清除样式，防止内存泄漏
+    // lv_style_reset(&default_style);
+    // lv_style_reset(&label_style1);
+    // lv_style_reset(&label_style2);
+    // lv_style_reset(&label_style3);
+    // lv_style_reset(&label_style4);
 }

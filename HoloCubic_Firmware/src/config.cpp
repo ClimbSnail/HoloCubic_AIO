@@ -12,13 +12,13 @@ void config_read(const char *file_path, Config *cfg)
     cfg->backLight = prefs.getUChar("backLight", 10);
     cfg->rotation = prefs.getUChar("rotation", 4);
     cfg->auto_calibration_mpu = prefs.getUChar("auto_mpu", 1);
+    cfg->mpu_order = prefs.getUChar("mpu_order", 0);
     cfg->ssid = prefs.getString("ssid", "");
     cfg->password = prefs.getString("password", "");
     prefs.end(); // 关闭当前命名空间
 
     prefs.begin("zhixin"); // 打开命名空间mynamespace
     cfg->cityname = prefs.getString("cityname", "BeiJing");
-    // cfg->cityname = prefs.getString("cityname", "北京");
     cfg->language = prefs.getString("language", "zh-Hans");
     cfg->weather_key = prefs.getString("weather_key", "");
     prefs.end(); // 关闭当前命名空间
@@ -52,6 +52,7 @@ void config_save(const char *file_path, Config *cfg)
     prefs.putUChar("backLight", cfg->backLight);
     prefs.putUChar("rotation", cfg->rotation);
     prefs.putUChar("auto_mpu", cfg->auto_calibration_mpu);
+    prefs.putUChar("mpu_order", cfg->mpu_order);
     prefs.putString("ssid", cfg->ssid);
     prefs.putString("password", cfg->password);
     prefs.end(); // 关闭当前命名空间
@@ -76,6 +77,7 @@ void config_save(const char *file_path, Config *cfg)
     // 立即更改屏幕方向
     screen.setBackLight(g_cfg.backLight / 100.0);
     tft->setRotation(g_cfg.rotation);
+    mpu.setOrder(g_cfg.mpu_order);
 }
 
 void mpu_config_read(const char *file_path, Config *cfg)
