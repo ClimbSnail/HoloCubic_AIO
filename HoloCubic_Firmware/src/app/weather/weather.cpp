@@ -12,6 +12,7 @@
 #define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
+#define TIME_API2 "https://time.is/t/?zh.0.347.2464.0p.480.43d.1574683214663.1594044507830."
 #define WEATHER_PAGE_SIZE 2
 #define UPDATE_WEATHER 0x01       // 更新天气
 #define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
@@ -140,8 +141,15 @@ static long long get_timestamp(String url)
         {
             String payload = http.getString();
             Serial.println(payload);
-            int time_index = (payload.indexOf("data")) + 12;
-            time = payload.substring(time_index, payload.length() - 3);
+            if(url == TIME_API)
+            {
+                int time_index = (payload.indexOf("data")) + 12;
+                time = payload.substring(time_index, payload.length() - 3);
+            }
+            else if(url == TIME_API2) // 使用time.is作为备用API，注意不能频繁调用
+            {
+                time = payload.substring(0, 13);
+            }
             // 以网络时间戳为准
             run_data->preNetTimestamp = atoll(time.c_str()) + run_data->errorNetTimestamp + TIMEZERO_OFFSIZE;
             run_data->preLocalTimestamp = millis();
@@ -153,6 +161,8 @@ static long long get_timestamp(String url)
         // 得不到网络时间戳时
         run_data->preNetTimestamp = run_data->preNetTimestamp + (millis() - run_data->preLocalTimestamp);
         run_data->preLocalTimestamp = millis();
+        http.end();
+        return -1;
     }
     http.end();
 
@@ -376,7 +386,20 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             Serial.print(F("ntp update.\n"));
             run_data->update_type |= UPDATE_TIME;
 
+            Serial.println("Getting time from API1...");
             long long timestamp = get_timestamp(TIME_API); // nowapi时间API
+            if (timestamp < 0) // nowapi调用失败
+            {
+                Serial.println("Failed to get time from API1...");
+                Serial.println("Getting time from API2...");
+                timestamp = get_timestamp(TIME_API2); // time.is
+                if (timestamp < 0) // time.is调用失败
+                {
+                    Serial.println("Failed to get time from API2...");
+                    Serial.println("Failed to get time from internet, using local time.");
+                    timestamp = get_timestamp();
+                }
+            }
             if (run_data->clock_page == 0)
             {
                 UpdateTime_RTC(timestamp);
