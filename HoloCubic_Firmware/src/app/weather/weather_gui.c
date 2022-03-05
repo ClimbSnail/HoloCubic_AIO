@@ -236,7 +236,7 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
     // 下面这行代码可能会出错
     lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
-                          weaInfo.minTemp, weaInfo.maxTmep, weaInfo.windDir, weaInfo.windLevel);
+                          weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
 
     lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_OFF);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);

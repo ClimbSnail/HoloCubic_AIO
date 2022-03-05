@@ -68,7 +68,7 @@ int AppController::app_install(APP_OBJ *app) // 将APP安装到app_controller中
 
     appList[app_num] = app;
     ++app_num;
-    return 0; //注册成功
+    return 0; // 安装成功
 }
 
 int AppController::app_uninstall(const APP_OBJ *app) // 将APP从app_controller中卸载（删除）

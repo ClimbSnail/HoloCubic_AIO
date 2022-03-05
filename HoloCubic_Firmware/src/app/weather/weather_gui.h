@@ -6,7 +6,7 @@ struct Weather
     int weather_code; // 天气现象代码
     int temperature;  // 温度
     int humidity;     // 湿度
-    int maxTmep;      // 最高气温
+    int maxTemp;      // 最高气温
     int minTemp;      // 最低气温
     char windDir[20];
     char cityname[10]; // 城市名

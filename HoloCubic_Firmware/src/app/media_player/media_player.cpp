@@ -171,19 +171,19 @@ void media_player_process(AppController *sys,
         return;
     }
 
-    // 主频控制 为了降低发热量
-    if (getCpuFrequencyMhz() > 80)
-    {
-        if (getCpuFrequencyMhz() > 160 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
-        {
-            // 设置CPU主频
-            setCpuFrequencyMhz(160);
-        }
-        else if (getCpuFrequencyMhz() > 80 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
-        {
-            setCpuFrequencyMhz(80);
-        }
-    }
+    // // 主频控制 为了降低发热量
+    // if (getCpuFrequencyMhz() > 80)
+    // {
+    //     if (getCpuFrequencyMhz() > 160 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
+    //     {
+    //         // 设置CPU主频
+    //         setCpuFrequencyMhz(160);
+    //     }
+    //     else if (getCpuFrequencyMhz() > 80 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
+    //     {
+    //         setCpuFrequencyMhz(80);
+    //     }
+    // }
 
     if (!run_data->file)
     {
