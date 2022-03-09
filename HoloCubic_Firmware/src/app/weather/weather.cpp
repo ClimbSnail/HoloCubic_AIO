@@ -102,8 +102,8 @@ static void get_weather(void)
             Serial.print("run_data->wea.humidity = ");
             Serial.println(run_data->wea.humidity);
 
-            run_data->wea.maxTmep = sk["tem_day"].as<int>();
-            run_data->wea.minTemp = sk["tem_night"].as<int>();
+            run_data->wea.maxTmep = sk["tem1"].as<int>();
+            run_data->wea.minTemp = sk["tem2"].as<int>();
             strcpy(run_data->wea.windDir, sk["win"].as<String>().c_str());
             run_data->wea.windLevel = windLevelAnalyse(sk["win_speed"].as<String>());
             run_data->wea.airQulity = airQulityLevel(sk["air"].as<int>());
