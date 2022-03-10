@@ -97,12 +97,10 @@ static void get_weather(void)
             run_data->wea.humidity = 50;
             char humidity[8] = {0};
             strncpy(humidity, sk["humidity"].as<String>().c_str(), 8);
-            humidity[strlen(humidity)-1] = 0;   // 去除尾部的 % 号
+            humidity[strlen(humidity) - 1] = 0; // 去除尾部的 % 号
             run_data->wea.humidity = atoi(humidity);
-            Serial.print("run_data->wea.humidity = ");
-            Serial.println(run_data->wea.humidity);
 
-            run_data->wea.maxTmep = sk["tem1"].as<int>();
+            run_data->wea.maxTemp = sk["tem1"].as<int>();
             run_data->wea.minTemp = sk["tem2"].as<int>();
             strcpy(run_data->wea.windDir, sk["win"].as<String>().c_str());
             run_data->wea.windLevel = windLevelAnalyse(sk["win_speed"].as<String>());
