@@ -2,6 +2,8 @@
 #include "common.h"
 #include "config.h"
 
+Preferences prefs;        // 声明Preferences对象
+
 void config_read(const char *file_path, Config *cfg)
 {
     // cfg->ssid = tf.readFileLine(file_path, 1);        // line-1 for WiFi ssid

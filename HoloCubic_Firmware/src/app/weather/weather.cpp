@@ -17,16 +17,54 @@
 #define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
 #define UPDATE_TIME 0x04          // 更新时间
 
+// 天气的持久化配置
+#define WEATHER_CONFIG_PATH "/weather.cfg"
+struct WT_Config
+{
+    String tianqi_appid;                 // tianqiapid 的 appid
+    String tianqi_appsecret;             // tianqiapid 的 appsecret
+    String tianqi_addr;                  // tianqiapid 的地址（填中文）
+    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
+    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
+};
+
+void read_config(WT_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    String info = g_flashCfg.readFile(WEATHER_CONFIG_PATH);
+    // 解析数据
+    cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
+    cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
+}
+
+void write_config(String tianqi_appid, String tianqi_appsecret,
+                  String tianqi_addr, unsigned long weatherUpdataInterval,
+                  unsigned long timeUpdataInterval)
+{
+    char tmp[25];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + tianqi_appid + "\n";
+    w_data = w_data + tianqi_appsecret + "\n";
+    w_data = w_data + tianqi_addr + "\n";
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%ul\n", weatherUpdataInterval);
+    w_data += tmp;
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%ul\n", timeUpdataInterval);
+    w_data += tmp;
+    g_flashCfg.writeFile(WEATHER_CONFIG_PATH, w_data.c_str());
+}
+
 struct WeatherAppRunData
 {
-    unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
-    unsigned long preTimeMillis;         // 更新时间计数器
-    unsigned long weatherUpdataInterval; // 天气更新的时间间隔
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(900s)
-    long long preNetTimestamp;           // 上一次的网络时间戳
-    long long errorNetTimestamp;         // 网络到显示过程中的时间误差
-    long long preLocalTimestamp;         // 上一次的本地机器时间戳
-    unsigned int coactusUpdateFlag;      // 强制更新标志
+    unsigned long preWeatherMillis; // 上一回更新天气时的毫秒数
+    unsigned long preTimeMillis;    // 更新时间计数器
+    long long preNetTimestamp;      // 上一次的网络时间戳
+    long long errorNetTimestamp;    // 网络到显示过程中的时间误差
+    long long preLocalTimestamp;    // 上一次的本地机器时间戳
+    unsigned int coactusUpdateFlag; // 强制更新标志
     int clock_page;
     unsigned int update_type; // 更新类型的标志位
 
@@ -37,6 +75,7 @@ struct WeatherAppRunData
     Weather wea;     // 保存天气状况
 };
 
+static WT_Config *cfg_data = NULL;
 static WeatherAppRunData *run_data = NULL;
 
 enum wea_event_Id
@@ -71,8 +110,8 @@ static void get_weather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    // snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
-    snprintf(api, 128, WEATHER_NOW_API_UPDATE, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
+    // snprintf(api, 128, WEATHER_NOW_API, cfg_data->tianqi_appid, cfg_data->tianqi_appsecret, cfg_data->tianqi_addr);
+    snprintf(api, 128, WEATHER_NOW_API_UPDATE, cfg_data->tianqi_appid, cfg_data->tianqi_appsecret, cfg_data->tianqi_addr);
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -165,7 +204,7 @@ static void get_daliyWeather(short maxT[], short minT[])
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
+    snprintf(api, 128, WEATHER_DALIY_API, cfg_data->tianqi_appid, cfg_data->tianqi_appsecret, cfg_data->tianqi_addr);
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -213,11 +252,13 @@ static void weather_init(void)
 {
     tft->setSwapBytes(true);
     weather_gui_init();
+    // 获取配置信息
+    cfg_data = (WT_Config *)calloc(1, sizeof(WT_Config));
+    read_config(cfg_data);
+
     // 初始化运行时参数
     run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
     memset((char *)&run_data->wea, 0, sizeof(Weather));
-    run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔900000(900s)
-    run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔900000(900s)
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
     run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
@@ -272,13 +313,13 @@ static void weather_process(AppController *sys,
     if (run_data->clock_page == 0)
     {
         display_weather(run_data->wea, anim_type);
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
         {
             sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NOW);
             sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_DAILY);
         }
 
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->timeUpdataInterval, &run_data->preTimeMillis, false))
         {
             // 尝试同步网络上的时钟
             sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NTP);
@@ -308,6 +349,10 @@ static void weather_exit_callback(void)
     {
         vTaskDelete(run_data->xHandle_task_task_update);
     }
+
+    // 释放配置数据
+    free(cfg_data);
+    cfg_data = NULL;
 
     // 释放运行数据
     free(run_data);

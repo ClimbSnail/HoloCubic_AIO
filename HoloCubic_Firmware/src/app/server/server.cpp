@@ -29,7 +29,11 @@ void start_web_config()
     server.on("/upload", File_Upload);
     server.on("/delete", File_Delete);
     server.on("/delete_result", delete_result);
-    server.on("/setting", Setting);
+    
+    server.on("/sys_setting", sys_setting);
+    server.on("/weather_setting", weather_setting);
+    server.on("/weather_old_setting", weather_old_setting);
+    server.on("/bili_setting", bili_setting);
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -37,7 +41,10 @@ void start_web_config()
         handleFileUpload);
 
     //连接
-    server.on("/saveConf", save_config);
+    server.on("/saveSysConf", saveSysConf);
+    server.on("/saveWeatherConf", saveWeatherConf);
+    server.on("/saveWeatherOldConf", saveWeatherOldConf);
+    server.on("/saveBiliConf", saveBiliConf);
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);
@@ -94,7 +101,7 @@ void server_process(AppController *sys,
         {
             // 发送wifi维持的心跳
             sys->req_event(&server_app, APP_EVENT_WIFI_ALIVE, 0);
-            
+
             display_setting(
                 "WebServer Start",
                 "Domain: holocubic",

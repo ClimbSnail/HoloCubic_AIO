@@ -5,9 +5,6 @@
 #include <MPU6050.h>
 #include "lv_port_indev.h"
 
-#define IMU_I2C_SDA 32
-#define IMU_I2C_SCL 33
-
 extern int32_t encoder_diff;
 extern lv_indev_state_t encoder_state;
 
@@ -63,6 +60,7 @@ public:
     IMU();
     void init(uint8_t order = 0);
     void setOrder(uint8_t order); // 设置方向
+    bool Encoder_GetIsPush(void); // 适配Peak的编码器中键 开关机使用
     Imu_Action *update(int interval);
     void getVirtureMotion6(Imu_Action *action_info);
 };

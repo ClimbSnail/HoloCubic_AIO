@@ -69,6 +69,12 @@ void IMU::setOrder(uint8_t order) // 设置方向
     this->order = order; // 表示方位
 }
 
+bool IMU::Encoder_GetIsPush(void)
+{
+    return (digitalRead(CONFIG_ENCODER_PUSH_PIN) == LOW);
+}
+
+
 Imu_Action *IMU::update(int interval)
 {
     getVirtureMotion6(&action_info);
@@ -182,12 +188,6 @@ Imu_Action *IMU::update(int interval)
         }
 
         last_update_time = millis();
-
-        // 操作方向进行调整
-        if (UNKNOWN != action_info.active)
-        {
-            action_info.active = (ACTIVE_TYPE)((action_info.active + 0) % UNKNOWN);
-        }
     }
     return &action_info;
 }

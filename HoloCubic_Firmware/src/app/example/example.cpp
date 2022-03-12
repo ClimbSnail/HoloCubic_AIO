@@ -37,6 +37,13 @@ void example_init(void)
     run_data->val3 = 0;
     // 使用 forever_data 中的变量，任何函数都可以用
     Serial.print(forever_data.val1);
+
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    String info = g_flashCfg.readFile("/example.cfg");
+    // 解析数据
+    // 将配置数据保存在文件中（持久化）
+    g_flashCfg.writeFile("/example.cfg", "value1=100\nvalue2=200");
 }
 
 void example_process(AppController *sys,
@@ -86,6 +93,6 @@ void example_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ example_app = {"Example", &app_example, "Author HQ\nVersion 1.8.0\n", example_init,
+APP_OBJ example_app = {"Example", &app_example, "Author HQ\nVersion 2.0.0\n", example_init,
                         example_process, example_exit_callback,
                         example_event_notification};

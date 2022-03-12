@@ -15,22 +15,59 @@ struct Weather
     int temperature;
 };
 
+// 天气的持久化配置
+#define WEATHER_CONFIG_PATH "/weather_old.cfg"
+struct WT_Config
+{
+    String cityname;                     // 显示的城市
+    String language;                     // 天气查询的地址编码
+    String weather_key;                  // 知心天气api_key（秘钥）
+    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
+    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
+};
+
+void read_config(WT_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    String info = g_flashCfg.readFile(WEATHER_CONFIG_PATH);
+    // 解析数据
+    cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
+    cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
+}
+
+void write_config(const WT_Config *cfg)
+{
+    char tmp[25];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + cfg->cityname + "\n";
+    w_data = w_data + cfg->language + "\n";
+    w_data = w_data + cfg->weather_key + "\n";
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%ul\n", cfg->weatherUpdataInterval);
+    w_data += tmp;
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%ul\n", cfg->timeUpdataInterval);
+    w_data += tmp;
+    g_flashCfg.writeFile(WEATHER_CONFIG_PATH, w_data.c_str());
+}
+
 struct WeatherAppRunData
 {
-    unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
-    unsigned long preTimeMillis;         // 更新时间计数器
-    unsigned long weatherUpdataInterval; // 天气更新的时间间隔
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(900s)
-    long long m_preNetTimestamp;         // 上一次的网络时间戳
-    long long m_errorNetTimestamp;       // 网络到显示过程中的时间误差
-    long long m_preLocalTimestamp;       // 上一次的本地机器时间戳
-    unsigned int coactusUpdateFlag;      // 强制更新标志
-    int clock_page;                      // 时钟桌面的播放记录
+    unsigned long preWeatherMillis; // 上一回更新天气时的毫秒数
+    unsigned long preTimeMillis;    // 更新时间计数器
+    long long m_preNetTimestamp;    // 上一次的网络时间戳
+    long long m_errorNetTimestamp;  // 网络到显示过程中的时间误差
+    long long m_preLocalTimestamp;  // 上一次的本地机器时间戳
+    unsigned int coactusUpdateFlag; // 强制更新标志
+    int clock_page;                 // 时钟桌面的播放记录
 
     ESP32Time g_rtc; // 用于时间解码
     Weather weather; // 保存天气状况
 };
 
+static WT_Config *cfg_data = NULL;
 static WeatherAppRunData *run_data = NULL;
 
 static Weather getWeather(void)
@@ -127,7 +164,7 @@ static void UpdateWeather(Weather *weather, lv_scr_load_anim_t anim_type)
 {
     char temperature[10] = {0};
     sprintf(temperature, "%d", weather->temperature);
-    display_weather_old(g_cfg.cityname.c_str(), temperature, weather->weather_code, anim_type);
+    display_weather_old(cfg_data->cityname.c_str(), temperature, weather->weather_code, anim_type);
 }
 
 static void UpdateTime_RTC(long long timestamp, lv_scr_load_anim_t anim_type)
@@ -141,17 +178,18 @@ static void UpdateTime_RTC(long long timestamp, lv_scr_load_anim_t anim_type)
 static void weather_init(void)
 {
     weather_old_gui_init();
+    // 获取配置信息
+    cfg_data = (WT_Config *)calloc(1, sizeof(WT_Config));
+    read_config(cfg_data);
     // 初始化运行时参数
     run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
-    run_data->weatherUpdataInterval = 900000;    // 天气更新的时间间隔
-    run_data->timeUpdataInterval = 900000;       // 日期时钟更新的时间间隔(900s)
     run_data->m_preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化围殴2020-01-01 00:00:00
     run_data->m_errorNetTimestamp = 2;
     run_data->m_preLocalTimestamp = 0; // 上一次的本地机器时间戳
     run_data->clock_page = 0;          // 时钟桌面的播放记录
     // 变相强制更新
-    run_data->preWeatherMillis = millis() - run_data->weatherUpdataInterval;
-    run_data->preTimeMillis = millis() - run_data->timeUpdataInterval;
+    run_data->preWeatherMillis = millis() - cfg_data->weatherUpdataInterval;
+    run_data->preTimeMillis = millis() - cfg_data->timeUpdataInterval;
     run_data->coactusUpdateFlag = 0x01;
 
     run_data->weather = {0, 0};
@@ -190,7 +228,7 @@ static void weather_process(AppController *sys,
         Weather weather = getWeather();
         UpdateWeather(&weather, anim_type);
         // 以下减少网络请求的压力
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
         {
             sys->req_event(&weather_old_app, APP_EVENT_WIFI_CONN, run_data->clock_page);
             run_data->coactusUpdateFlag = 0x00;
@@ -204,7 +242,7 @@ static void weather_process(AppController *sys,
         long long timestamp = getTimestamp() + TIMEZERO_OFFSIZE; // nowapi时间API
         UpdateTime_RTC(timestamp, anim_type);
         // 以下减少网络请求的压力
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->timeUpdataInterval, &run_data->preTimeMillis, false))
         {
             // 尝试同步网络上的时钟
             sys->req_event(&weather_old_app, APP_EVENT_WIFI_CONN, run_data->clock_page);
@@ -240,7 +278,8 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
         {
             //如果要改城市这里也需要修改
             char api[128] = "";
-            snprintf(api, 128, ZHIXIN_WEATHER_API, g_cfg.weather_key.c_str(), g_cfg.cityname.c_str(), g_cfg.language.c_str());
+            snprintf(api, 128, ZHIXIN_WEATHER_API, cfg_data->weather_key.c_str(),
+                     cfg_data->cityname.c_str(), cfg_data->language.c_str());
             Weather weather = getWeather(api);
             // Weather weather = getWeather("https://api.seniverse.com/v3/weather/now.json?key=" +
             //                              g_cfg.weather_key + "&location=" + g_cfg.cityname + "&language=" +

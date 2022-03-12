@@ -19,7 +19,7 @@
 #include "app/bilibili_fans/bilibili.h"
 #include "app/server/server.h"
 #include "app/idea_anim/idea.h"
-#include "app/settings/settings.h"
+// #include "app/settings/settings.h"
 #include "app/game_2048/game_2048.h"
 #include "app/picture/picture.h"
 #include "app/media_player/media_player.h"
@@ -35,12 +35,25 @@ void setup()
 {
     Serial.begin(115200);
 
-    Serial.println(F("\nAIO (All in one) version "AIO_VERSION"\n"));
-    
-    config_read(NULL, &g_cfg);
+    Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
+    app_controller = new AppController(); // APP控制器
+
+#ifdef PEAK
+    pinMode(CONFIG_BAT_CHG_DET_PIN, INPUT);
+    pinMode(CONFIG_ENCODER_PUSH_PIN, INPUT_PULLUP);
+    /*电源使能保持*/
+    Serial.println("Power: Waiting...");
+    pinMode(CONFIG_POWER_EN_PIN, OUTPUT);
+    digitalWrite(CONFIG_POWER_EN_PIN, LOW);
+    digitalWrite(CONFIG_POWER_EN_PIN, HIGH);
+    Serial.println("Power: ON");
+#endif
+
+    // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
 
     /*** Init screen ***/
-    screen.init();
+    screen.init(app_controller->sys_cfg.rotation,
+                app_controller->sys_cfg.backLight);
 
     /*** Init on-board RGB ***/
     rgb.init();
@@ -53,7 +66,6 @@ void setup()
     tf.init();
     lv_fs_if_init();
 
-    app_controller = new AppController(); // APP控制器
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
     app_controller->app_install(&picture_app);
@@ -63,7 +75,7 @@ void setup()
     app_controller->app_install(&server_app);
     app_controller->app_install(&idea_app);
     app_controller->app_install(&bilibili_app);
-    app_controller->app_install(&settings_app);
+    // app_controller->app_install(&settings_app);
     app_controller->app_install(&game_2048_app);
 
     // 优先显示屏幕 加快视觉上的开机时间
@@ -71,7 +83,7 @@ void setup()
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
-    mpu.init(g_cfg.mpu_order); // 初始化比较耗时
+    mpu.init(app_controller->sys_cfg.mpu_order); // 初始化比较耗时
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     // 初始化RGB灯 HSV色彩模式
@@ -88,6 +100,17 @@ void loop()
 {
     screen.routine();
     act_info = mpu.update(200);
+    if (!mpu.Encoder_GetIsPush())
+    {
+        Serial.println("mpu.Encoder_GetIsPush()1");
+        delay(1000);
+        if (!mpu.Encoder_GetIsPush())
+        {
+            Serial.println("mpu.Encoder_GetIsPush()2");
+            // 适配Peak的关机功能
+            digitalWrite(CONFIG_POWER_EN_PIN, LOW);
+        }
+    }
     app_controller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);

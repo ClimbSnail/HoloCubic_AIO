@@ -6,6 +6,32 @@
 #define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
 #define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
 
+
+// 天气的持久化配置
+#define B_CONFIG_PATH "/bilibili.cfg"
+struct B_Config
+{
+    String bili_uid;              // bilibili的uid
+};
+
+void read_config(B_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    String info = g_flashCfg.readFile(B_CONFIG_PATH);
+    // 解析数据
+    cfg->bili_uid = info;  // 
+}
+
+void write_config(const B_Config *cfg)
+{
+    char tmp[25];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + cfg->bili_uid + "\n";
+    g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
+}
+
 struct BilibiliAppRunData
 {
     unsigned int fans_num;
@@ -21,6 +47,7 @@ struct MyHttpResult
     String httpResponse = "";
 };
 
+static B_Config *cfg_data = NULL;
 static BilibiliAppRunData *run_data = NULL;
 
 MyHttpResult http_request(String uid = "344470052")
@@ -47,6 +74,9 @@ MyHttpResult http_request(String uid = "344470052")
 void bilibili_init(void)
 {
     bilibili_gui_init();
+    // 获取配置信息
+    cfg_data = (B_Config *)calloc(1, sizeof(B_Config));
+    read_config(cfg_data);
     // 初始化运行时参数
     run_data = (BilibiliAppRunData *)malloc(sizeof(BilibiliAppRunData));
     run_data->fans_num = 0;

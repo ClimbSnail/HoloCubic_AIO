@@ -47,6 +47,10 @@ private:
     boolean app_exit_flag; // 表示是否退出APP应用
     int cur_app_index;     // 当前运行的APP下标
     int pre_app_index;     // 上一次运行的APP下标
+
+public:
+    SYS_UTIL_CFG sys_cfg;
+    Sys_MPU_Config mpu_cfg;
 };
 
 #endif
