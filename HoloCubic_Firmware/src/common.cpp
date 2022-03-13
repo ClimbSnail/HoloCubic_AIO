@@ -1,7 +1,5 @@
 #include "common.h"
 #include "network.h"
-#include <LittleFS.h>
-#include <SPIFFS.h>
 
 IMU mpu;
 SdCard tf;

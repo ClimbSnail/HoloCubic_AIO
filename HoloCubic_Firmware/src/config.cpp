@@ -113,11 +113,11 @@ void config_save(const char *file_path, Config *cfg)
     prefs.putString("bili_uid", cfg->bili_uid);
     prefs.end(); // 关闭当前命名空间
 
-    config_read("/wifi.txt", &g_cfg);
-    // 立即更改屏幕方向
-    screen.setBackLight(g_cfg.backLight / 100.0);
-    tft->setRotation(g_cfg.rotation);
-    mpu.setOrder(g_cfg.mpu_order);
+    // config_read("/wifi.txt", &g_cfg);
+    // // 立即更改屏幕方向
+    // screen.setBackLight(g_cfg.backLight / 100.0);
+    // tft->setRotation(g_cfg.rotation);
+    // mpu.setOrder(g_cfg.mpu_order);
 }
 
 void mpu_config_read(const char *file_path, Config *cfg)

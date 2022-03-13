@@ -19,13 +19,15 @@
 #include "app/bilibili_fans/bilibili.h"
 #include "app/server/server.h"
 #include "app/idea_anim/idea.h"
-// #include "app/settings/settings.h"
+#include "app/settings/settings.h"
 #include "app/game_2048/game_2048.h"
 #include "app/picture/picture.h"
 #include "app/media_player/media_player.h"
 #include "app/screen_share/screen_share.h"
 #include "app/file_manager/file_manager.h"
 #include "app/weather_old/weather_old.h"
+
+#include <esp32-hal.h>
 
 /*** Component objects **7*/
 Imu_Action *act_info;          // 存放mpu6050返回的数据
@@ -47,11 +49,14 @@ void setup()
     digitalWrite(CONFIG_POWER_EN_PIN, LOW);
     digitalWrite(CONFIG_POWER_EN_PIN, HIGH);
     Serial.println("Power: ON");
+    log_e("Power: ON");
 #endif
 
     // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
 
     /*** Init screen ***/
+    // screen.init(app_controller->sys_cfg.rotation,
+    //             app_controller->sys_cfg.backLight);
     screen.init(app_controller->sys_cfg.rotation,
                 app_controller->sys_cfg.backLight);
 
@@ -66,6 +71,7 @@ void setup()
     tf.init();
     lv_fs_if_init();
 
+    app_controller->init();
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
     app_controller->app_install(&picture_app);
@@ -75,7 +81,7 @@ void setup()
     app_controller->app_install(&server_app);
     app_controller->app_install(&idea_app);
     app_controller->app_install(&bilibili_app);
-    // app_controller->app_install(&settings_app);
+    app_controller->app_install(&settings_app);
     app_controller->app_install(&game_2048_app);
 
     // 优先显示屏幕 加快视觉上的开机时间
@@ -83,7 +89,9 @@ void setup()
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
-    mpu.init(app_controller->sys_cfg.mpu_order); // 初始化比较耗时
+    mpu.init(app_controller->sys_cfg.mpu_order,
+             app_controller->sys_cfg.auto_calibration_mpu,
+             &app_controller->mpu_cfg); // 初始化比较耗时
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     // 初始化RGB灯 HSV色彩模式
@@ -100,6 +108,8 @@ void loop()
 {
     screen.routine();
     act_info = mpu.update(200);
+
+#ifdef PEAK
     if (!mpu.Encoder_GetIsPush())
     {
         Serial.println("mpu.Encoder_GetIsPush()1");
@@ -111,6 +121,7 @@ void loop()
             digitalWrite(CONFIG_POWER_EN_PIN, LOW);
         }
     }
+#endif
     app_controller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);

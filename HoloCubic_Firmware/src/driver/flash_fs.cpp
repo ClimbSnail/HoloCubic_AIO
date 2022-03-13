@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "FS.h"
-#include <LittleFS.h>
+// #include <LittleFS.h>
 #include <SPIFFS.h>
 #include <time.h>
 #include "flash_fs.h"
@@ -13,31 +13,32 @@
 
 FlashFS::FlashFS()
 {
+    // 目前这个会报错 想运行可以注释以下几行代码
     if (!SPIFFS.begin(FORMAT_LITTLEFS_IF_FAILED))
     {
         Serial.println("SPIFFS Mount Failed");
         return;
     }
 
-    listDir("/", 0);
-    createDir("/mydir");
-    writeFile("/mydir/hello2.txt", "Hello2");
-    // writeFile("/mydir/newdir2/newdir3/hello3.txt", "Hello3");
-    writeFile2("/mydir/newdir2/newdir3/hello3.txt", "Hello3");
-    listDir("/", 3);
-    deleteFile("/mydir/hello2.txt");
-    // deleteFile("/mydir/newdir2/newdir3/hello3.txt");
-    deleteFile2("/mydir/newdir2/newdir3/hello3.txt");
-    removeDir("/mydir");
-    listDir("/", 3);
-    writeFile("/hello.txt", "Hello ");
-    appendFile("/hello.txt", "World!\r\n");
-    readFile("/hello.txt");
-    renameFile("/hello.txt", "/foo.txt");
-    readFile("/foo.txt");
-    deleteFile("/foo.txt");
-    testFileIO("/test.txt");
-    deleteFile("/test.txt");
+    // listDir("/", 0);
+    // createDir("/mydir");
+    // writeFile("/mydir/hello2.txt", "Hello2");
+    // // writeFile("/mydir/newdir2/newdir3/hello3.txt", "Hello3");
+    // writeFile2("/mydir/newdir2/newdir3/hello3.txt", "Hello3");
+    // listDir("/", 3);
+    // deleteFile("/mydir/hello2.txt");
+    // // deleteFile("/mydir/newdir2/newdir3/hello3.txt");
+    // deleteFile2("/mydir/newdir2/newdir3/hello3.txt");
+    // removeDir("/mydir");
+    // listDir("/", 3);
+    // writeFile("/hello.txt", "Hello ");
+    // appendFile("/hello.txt", "World!\r\n");
+    // readFile("/hello.txt");
+    // renameFile("/hello.txt", "/foo.txt");
+    // readFile("/foo.txt");
+    // deleteFile("/foo.txt");
+    // testFileIO("/test.txt");
+    // deleteFile("/test.txt");
 
     Serial.println("Test complete");
 }

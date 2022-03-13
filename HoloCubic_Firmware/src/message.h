@@ -3,8 +3,6 @@
 
 #include "stdint.h"
 #include <string.h>
-// #include <netinet/in.h>
-// #include <config.h>
 
 enum MODULE_TYPE : unsigned char
 {

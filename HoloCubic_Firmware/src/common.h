@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.0.0 Beta"
+#define AIO_VERSION "2.0.0"
 
 #include "Arduino.h"
 #include "driver/rgb_led.h"
@@ -34,7 +34,7 @@ boolean doDelayMillisTime(unsigned long interval,
 #define AMB_I2C_SCL 33
 
 // TFT屏幕接口
-#define PEAK
+// #define PEAK
 #ifdef PEAK
 #define LCD_BL_PIN 12
 /* Battery */
@@ -48,17 +48,6 @@ boolean doDelayMillisTime(unsigned long interval,
 #endif
 
 #define LCD_BL_PWM_CHANNEL 0
-
-struct Sys_MPU_Config
-{
-    int16_t x_gyro_offset;
-    int16_t y_gyro_offset;
-    int16_t z_gyro_offset;
-
-    int16_t x_accel_offset;
-    int16_t y_accel_offset;
-    int16_t z_accel_offset;
-};
 
 struct SYS_UTIL_CFG
 {

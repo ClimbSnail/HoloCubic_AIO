@@ -5,6 +5,8 @@
 #include "common.h"
 #include <esp32-hal-timer.h>
 
+#define G2048_APP_NAME "2048"
+
 void taskOne(void *parameter)
 {
     while (1)
@@ -45,7 +47,7 @@ struct Game2048AppRunData
 
 static Game2048AppRunData *run_data = NULL;
 
-void game_2048_init(void)
+static int game_2048_init(void)
 {
     // 初始化运行时的参数
     game_2048_gui_init();
@@ -58,19 +60,19 @@ void game_2048_init(void)
     run_data->moveRecord = game.getMoveRecord();
 
     run_data->xReturned_task_one = xTaskCreate(
-        taskOne,                     /*任务函数*/
-        "TaskOne",                   /*带任务名称的字符串*/
-        10000,                       /*堆栈大小，单位为字节*/
-        NULL,                        /*作为任务输入传递的参数*/
-        1,                           /*任务的优先级*/
+        taskOne,                      /*任务函数*/
+        "TaskOne",                    /*带任务名称的字符串*/
+        10000,                        /*堆栈大小，单位为字节*/
+        NULL,                         /*作为任务输入传递的参数*/
+        1,                            /*任务的优先级*/
         &run_data->xHandle_task_one); /*任务句柄*/
 
     run_data->xReturned_task_two = xTaskCreate(
-        taskTwo,                     /*任务函数*/
-        "TaskTwo",                   /*带任务名称的字符串*/
-        10000,                       /*堆栈大小，单位为字节*/
-        NULL,                        /*作为任务输入传递的参数*/
-        1,                           /*任务的优先级*/
+        taskTwo,                      /*任务函数*/
+        "TaskTwo",                    /*带任务名称的字符串*/
+        10000,                        /*堆栈大小，单位为字节*/
+        NULL,                         /*作为任务输入传递的参数*/
+        1,                            /*任务的优先级*/
         &run_data->xHandle_task_two); /*任务句柄*/
     //刷新棋盘显示
     int new1 = game.addRandom();
@@ -83,7 +85,7 @@ void game_2048_init(void)
     delay(1000);
 }
 
-void game_2048_process(AppController *sys,
+static void game_2048_process(AppController *sys,
                        const Imu_Action *act_info)
 {
     if (RETURN == act_info->active)
@@ -145,7 +147,7 @@ void game_2048_process(AppController *sys,
     delay(300);
 }
 
-void game_2048_exit_callback(void)
+static int game_2048_exit_callback(void *param)
 {
     // 查杀定时器
     if (run_data->xReturned_task_one == pdPASS)
@@ -163,22 +165,24 @@ void game_2048_exit_callback(void)
     run_data = NULL;
 }
 
-void game_2048_event_notification(APP_EVENT_TYPE type, int event_id)
+static void game_2048_message_handle(const char *from, const char *to,
+                              APP_MESSAGE_TYPE type, void *message,
+                              void *ext_info)
 {
     // 目前事件主要是wifi开关类事件（用于功耗控制）
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
     }
@@ -188,6 +192,6 @@ void game_2048_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ game_2048_app = {"2048", &app_game_2048, "", game_2048_init,
-                         game_2048_process, game_2048_exit_callback,
-                         game_2048_event_notification};
+APP_OBJ game_2048_app = {G2048_APP_NAME, &app_game_2048, "",
+                         game_2048_init, game_2048_process,
+                         game_2048_exit_callback, game_2048_message_handle};

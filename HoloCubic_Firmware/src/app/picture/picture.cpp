@@ -6,6 +6,8 @@
 // Include the jpeg decoder library
 #include <TJpg_Decoder.h>
 
+#define PICTURE_APP_NAME "Picture"
+
 struct PictureAppRunData
 {
     unsigned long pic_perMillis;      // 图片上一回更新的时间
@@ -58,7 +60,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return pfile;
 }
 
-void picture_init(void)
+static int picture_init(void)
 {
     photo_gui_init();
     // 初始化运行时参数
@@ -84,7 +86,7 @@ void picture_init(void)
     TJpgDec.setCallback(tft_output);
 }
 
-void picture_process(AppController *sys,
+static void picture_process(AppController *sys,
                      const Imu_Action *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
@@ -118,10 +120,13 @@ void picture_process(AppController *sys,
     {
         if (NULL != run_data->image_file)
         {
-            run_data->pfile = get_next_file(run_data->pfile, run_data->image_pos_increate);
+            run_data->pfile = get_next_file(run_data->pfile,
+                                            run_data->image_pos_increate);
         }
         char file_name[PIC_FILENAME_MAX_LEN] = {0};
-        snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s", run_data->image_file->file_name, run_data->pfile->file_name);
+        snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s",
+                 run_data->image_file->file_name,
+                 run_data->pfile->file_name);
         // Draw the image, top left at 0,0
         Serial.print(F("Decode image: "));
         Serial.println(file_name);
@@ -139,7 +144,7 @@ void picture_process(AppController *sys,
     delay(300);
 }
 
-void picture_exit_callback(void)
+static int picture_exit_callback(void *param)
 {
     photo_gui_del();
     // 释放文件名链表
@@ -152,10 +157,12 @@ void picture_exit_callback(void)
     run_data = NULL;
 }
 
-void picture_event_notification(APP_EVENT_TYPE type, int event_id)
+static void picture_message_handle(const char *from, const char *to,
+                            APP_MESSAGE_TYPE type, void *message,
+                            void *ext_info)
 {
 }
 
-APP_OBJ picture_app = {"Picture", &app_picture, "", picture_init,
-                       picture_process, picture_exit_callback,
-                       picture_event_notification};
+APP_OBJ picture_app = {PICTURE_APP_NAME, &app_picture, "",
+                       picture_init, picture_process,
+                       picture_exit_callback, picture_message_handle};

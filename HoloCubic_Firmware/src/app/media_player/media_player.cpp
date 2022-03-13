@@ -8,11 +8,13 @@
 
 #include <SD.h>
 
+#define MEDIA_PLAYER_APP_NAME "Media"
+
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
 #define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
-#define NO_TRIGGER_ENTER_FREQ_80M 120000UL  // 无操作规定时间后进入设置160M主频（120s）
+#define NO_TRIGGER_ENTER_FREQ_80M 120000UL // 无操作规定时间后进入设置160M主频（120s）
 
 struct MediaAppRunData
 {
@@ -46,7 +48,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return pfile;
 }
 
-bool video_start(bool create_new)
+static bool video_start(bool create_new)
 {
     if (NULL == run_data->pfile)
     {
@@ -80,7 +82,7 @@ bool video_start(bool create_new)
     return true;
 }
 
-void release_player_docoder(void)
+static void release_player_docoder(void)
 {
     // 释放具体的播放对象
     if (NULL != run_data->player_docoder)
@@ -90,7 +92,7 @@ void release_player_docoder(void)
     }
 }
 
-void media_player_init(void)
+static int media_player_init(void)
 {
     // 调整RGB模式  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
@@ -122,7 +124,7 @@ void media_player_init(void)
     video_start(false);
 }
 
-void media_player_process(AppController *sys,
+static void media_player_process(AppController *sys,
                           const Imu_Action *act_info)
 {
     if (RETURN == act_info->active)
@@ -206,7 +208,7 @@ void media_player_process(AppController *sys,
     }
 }
 
-void media_player_exit_callback(void)
+static int media_player_exit_callback(void *param)
 {
     // 结束播放
     release_player_docoder();
@@ -227,10 +229,12 @@ void media_player_exit_callback(void)
     set_rgb(&rgb_setting);
 }
 
-void media_player_event_notification(APP_EVENT_TYPE type, int event_id)
+static void media_player_message_handle(const char *from, const char *to,
+                                 APP_MESSAGE_TYPE type, void *message,
+                                 void *ext_info)
 {
 }
 
-APP_OBJ media_app = {"Media", &app_movie, "", media_player_init,
-                     media_player_process, media_player_exit_callback,
-                     media_player_event_notification};
+APP_OBJ media_app = {MEDIA_PLAYER_APP_NAME, &app_movie, "",
+                     media_player_init, media_player_process,
+                     media_player_exit_callback, media_player_message_handle};
