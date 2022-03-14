@@ -51,21 +51,30 @@ String file_size(int bytes)
                    ".input .radio {height: 30px;width: 50px;}"                                          \
                    ".btn {width: 120px;height: 35px;background-color: #000000;border: 0px;color: #ffffff;margin-top: 15px;margin-left: auto;}" // margin-left: 100px;
 
-#define SETTING "<form method=\"GET\" action=\"saveConf\">"                                                                                                                                                                                                        \
-                "<label class=\"input\"><span>WiFi SSID (2.4G)</span><input type=\"text\"name=\"ssid\"value=\"%s\"></label>"                                                                                                                                       \
-                "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"pass\"value=\"%s\"></label>"                                                                                                                                            \
-                "<label class=\"input\"><span>知心天气 城市名（拼音）</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>"                                                                                                                 \
-                "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"                                                                                                                             \
-                "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weatherKey\"value=\"%s\"></label>"                                                                                                                                      \
-                "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqiAppId\"value=\"%s\"></label>"                                                                                                                                    \
-                "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqiAppSecret\"value=\"%s\"></label>"                                                                                                                            \
-                "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqiAddr\"value=\"%s\"></label>"                                                                                                                     \
-                "<label class=\"input\"><span>Bili UID</span><input type=\"text\"name=\"biliUID\"value=\"%s\"></label>"                                                                                                                                            \
-                "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
-                "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
-                "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%u\"></label>"                                                                                                                      \
-                "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
-                "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+#define SYS_SETTING "<form method=\"GET\" action=\"saveSysConf\">"                                                                                                                                                                                                     \
+                    "<label class=\"input\"><span>WiFi SSID (2.4G)</span><input type=\"text\"name=\"ssid_0\"value=\"%s\"></label>"                                                                                                                                     \
+                    "<label class=\"input\"><span>WiFi Passwd</span><input type=\"text\"name=\"password_0\"value=\"%s\"></label>"                                                                                                                                      \
+                    "<label class=\"input\"><span>BackLight (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%u\"></label>"                                                                                                                           \
+                    "<label class=\"input\"><span>Rotation value (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%u\"></label>"                                                                                                                         \
+                    "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%u\"></label>"                                                                                                                      \
+                    "<label class=\"input\"><span>AutoCalibrationMPU</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
+                    "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
+#define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                              \
+                        "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqi_appid\"value=\"%s\"></label>"                \
+                        "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqi_appsecret\"value=\"%s\"></label>"        \
+                        "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqi_addr\"value=\"%s\"></label>" \
+                        "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
+#define WEATHER_OLD_SETTING "<form method=\"GET\" action=\"saveWeatherOldConf\">"                                                                              \
+                            "<label class=\"input\"><span>知心天气 城市名（拼音）</span><input type=\"text\"name=\"cityname\"value=\"%s\"></label>" \
+                            "<label class=\"input\"><span>City Language(zh-Hans)</span><input type=\"text\"name=\"language\"value=\"%s\"></label>"             \
+                            "<label class=\"input\"><span>Weather Key</span><input type=\"text\"name=\"weather_key\"value=\"%s\"></label>"                     \
+                            "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
+#define BILIBILI_SETTING "<form method=\"GET\" action=\"saveBiliConf\">"                                                          \
+                         "<label class=\"input\"><span>Bili UID</span><input type=\"text\"name=\"bili_uid\"value=\"%s\"></label>" \
+                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 void init_page_header()
 {
@@ -111,7 +120,10 @@ void init_page_header()
     webpage_header += F("<li><a href='/download'>Download</a></li>");
     webpage_header += F("<li><a href='/upload'>Upload</a></li>");
     webpage_header += F("<li><a href='/delete'>Delete</a></li>");
-    webpage_header += F("<li><a href='/setting'>Setting</a></li>");
+    webpage_header += F("<li><a href='/sys_setting'>系统设置</a></li>");
+    webpage_header += F("<li><a href='/weather_setting'>最版天气</a></li>");
+    webpage_header += F("<li><a href='/weather_old_setting'>旧版天气</a></li>");
+    webpage_header += F("<li><a href='/bili_setting'>B站</a></li>");
     webpage_header += F("</ul>");
 }
 
@@ -130,49 +142,185 @@ void HomePage()
     Send_HTML(webpage);
 }
 
-void Setting()
+void sys_setting()
 {
-    // 实时读取配置文件
-    // config_read("/wifi.txt", &g_cfg);
     char buf[2048];
+    char ssid_0[32];
+    char password_0[32];
+    char backLight[32];
+    char rotation[32];
+    char auto_calibration_mpu[32];
+    char mpu_order[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"ssid_0", ssid_0);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"password_0", password_0);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"backLight", backLight);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"rotation", rotation);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"auto_calibration_mpu", auto_calibration_mpu);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"mpu_order", mpu_order);
+    SYS_UTIL_CFG cfg = app_controller->sys_cfg;
     // 主要为了处理启停MPU自动校准的单选框
-    if (0 == g_cfg.auto_calibration_mpu)
+    if (0 == cfg.auto_calibration_mpu)
     {
-        sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
-                g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
-                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, g_cfg.mpu_order, "checked=\"checked\"", "");
+        sprintf(buf, SYS_SETTING,
+                ssid_0, password_0,
+                backLight, rotation,
+                mpu_order, "checked=\"checked\"", "");
     }
     else
     {
-        sprintf(buf, SETTING, g_cfg.ssid.c_str(), g_cfg.password.c_str(),
-                g_cfg.cityname.c_str(), g_cfg.language.c_str(),
-                g_cfg.weather_key.c_str(), g_cfg.tianqi_appid.c_str(), g_cfg.tianqi_appsecret.c_str(), g_cfg.tianqi_addr.c_str(),
-                g_cfg.bili_uid.c_str(), g_cfg.backLight, g_cfg.rotation, g_cfg.mpu_order, "", "checked=\"checked\"");
+        sprintf(buf, SYS_SETTING,
+                ssid_0, password_0,
+                backLight, rotation,
+                mpu_order, "", "checked=\"checked\"");
     }
     webpage = buf;
     Send_HTML(webpage);
 }
 
-void save_config(void)
+void weather_setting()
+{
+    char buf[2048];
+    char tianqi_appid[32];
+    char tianqi_appsecret[32];
+    char tianqi_addr[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"tianqi_appid", tianqi_appid);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"tianqi_appsecret", tianqi_appsecret);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"tianqi_addr", tianqi_addr);
+    sprintf(buf, WEATHER_SETTING, tianqi_appid,
+            tianqi_appsecret, tianqi_addr);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
+void weather_old_setting()
+{
+    char buf[2048];
+    char cityname[32];
+    char language[32];
+    char weather_key[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_GET_PARAM,
+                            (void *)"cityname", cityname);
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_GET_PARAM,
+                            (void *)"language", language);
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_GET_PARAM,
+                            (void *)"weather_key", weather_key);
+    sprintf(buf, WEATHER_OLD_SETTING,
+            cityname,
+            language,
+            weather_key);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
+void bili_setting()
+{
+    char buf[2048];
+    char bili_uid[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_GET_PARAM,
+                            (void *)"bili_uid", bili_uid);
+    sprintf(buf, BILIBILI_SETTING, bili_uid);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
+void saveSysConf(void)
 {
     Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
 
     //获取输入的WIFI账户和密码
-    g_cfg.ssid = server.arg("ssid");
-    g_cfg.password = server.arg("pass");
-    g_cfg.cityname = server.arg("cityname");
-    g_cfg.language = server.arg("language");
-    g_cfg.weather_key = server.arg("weatherKey");
-    g_cfg.tianqi_appid = server.arg("tianqiAppId");
-    g_cfg.tianqi_appsecret = server.arg("tianqiAppSecret");
-    g_cfg.tianqi_addr = server.arg("tianqiAddr");
-    g_cfg.bili_uid = server.arg("biliUID");
-    g_cfg.backLight = server.arg("backLight").toInt();
-    g_cfg.rotation = server.arg("rotation").toInt();
-    g_cfg.mpu_order = server.arg("mpu_order").toInt();
-    g_cfg.auto_calibration_mpu = server.arg("auto_calibration_mpu").toInt();
-    config_save("/wifi.txt", &g_cfg); // 更新配置文件
+    String param;
+    param = param + server.arg("ssid_0") + "\n";
+    param = param + server.arg("password_0") + "\n";
+    param = param + server.arg("backLight") + "\n";
+    param = param + server.arg("rotation") + "\n";
+    param = param + server.arg("mpu_order") + "\n";
+    param = param + server.arg("auto_calibration_mpu");
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"ssid_0",
+                            (void *)server.arg("ssid_0").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"password_0",
+                            (void *)server.arg("password_0").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveWeatherConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"tianqi_appid",
+                            (void *)server.arg("tianqi_appid").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"tianqi_appsecret",
+                            (void *)server.arg("tianqi_appsecret").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"tianqi_addr",
+                            (void *)server.arg("tianqi_addr").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveWeatherOldConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"cityname",
+                            (void *)server.arg("cityname").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"language",
+                            (void *)server.arg("language").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"weather_key",
+                            (void *)server.arg("weather_key").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveBiliConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+    app_controller->send_to(SERVER_APP_NAME, "Bili",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"bili_uid",
+                            (void *)server.arg("bili_uid").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
 }
 
 void File_Delete()

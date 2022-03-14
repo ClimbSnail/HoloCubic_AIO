@@ -9,7 +9,6 @@ static lv_obj_t *now_app_image = NULL;
 static lv_obj_t *now_app_name = NULL;
 const void *pre_img_path = NULL;
 
-// static lv_group_t *g;
 static lv_style_t default_style;
 static lv_style_t app_name_style;
 
@@ -57,7 +56,7 @@ void display_app_scr_init(const void *src_img_path, const char *app_name)
         lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
         return;
     }
-    
+
     lv_obj_clean(act_obj); // 清空此前页面
     pre_app_image = lv_img_create(app_scr, NULL);
     lv_img_set_src(pre_app_image, src_img_path);

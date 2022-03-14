@@ -27,6 +27,9 @@
 #include "app/file_manager/file_manager.h"
 #include "app/weather_old/weather_old.h"
 
+#include <SPIFFS.h>
+#include <esp32-hal.h>
+
 /*** Component objects **7*/
 Imu_Action *act_info;          // 存放mpu6050返回的数据
 AppController *app_controller; // APP控制器
@@ -35,12 +38,35 @@ void setup()
 {
     Serial.begin(115200);
 
-    Serial.println(F("\nAIO (All in one) version "AIO_VERSION"\n"));
+    Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
+    app_controller = new AppController(); // APP控制器
     
-    config_read(NULL, &g_cfg);
+    // 需要放在Setup里初始化
+    if (!SPIFFS.begin(true))
+    {
+        Serial.println("SPIFFS Mount Failed");
+        return;
+    }
+
+#ifdef PEAK
+    pinMode(CONFIG_BAT_CHG_DET_PIN, INPUT);
+    pinMode(CONFIG_ENCODER_PUSH_PIN, INPUT_PULLUP);
+    /*电源使能保持*/
+    Serial.println("Power: Waiting...");
+    pinMode(CONFIG_POWER_EN_PIN, OUTPUT);
+    digitalWrite(CONFIG_POWER_EN_PIN, LOW);
+    digitalWrite(CONFIG_POWER_EN_PIN, HIGH);
+    Serial.println("Power: ON");
+    log_e("Power: ON");
+#endif
+
+    // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
 
     /*** Init screen ***/
-    screen.init();
+    // screen.init(app_controller->sys_cfg.rotation,
+    //             app_controller->sys_cfg.backLight);
+    screen.init(app_controller->sys_cfg.rotation,
+                app_controller->sys_cfg.backLight);
 
     /*** Init on-board RGB ***/
     rgb.init();
@@ -53,7 +79,7 @@ void setup()
     tf.init();
     lv_fs_if_init();
 
-    app_controller = new AppController(); // APP控制器
+    app_controller->init();
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
     app_controller->app_install(&picture_app);
@@ -71,7 +97,9 @@ void setup()
 
     /*** Init IMU as input device ***/
     lv_port_indev_init();
-    mpu.init(g_cfg.mpu_order); // 初始化比较耗时
+    mpu.init(app_controller->sys_cfg.mpu_order,
+             app_controller->sys_cfg.auto_calibration_mpu,
+             &app_controller->mpu_cfg); // 初始化比较耗时
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     // 初始化RGB灯 HSV色彩模式
@@ -88,6 +116,20 @@ void loop()
 {
     screen.routine();
     act_info = mpu.update(200);
+
+#ifdef PEAK
+    if (!mpu.Encoder_GetIsPush())
+    {
+        Serial.println("mpu.Encoder_GetIsPush()1");
+        delay(1000);
+        if (!mpu.Encoder_GetIsPush())
+        {
+            Serial.println("mpu.Encoder_GetIsPush()2");
+            // 适配Peak的关机功能
+            digitalWrite(CONFIG_POWER_EN_PIN, LOW);
+        }
+    }
+#endif
     app_controller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);

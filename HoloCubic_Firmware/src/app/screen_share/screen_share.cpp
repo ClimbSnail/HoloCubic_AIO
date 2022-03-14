@@ -4,6 +4,8 @@
 #include <TJpg_Decoder.h>
 #include "sys/app_controller.h"
 
+#define SCREEN_SHARE_APP_NAME "Screen share"
+
 #define JPEG_BUFFER_SIZE 1       // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
 #define RECV_BUFFER_SIZE 50000   // 理论上是JPEG_BUFFER_SIZE的两倍就够了
 #define DMA_BUFFER_SIZE 512      // (16*16*2)
@@ -103,7 +105,7 @@ static bool readJpegFromBuffer(uint8_t *const end)
     return isFound;
 }
 
-void screen_share_init(void)
+static int screen_share_init(void)
 {
     // 设置CPU主频
     setCpuFrequencyMhz(160);
@@ -142,11 +144,11 @@ void screen_share_init(void)
     tft->setSwapBytes(true);
     // 因为其他app里是对tft直接设置的，所以此处尽量了不要使用TJpgDec的setSwapBytes
     // TJpgDec.setSwapBytes(true);
-    
+
     Serial.print(F("防止过热，目前为限制为中速档!\n"));
 }
 
-void stop_share_config()
+static void stop_share_config()
 {
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
@@ -155,7 +157,7 @@ void stop_share_config()
     ss_server.close();
 }
 
-void screen_share_process(AppController *sys,
+static void screen_share_process(AppController *sys,
                           const Imu_Action *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
@@ -175,10 +177,12 @@ void screen_share_process(AppController *sys,
             "8081",
             "Wait connect ....",
             LV_SCR_LOAD_ANIM_NONE);
-        // 如果web服务没有开启 且 ap开启的请求没有发送 event_id这边没有作用（填0）
-        // sys->req_event(&screen_share_app, APP_EVENT_WIFI_AP, 0);
+        // 如果web服务没有开启 且 ap开启的请求没有发送 message这边没有作用（填NULL）
+        // sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
+        //              APP_MESSAGE_WIFI_AP, NULL, NULL);
         // 使用STA模式
-        sys->req_event(&screen_share_app, APP_EVENT_WIFI_CONN, 0);
+        sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
         run_data->req_sent = 1; // 标志为 ap开启请求已发送
     }
     else if (1 == run_data->tcp_start)
@@ -186,7 +190,8 @@ void screen_share_process(AppController *sys,
         if (doDelayMillisTime(SHARE_WIFI_ALIVE, &run_data->pre_wifi_alive_millis, false))
         {
             // 发送wifi维持的心跳
-            sys->req_event(&screen_share_app, APP_EVENT_WIFI_ALIVE, 0);
+            sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
         }
 
         if (ss_client.connected())
@@ -204,11 +209,11 @@ void screen_share_process(AppController *sys,
                 if (true == get_mjpeg_ret)
                 {
                     ss_client.write("ok"); // 向上位机发送下一帧发送指令
-                    tft->startWrite();   // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
+                    tft->startWrite();     // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
                     uint32_t frame_size = run_data->mjpeg_end - run_data->mjpeg_start + 1;
                     // 在左上角的0,0处绘制图像——在这个草图中，DMA请求在回调tft_output()中处理
                     JRESULT jpg_ret = TJpgDec.drawJpg(0, 0, run_data->mjpeg_start, frame_size);
-                    tft->endWrite();                                // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
+                    tft->endWrite(); // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
                     // 剩余帧大小
                     uint32_t left_frame_size = &run_data->recvBuf[run_data->bufSaveTail] - run_data->mjpeg_end;
                     memcpy(run_data->recvBuf, run_data->mjpeg_end + 1, left_frame_size);
@@ -259,7 +264,7 @@ void screen_share_process(AppController *sys,
     }
 }
 
-void screen_exit_callback(void)
+static int screen_exit_callback(void *param)
 {
     stop_share_config();
     screen_share_gui_del();
@@ -296,13 +301,15 @@ void screen_exit_callback(void)
     run_data = NULL;
 }
 
-void screen_event_notification(APP_EVENT_TYPE type, int event_id)
+static void screen_message_handle(const char *from, const char *to,
+                           APP_MESSAGE_TYPE type, void *message,
+                           void *ext_info)
 {
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(F("APP_EVENT_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
         display_screen_share(
             "Screen Share",
             WiFi.localIP().toString().c_str(),
@@ -314,9 +321,9 @@ void screen_event_notification(APP_EVENT_TYPE type, int event_id)
         ss_server.setNoDelay(true);
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
-        Serial.print(F("APP_EVENT_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
         display_screen_share(
             "Screen Share",
             WiFi.softAPIP().toString().c_str(),
@@ -328,9 +335,20 @@ void screen_event_notification(APP_EVENT_TYPE type, int event_id)
         // ss_server.setNoDelay(true);
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
+    }
+    break;
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
     }
     break;
     default:
@@ -338,6 +356,6 @@ void screen_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ screen_share_app = {"Screen share", &app_screen, "", screen_share_init,
-                            screen_share_process, screen_exit_callback,
-                            screen_event_notification};
+APP_OBJ screen_share_app = {SCREEN_SHARE_APP_NAME, &app_screen, "",
+                            screen_share_init, screen_share_process,
+                            screen_exit_callback, screen_message_handle};

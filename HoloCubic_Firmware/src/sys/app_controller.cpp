@@ -4,13 +4,14 @@
 #include "interface.h"
 #include "Arduino.h"
 
-const char *app_event_type_info[] = {"APP_EVENT_WIFI_CONN", "APP_EVENT_WIFI_AP",
-                                     "APP_EVENT_WIFI_ALIVE", "APP_EVENT_WIFI_DISCONN",
-                                     "APP_EVENT_UPDATE_TIME", "APP_EVENT_NONE"};
+const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_AP",
+                                     "APP_MESSAGE_WIFI_ALIVE", "APP_MESSAGE_WIFI_DISCONN",
+                                     "APP_MESSAGE_UPDATE_TIME", "APP_MESSAGE_GET_PARAM",
+                                     "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_NONE"};
 
-AppController::AppController(const char * name)
+AppController::AppController(const char *name)
 {
-    strncpy(this->name, name, APP_CONTROLLER_NAME);
+    strncpy(this->name, name, APP_CONTROLLER_NAME_LEN);
     app_num = 0;
     app_exit_flag = 0;
     cur_app_index = 0;
@@ -24,7 +25,10 @@ AppController::AppController(const char * name)
     // uint32_t freq = getXtalFrequencyMhz(); // In MHz
     Serial.print(F("getCpuFrequencyMhz: "));
     Serial.println(freq);
+}
 
+void AppController::init(void)
+{
     app_control_gui_init();
     appList[0] = new APP_OBJ();
     appList[0]->app_image = &app_loading;
@@ -81,7 +85,7 @@ int AppController::main_process(Imu_Action *act_info)
 {
     if (UNKNOWN != act_info->active)
     {
-        Serial.print(F("act_info->active: "));
+        Serial.print(F("[Operate]\tact_info->active: "));
         Serial.println(active_type_info[act_info->active]);
     }
     // 扫描事件
@@ -90,7 +94,7 @@ int AppController::main_process(Imu_Action *act_info)
     // wifi自动关闭
     if (true == m_wifi_status && doDelayMillisTime(WIFI_LIFE_CYCLE, &m_preWifiReqMillis, false))
     {
-        req_event(NULL, APP_EVENT_WIFI_DISCONN, 0);
+        send_to(CTRL_NAME, CTRL_NAME, APP_MESSAGE_WIFI_DISCONN, 0, NULL);
     }
 
     if (0 == app_exit_flag)
@@ -140,20 +144,124 @@ int AppController::main_process(Imu_Action *act_info)
     return 0;
 }
 
-// 事件请求
-int AppController::req_event(const APP_OBJ *from, APP_EVENT_TYPE type, int event_id)
+APP_OBJ *AppController::getAppByName(const char *name)
 {
-    // 更新事件的请求者
-    if (eventList.size() > EVENT_LIST_MAX_LENGTH)
+    for (int pos = 0; pos < app_num; ++pos)
     {
-        return 1;
+        if (!strcmp(name, appList[pos]->app_name))
+        {
+            return appList[pos];
+        }
     }
-    EVENT_OBJ new_event = {from, type, event_id};
-    eventList.push_back(new_event);
-    Serial.print("Add EVENT -> " + String(app_event_type_info[type]));
-    Serial.print(F("\tEventList Size: "));
-    Serial.println(eventList.size());
+
+    return NULL;
+}
+
+// 通信中心（消息转发）
+int AppController::send_to(const char *from, const char *to,
+                           APP_MESSAGE_TYPE type, void *message,
+                           void *ext_info)
+{
+    APP_OBJ *fromApp = getAppByName(from); // 来自谁 有可能为空
+    APP_OBJ *toApp = getAppByName(to);     // 发送给谁 有可能为空
+    if (type <= APP_MESSAGE_UPDATE_TIME)
+    {
+        // 更新事件的请求者
+        if (eventList.size() > EVENT_LIST_MAX_LENGTH)
+        {
+            return 1;
+        }
+        // 发给控制器的消息(目前都是wifi事件)
+        EVENT_OBJ new_event = {fromApp, type, message};
+        eventList.push_back(new_event);
+        Serial.print("[EVENT]\tAdd -> " + String(app_event_type_info[type]));
+        Serial.print(F("\tEventList Size: "));
+        Serial.println(eventList.size());
+    }
+    else
+    {
+        // 各个APP之间通信的消息
+        if (NULL != toApp)
+        {
+            Serial.print("[Massage]\tFrom " + String(fromApp->app_name) + "\tTo " + String(toApp->app_name) + "\n");
+            if (NULL != toApp->message_handle)
+            {
+                toApp->message_handle(from, to, type, message, ext_info);
+            }
+        }
+        else if (!strcmp(to, CTRL_NAME))
+        {
+            Serial.print("[Massage]\tFrom " + String(fromApp->app_name) + "\tTo " + CTRL_NAME + "\n");
+            deal_config(type, (const char *)message, (char *)ext_info);
+        }
+    }
     return 0;
+}
+void AppController::deal_config(APP_MESSAGE_TYPE type,
+                                const char *key, char *value)
+{
+    if (APP_MESSAGE_GET_PARAM == type)
+    {
+        if (!strcmp(key, "ssid_0"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.ssid_0.c_str());
+        }
+        else if (!strcmp(key, "password_0"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.password_0.c_str());
+        }
+        else if (!strcmp(key, "power_mode"))
+        {
+            snprintf(value, 32, "%u", sys_cfg.power_mode);
+        }
+        else if (!strcmp(key, "backLight"))
+        {
+            snprintf(value, 32, "%u", sys_cfg.backLight);
+        }
+        else if (!strcmp(key, "rotation"))
+        {
+            snprintf(value, 32, "%u", sys_cfg.rotation);
+        }
+        else if (!strcmp(key, "auto_calibration_mpu"))
+        {
+            snprintf(value, 32, "%u", sys_cfg.auto_calibration_mpu);
+        }
+        else if (!strcmp(key, "mpu_order"))
+        {
+            snprintf(value, 32, "%u", sys_cfg.mpu_order);
+        }
+    }
+    else if (APP_MESSAGE_SET_PARAM == type)
+    {
+        if (!strcmp(key, "ssid_0"))
+        {
+            sys_cfg.ssid_0 = value;
+        }
+        else if (!strcmp(key, "password_0"))
+        {
+            sys_cfg.password_0 = value;
+        }
+        else if (!strcmp(key, "power_mode"))
+        {
+            sys_cfg.power_mode = String(value).toInt();
+        }
+        else if (!strcmp(key, "backLight"))
+        {
+            sys_cfg.backLight = String(value).toInt();
+        }
+        else if (!strcmp(key, "rotation"))
+        {
+            sys_cfg.rotation = String(value).toInt();
+        }
+        else if (!strcmp(key, "auto_calibration_mpu"))
+        {
+            sys_cfg.auto_calibration_mpu = String(value).toInt();
+        }
+        else if (!strcmp(key, "mpu_order"))
+        {
+            sys_cfg.mpu_order = String(value).toInt();
+        }
+    }
 }
 
 int AppController::req_event_deal(void)
@@ -172,9 +280,10 @@ int AppController::req_event_deal(void)
         // 事件回调
         if (NULL != (*event).from)
         {
-            (*((*event).from->on_event))((*event).type, (*event).id);
+            (*((*event).from->message_handle))(CTRL_NAME, (*event).from->app_name,
+                                               (*event).type, (*event).info, NULL);
         }
-        Serial.print("Delete EVENT -> " + String(app_event_type_info[(*event).type]));
+        Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
         eventList.erase(event); // 删除该响应完成的事件
         Serial.print(F("\tEventList Size: "));
         Serial.println(eventList.size());
@@ -186,17 +295,17 @@ int AppController::req_event_deal(void)
  *  wifi事件的处理
  *  事件处理成功返回true 否则false
  * */
-bool AppController::wifi_event(APP_EVENT_TYPE type)
+bool AppController::wifi_event(APP_MESSAGE_TYPE type)
 {
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
         // 更新请求
         // CONN_ERROR == g_network.end_conn_wifi() ||
         if (false == m_wifi_status)
         {
-            g_network.start_conn_wifi(g_cfg.ssid.c_str(), g_cfg.password.c_str());
+            g_network.start_conn_wifi(sys_cfg.ssid_0.c_str(), sys_cfg.password_0.c_str());
             m_wifi_status = true;
         }
         m_preWifiReqMillis = millis();
@@ -207,7 +316,7 @@ bool AppController::wifi_event(APP_EVENT_TYPE type)
         }
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
         // 更新请求
         g_network.open_ap(AP_SSID);
@@ -215,7 +324,7 @@ bool AppController::wifi_event(APP_EVENT_TYPE type)
         m_preWifiReqMillis = millis();
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi开关的心跳 持续收到心跳 wifi才不会被关闭
         m_wifi_status = true;
@@ -223,14 +332,14 @@ bool AppController::wifi_event(APP_EVENT_TYPE type)
         m_preWifiReqMillis = millis();
     }
     break;
-    case APP_EVENT_WIFI_DISCONN:
+    case APP_MESSAGE_WIFI_DISCONN:
     {
         g_network.close_wifi();
         m_wifi_status = false; // 标志位
         // m_preWifiReqMillis = millis() - WIFI_LIFE_CYCLE;
     }
     break;
-    case APP_EVENT_UPDATE_TIME:
+    case APP_MESSAGE_UPDATE_TIME:
     {
     }
     break;
@@ -257,7 +366,7 @@ void AppController::app_exit()
     if (NULL != appList[cur_app_index]->exit_callback)
     {
         // 执行APP退出回调
-        (*(appList[cur_app_index]->exit_callback))();
+        (*(appList[cur_app_index]->exit_callback))(NULL);
     }
     app_control_display_scr(appList[cur_app_index]->app_image,
                             appList[cur_app_index]->app_name,

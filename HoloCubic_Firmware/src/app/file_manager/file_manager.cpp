@@ -6,6 +6,8 @@
 #include "common.h"
 #include "ESP32FtpServer.h"
 
+#define FILE_MANAGER_APP_NAME "File Manager"
+
 #define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
 
 #define RECV_BUFFER_SIZE 2000    //
@@ -26,7 +28,7 @@ struct FileManagerAppRunData
 };
 
 static FileManagerAppRunData *run_data = NULL;
-void file_maneger_init(void)
+static int file_maneger_init(void)
 {
     file_maneger_gui_init();
     // 初始化运行时参数
@@ -38,7 +40,7 @@ void file_maneger_init(void)
     run_data->sendBuf = (uint8_t *)calloc(1, SEND_BUFFER_SIZE);
 }
 
-void file_maneger_process(AppController *sys,
+static void file_maneger_process(AppController *sys,
                           const Imu_Action *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
@@ -59,7 +61,8 @@ void file_maneger_process(AppController *sys,
             "Wait connect ....",
             LV_SCR_LOAD_ANIM_NONE);
         // 如果web服务没有开启 且 ap开启的请求没有发送 event_id这边没有作用（填0）
-        sys->req_event(&file_manager_app, APP_EVENT_WIFI_CONN, 0);
+        sys->send_to(FILE_MANAGER_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
         run_data->req_sent = 1; // 标志为 ap开启请求已发送
     }
     else if (1 == run_data->tcp_start)
@@ -67,13 +70,14 @@ void file_maneger_process(AppController *sys,
         if (doDelayMillisTime(SHARE_WIFI_ALIVE, &run_data->apAlivePreMillis, false))
         {
             // 发送wifi维持的心跳
-            sys->req_event(&file_manager_app, APP_EVENT_WIFI_ALIVE, 0);
+            sys->send_to(FILE_MANAGER_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
         }
         ftpSrv.handleFTP(); // make sure in loop you call handleFTP()!!
     }
 }
 
-void file_maneger_exit_callback(void)
+static int file_maneger_exit_callback(void *param)
 {
     file_manager_gui_del();
 
@@ -94,13 +98,15 @@ void file_maneger_exit_callback(void)
     run_data = NULL;
 }
 
-void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
+static void file_maneger_message_handle(const char *from, const char *to,
+                                 APP_MESSAGE_TYPE type, void *message,
+                                 void *ext_info)
 {
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(F("APP_EVENT_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
         display_file_manager(
             "File Manager",
             WiFi.localIP().toString().c_str(),
@@ -111,9 +117,9 @@ void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
         ftpSrv.begin("holocubic", "aio");
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
-        Serial.print(F("APP_EVENT_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
         display_file_manager(
             "File Manager",
             WiFi.localIP().toString().c_str(),
@@ -123,7 +129,7 @@ void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
         run_data->tcp_start = 1;
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
     }
@@ -133,6 +139,6 @@ void file_maneger_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ file_manager_app = {"File Manager", &app_file_manager, "", file_maneger_init,
-                            file_maneger_process, file_maneger_exit_callback,
-                            file_maneger_event_notification};
+APP_OBJ file_manager_app = {FILE_MANAGER_APP_NAME, &app_file_manager, "",
+                            file_maneger_init, file_maneger_process,
+                            file_maneger_exit_callback, file_maneger_message_handle};

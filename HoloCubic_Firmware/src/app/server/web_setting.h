@@ -2,17 +2,25 @@
 #define WEB_SETTING_H
 
 #include <WString.h>
+#include "sys/app_controller.h"
 
+extern AppController *app_controller; // APP控制器
 void init_page_header(void);
 void init_page_footer(void);
 void HomePage(void);
-void Setting(void);
+void sys_setting(void);
+void weather_setting(void);
+void weather_old_setting(void);
+void bili_setting(void);
 void File_Download(void);
 void File_Upload(void);
 void File_Delete(void);
 void delete_result(void);
 void handleFileUpload(void);
-void save_config(void);
+void saveSysConf(void);
+void saveWeatherConf(void);
+void saveWeatherOldConf(void);
+void saveBiliConf(void);
 
 void sd_file_download(const String &filename);
 void SelectInput(String heading, String command, String arg_calling_name);

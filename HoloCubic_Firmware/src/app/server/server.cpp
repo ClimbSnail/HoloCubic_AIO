@@ -29,7 +29,11 @@ void start_web_config()
     server.on("/upload", File_Upload);
     server.on("/delete", File_Delete);
     server.on("/delete_result", delete_result);
-    server.on("/setting", Setting);
+
+    server.on("/sys_setting", sys_setting);
+    server.on("/weather_setting", weather_setting);
+    server.on("/weather_old_setting", weather_old_setting);
+    server.on("/bili_setting", bili_setting);
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -37,7 +41,10 @@ void start_web_config()
         handleFileUpload);
 
     //连接
-    server.on("/saveConf", save_config);
+    server.on("/saveSysConf", saveSysConf);
+    server.on("/saveWeatherConf", saveWeatherConf);
+    server.on("/saveWeatherOldConf", saveWeatherOldConf);
+    server.on("/saveBiliConf", saveBiliConf);
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);
@@ -52,7 +59,7 @@ void stop_web_config()
     server.close();
 }
 
-void server_init(void)
+static int server_init(void)
 {
     server_gui_init();
     // 初始化运行时参数
@@ -62,7 +69,7 @@ void server_init(void)
     run_data->serverReflushPreMillis = 0;
 }
 
-void server_process(AppController *sys,
+static void server_process(AppController *sys,
                     const Imu_Action *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
@@ -83,8 +90,9 @@ void server_process(AppController *sys,
             "Wait...", "Wait...",
             // "", "",
             LV_SCR_LOAD_ANIM_NONE);
-        // 如果web服务没有开启 且 ap开启的请求没有发送 event_id这边没有作用（填0）
-        sys->req_event(&server_app, APP_EVENT_WIFI_AP, 0);
+        // 如果web服务没有开启 且 ap开启的请求没有发送 message这边没有作用（填0）
+        sys->send_to(SERVER_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_AP, NULL, NULL);
         run_data->req_sent = 1; // 标志为 ap开启请求已发送
     }
     else if (1 == run_data->web_start)
@@ -93,8 +101,9 @@ void server_process(AppController *sys,
         if (doDelayMillisTime(SERVER_REFLUSH_INTERVAL, &run_data->serverReflushPreMillis, false) == true)
         {
             // 发送wifi维持的心跳
-            sys->req_event(&server_app, APP_EVENT_WIFI_ALIVE, 0);
-            
+            sys->send_to(SERVER_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
+
             display_setting(
                 "WebServer Start",
                 "Domain: holocubic",
@@ -105,7 +114,7 @@ void server_process(AppController *sys,
     }
 }
 
-void server_exit_callback(void)
+static int server_exit_callback(void *param)
 {
     setting_gui_del();
     // 释放运行时参数
@@ -113,13 +122,15 @@ void server_exit_callback(void)
     run_data = NULL;
 }
 
-void server_event_notification(APP_EVENT_TYPE type, int event_id)
+static void server_message_handle(const char *from, const char *to,
+                           APP_MESSAGE_TYPE type, void *message,
+                           void *ext_info)
 {
     switch (type)
     {
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
-        Serial.print(F("APP_EVENT_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
         display_setting(
             "WebServer Start",
             "Domain: holocubic",
@@ -130,7 +141,7 @@ void server_event_notification(APP_EVENT_TYPE type, int event_id)
         run_data->web_start = 1;
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
     }
@@ -140,6 +151,6 @@ void server_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ server_app = {"WebServer", &app_server, "", server_init,
-                      server_process, server_exit_callback,
-                      server_event_notification};
+APP_OBJ server_app = {SERVER_APP_NAME, &app_server, "",
+                      server_init, server_process,
+                      server_exit_callback, server_message_handle};
