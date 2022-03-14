@@ -157,7 +157,7 @@ APP_OBJ *AppController::getAppByName(const char *name)
     return NULL;
 }
 
-// 事件请求
+// 通信中心（消息转发）
 int AppController::send_to(const char *from, const char *to,
                            APP_MESSAGE_TYPE type, void *message,
                            void *ext_info)

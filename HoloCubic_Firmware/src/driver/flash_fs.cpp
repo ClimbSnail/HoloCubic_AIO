@@ -13,12 +13,12 @@
 
 FlashFS::FlashFS()
 {
-    // 目前这个会报错 想运行可以注释以下几行代码
-    if (!SPIFFS.begin(FORMAT_LITTLEFS_IF_FAILED))
-    {
-        Serial.println("SPIFFS Mount Failed");
-        return;
-    }
+    // SPIFFS初始化需要在setup启动后，如果在全局变量里初始化会报错
+    // if (!SPIFFS.begin(FORMAT_LITTLEFS_IF_FAILED))
+    // {
+    //     Serial.println("SPIFFS Mount Failed");
+    //     return;
+    // }
 
     // listDir("/", 0);
     // createDir("/mydir");
@@ -39,8 +39,6 @@ FlashFS::FlashFS()
     // deleteFile("/foo.txt");
     // testFileIO("/test.txt");
     // deleteFile("/test.txt");
-
-    Serial.println("Test complete");
 }
 
 FlashFS::~FlashFS()
@@ -95,38 +93,40 @@ void FlashFS::listDir(const char *dirname, uint8_t levels)
     }
 }
 
-void FlashFS::createDir(const char *path)
-{
-    Serial.printf("Creating Dir: %s\n", path);
-    if (SPIFFS.mkdir(path))
-    {
-        Serial.println("Dir created");
-    }
-    else
-    {
-        Serial.println("mkdir failed");
-    }
-}
+// void FlashFS::createDir(const char *path)
+// {
+//     // SPIFFS不支持目录
+//     Serial.printf("Creating Dir: %s\n", path);
+//     if (SPIFFS.mkdir(path))
+//     {
+//         Serial.println("Dir created");
+//     }
+//     else
+//     {
+//         Serial.println("mkdir failed");
+//     }
+// }
 
-void FlashFS::removeDir(const char *path)
-{
-    Serial.printf("Removing Dir: %s\n", path);
-    if (SPIFFS.rmdir(path))
-    {
-        Serial.println("Dir removed");
-    }
-    else
-    {
-        Serial.println("rmdir failed");
-    }
-}
+// void FlashFS::removeDir(const char *path)
+// {
+//     Serial.printf("Removing Dir: %s\n", path);
+//     if (SPIFFS.rmdir(path))
+//     {
+//         Serial.println("Dir removed");
+//     }
+//     else
+//     {
+//         Serial.println("rmdir failed");
+//     }
+// }
 
 String FlashFS::readFile(const char *path)
 {
     Serial.printf("Reading file: %s\r\n", path);
 
     File file = SPIFFS.open(path);
-    String readInfo;
+    String readInfo = "";
+    char tmp[16];
     if (!file || file.isDirectory())
     {
         Serial.println("- failed to open file for reading");
@@ -135,9 +135,11 @@ String FlashFS::readFile(const char *path)
 
     Serial.println("- read from file:");
     while (file.available())
-    {
-        // readInfo += 
-        Serial.write(file.read());
+    {   
+        memset(tmp, 0, 16);
+        file.read((uint8_t *)tmp, 15);
+        readInfo += tmp;
+        // Serial.write(file.read());
     }
     file.close();
     return readInfo;
@@ -214,78 +216,78 @@ void FlashFS::deleteFile(const char *path)
 // SPIFFS-like write and delete file
 
 // See: https://github.com/esp8266/Arduino/blob/master/libraries/SPIFFS/src/SPIFFS.cpp#L60
-void FlashFS::writeFile2(const char *path, const char *message)
-{
-    if (!SPIFFS.exists(path))
-    {
-        if (strchr(path, '/'))
-        {
-            Serial.printf("Create missing folders of: %s\r\n", path);
-            char *pathStr = strdup(path);
-            if (pathStr)
-            {
-                char *ptr = strchr(pathStr, '/');
-                while (ptr)
-                {
-                    *ptr = 0;
-                    SPIFFS.mkdir(pathStr);
-                    *ptr = '/';
-                    ptr = strchr(ptr + 1, '/');
-                }
-            }
-            free(pathStr);
-        }
-    }
+// void FlashFS::writeFile2(const char *path, const char *message)
+// {
+//     if (!SPIFFS.exists(path))
+//     {
+//         if (strchr(path, '/'))
+//         {
+//             Serial.printf("Create missing folders of: %s\r\n", path);
+//             char *pathStr = strdup(path);
+//             if (pathStr)
+//             {
+//                 char *ptr = strchr(pathStr, '/');
+//                 while (ptr)
+//                 {
+//                     *ptr = 0;
+//                     SPIFFS.mkdir(pathStr);
+//                     *ptr = '/';
+//                     ptr = strchr(ptr + 1, '/');
+//                 }
+//             }
+//             free(pathStr);
+//         }
+//     }
 
-    Serial.printf("Writing file to: %s\r\n", path);
-    File file = SPIFFS.open(path, FILE_WRITE);
-    if (!file)
-    {
-        Serial.println("- failed to open file for writing");
-        return;
-    }
-    if (file.print(message))
-    {
-        Serial.println("- file written");
-    }
-    else
-    {
-        Serial.println("- write failed");
-    }
-    file.close();
-}
+//     Serial.printf("Writing file to: %s\r\n", path);
+//     File file = SPIFFS.open(path, FILE_WRITE);
+//     if (!file)
+//     {
+//         Serial.println("- failed to open file for writing");
+//         return;
+//     }
+//     if (file.print(message))
+//     {
+//         Serial.println("- file written");
+//     }
+//     else
+//     {
+//         Serial.println("- write failed");
+//     }
+//     file.close();
+// }
 
 // See:  https://github.com/esp8266/Arduino/blob/master/libraries/SPIFFS/src/SPIFFS.h#L149
-void FlashFS::deleteFile2(const char *path)
-{
-    Serial.printf("Deleting file and empty folders on path: %s\r\n", path);
+// void FlashFS::deleteFile2(const char *path)
+// {
+//     Serial.printf("Deleting file and empty folders on path: %s\r\n", path);
 
-    if (SPIFFS.remove(path))
-    {
-        Serial.println("- file deleted");
-    }
-    else
-    {
-        Serial.println("- delete failed");
-    }
+//     if (SPIFFS.remove(path))
+//     {
+//         Serial.println("- file deleted");
+//     }
+//     else
+//     {
+//         Serial.println("- delete failed");
+//     }
 
-    char *pathStr = strdup(path);
-    if (pathStr)
-    {
-        char *ptr = strrchr(pathStr, '/');
-        if (ptr)
-        {
-            Serial.printf("Removing all empty folders on path: %s\r\n", path);
-        }
-        while (ptr)
-        {
-            *ptr = 0;
-            SPIFFS.rmdir(pathStr);
-            ptr = strrchr(pathStr, '/');
-        }
-        free(pathStr);
-    }
-}
+//     char *pathStr = strdup(path);
+//     if (pathStr)
+//     {
+//         char *ptr = strrchr(pathStr, '/');
+//         if (ptr)
+//         {
+//             Serial.printf("Removing all empty folders on path: %s\r\n", path);
+//         }
+//         while (ptr)
+//         {
+//             *ptr = 0;
+//             SPIFFS.rmdir(pathStr);
+//             ptr = strrchr(pathStr, '/');
+//         }
+//         free(pathStr);
+//     }
+// }
 
 void FlashFS::testFileIO(const char *path)
 {

@@ -151,6 +151,9 @@ void sys_setting()
     char rotation[32];
     char auto_calibration_mpu[32];
     char mpu_order[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
                             (void *)"ssid_0", ssid_0);
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
@@ -189,6 +192,9 @@ void weather_setting()
     char tianqi_appid[32];
     char tianqi_appsecret[32];
     char tianqi_addr[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"tianqi_appid", tianqi_appid);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
@@ -207,6 +213,9 @@ void weather_old_setting()
     char cityname[32];
     char language[32];
     char weather_key[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
     app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_GET_PARAM,
                             (void *)"cityname", cityname);
     app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_GET_PARAM,
@@ -225,6 +234,9 @@ void bili_setting()
 {
     char buf[2048];
     char bili_uid[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
     app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_GET_PARAM,
                             (void *)"bili_uid", bili_uid);
     sprintf(buf, BILIBILI_SETTING, bili_uid);
@@ -252,6 +264,9 @@ void saveSysConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"password_0",
                             (void *)server.arg("password_0").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
 }
 
 void saveWeatherConf(void)
@@ -270,6 +285,9 @@ void saveWeatherConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"tianqi_addr",
                             (void *)server.arg("tianqi_addr").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
 }
 
 void saveWeatherOldConf(void)
@@ -288,6 +306,9 @@ void saveWeatherOldConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weather_key",
                             (void *)server.arg("weather_key").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
 }
 
 void saveBiliConf(void)
@@ -297,6 +318,9 @@ void saveBiliConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"bili_uid",
                             (void *)server.arg("bili_uid").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
 }
 
 void File_Delete()

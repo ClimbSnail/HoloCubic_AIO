@@ -34,26 +34,25 @@ static void read_config(WT_Config *cfg)
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
     String info = g_flashCfg.readFile(WEATHER_CONFIG_PATH);
+    Serial.println(info);
     // 解析数据
     cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
     cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
 }
 
-static void write_config(String tianqi_appid, String tianqi_appsecret,
-                         String tianqi_addr, unsigned long weatherUpdataInterval,
-                         unsigned long timeUpdataInterval)
+static void write_config(WT_Config *cfg)
 {
     char tmp[25];
     // 将配置数据保存在文件中（持久化）
     String w_data;
-    w_data = w_data + tianqi_appid + "\n";
-    w_data = w_data + tianqi_appsecret + "\n";
-    w_data = w_data + tianqi_addr + "\n";
+    w_data = w_data + cfg->tianqi_appid + "\n";
+    w_data = w_data + cfg->tianqi_appsecret + "\n";
+    w_data = w_data + cfg->tianqi_addr + "\n";
     memset(tmp, 0, 25);
-    snprintf(tmp, 25, "%ul\n", weatherUpdataInterval);
+    snprintf(tmp, 25, "%u\n", cfg->weatherUpdataInterval);
     w_data += tmp;
     memset(tmp, 0, 25);
-    snprintf(tmp, 25, "%ul\n", timeUpdataInterval);
+    snprintf(tmp, 25, "%u\n", cfg->timeUpdataInterval);
     w_data += tmp;
     g_flashCfg.writeFile(WEATHER_CONFIG_PATH, w_data.c_str());
 }
@@ -484,6 +483,16 @@ static void weather_message_handle(const char *from, const char *to,
         {
             cfg_data.tianqi_addr = param_val;
         }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
     }
     break;
     default:

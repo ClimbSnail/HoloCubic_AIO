@@ -27,6 +27,7 @@
 #include "app/file_manager/file_manager.h"
 #include "app/weather_old/weather_old.h"
 
+#include <SPIFFS.h>
 #include <esp32-hal.h>
 
 /*** Component objects **7*/
@@ -39,6 +40,13 @@ void setup()
 
     Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
     app_controller = new AppController(); // APP控制器
+    
+    // 需要放在Setup里初始化
+    if (!SPIFFS.begin(true))
+    {
+        Serial.println("SPIFFS Mount Failed");
+        return;
+    }
 
 #ifdef PEAK
     pinMode(CONFIG_BAT_CHG_DET_PIN, INPUT);
