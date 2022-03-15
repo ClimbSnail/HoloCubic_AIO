@@ -34,6 +34,8 @@ void start_web_config()
     server.on("/weather_setting", weather_setting);
     server.on("/weather_old_setting", weather_old_setting);
     server.on("/bili_setting", bili_setting);
+    server.on("/picture_setting", picture_setting);
+    server.on("/media_setting", media_setting);
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -45,6 +47,8 @@ void start_web_config()
     server.on("/saveWeatherConf", saveWeatherConf);
     server.on("/saveWeatherOldConf", saveWeatherOldConf);
     server.on("/saveBiliConf", saveBiliConf);
+    server.on("/savePictureConf", savePictureConf);
+    server.on("/saveMediaConf", saveMediaConf);
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);
@@ -70,7 +74,7 @@ static int server_init(void)
 }
 
 static void server_process(AppController *sys,
-                    const Imu_Action *action)
+                           const Imu_Action *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 
@@ -123,8 +127,8 @@ static int server_exit_callback(void *param)
 }
 
 static void server_message_handle(const char *from, const char *to,
-                           APP_MESSAGE_TYPE type, void *message,
-                           void *ext_info)
+                                  APP_MESSAGE_TYPE type, void *message,
+                                  void *ext_info)
 {
     switch (type)
     {

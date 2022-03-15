@@ -10,25 +10,44 @@
 #define B_CONFIG_PATH "/bilibili.cfg"
 struct B_Config
 {
-    String bili_uid; // bilibili的uid
+    String bili_uid;              // bilibili的uid
+    unsigned long updataInterval; // 更新的时间间隔(s)
 };
+
+static void write_config(const B_Config *cfg)
+{
+    char tmp[16];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + cfg->bili_uid + "\n";
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->updataInterval);
+    w_data += tmp;
+    g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
+}
 
 static void read_config(B_Config *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
-    String info = g_flashCfg.readFile(B_CONFIG_PATH);
-    // 解析数据
-    cfg->bili_uid = info; //
-}
-
-static void write_config(const B_Config *cfg)
-{
-    char tmp[25];
-    // 将配置数据保存在文件中（持久化）
-    String w_data;
-    w_data = w_data + cfg->bili_uid + "\n";
-    g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(B_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->bili_uid = "344470052";  // B站的用户ID
+        cfg->updataInterval = 900000; // 更新的时间间隔900000(900s)
+        write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[2] = {0};
+        analyseParam(info, 2, param);
+        cfg->bili_uid = param[0];
+        cfg->updataInterval = atol(param[1]);
+    }
 }
 
 struct BilibiliAppRunData
@@ -36,7 +55,6 @@ struct BilibiliAppRunData
     unsigned int fans_num;
     unsigned int follow_num;
     unsigned int refresh_status;
-    unsigned long refresh_interval;
     unsigned long refresh_time_millis;
 };
 
@@ -80,8 +98,7 @@ static int bilibili_init(void)
     run_data->fans_num = 0;
     run_data->follow_num = 0;
     run_data->refresh_status = 0;
-    run_data->refresh_interval = 900000;
-    run_data->refresh_time_millis = millis() - run_data->refresh_interval;
+    run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
 }
 
 static void bilibili_process(AppController *sys,
@@ -120,7 +137,7 @@ static void bilibili_process(AppController *sys,
     {
         display_bilibili("bilibili", anim_type, fans_num, follow_num);
         // 以下减少网络请求的压力
-        if (doDelayMillisTime(run_data->refresh_interval, &run_data->refresh_time_millis, false))
+        if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
         {
             sys->send_to(BILI_APP_NAME, CTRL_NAME,
                          APP_MESSAGE_WIFI_CONN, NULL, NULL);
@@ -195,6 +212,14 @@ static void bilibili_message_handle(const char *from, const char *to,
         {
             snprintf((char *)ext_info, 32, "%s", cfg_data.bili_uid.c_str());
         }
+        else if (!strcmp(param_key, "updataInterval"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.updataInterval);
+        }
+        else
+        {
+            snprintf((char *)ext_info, 32, "%s", "NULL");
+        }
     }
     break;
     case APP_MESSAGE_SET_PARAM:
@@ -205,6 +230,20 @@ static void bilibili_message_handle(const char *from, const char *to,
         {
             cfg_data.bili_uid = param_val;
         }
+        else if (!strcmp(param_key, "updataInterval"))
+        {
+            cfg_data.updataInterval = atol(param_val);
+        }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
     }
     break;
     default:

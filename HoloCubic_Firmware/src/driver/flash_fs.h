@@ -16,7 +16,7 @@ public:
 
     // void removeDir(const char *path);
 
-    String readFile(const char *path);
+    uint16_t readFile(const char *path, uint8_t *info);
 
     void writeFile(const char *path, const char *message);
 
@@ -35,3 +35,5 @@ public:
 private:
     void testFileIO(const char *path);
 };
+
+bool analyseParam(char *info, int argc, char **argv);

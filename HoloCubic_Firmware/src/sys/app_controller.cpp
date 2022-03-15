@@ -3,11 +3,80 @@
 #include "common.h"
 #include "interface.h"
 #include "Arduino.h"
-
+#define APP_CTRL_CONFIG_PATH "/sys.cfg"
 const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_AP",
                                      "APP_MESSAGE_WIFI_ALIVE", "APP_MESSAGE_WIFI_DISCONN",
                                      "APP_MESSAGE_UPDATE_TIME", "APP_MESSAGE_GET_PARAM",
                                      "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_NONE"};
+
+void AppController::read_config(SYS_UTIL_CFG *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(APP_CTRL_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->power_mode = 0;           // 功耗模式（0为节能模式 1为性能模式）
+        cfg->backLight = 80;           // 屏幕亮度（1-100）
+        cfg->rotation = 4;             // 屏幕旋转方向
+        cfg->auto_calibration_mpu = 1; // 是否自动校准陀螺仪 0关闭自动校准 1打开自动校准
+        cfg->mpu_order = 0;            // 操作方向
+        this->write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[11] = {0};
+        analyseParam(info, 11, param);
+        cfg->ssid_0 = param[0];
+        cfg->password_0 = param[1];
+        cfg->ssid_1 = param[2];
+        cfg->password_1 = param[3];
+        cfg->ssid_2 = param[4];
+        cfg->password_2 = param[5];
+        cfg->power_mode = atol(param[6]);
+        cfg->backLight = atol(param[7]);
+        cfg->rotation = atol(param[8]);
+        cfg->auto_calibration_mpu = atol(param[9]);
+        cfg->mpu_order = atol(param[10]);
+    }
+}
+
+void AppController::write_config(SYS_UTIL_CFG *cfg)
+{
+    char tmp[25];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + cfg->ssid_0 + "\n";
+    w_data = w_data + cfg->password_0 + "\n";
+    w_data = w_data + cfg->ssid_1 + "\n";
+    w_data = w_data + cfg->password_1 + "\n";
+    w_data = w_data + cfg->ssid_2 + "\n";
+    w_data = w_data + cfg->password_2 + "\n";
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%u\n", cfg->power_mode);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%u\n", cfg->backLight);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%u\n", cfg->rotation);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%u\n", cfg->auto_calibration_mpu);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%u\n", cfg->mpu_order);
+    w_data += tmp;
+    g_flashCfg.writeFile(APP_CTRL_CONFIG_PATH, w_data.c_str());
+}
 
 AppController::AppController(const char *name)
 {
@@ -91,8 +160,8 @@ int AppController::main_process(Imu_Action *act_info)
     // 扫描事件
     req_event_deal();
 
-    // wifi自动关闭
-    if (true == m_wifi_status && doDelayMillisTime(WIFI_LIFE_CYCLE, &m_preWifiReqMillis, false))
+    // wifi自动关闭(在节能模式下)
+    if (0 == sys_cfg.power_mode && true == m_wifi_status && doDelayMillisTime(WIFI_LIFE_CYCLE, &m_preWifiReqMillis, false))
     {
         send_to(CTRL_NAME, CTRL_NAME, APP_MESSAGE_WIFI_DISCONN, 0, NULL);
     }
@@ -200,7 +269,10 @@ int AppController::send_to(const char *from, const char *to,
 void AppController::deal_config(APP_MESSAGE_TYPE type,
                                 const char *key, char *value)
 {
-    if (APP_MESSAGE_GET_PARAM == type)
+    switch (type)
+    {
+
+    case APP_MESSAGE_GET_PARAM:
     {
         if (!strcmp(key, "ssid_0"))
         {
@@ -209,6 +281,22 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         else if (!strcmp(key, "password_0"))
         {
             snprintf(value, 32, "%s", sys_cfg.password_0.c_str());
+        }
+        else if (!strcmp(key, "ssid_1"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.ssid_1.c_str());
+        }
+        else if (!strcmp(key, "password_1"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.password_1.c_str());
+        }
+        if (!strcmp(key, "ssid_2"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.ssid_2.c_str());
+        }
+        else if (!strcmp(key, "password_2"))
+        {
+            snprintf(value, 32, "%s", sys_cfg.password_2.c_str());
         }
         else if (!strcmp(key, "power_mode"))
         {
@@ -231,7 +319,8 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
             snprintf(value, 32, "%u", sys_cfg.mpu_order);
         }
     }
-    else if (APP_MESSAGE_SET_PARAM == type)
+    break;
+    case APP_MESSAGE_SET_PARAM:
     {
         if (!strcmp(key, "ssid_0"))
         {
@@ -240,6 +329,22 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         else if (!strcmp(key, "password_0"))
         {
             sys_cfg.password_0 = value;
+        }
+        else if (!strcmp(key, "ssid_1"))
+        {
+            sys_cfg.ssid_1 = value;
+        }
+        else if (!strcmp(key, "password_1"))
+        {
+            sys_cfg.password_1 = value;
+        }
+        else if (!strcmp(key, "ssid_2"))
+        {
+            sys_cfg.ssid_2 = value;
+        }
+        else if (!strcmp(key, "password_2"))
+        {
+            sys_cfg.password_2 = value;
         }
         else if (!strcmp(key, "power_mode"))
         {
@@ -261,6 +366,18 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         {
             sys_cfg.mpu_order = String(value).toInt();
         }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&sys_cfg);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&sys_cfg);
+    }
+    break;
     }
 }
 

@@ -83,7 +83,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 2. 启用后，会显示`Web Sever Start`。若当前模式为STA模式（此前已经连接过wifi），则WebServer建立在STA模式下的`Local_IP`上。若为AP模式（重没连接过wifi），则建立在`AP_IP`上（屏幕的服务界面有标注），AP模式的热点名为`HoloCubic_AIO`无密码。
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。如果`Holocubic`已经连接上路由器，则电脑应当也连上该路由器。
 4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（ http://192.168.4.2 也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
-5. 网页里可设置屏幕方向。
+5. 网页里可设置系统参数、天气APP参数、相册参数、播放器参数等等。
 
 ##### 文件管理器（File Manager）
 作用：通过无线网络管理内存卡上的文件。
@@ -150,7 +150,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要修改SPI引脚了。以下是此前版本的操作
+3. 目前最新版本已经不需要大家特意修改SPI引脚了，本工程的`lib`下已经修改好了SPI的引脚。以下是此前版本的操作（可忽略）
 
 然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：

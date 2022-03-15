@@ -56,7 +56,7 @@ struct SYS_UTIL_CFG
     String ssid_1;
     String password_1;
     String ssid_2;
-    String password_3;
+    String password_2;
     uint8_t power_mode;           // 功耗模式（0为节能模式 1为性能模式）
     uint8_t backLight;            // 屏幕亮度（1-100）
     uint8_t rotation;             // 屏幕旋转方向
