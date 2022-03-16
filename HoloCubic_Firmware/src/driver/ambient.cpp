@@ -1,4 +1,5 @@
 #include "ambient.h"
+#include "common.h"
 
 void Ambient::init(int mode)
 {

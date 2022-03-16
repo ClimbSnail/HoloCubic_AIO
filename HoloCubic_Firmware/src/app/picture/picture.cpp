@@ -6,6 +6,48 @@
 // Include the jpeg decoder library
 #include <TJpg_Decoder.h>
 
+#define PICTURE_APP_NAME "Picture"
+
+// 相册的持久化配置
+#define PICTURE_CONFIG_PATH "/picture.cfg"
+struct PIC_Config
+{
+    unsigned long switchInterval; // 自动播放下一张的时间间隔s（0不切换 1自动切换）
+};
+
+static void write_config(PIC_Config *cfg)
+{
+    char tmp[16];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->switchInterval);
+    w_data += tmp;
+    g_flashCfg.writeFile(PICTURE_CONFIG_PATH, w_data.c_str());
+}
+
+static void read_config(PIC_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(PICTURE_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->switchInterval = 10000; // 是否自动播放下一个（0不切换 默认10000毫秒）
+        write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[1] = {0};
+        analyseParam(info, 1, param);
+        cfg->switchInterval = atol(param[0]);
+    }
+}
+
 struct PictureAppRunData
 {
     unsigned long pic_perMillis;      // 图片上一回更新的时间
@@ -17,6 +59,7 @@ struct PictureAppRunData
     bool tftSwapStatus;
 };
 
+static PIC_Config cfg_data;
 static PictureAppRunData *run_data = NULL;
 
 // This next function will be called during decoding of the jpeg file to
@@ -58,13 +101,14 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return pfile;
 }
 
-void picture_init(void)
+static int picture_init(void)
 {
     photo_gui_init();
+    // 获取配置信息
+    read_config(&cfg_data);
     // 初始化运行时参数
     run_data = (PictureAppRunData *)malloc(sizeof(PictureAppRunData));
     run_data->pic_perMillis = 0;
-    run_data->picRefreshInterval = 10000;
     run_data->image_file = NULL;
     run_data->pfile = NULL;
     run_data->image_pos_increate = 1;
@@ -84,8 +128,8 @@ void picture_init(void)
     TJpgDec.setCallback(tft_output);
 }
 
-void picture_process(AppController *sys,
-                     const Imu_Action *act_info)
+static void picture_process(AppController *sys,
+                            const Imu_Action *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
 
@@ -99,13 +143,13 @@ void picture_process(AppController *sys,
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_RIGHT;
         run_data->image_pos_increate = 1;
-        run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
+        run_data->pic_perMillis = millis() - cfg_data.switchInterval; // 间接强制更新
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_LEFT;
         run_data->image_pos_increate = -1;
-        run_data->pic_perMillis = millis() - run_data->picRefreshInterval; // 间接强制更新
+        run_data->pic_perMillis = millis() - cfg_data.switchInterval; // 间接强制更新
     }
 
     if (NULL == run_data->image_file)
@@ -114,14 +158,17 @@ void picture_process(AppController *sys,
         return;
     }
 
-    if (doDelayMillisTime(run_data->picRefreshInterval, &run_data->pic_perMillis, false) == true)
+    if (doDelayMillisTime(cfg_data.switchInterval, &run_data->pic_perMillis, false) == true)
     {
         if (NULL != run_data->image_file)
         {
-            run_data->pfile = get_next_file(run_data->pfile, run_data->image_pos_increate);
+            run_data->pfile = get_next_file(run_data->pfile,
+                                            run_data->image_pos_increate);
         }
         char file_name[PIC_FILENAME_MAX_LEN] = {0};
-        snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s", run_data->image_file->file_name, run_data->pfile->file_name);
+        snprintf(file_name, PIC_FILENAME_MAX_LEN, "%s/%s",
+                 run_data->image_file->file_name,
+                 run_data->pfile->file_name);
         // Draw the image, top left at 0,0
         Serial.print(F("Decode image: "));
         Serial.println(file_name);
@@ -139,7 +186,7 @@ void picture_process(AppController *sys,
     delay(300);
 }
 
-void picture_exit_callback(void)
+static int picture_exit_callback(void *param)
 {
     photo_gui_del();
     // 释放文件名链表
@@ -152,10 +199,50 @@ void picture_exit_callback(void)
     run_data = NULL;
 }
 
-void picture_event_notification(APP_EVENT_TYPE type, int event_id)
+static void picture_message_handle(const char *from, const char *to,
+                                   APP_MESSAGE_TYPE type, void *message,
+                                   void *ext_info)
 {
+    switch (type)
+    {
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+        if (!strcmp(param_key, "switchInterval"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.switchInterval);
+        }
+        else
+        {
+            snprintf((char *)ext_info, 32, "%s", "NULL");
+        }
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
+        if (!strcmp(param_key, "switchInterval"))
+        {
+            cfg_data.switchInterval = atol(param_val);
+        }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
-APP_OBJ picture_app = {"Picture", &app_picture, "", picture_init,
-                       picture_process, picture_exit_callback,
-                       picture_event_notification};
+APP_OBJ picture_app = {PICTURE_APP_NAME, &app_picture, "",
+                       picture_init, picture_process,
+                       picture_exit_callback, picture_message_handle};

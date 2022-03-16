@@ -4,6 +4,7 @@
 #include "sys/app_controller.h"
 #include "common.h"
 
+#define SETTINGS_APP_NAME "Settings"
 #define RECV_BUF_LEN 128
 
 struct SettingsAppRunData
@@ -24,28 +25,28 @@ int exec_order(int len, const uint8_t *data)
         // 如果消息合法
         if (AT_SETTING_SET == msg.m_msg_head.m_action_type)
         {
-            prefs.begin(msg.m_prefs_name); // 打开命名空间mynamespace
+            // prefs.begin(msg.m_prefs_name); // 打开命名空间mynamespace
             switch (msg.m_value_type)
             {
             case VALUE_TYPE_INT:
             {
-                prefs.putInt(msg.m_key, msg.m_value[0] << 8 + msg.m_value[1]);
+                // prefs.putInt(msg.m_key, msg.m_value[0] << 8 + msg.m_value[1]);
             }
             break;
             case VALUE_TYPE_UCHAR:
             {
-                prefs.putUChar(msg.m_key, msg.m_value[0]);
+                // prefs.putUChar(msg.m_key, msg.m_value[0]);
             }
             break;
             case VALUE_TYPE_STRING:
             {
-                prefs.putString(msg.m_key, (char *)msg.m_value);
+                // prefs.putString(msg.m_key, (char *)msg.m_value);
             }
             break;
             default:
                 break;
             }
-            prefs.end(); // 关闭当前命名空间
+            // prefs.end(); // 关闭当前命名空间
             Serial.print("Set OK\n");
         }
         else if (AT_SETTING_GET == msg.m_msg_head.m_action_type)
@@ -56,12 +57,12 @@ int exec_order(int len, const uint8_t *data)
             Serial.print(" m_key-->");
             Serial.print(msg.m_key);
             Serial.print(" ");
-            prefs.begin(msg.m_prefs_name); // 打开命名空间mynamespace
+            // prefs.begin(msg.m_prefs_name); // 打开命名空间mynamespace
             switch (msg.m_value_type)
             {
             case VALUE_TYPE_INT:
             {
-                int value = prefs.getInt(msg.m_key);
+                int value = 0; // prefs.getInt(msg.m_key);
                 msg.m_value[0] = value >> 8;
                 msg.m_value[1] = value | 0x00FF;
                 Serial.print(" getInt-->");
@@ -69,13 +70,13 @@ int exec_order(int len, const uint8_t *data)
             break;
             case VALUE_TYPE_UCHAR:
             {
-                msg.m_value[0] = prefs.getUChar(msg.m_key);
+                msg.m_value[0] = 0; // prefs.getUChar(msg.m_key);
                 Serial.print(" getUChar-->");
             }
             break;
             case VALUE_TYPE_STRING:
             {
-                String value = prefs.getString(msg.m_key);
+                String value = ""; // prefs.getString(msg.m_key);
                 strncpy((char *)msg.m_value, value.c_str(), 15);
                 Serial.print(" getString-->");
             }
@@ -83,7 +84,7 @@ int exec_order(int len, const uint8_t *data)
             default:
                 break;
             }
-            prefs.end(); // 关闭当前命名空间
+            // prefs.end(); // 关闭当前命名空间
             unsigned char send_msg[64];
             msg.m_msg_head.m_from_who = MODULE_TYPE_CUBIC_SETTINGS;
             msg.m_msg_head.m_to_who = MODULE_TYPE_TOOL_SETTINGS;
@@ -146,7 +147,7 @@ int analysis_uart_data(int data_len, uint8_t *data)
     }
 }
 
-void settings_init(void)
+static int settings_init(void)
 {
     // 初始化运行时的参数
     settings_gui_init();
@@ -159,7 +160,7 @@ void settings_init(void)
     run_data->recv_len = 0;
 }
 
-void settings_process(AppController *sys,
+static void settings_process(AppController *sys,
                       const Imu_Action *act_info)
 {
     if (RETURN == act_info->active)
@@ -189,12 +190,12 @@ void settings_process(AppController *sys,
     }
 
     // 发送请求，当请求完成后自动会调用 settings_event_notification 函数
-    // sys->req_event(&settings_app, APP_EVENT_WIFI_CONN, run_data->val1);
+    // sys->req_event(&settings_app, APP_MESSAGE_WIFI_CONN, run_data->val1);
     // 程序需要时可以适当加延时
     // delay(200);
 }
 
-void settings_exit_callback(void)
+static int settings_exit_callback(void *param)
 {
     settings_gui_del();
     // 释放资源
@@ -202,24 +203,37 @@ void settings_exit_callback(void)
     run_data = NULL;
 }
 
-void settings_event_notification(APP_EVENT_TYPE type, int event_id)
+static void settings_message_handle(const char *from, const char *to,
+                             APP_MESSAGE_TYPE type, void *message,
+                             void *ext_info)
 {
     // 目前事件主要是wifi开关类事件（用于功耗控制）
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
+    }
+    break;
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
     }
     break;
     default:
@@ -227,6 +241,6 @@ void settings_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ settings_app = {"Settings", &app_settings, "", settings_init,
-                        settings_process, settings_exit_callback,
-                        settings_event_notification};
+APP_OBJ settings_app = {SETTINGS_APP_NAME, &app_settings, "",
+                        settings_init, settings_process,
+                        settings_exit_callback, settings_message_handle};

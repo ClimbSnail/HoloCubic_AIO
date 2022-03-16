@@ -8,11 +8,59 @@
 
 #include <SD.h>
 
+#define MEDIA_PLAYER_APP_NAME "Media"
+
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
 #define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
-#define NO_TRIGGER_ENTER_FREQ_80M 120000UL  // 无操作规定时间后进入设置160M主频（120s）
+#define NO_TRIGGER_ENTER_FREQ_80M 120000UL // 无操作规定时间后进入设置160M主频（120s）
+
+// 天气的持久化配置
+#define MEDIA_CONFIG_PATH "/media.cfg"
+struct MP_Config
+{
+    unsigned long switchFlag; // 是否自动播放下一个（0不切换 1自动切换）
+    unsigned long powerFlag;  // 功耗控制（0低发热 1性能优先）
+};
+
+static void write_config(MP_Config *cfg)
+{
+    char tmp[16];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->switchFlag);
+    w_data += tmp;
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->powerFlag);
+    w_data += tmp;
+    g_flashCfg.writeFile(MEDIA_CONFIG_PATH, w_data.c_str());
+}
+
+static void read_config(MP_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(MEDIA_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->switchFlag = 1; // 是否自动播放下一个（0不切换 1自动切换）
+        cfg->powerFlag = 0;  // 功耗控制（0低发热 1性能优先）
+        write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[2] = {0};
+        analyseParam(info, 2, param);
+        cfg->switchFlag = atol(param[0]);
+        cfg->powerFlag = atol(param[1]);
+    }
+}
 
 struct MediaAppRunData
 {
@@ -24,6 +72,7 @@ struct MediaAppRunData
     File file;
 };
 
+static MP_Config cfg_data;
 static MediaAppRunData *run_data = NULL;
 
 static File_Info *get_next_file(File_Info *p_cur_file, int direction)
@@ -46,7 +95,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return pfile;
 }
 
-bool video_start(bool create_new)
+static bool video_start(bool create_new)
 {
     if (NULL == run_data->pfile)
     {
@@ -80,7 +129,7 @@ bool video_start(bool create_new)
     return true;
 }
 
-void release_player_docoder(void)
+static void release_player_docoder(void)
 {
     // 释放具体的播放对象
     if (NULL != run_data->player_docoder)
@@ -90,7 +139,7 @@ void release_player_docoder(void)
     }
 }
 
-void media_player_init(void)
+static int media_player_init(void)
 {
     // 调整RGB模式  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
@@ -99,6 +148,8 @@ void media_player_init(void)
                             0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
 
+    // 获取配置信息
+    read_config(&cfg_data);
     // 初始化运行时参数
     // run_data = (MediaAppRunData *)malloc(sizeof(MediaAppRunData));
     // memset(run_data, 0, sizeof(MediaAppRunData));
@@ -122,8 +173,8 @@ void media_player_init(void)
     video_start(false);
 }
 
-void media_player_process(AppController *sys,
-                          const Imu_Action *act_info)
+static void media_player_process(AppController *sys,
+                                 const Imu_Action *act_info)
 {
     if (RETURN == act_info->active)
     {
@@ -171,19 +222,19 @@ void media_player_process(AppController *sys,
         return;
     }
 
-    // // 主频控制 为了降低发热量
-    // if (getCpuFrequencyMhz() > 80)
-    // {
-    //     if (getCpuFrequencyMhz() > 160 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
-    //     {
-    //         // 设置CPU主频
-    //         setCpuFrequencyMhz(160);
-    //     }
-    //     else if (getCpuFrequencyMhz() > 80 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
-    //     {
-    //         setCpuFrequencyMhz(80);
-    //     }
-    // }
+    // 主频控制 为了降低发热量
+    if (getCpuFrequencyMhz() > 80 && 0 == cfg_data.powerFlag)
+    {
+        if (getCpuFrequencyMhz() > 160 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
+        {
+            // 设置CPU主频
+            setCpuFrequencyMhz(160);
+        }
+        else if (getCpuFrequencyMhz() > 80 && millis() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
+        {
+            setCpuFrequencyMhz(80);
+        }
+    }
 
     if (!run_data->file)
     {
@@ -201,12 +252,20 @@ void media_player_process(AppController *sys,
         // 结束播放
         release_player_docoder();
         run_data->file.close();
-        // 创建播放(重复播放)
-        video_start(false);
+        if (0 == cfg_data.switchFlag)
+        {
+            // 创建播放(重复播放)
+            video_start(false);
+        }
+        else
+        {
+            // 创建播放(播放下一个)
+            video_start(true);
+        }
     }
 }
 
-void media_player_exit_callback(void)
+static int media_player_exit_callback(void *param)
 {
     // 结束播放
     release_player_docoder();
@@ -227,10 +286,58 @@ void media_player_exit_callback(void)
     set_rgb(&rgb_setting);
 }
 
-void media_player_event_notification(APP_EVENT_TYPE type, int event_id)
+static void media_player_message_handle(const char *from, const char *to,
+                                        APP_MESSAGE_TYPE type, void *message,
+                                        void *ext_info)
 {
+    switch (type)
+    {
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+        if (!strcmp(param_key, "switchFlag"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.switchFlag);
+        }
+        else if (!strcmp(param_key, "powerFlag"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.powerFlag);
+        }
+        else
+        {
+            snprintf((char *)ext_info, 32, "%s", "NULL");
+        }
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
+        if (!strcmp(param_key, "switchFlag"))
+        {
+            cfg_data.switchFlag = atol(param_val);
+        }
+        else if (!strcmp(param_key, "powerFlag"))
+        {
+            cfg_data.powerFlag = atol(param_val);
+        }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
-APP_OBJ media_app = {"Media", &app_movie, "", media_player_init,
-                     media_player_process, media_player_exit_callback,
-                     media_player_event_notification};
+APP_OBJ media_app = {MEDIA_PLAYER_APP_NAME, &app_movie, "",
+                     media_player_init, media_player_process,
+                     media_player_exit_callback, media_player_message_handle};

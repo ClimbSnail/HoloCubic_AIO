@@ -3,6 +3,8 @@
 #include "sys/app_controller.h"
 #include "common.h"
 
+#define EXAMPLE_APP_NAME "Example"
+
 // 动态数据，APP的生命周期结束也需要释放它
 struct ExampleAppRunData
 {
@@ -26,7 +28,7 @@ static ExampleAppRunData *run_data = NULL;
 // 考虑到所有的APP公用内存，尽量减少 forever_data 的数据占用
 static ExampleAppForeverData forever_data;
 
-void example_init(void)
+static int example_init(void)
 {
     // 初始化运行时的参数
     example_gui_init();
@@ -37,48 +39,70 @@ void example_init(void)
     run_data->val3 = 0;
     // 使用 forever_data 中的变量，任何函数都可以用
     Serial.print(forever_data.val1);
+
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile("/example.cfg", (uint8_t *)info);
+    // 解析数据
+    // 将配置数据保存在文件中（持久化）
+    g_flashCfg.writeFile("/example.cfg", "value1=100\nvalue2=200");
 }
 
-void example_process(AppController *sys,
-                      const Imu_Action *act_info)
+static void example_process(AppController *sys,
+                            const Imu_Action *act_info)
 {
     if (RETURN == act_info->active)
     {
         sys->app_exit(); // 退出APP
         return;
     }
-    // 发送请求，当请求完成后自动会调用 example_event_notification 函数
-    // sys->req_event(&example_app, APP_EVENT_WIFI_CONN, run_data->val1);
-    
+    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 example_message_handle 函数
+    // sys->send_to(EXAMPLE_APP_NAME, CTRL_NAME,
+    //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
+
     // 程序需要时可以适当加延时
     // delay(300);
 }
 
-void example_exit_callback(void)
+static int example_exit_callback(void *param)
 {
     // 释放资源
     free(run_data);
     run_data = NULL;
 }
 
-void example_event_notification(APP_EVENT_TYPE type, int event_id)
+static void example_message_handle(const char *from, const char *to,
+                                   APP_MESSAGE_TYPE type, void *message,
+                                   void *ext_info)
 {
-    // 目前事件主要是wifi开关类事件（用于功耗控制）
+    // 目前主要是wifi开关类事件（用于功耗控制）
     switch (type)
     {
-    case APP_EVENT_WIFI_CONN:
+    case APP_MESSAGE_WIFI_CONN:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_AP:
+    case APP_MESSAGE_WIFI_AP:
     {
         // todo
     }
     break;
-    case APP_EVENT_WIFI_ALIVE:
+    case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理
+    }
+    break;
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
     }
     break;
     default:
@@ -86,6 +110,6 @@ void example_event_notification(APP_EVENT_TYPE type, int event_id)
     }
 }
 
-APP_OBJ example_app = {"Example", &app_example, "Author HQ\nVersion 1.8.0\n", example_init,
-                        example_process, example_exit_callback,
-                        example_event_notification};
+APP_OBJ example_app = {EXAMPLE_APP_NAME, &app_example, "Author HQ\nVersion 2.0.0\n",
+                       example_init, example_process,
+                       example_exit_callback, example_message_handle};

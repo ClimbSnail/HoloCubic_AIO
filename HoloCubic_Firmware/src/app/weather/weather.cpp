@@ -8,6 +8,7 @@
 #include <esp32-hal-timer.h>
 #include <map>
 
+#define WEATHER_APP_NAME "Weather"
 #define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
 #define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
@@ -18,16 +19,70 @@
 #define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
 #define UPDATE_TIME 0x04          // 更新时间
 
+// 天气的持久化配置
+#define WEATHER_CONFIG_PATH "/weather.cfg"
+struct WT_Config
+{
+    String tianqi_appid;                 // tianqiapid 的 appid
+    String tianqi_appsecret;             // tianqiapid 的 appsecret
+    String tianqi_addr;                  // tianqiapid 的地址（填中文）
+    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
+    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
+};
+
+static void write_config(WT_Config *cfg)
+{
+    char tmp[16];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    w_data = w_data + cfg->tianqi_appid + "\n";
+    w_data = w_data + cfg->tianqi_appsecret + "\n";
+    w_data = w_data + cfg->tianqi_addr + "\n";
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->weatherUpdataInterval);
+    w_data += tmp;
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->timeUpdataInterval);
+    w_data += tmp;
+    g_flashCfg.writeFile(WEATHER_CONFIG_PATH, w_data.c_str());
+}
+
+static void read_config(WT_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(WEATHER_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->tianqi_addr = "北京";
+        cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
+        cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
+        write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[5] = {0};
+        analyseParam(info, 5, param);
+        cfg->tianqi_appid = param[0];
+        cfg->tianqi_appsecret = param[1];
+        cfg->tianqi_addr = param[2];
+        cfg->weatherUpdataInterval = atol(param[3]);
+        cfg->timeUpdataInterval = atol(param[4]);
+    }
+}
+
 struct WeatherAppRunData
 {
-    unsigned long preWeatherMillis;      // 上一回更新天气时的毫秒数
-    unsigned long preTimeMillis;         // 更新时间计数器
-    unsigned long weatherUpdataInterval; // 天气更新的时间间隔
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(900s)
-    long long preNetTimestamp;           // 上一次的网络时间戳
-    long long errorNetTimestamp;         // 网络到显示过程中的时间误差
-    long long preLocalTimestamp;         // 上一次的本地机器时间戳
-    unsigned int coactusUpdateFlag;      // 强制更新标志
+    unsigned long preWeatherMillis; // 上一回更新天气时的毫秒数
+    unsigned long preTimeMillis;    // 更新时间计数器
+    long long preNetTimestamp;      // 上一次的网络时间戳
+    long long errorNetTimestamp;    // 网络到显示过程中的时间误差
+    long long preLocalTimestamp;    // 上一次的本地机器时间戳
+    unsigned int coactusUpdateFlag; // 强制更新标志
     int clock_page;
     unsigned int update_type; // 更新类型的标志位
 
@@ -38,6 +93,7 @@ struct WeatherAppRunData
     Weather wea;     // 保存天气状况
 };
 
+static WT_Config cfg_data;
 static WeatherAppRunData *run_data = NULL;
 
 enum wea_event_Id
@@ -72,8 +128,8 @@ static void get_weather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    // snprintf(api, 128, WEATHER_NOW_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
-    snprintf(api, 128, WEATHER_NOW_API_UPDATE, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
+    // snprintf(api, 128, WEATHER_NOW_API, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
+    snprintf(api, 128, WEATHER_NOW_API_UPDATE, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -175,7 +231,7 @@ static void get_daliyWeather(short maxT[], short minT[], int & minTemp, int & ma
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    snprintf(api, 128, WEATHER_DALIY_API, g_cfg.tianqi_appid, g_cfg.tianqi_appsecret, g_cfg.tianqi_addr);
+    snprintf(api, 128, WEATHER_DALIY_API, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -221,15 +277,16 @@ static void UpdateTime_RTC(long long timestamp)
     display_time(t, LV_SCR_LOAD_ANIM_NONE);
 }
 
-static void weather_init(void)
+static int weather_init(void)
 {
     tft->setSwapBytes(true);
     weather_gui_init();
+    // 获取配置信息
+    read_config(&cfg_data);
+
     // 初始化运行时参数
     run_data = (WeatherAppRunData *)calloc(1, sizeof(WeatherAppRunData));
     memset((char *)&run_data->wea, 0, sizeof(Weather));
-    run_data->weatherUpdataInterval = 900000;  // 天气更新的时间间隔900000(900s)
-    run_data->timeUpdataInterval = 900000;     // 日期时钟更新的时间间隔900000(900s)
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
     run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
@@ -284,16 +341,19 @@ static void weather_process(AppController *sys,
     if (run_data->clock_page == 0)
     {
         display_weather(run_data->wea, anim_type);
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data.weatherUpdataInterval, &run_data->preWeatherMillis, false))
         {
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NOW);
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_DAILY);
+            sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_CONN, (void *)UPDATE_NOW, NULL);
+            sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_CONN, (void *)UPDATE_DAILY, NULL);
         }
 
-        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preTimeMillis, false))
+        if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data.timeUpdataInterval, &run_data->preTimeMillis, false))
         {
             // 尝试同步网络上的时钟
-            sys->req_event(&weather_app, APP_EVENT_WIFI_CONN, UPDATE_NTP);
+            sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_CONN, (void *)UPDATE_NTP, NULL);
         }
         else if (millis() - run_data->preLocalTimestamp > 400)
         {
@@ -311,7 +371,7 @@ static void weather_process(AppController *sys,
     }
 }
 
-static void weather_exit_callback(void)
+static int weather_exit_callback(void *param)
 {
     weather_gui_del();
 
@@ -362,11 +422,16 @@ static void weather_exit_callback(void)
 //     }
 // }
 
-static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
+static void weather_message_handle(const char *from, const char *to,
+                                   APP_MESSAGE_TYPE type, void *message,
+                                   void *ext_info)
 {
-    if (type == APP_EVENT_WIFI_CONN)
+    switch (type)
+    {
+    case APP_MESSAGE_WIFI_CONN:
     {
         Serial.println(F("----->weather_event_notification"));
+        int event_id = (int)message;
         switch (event_id)
         {
         case UPDATE_NOW:
@@ -422,8 +487,77 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             break;
         }
     }
+    break;
+    case APP_MESSAGE_GET_PARAM:
+    {
+        char *param_key = (char *)message;
+        if (!strcmp(param_key, "tianqi_appid"))
+        {
+            snprintf((char *)ext_info, 32, "%s", cfg_data.tianqi_appid.c_str());
+        }
+        else if (!strcmp(param_key, "tianqi_appsecret"))
+        {
+            snprintf((char *)ext_info, 32, "%s", cfg_data.tianqi_appsecret.c_str());
+        }
+        else if (!strcmp(param_key, "tianqi_addr"))
+        {
+            snprintf((char *)ext_info, 32, "%s", cfg_data.tianqi_addr.c_str());
+        }
+        else if (!strcmp(param_key, "weatherUpdataInterval"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.weatherUpdataInterval);
+        }
+        else if (!strcmp(param_key, "timeUpdataInterval"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.timeUpdataInterval);
+        }
+        else
+        {
+            snprintf((char *)ext_info, 32, "%s", "NULL");
+        }
+    }
+    break;
+    case APP_MESSAGE_SET_PARAM:
+    {
+        char *param_key = (char *)message;
+        char *param_val = (char *)ext_info;
+        if (!strcmp(param_key, "tianqi_appid"))
+        {
+            cfg_data.tianqi_appid = param_val;
+        }
+        else if (!strcmp(param_key, "tianqi_appsecret"))
+        {
+            cfg_data.tianqi_appsecret = param_val;
+        }
+        else if (!strcmp(param_key, "tianqi_addr"))
+        {
+            cfg_data.tianqi_addr = param_val;
+        }
+        else if (!strcmp(param_key, "weatherUpdataInterval"))
+        {
+            cfg_data.weatherUpdataInterval = atol(param_val);
+        }
+        else if (!strcmp(param_key, "timeUpdataInterval"))
+        {
+            cfg_data.timeUpdataInterval = atol(param_val);
+        }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
+    }
+    break;
+    default:
+        break;
+    }
 }
 
-APP_OBJ weather_app = {"Weather", &app_weather, "", weather_init,
-                       weather_process, weather_exit_callback,
-                       weather_event_notification};
+APP_OBJ weather_app = {WEATHER_APP_NAME, &app_weather, "",
+                       weather_init, weather_process,
+                       weather_exit_callback, weather_message_handle};

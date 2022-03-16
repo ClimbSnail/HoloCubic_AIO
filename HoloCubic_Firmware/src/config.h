@@ -1,6 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 #include <WString.h>
+#include <Preferences.h>
+
+extern Preferences prefs;       // 声明Preferences对象
 
 struct MPU_Config
 {
