@@ -120,29 +120,26 @@ void FlashFS::listDir(const char *dirname, uint8_t levels)
 //     }
 // }
 
-String FlashFS::readFile(const char *path)
+uint16_t FlashFS::readFile(const char *path, uint8_t *info)
 {
     Serial.printf("Reading file: %s\r\n", path);
 
     File file = SPIFFS.open(path);
-    String readInfo = "";
-    char tmp[16];
+    uint16_t ret_len = 0;
     if (!file || file.isDirectory())
     {
         Serial.println("- failed to open file for reading");
-        return readInfo;
+        return ret_len;
     }
 
     Serial.println("- read from file:");
     while (file.available())
-    {   
-        memset(tmp, 0, 16);
-        file.read((uint8_t *)tmp, 15);
-        readInfo += tmp;
+    {
+        ret_len += file.read(info + ret_len, 15);
         // Serial.write(file.read());
     }
     file.close();
-    return readInfo;
+    return ret_len;
 }
 
 void FlashFS::writeFile(const char *path, const char *message)
@@ -351,4 +348,20 @@ void FlashFS::testFileIO(const char *path)
     {
         Serial.println("- failed to open file for reading");
     }
+}
+
+bool analyseParam(char *info, int argc, char **argv)
+{
+    int cnt; // 记录解析到第几个参数
+    for (cnt = 0; cnt < argc; ++cnt)
+    {
+        argv[cnt] = info;
+        while (*info != '\n')
+        {
+            ++info;
+        }
+        *info = 0;
+        ++info;
+    }
+    return true;
 }

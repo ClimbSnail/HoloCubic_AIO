@@ -49,6 +49,8 @@ public:
     // 事件处理
     int req_event_deal(void);
     bool wifi_event(APP_MESSAGE_TYPE type); // wifi事件的处理
+    void read_config(SYS_UTIL_CFG *cfg);
+    void write_config(SYS_UTIL_CFG *cfg);
 
 private:
     APP_OBJ *getAppByName(const char *name);

@@ -61,10 +61,9 @@ void setup()
 #endif
 
     // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
+    app_controller->read_config(&app_controller->sys_cfg);
 
     /*** Init screen ***/
-    // screen.init(app_controller->sys_cfg.rotation,
-    //             app_controller->sys_cfg.backLight);
     screen.init(app_controller->sys_cfg.rotation,
                 app_controller->sys_cfg.backLight);
 
