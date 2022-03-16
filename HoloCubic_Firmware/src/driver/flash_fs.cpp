@@ -132,7 +132,7 @@ uint16_t FlashFS::readFile(const char *path, uint8_t *info)
         return ret_len;
     }
 
-    Serial.println("- read from file:");
+    // Serial.println("- read from file:");
     while (file.available())
     {
         ret_len += file.read(info + ret_len, 15);

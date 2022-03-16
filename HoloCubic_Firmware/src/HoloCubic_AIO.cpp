@@ -40,7 +40,7 @@ void setup()
 
     Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
     app_controller = new AppController(); // APP控制器
-    
+
     // 需要放在Setup里初始化
     if (!SPIFFS.begin(true))
     {
@@ -62,6 +62,8 @@ void setup()
 
     // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
     app_controller->read_config(&app_controller->sys_cfg);
+    app_controller->read_config(&app_controller->mpu_cfg);
+    app_controller->read_config(&app_controller->rgb_cfg);
 
     /*** Init screen ***/
     screen.init(app_controller->sys_cfg.rotation,
@@ -101,12 +103,14 @@ void setup()
              &app_controller->mpu_cfg); // 初始化比较耗时
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
+    RgbConfig *rgb_cfg = &app_controller->rgb_cfg;
     // 初始化RGB灯 HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV,
-                            1, 32, 255,
-                            255, 255, 255,
-                            1, 1, 1,
-                            0.15, 0.25, 0.001, 30};
+                            rgb_cfg->min_value_0, rgb_cfg->min_value_1, rgb_cfg->min_value_2,
+                            rgb_cfg->max_value_0, rgb_cfg->max_value_1, rgb_cfg->max_value_2,
+                            rgb_cfg->step_0, rgb_cfg->step_1, rgb_cfg->step_2,
+                            rgb_cfg->min_brightness, rgb_cfg->max_brightness,
+                            rgb_cfg->brightness_step, rgb_cfg->time};
     // 初始化RGB任务
     rgb_thread_init(&rgb_setting);
 }

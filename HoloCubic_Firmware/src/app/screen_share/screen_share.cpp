@@ -15,6 +15,46 @@
 WiFiServer ss_server;  //服务端 ss = screen_share
 WiFiClient ss_client;  // 客户端 ss = screen_share
 
+// 天气的持久化配置
+#define SCREEN_SHARE_CONFIG_PATH "/screen_share.cfg"
+struct SS_Config
+{
+    uint8_t powerFlag; // 功耗控制（0低发热 1性能优先）
+};
+
+static void write_config(SS_Config *cfg)
+{
+    char tmp[16];
+    // 将配置数据保存在文件中（持久化）
+    String w_data;
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%u\n", cfg->powerFlag);
+    w_data += tmp;
+    g_flashCfg.writeFile(SCREEN_SHARE_CONFIG_PATH, w_data.c_str());
+}
+
+static void read_config(SS_Config *cfg)
+{
+    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
+    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile(SCREEN_SHARE_CONFIG_PATH, (uint8_t *)info);
+    info[size] = 0;
+    if (size == 0)
+    {
+        // 默认值
+        cfg->powerFlag = 0; // 功耗控制（0低发热 1性能优先）
+        write_config(cfg);
+    }
+    else
+    {
+        // 解析数据
+        char *param[1] = {0};
+        analyseParam(info, 1, param);
+        cfg->powerFlag = atol(param[0]);
+    }
+}
+
 struct ScreenShareAppRunData
 {
     // 数据量也不大，同时为了数据结构清晰 这里不对其进行内存对齐了
@@ -34,6 +74,7 @@ struct ScreenShareAppRunData
     unsigned long pre_wifi_alive_millis; // 上一次发送维持心跳的本地时间戳
 };
 
+static SS_Config cfg_data;
 static ScreenShareAppRunData *run_data = NULL;
 
 // This next function will be called during decoding of the jpeg file to render each
@@ -107,8 +148,18 @@ static bool readJpegFromBuffer(uint8_t *const end)
 
 static int screen_share_init(void)
 {
-    // 设置CPU主频
-    setCpuFrequencyMhz(160);
+    // 获取配置信息
+    read_config(&cfg_data);
+
+    if (0 == cfg_data.powerFlag)
+    {
+        // 设置CPU主频
+        setCpuFrequencyMhz(160);
+    }
+    else
+    {
+        setCpuFrequencyMhz(240);
+    }
 
     // 调整RGB模式  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
@@ -158,7 +209,7 @@ static void stop_share_config()
 }
 
 static void screen_share_process(AppController *sys,
-                          const Imu_Action *action)
+                                 const Imu_Action *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 
@@ -302,8 +353,8 @@ static int screen_exit_callback(void *param)
 }
 
 static void screen_message_handle(const char *from, const char *to,
-                           APP_MESSAGE_TYPE type, void *message,
-                           void *ext_info)
+                                  APP_MESSAGE_TYPE type, void *message,
+                                  void *ext_info)
 {
     switch (type)
     {
@@ -343,12 +394,34 @@ static void screen_message_handle(const char *from, const char *to,
     case APP_MESSAGE_GET_PARAM:
     {
         char *param_key = (char *)message;
+        if (!strcmp(param_key, "powerFlag"))
+        {
+            snprintf((char *)ext_info, 32, "%u", cfg_data.powerFlag);
+        }
+        else
+        {
+            snprintf((char *)ext_info, 32, "%s", "NULL");
+        }
     }
     break;
     case APP_MESSAGE_SET_PARAM:
     {
         char *param_key = (char *)message;
         char *param_val = (char *)ext_info;
+        if (!strcmp(param_key, "powerFlag"))
+        {
+            cfg_data.powerFlag = atol(param_val);
+        }
+    }
+    break;
+    case APP_MESSAGE_READ_CFG:
+    {
+        read_config(&cfg_data);
+    }
+    break;
+    case APP_MESSAGE_WRITE_CFG:
+    {
+        write_config(&cfg_data);
     }
     break;
     default:

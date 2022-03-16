@@ -51,6 +51,10 @@ public:
     bool wifi_event(APP_MESSAGE_TYPE type); // wifi事件的处理
     void read_config(SYS_UTIL_CFG *cfg);
     void write_config(SYS_UTIL_CFG *cfg);
+    void read_config(Sys_MPU_Config *cfg);
+    void write_config(Sys_MPU_Config *cfg);
+    void read_config(RgbConfig *cfg);
+    void write_config(RgbConfig *cfg);
 
 private:
     APP_OBJ *getAppByName(const char *name);
@@ -71,6 +75,7 @@ private:
 public:
     SYS_UTIL_CFG sys_cfg;
     Sys_MPU_Config mpu_cfg;
+    RgbConfig rgb_cfg;
 };
 
 #endif

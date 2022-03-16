@@ -31,11 +31,13 @@ void start_web_config()
     server.on("/delete_result", delete_result);
 
     server.on("/sys_setting", sys_setting);
+    server.on("/rgb_setting", rgb_setting);
     server.on("/weather_setting", weather_setting);
     server.on("/weather_old_setting", weather_old_setting);
     server.on("/bili_setting", bili_setting);
     server.on("/picture_setting", picture_setting);
     server.on("/media_setting", media_setting);
+    server.on("/screen_setting", screen_setting);
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -44,11 +46,13 @@ void start_web_config()
 
     //连接
     server.on("/saveSysConf", saveSysConf);
+    server.on("/saveRgbConf", saveRgbConf);
     server.on("/saveWeatherConf", saveWeatherConf);
     server.on("/saveWeatherOldConf", saveWeatherOldConf);
     server.on("/saveBiliConf", saveBiliConf);
     server.on("/savePictureConf", savePictureConf);
     server.on("/saveMediaConf", saveMediaConf);
+    server.on("/saveScreenConf", saveScreenConf);
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);
