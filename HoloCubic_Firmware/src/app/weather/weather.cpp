@@ -167,7 +167,7 @@ static long long get_timestamp(String url)
     return run_data->preNetTimestamp;
 }
 
-static void get_daliyWeather(short maxT[], short minT[])
+static void get_daliyWeather(short maxT[], short minT[], int & minTemp, int & maxTemp)
 {
     if (WL_CONNECTED != WiFi.status())
         return;
@@ -196,6 +196,8 @@ static void get_daliyWeather(short maxT[], short minT[])
                 maxT[gDW_i] = sk["data"][gDW_i]["tem_day"].as<int>();
                 minT[gDW_i] = sk["data"][gDW_i]["tem_night"].as<int>();
             }
+            minTemp = minT[0];
+            maxTemp = maxT[0];
         }
     }
     else
@@ -409,7 +411,7 @@ static void weather_event_notification(APP_EVENT_TYPE type, int event_id)
             Serial.print(F("daliy update.\n"));
             run_data->update_type |= UPDATE_DALIY_WEATHER;
 
-            get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
+            get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min, run_data->wea.minTemp, run_data->wea.maxTemp);
             if (run_data->clock_page == 1)
             {
                 display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
