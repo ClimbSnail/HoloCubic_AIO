@@ -10,7 +10,6 @@
 #define LED_MODE_RGB 0
 #define LED_MODE_HSV 1
 
-
 class Pixel
 {
 private:
@@ -30,9 +29,27 @@ public:
     Pixel &setBrightness(float duty);
 };
 
+struct RgbConfig
+{
+    uint8_t mode;
+    uint8_t min_value_0;
+    uint8_t min_value_1;
+    uint8_t min_value_2;
+    uint8_t max_value_0;
+    uint8_t max_value_1;
+    uint8_t max_value_2;
+    int8_t step_0;
+    int8_t step_1;
+    int8_t step_2;
+    float min_brightness;
+    float max_brightness;
+    float brightness_step;
+    int time; // 定时器的时间
+};
+
 struct RgbParam
 {
-    uint8_t mode;  // 0为RGB色彩(LED_MODE_RGB) 1为HSV色彩(LED_MODE_HSV)
+    uint8_t mode; // 0为RGB色彩(LED_MODE_RGB) 1为HSV色彩(LED_MODE_HSV)
     union
     {
         uint8_t min_value_r;

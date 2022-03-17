@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.0.0"
+#define AIO_VERSION "2.0.1"
 
 #include "Arduino.h"
 #include "driver/rgb_led.h"

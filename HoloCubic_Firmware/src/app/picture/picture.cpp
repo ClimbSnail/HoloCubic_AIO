@@ -12,7 +12,7 @@
 #define PICTURE_CONFIG_PATH "/picture.cfg"
 struct PIC_Config
 {
-    unsigned long switchInterval; // 自动播放下一张的时间间隔s（0不切换 1自动切换）
+    unsigned long switchInterval; // 自动播放下一张的时间间隔 ms
 };
 
 static void write_config(PIC_Config *cfg)

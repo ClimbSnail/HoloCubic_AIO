@@ -20,8 +20,8 @@
 #define MEDIA_CONFIG_PATH "/media.cfg"
 struct MP_Config
 {
-    unsigned long switchFlag; // 是否自动播放下一个（0不切换 1自动切换）
-    unsigned long powerFlag;  // 功耗控制（0低发热 1性能优先）
+    uint8_t switchFlag; // 是否自动播放下一个（0不切换 1自动切换）
+    uint8_t powerFlag;  // 功耗控制（0低发热 1性能优先）
 };
 
 static void write_config(MP_Config *cfg)
