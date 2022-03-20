@@ -214,7 +214,7 @@ static int weather_init(void)
 }
 
 static void weather_process(AppController *sys,
-                            const Imu_Action *act_info)
+                            const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)

@@ -174,7 +174,7 @@ static int media_player_init(void)
 }
 
 static void media_player_process(AppController *sys,
-                                 const Imu_Action *act_info)
+                                 const ImuAction *act_info)
 {
     if (RETURN == act_info->active)
     {

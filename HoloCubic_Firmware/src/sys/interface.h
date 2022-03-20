@@ -17,7 +17,7 @@ enum APP_MESSAGE_TYPE
 };
 
 class AppController;
-struct Imu_Action;
+struct ImuAction;
 
 struct APP_OBJ
 {
@@ -35,7 +35,7 @@ struct APP_OBJ
 
     // APP的主程序函数入口指针
     void (*main_process)(AppController *sys,
-                         const Imu_Action *act_info);
+                         const ImuAction *act_info);
 
     // 退出之前需要处理的回调函数 可为空
     int (*exit_callback)(void *param);

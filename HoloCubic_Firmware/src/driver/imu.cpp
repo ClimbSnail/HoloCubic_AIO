@@ -15,7 +15,7 @@ IMU::IMU()
 }
 
 void IMU::init(uint8_t order, uint8_t auto_calibration,
-               Sys_MPU_Config *mpu_cfg)
+               SysMpuConfig *mpu_cfg)
 {
     this->setOrder(order); // 设置方向
     Wire.begin(IMU_I2C_SDA, IMU_I2C_SCL);
@@ -78,7 +78,7 @@ bool IMU::Encoder_GetIsPush(void)
 #endif
 }
 
-Imu_Action *IMU::update(int interval)
+ImuAction *IMU::update(int interval)
 {
     getVirtureMotion6(&action_info);
     // 原先判断的只是加速度，现在要加上陀螺仪
@@ -195,7 +195,7 @@ Imu_Action *IMU::update(int interval)
     return &action_info;
 }
 
-void IMU::getVirtureMotion6(Imu_Action *action_info)
+void IMU::getVirtureMotion6(ImuAction *action_info)
 {
     mpu.getMotion6(&(action_info->v_ax), &(action_info->v_ay),
                    &(action_info->v_az), &(action_info->v_gx),

@@ -102,7 +102,7 @@ static int bilibili_init(void)
 }
 
 static void bilibili_process(AppController *sys,
-                             const Imu_Action *act_info)
+                             const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
     if (RETURN == act_info->active)

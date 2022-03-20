@@ -129,7 +129,7 @@ static int picture_init(void)
 }
 
 static void picture_process(AppController *sys,
-                            const Imu_Action *act_info)
+                            const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
 

@@ -38,7 +38,7 @@ public:
     void Display(void);                    // 显示接口
     int app_install(APP_OBJ *app);         // 将APP注册到app_controller中
     int app_uninstall(const APP_OBJ *app); // 将APP从app_controller中卸载（删除）
-    int main_process(Imu_Action *act_info);
+    int main_process(ImuAction *act_info);
     void app_exit(void); // 提供给app退出的系统调用
     // 消息发送
     int send_to(const char *from, const char *to,
@@ -49,10 +49,10 @@ public:
     // 事件处理
     int req_event_deal(void);
     bool wifi_event(APP_MESSAGE_TYPE type); // wifi事件的处理
-    void read_config(SYS_UTIL_CFG *cfg);
-    void write_config(SYS_UTIL_CFG *cfg);
-    void read_config(Sys_MPU_Config *cfg);
-    void write_config(Sys_MPU_Config *cfg);
+    void read_config(SysUtilConfig *cfg);
+    void write_config(SysUtilConfig *cfg);
+    void read_config(SysMpuConfig *cfg);
+    void write_config(SysMpuConfig *cfg);
     void read_config(RgbConfig *cfg);
     void write_config(RgbConfig *cfg);
 
@@ -73,8 +73,8 @@ private:
     int pre_app_index;     // 上一次运行的APP下标
 
 public:
-    SYS_UTIL_CFG sys_cfg;
-    Sys_MPU_Config mpu_cfg;
+    SysUtilConfig sys_cfg;
+    SysMpuConfig mpu_cfg;
     RgbConfig rgb_cfg;
 };
 

@@ -72,7 +72,7 @@ static int idea_init(void)
 }
 
 static void idea_process(AppController *sys,
-                  const Imu_Action *action)
+                         const ImuAction *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 
@@ -112,8 +112,8 @@ static int idea_exit_callback(void *param)
 }
 
 static void idea_message_handle(const char *from, const char *to,
-                         APP_MESSAGE_TYPE type, void *message,
-                         void *ext_info)
+                                APP_MESSAGE_TYPE type, void *message,
+                                void *ext_info)
 {
 }
 
