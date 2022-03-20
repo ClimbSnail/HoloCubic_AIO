@@ -32,7 +32,7 @@ enum MPU_DIR_TYPE
     XY_DIR_TYPE = 0x08
 };
 
-struct Sys_MPU_Config
+struct SysMpuConfig
 {
     int16_t x_gyro_offset;
     int16_t y_gyro_offset;
@@ -43,7 +43,7 @@ struct Sys_MPU_Config
     int16_t z_accel_offset;
 };
 
-struct Imu_Action
+struct ImuAction
 {
     ACTIVE_TYPE active;
     boolean isValid;
@@ -65,16 +65,16 @@ private:
     uint8_t order; // 表示方位，x与y是否对换
 
 public:
-    Imu_Action action_info;
+    ImuAction action_info;
 
 public:
     IMU();
     void init(uint8_t order, uint8_t auto_calibration,
-              Sys_MPU_Config *mpu_cfg);
+              SysMpuConfig *mpu_cfg);
     void setOrder(uint8_t order); // 设置方向
     bool Encoder_GetIsPush(void); // 适配Peak的编码器中键 开关机使用
-    Imu_Action *update(int interval);
-    void getVirtureMotion6(Imu_Action *action_info);
+    ImuAction *update(int interval);
+    void getVirtureMotion6(ImuAction *action_info);
 };
 
 #endif

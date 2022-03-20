@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.0.1"
+#define AIO_VERSION "2.0.2"
 
 #include "Arduino.h"
 #include "driver/rgb_led.h"
@@ -49,7 +49,7 @@ boolean doDelayMillisTime(unsigned long interval,
 
 #define LCD_BL_PWM_CHANNEL 0
 
-struct SYS_UTIL_CFG
+struct SysUtilConfig
 {
     String ssid_0;
     String password_0;
@@ -62,7 +62,6 @@ struct SYS_UTIL_CFG
     uint8_t rotation;             // 屏幕旋转方向
     uint8_t auto_calibration_mpu; // 是否自动校准陀螺仪 0关闭自动校准 1打开自动校准
     uint8_t mpu_order;            // 操作方向
-    Sys_MPU_Config mpu_config;    // 保存mup的校准数据
 };
 
 #define GFX 0

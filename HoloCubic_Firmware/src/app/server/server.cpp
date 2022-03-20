@@ -78,7 +78,7 @@ static int server_init(void)
 }
 
 static void server_process(AppController *sys,
-                           const Imu_Action *action)
+                           const ImuAction *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 

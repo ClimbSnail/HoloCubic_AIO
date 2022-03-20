@@ -207,7 +207,7 @@ void sys_setting()
                             (void *)"time", time);
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
                             (void *)"auto_calibration_mpu", auto_calibration_mpu);
-    SYS_UTIL_CFG cfg = app_controller->sys_cfg;
+    SysUtilConfig cfg = app_controller->sys_cfg;
     // 主要为了处理启停MPU自动校准的单选框
     if (0 == cfg.auto_calibration_mpu)
     {

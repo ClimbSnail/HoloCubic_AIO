@@ -31,7 +31,7 @@
 #include <esp32-hal.h>
 
 /*** Component objects **7*/
-Imu_Action *act_info;          // 存放mpu6050返回的数据
+ImuAction *act_info;          // 存放mpu6050返回的数据
 AppController *app_controller; // APP控制器
 
 void setup()

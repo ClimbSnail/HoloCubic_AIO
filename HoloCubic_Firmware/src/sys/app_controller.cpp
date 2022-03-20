@@ -11,7 +11,7 @@ const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_
                                      "APP_MESSAGE_UPDATE_TIME", "APP_MESSAGE_GET_PARAM",
                                      "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_NONE"};
 
-void AppController::read_config(SYS_UTIL_CFG *cfg)
+void AppController::read_config(SysUtilConfig *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
@@ -47,7 +47,7 @@ void AppController::read_config(SYS_UTIL_CFG *cfg)
     }
 }
 
-void AppController::write_config(SYS_UTIL_CFG *cfg)
+void AppController::write_config(SysUtilConfig *cfg)
 {
     char tmp[25];
     // 将配置数据保存在文件中（持久化）
@@ -78,9 +78,14 @@ void AppController::write_config(SYS_UTIL_CFG *cfg)
     snprintf(tmp, 25, "%u\n", cfg->mpu_order);
     w_data += tmp;
     g_flashCfg.writeFile(APP_CTRL_CONFIG_PATH, w_data.c_str());
+
+    // 立即生效相关配置
+    screen.setBackLight(cfg->backLight / 100.0);
+    tft->setRotation(cfg->rotation);
+    mpu.setOrder(cfg->mpu_order);
 }
 
-void AppController::read_config(Sys_MPU_Config *cfg)
+void AppController::read_config(SysMpuConfig *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
@@ -113,7 +118,7 @@ void AppController::read_config(Sys_MPU_Config *cfg)
     }
 }
 
-void AppController::write_config(Sys_MPU_Config *cfg)
+void AppController::write_config(SysMpuConfig *cfg)
 {
     char tmp[25];
     // 将配置数据保存在文件中（持久化）
@@ -339,7 +344,7 @@ int AppController::app_uninstall(const APP_OBJ *app) // 将APP从app_controller�
     return 0;
 }
 
-int AppController::main_process(Imu_Action *act_info)
+int AppController::main_process(ImuAction *act_info)
 {
     if (UNKNOWN != act_info->active)
     {

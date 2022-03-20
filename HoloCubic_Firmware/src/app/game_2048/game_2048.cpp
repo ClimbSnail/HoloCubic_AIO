@@ -86,7 +86,7 @@ static int game_2048_init(void)
 }
 
 static void game_2048_process(AppController *sys,
-                       const Imu_Action *act_info)
+                       const ImuAction *act_info)
 {
     if (RETURN == act_info->active)
     {
