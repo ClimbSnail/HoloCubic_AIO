@@ -3,16 +3,12 @@
 #include "HardwareSerial.h"
 
 IPAddress local_ip(192, 168, 4, 2); // Set your server's fixed IP address here
-IPAddress gateway(192, 168, 4, 1);  // Set your network Gateway usually your Router base address
+IPAddress gateway(192, 168, 4, 2);  // Set your network Gateway usually your Router base address
 IPAddress subnet(255, 255, 255, 0); // Set your network sub-network mask here
 IPAddress dns(192, 168, 4, 1);      // Set your network DNS usually your Router base address
 
 const char *AP_SSID = "HoloCubic_AIO"; //热点名称
-const char *AP_PASS = "12345678";      //密码
-const char *HOST_NAME = "HoloCubic";   //密码
-
-const char *AP_SSID1 = "K20Pro";   //热点名称
-const char *AP_PASS1 = "88888888"; //密码
+const char *HOST_NAME = "HoloCubic";   //主机名
 
 uint16_t ap_timeout = 0; // ap无连接的超时时间
 

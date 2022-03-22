@@ -6,8 +6,10 @@
 #include "common.h"
 
 #define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
-
+#define DNS_PORT 53                    // DNS端口
 WebServer server(80);
+
+DNSServer dnsServer;
 
 struct ServerAppRunData
 {
@@ -21,7 +23,7 @@ static ServerAppRunData *run_data = NULL;
 void start_web_config()
 {
     //首页
-    server.on("/", HomePage);
+    server.on("/", HTTP_GET, HomePage);
 
     init_page_header();
     init_page_footer();
@@ -57,6 +59,8 @@ void start_web_config()
     server.begin();
     // MDNS.addService("http", "tcp", 80);
     Serial.println("HTTP server started");
+
+    dnsServer.start(DNS_PORT, "*", gateway);
 }
 
 void stop_web_config()
@@ -106,6 +110,7 @@ static void server_process(AppController *sys,
     else if (1 == run_data->web_start)
     {
         server.handleClient(); // 一定需要放在循环里扫描
+        dnsServer.processNextRequest();
         if (doDelayMillisTime(SERVER_REFLUSH_INTERVAL, &run_data->serverReflushPreMillis, false) == true)
         {
             // 发送wifi维持的心跳

@@ -45,7 +45,6 @@ extern IPAddress subnet;   // Set your network sub-network mask here
 extern IPAddress dns;      // Set your network DNS usually your Router base address
 
 extern const char *AP_SSID; //热点名称
-extern const char *AP_PASS; //密码
 
 void restCallback(TimerHandle_t xTimer);
 

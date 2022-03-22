@@ -435,7 +435,7 @@ int AppController::send_to(const char *from, const char *to,
             return 1;
         }
         // 发给控制器的消息(目前都是wifi事件)
-        EVENT_OBJ new_event = {fromApp, type, message};
+        EVENT_OBJ new_event = {fromApp, type, message, 3, 0};
         eventList.push_back(new_event);
         Serial.print("[EVENT]\tAdd -> " + String(app_event_type_info[type]));
         Serial.print(F("\tEventList Size: "));
@@ -610,24 +610,37 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
 int AppController::req_event_deal(void)
 {
     // 请求事件的处理
-    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
         // 后期可以拓展其他事件的处理
         bool ret = wifi_event((*event).type);
         if (false == ret)
         {
             // 本事件没处理完成
+            (*event).retryCount += 1;
+            if ((*event).retryCount >= (*event).retryMaxNum)
+            {
+                // 多次重试失败 删除该响应事件
+                event = eventList.erase(event);
+            }
+            else
+            {
+                ++event;
+            }
             continue;
         }
 
         // 事件回调
-        if (NULL != (*event).from)
+        if (NULL != (*event).from && NULL != (*event).from->message_handle)
         {
             (*((*event).from->message_handle))(CTRL_NAME, (*event).from->app_name,
                                                (*event).type, (*event).info, NULL);
         }
         Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
-        eventList.erase(event); // 删除该响应完成的事件
+        // auto delete_event = event;
+        // ++event;
+        // eventList.erase(delete_event); // 删除该响应完成的事件
+        event = eventList.erase(event); // 删除该响应完成的事件
         Serial.print(F("\tEventList Size: "));
         Serial.println(eventList.size());
     }
@@ -698,11 +711,15 @@ void AppController::app_exit()
     app_exit_flag = 0; // 退出APP
 
     // 清空该对象的所有请求
-    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end(); ++event)
+    for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
         if (appList[cur_app_index] == (*event).from)
         {
-            eventList.erase(event); // 删除该响应事件
+            event = eventList.erase(event); // 删除该响应事件
+        }
+        else
+        {
+            ++event;
         }
     }
 
