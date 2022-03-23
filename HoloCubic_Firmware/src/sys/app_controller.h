@@ -27,6 +27,8 @@ struct EVENT_OBJ
     const APP_OBJ *from;   // 发送请求服务的APP
     APP_MESSAGE_TYPE type; // app的事件类型
     void *info;            // 请求携带的信息
+    uint8_t retryMaxNum;   // 重试次数
+    uint8_t retryCount;    // 重试计数
 };
 
 class AppController
