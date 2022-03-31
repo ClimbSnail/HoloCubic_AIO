@@ -2,6 +2,7 @@
 #include "weather_image.h"
 
 #include "lvgl.h"
+#include <esp32-hal.h>
 
 LV_FONT_DECLARE(lv_font_ibmplex_115);
 LV_FONT_DECLARE(lv_font_ibmplex_64);
@@ -232,6 +233,14 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     display_weather_init(anim_type);
 
     lv_label_set_text(cityLabel, weaInfo.cityname);
+    if (strlen(weaInfo.cityname) > 6)
+    {
+        lv_obj_align(cityLabel, NULL, LV_ALIGN_IN_TOP_LEFT, 5, 15);
+    }
+    else
+    {
+        lv_obj_align(cityLabel, NULL, LV_ALIGN_IN_TOP_LEFT, 20, 15);
+    }
     lv_label_set_text(btnLabel, airQualityCh[weaInfo.airQulity]);
     lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
     // 下面这行代码可能会出错

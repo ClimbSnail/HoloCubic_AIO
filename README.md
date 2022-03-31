@@ -150,7 +150,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要大家特意修改SPI引脚了，本工程的`lib`下已经修改好了SPI的引脚。以下是此前版本的操作（可忽略）
+3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
 
 然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
@@ -189,4 +189,5 @@ lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 * ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403
 * 视频播放 https://github.com/moononournation/RGB565_video
 * FTP参考文档 https://blog.csdn.net/zhubao124/article/details/81662775
+* ESP32 arduino运行双核 https://www.yiboard.com/thread-1344-1-1.html
 * 感谢`lib`目录下所用到的开源库相关的作者
