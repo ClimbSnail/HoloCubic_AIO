@@ -9,7 +9,7 @@
 #define DNS_PORT 53                    // DNS端口
 WebServer server(80);
 
-DNSServer dnsServer;
+// DNSServer dnsServer;
 
 struct ServerAppRunData
 {
@@ -60,7 +60,7 @@ void start_web_config()
     // MDNS.addService("http", "tcp", 80);
     Serial.println("HTTP server started");
 
-    dnsServer.start(DNS_PORT, "*", gateway);
+    // dnsServer.start(DNS_PORT, "*", gateway);
 }
 
 void stop_web_config()
@@ -110,7 +110,7 @@ static void server_process(AppController *sys,
     else if (1 == run_data->web_start)
     {
         server.handleClient(); // 一定需要放在循环里扫描
-        dnsServer.processNextRequest();
+        // dnsServer.processNextRequest();
         if (doDelayMillisTime(SERVER_REFLUSH_INTERVAL, &run_data->serverReflushPreMillis, false) == true)
         {
             // 发送wifi维持的心跳

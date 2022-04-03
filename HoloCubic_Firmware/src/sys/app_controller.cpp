@@ -19,15 +19,23 @@ AppController::AppController(const char *name)
     // appList = new APP_OBJ[APP_MAX_NUM];
     m_wifi_status = false;
     m_preWifiReqMillis = millis();
-    // 设置CPU主频
-    setCpuFrequencyMhz(80);
-    // uint32_t freq = getXtalFrequencyMhz(); // In MHz
-    Serial.print(F("getCpuFrequencyMhz: "));
-    Serial.println(getCpuFrequencyMhz());
 }
 
 void AppController::init(void)
 {
+    // 设置CPU主频
+    if (1 == this->sys_cfg.power_mode)
+    {
+        setCpuFrequencyMhz(240);
+    }
+    else
+    {
+        setCpuFrequencyMhz(80);
+    }
+    // uint32_t freq = getXtalFrequencyMhz(); // In MHz
+    Serial.print(F("CpuFrequencyMhz: "));
+    Serial.println(getCpuFrequencyMhz());
+
     app_control_gui_init();
     appList[0] = new APP_OBJ();
     appList[0]->app_image = &app_loading;
@@ -329,5 +337,14 @@ void AppController::app_exit()
                             appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
     // 设置CPU主频
-    setCpuFrequencyMhz(80);
+    if (1 == this->sys_cfg.power_mode)
+    {
+        setCpuFrequencyMhz(240);
+    }
+    else
+    {
+        setCpuFrequencyMhz(80);
+    }
+    Serial.print(F("CpuFrequencyMhz: "));
+    Serial.println(getCpuFrequencyMhz());
 }

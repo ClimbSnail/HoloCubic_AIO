@@ -94,11 +94,11 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 注：目前文件管理器临时使用`windows资源管理器`，在地址栏输入 ftp://holocubic:aio@192.168.123.241 （192.168.123.241为我的小电视上显示的IP地址，如果提示开启访问，就开启）
 
-
 ##### 相册（Picture）
 1. 运行APP条件：必须插内存卡，内存卡的根目录下必须存在`image/`目录（也可以使用`Web Server服务`APP 通过浏览器上传照片），`image/`目录下必须要有图片文件（jpg或者bin）。
 2. 将需要播放的图片转化成一定格式（.jpg或.bin），再保存在`image/`目录中，图片文件名必须为英文字符或数字。
 3. 使用固件进入相册APP后，将会读取`image/`目录下的图片文件。
+4. `WebServer`的网页端可以进行附加功能的设置。
 
 关于图片转换：使用附带的上位机转化（分辨率随意，软件会自动压缩到指定分辨率）。
 * 常用的天气图片，转换为c数组，格式为Indexed 16 colors 选择 C array。
@@ -109,23 +109,25 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 2. 将所需要播放的视频（最好长宽比是1:1），使用本固件配套的使用转化工具转化为目标文件（mjpeg或者rgb格式都可），存放在`movie/`目录下，视频文件名必须为英文字符或数字。
 3. 运行播放器APP后，将会读取`movie/`目录下的视频文件。
 4. 默认功率下，无任何动作90s后进入低功耗模式，120s后进入二级低功耗模式，具体表现为播放画面帧数下降。
+5. `WebServer`的网页端可以进行附加功能的设置。
 
 ##### 屏幕分享、电脑投屏（Screen share）
 1. 运行APP条件：无需内存卡，但需要利用`Web Server服务`app设置wifi密码（确保能连上路由器）。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
 2. 上位机目前使用第三方软件，后期会独立编写投屏上位机，提高性能。
 3. 本投屏上位机使用的是[大大怪](https://gitee.com/superddg123/esp32-TFT/tree/master)的上位机。
+4. `WebServer`的网页端可以进行附加功能的设置。
 
 ##### 天气、时钟（Weather）
 一共有两款天气时钟APP
 ###### 新版 weather
 1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
 2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`、`tianqi 城市名（中文）`。
-2. 使用新版天气时钟，需要再"Web Server"服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.yiketianqi.com/user/login ）
+2. 使用新版天气时钟，需要再"Web Server"网页服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.yiketianqi.com/user/login ）
 ###### 旧版 weather old
 1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
 2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
 3. 一般情况下不插内存卡也可以工作，但部分天气图标是存在内存卡中（由于内部flash不够用）的，需要将固件附带的`weather/`文件夹复制到tf卡根目录。
-4. 使用旧版天气时钟，需要再"Web Server"服务中修改知心天气的`知心天气 城市名`、`key（私钥）`。（申请地址 https://seniverse.com 。程序默认使用的是v3版本的api）
+4. 使用旧版天气时钟，需要再"Web Server"网页服务中修改知心天气的`知心天气 城市名`、`key（私钥）`。（申请地址 https://seniverse.com 。程序默认使用的是v3版本的api）
 
 注：即使断网后，时钟也依旧运行。（开机最好连接wifi，这样会自动同步时钟。使用中会间歇尝试同步时钟）
 
@@ -190,4 +192,5 @@ lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 * 视频播放 https://github.com/moononournation/RGB565_video
 * FTP参考文档 https://blog.csdn.net/zhubao124/article/details/81662775
 * ESP32 arduino运行双核 https://www.yiboard.com/thread-1344-1-1.html
+* 强制门户认证 https://blog.csdn.net/xh870189248/article/details/102892766
 * 感谢`lib`目录下所用到的开源库相关的作者

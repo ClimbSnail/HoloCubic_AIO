@@ -31,14 +31,36 @@
 #include <esp32-hal.h>
 
 /*** Component objects **7*/
-ImuAction *act_info;          // 存放mpu6050返回的数据
+ImuAction *act_info;           // 存放mpu6050返回的数据
 AppController *app_controller; // APP控制器
+
+TaskHandle_t handleTaskLvgl;
+void TaskLvglUpdate(void *parameter)
+{
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+    for (;;)
+    {
+        screen.routine();
+        // lv_task_handler();
+
+        delay(5);
+    }
+}
 
 void setup()
 {
     Serial.begin(115200);
 
     Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
+    // MAC ID可用作芯片唯一标识
+    Serial.print(F("ChipID(EfuseMac): "));
+    Serial.println(ESP.getEfuseMac());
+    // flash运行模式
+    // Serial.print(F("FlashChipMode: "));
+    // Serial.println(ESP.getFlashChipMode());
+    // Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
+
     app_controller = new AppController(); // APP控制器
 
     // 需要放在Setup里初始化
@@ -81,6 +103,7 @@ void setup()
     lv_fs_if_init();
 
     app_controller->init();
+    // 将APP"安装"到controller里
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
     app_controller->app_install(&picture_app);
@@ -113,6 +136,15 @@ void setup()
                             rgb_cfg->brightness_step, rgb_cfg->time};
     // 初始化RGB任务
     rgb_thread_init(&rgb_setting);
+
+    // Update display in parallel thread.
+    // xTaskCreate(
+    //     TaskLvglUpdate,
+    //     "LvglThread",
+    //     20000,
+    //     nullptr,
+    //     configMAX_PRIORITIES - 1,
+    //     &handleTaskLvgl);
 }
 
 void loop()
