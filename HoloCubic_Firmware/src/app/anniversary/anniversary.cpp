@@ -8,6 +8,7 @@
 #define MAX_ANNIVERSARY_CNT 2
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 
+bool tmfromString(const char *date_str, struct tm *date);
 
 // 纪念日的持久化配置
 #define ANNIVERSARY_CONFIG_PATH "/anniversary.cfg"
@@ -15,10 +16,10 @@ struct AN_Config
 {
     unsigned long anniversary_cnt; // 事件个数    
     String event_name[MAX_ANNIVERSARY_CNT]; // 事件名称
-    struct tm target_date[MAX_ANNIVERSARY_CNT]; // 目标日   
+    struct tm target_date[MAX_ANNIVERSARY_CNT]; // 目标日  
+    struct tm current_date; 
 };
 
-static void set_target_date(int year, int mon, int day, int wday, struct tm *tmp_date);
 static long long get_timestamp(String url);
 
 static void write_config(AN_Config *cfg)
@@ -33,18 +34,12 @@ static void write_config(AN_Config *cfg)
     {
         w_data = w_data + cfg->event_name[i] + "\n";
         memset(tmp, 0, 16);
-        snprintf(tmp, 16, "%u\n", cfg->target_date[i].tm_year);
-        w_data += tmp;
-        memset(tmp, 0, 16);
-        snprintf(tmp, 16, "%u\n", cfg->target_date[i].tm_mon);
-        w_data += tmp;
-        memset(tmp, 0, 16);
-        snprintf(tmp, 16, "%u\n", cfg->target_date[i].tm_mday);
-        w_data += tmp;
-        memset(tmp, 0, 16);
-        snprintf(tmp, 16, "%u\n", cfg->target_date[i].tm_wday);
+        snprintf(tmp, 16, "%d.%d.%d\n", cfg->target_date[i].tm_year, cfg->target_date[i].tm_mon, cfg->target_date[i].tm_mday);
         w_data += tmp;
     }
+    memset(tmp, 0, 16);
+    snprintf(tmp, 16, "%d.%d.%d\n", cfg->current_date.tm_year, cfg->current_date.tm_mon, cfg->current_date.tm_mday);
+    w_data += tmp;
     g_flashCfg.writeFile(ANNIVERSARY_CONFIG_PATH, w_data.c_str());
 }
 
@@ -64,33 +59,31 @@ static void read_config(AN_Config *cfg)
         cfg->target_date[0].tm_year = 0; // 设置为零则每年重复
         cfg->target_date[0].tm_mon = 1; 
         cfg->target_date[0].tm_mday = 1; 
-        cfg->target_date[0].tm_wday = 0; 
         cfg->event_name[1] = "毕业还有"; 
         cfg->target_date[1].tm_year = 2025; 
         cfg->target_date[1].tm_mon = 7; 
         cfg->target_date[1].tm_mday = 4; 
-        cfg->target_date[1].tm_wday = 0; 
         write_config(cfg);
         Serial.printf("Write config successful\n");
     }
     else
     {
         // 解析数据
-        char *param[MAX_ANNIVERSARY_CNT*5+1] = {0};
-        analyseParam(info, MAX_ANNIVERSARY_CNT*5+1, param);
+        char *param[MAX_ANNIVERSARY_CNT*2+2] = {0};
+        analyseParam(info, MAX_ANNIVERSARY_CNT*2+2, param);
         cfg->anniversary_cnt = atol(param[0]);
         for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i) 
         {
-            cfg->event_name[i] = param[5*i+1];
-            set_target_date(atol(param[5*i+2]), atol(param[5*i+3]), atol(param[5*i+4]), atol(param[5*i+5]), &(cfg->target_date[i]));
+            cfg->event_name[i] = param[2*i+1];
+            tmfromString(param[2*i+2], &(cfg->target_date[i]));
         }
+        tmfromString(param[MAX_ANNIVERSARY_CNT*2+1], &(cfg->current_date));
     }
 }
 
 // 动态数据，APP的生命周期结束也需要释放它
 struct AnniversaryAppRunData
 {
-    struct tm now_date;
     int cur_anniversary; // 当前显示第几个纪念日
     int anniversary_day_count;
     unsigned long preWeatherMillis; // 上一回更新天气时的毫秒数
@@ -148,14 +141,6 @@ bool tmfromString(const char *date_str, struct tm *date)
     return true;
 }
 
-static void set_target_date(int year, int mon, int day, int wday, struct tm *tmp_date)
-{
-    tmp_date->tm_year = year;
-    tmp_date->tm_mon = mon;
-    tmp_date->tm_mday = day;
-    tmp_date->tm_wday = wday;
-}
-
 
 static int dateDiff(struct tm* date1, struct tm* date2)
 {
@@ -188,13 +173,13 @@ static void get_date_diff()
     // time(&timep);
     p_tm = localtime(&timep); 
     
-    run_data->now_date.tm_year = p_tm -> tm_year + 1900;
-    run_data->now_date.tm_mon = p_tm -> tm_mon + 1;
-    run_data->now_date.tm_mday = p_tm -> tm_mday;
+    cfg_data.current_date.tm_year = p_tm -> tm_year + 1900;
+    cfg_data.current_date.tm_mon = p_tm -> tm_mon + 1;
+    cfg_data.current_date.tm_mday = p_tm -> tm_mday;
 
-    // Serial.printf("now_date %d %d %d\n", run_data->now_date.tm_year, run_data->now_date.tm_mon, run_data->now_date.tm_mday);
+    // Serial.printf("current_date %d %d %d\n", cfg_data.current_date.tm_year, cfg_data.current_date.tm_mon, cfg_data.current_date.tm_mday);
 
-    run_data->anniversary_day_count = dateDiff(&(run_data->now_date), &(cfg_data.target_date[run_data->cur_anniversary]));
+    run_data->anniversary_day_count = dateDiff(&(cfg_data.current_date), &(cfg_data.target_date[run_data->cur_anniversary]));
 }
 
 
@@ -282,6 +267,7 @@ static void anniversary_process(AppController *sys,
         sys->send_to(ANNIVERSARY_APP_NAME, CTRL_NAME,
                         APP_MESSAGE_WIFI_CONN, NULL, NULL);
         run_data->coactusUpdateFlag = 0x00;
+        write_config(&cfg_data);
     }
     get_date_diff();
     tm *cur_target = &(cfg_data.target_date[run_data->cur_anniversary]);
