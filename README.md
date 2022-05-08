@@ -9,6 +9,7 @@
 * 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
 * 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
 * BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
+* 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群 755143193**_
@@ -152,6 +153,8 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ##### 纪念日
 1. 运行APP条件：联网状态
 2. 第一次使用之前，要先在`WebServer App`的网页上填写纪念日名称和日期，目前可以设置两个纪念日。纪念日支持的字有`生日还有毕业养小恐龙种土豆老婆女朋友爸妈爷奶弟妹兄姐结婚纪念`，如果纪念日名称包含的字不在这个范围内，请自行生成字体文件并替换`src\app\anniversary\msyhbd_24.c`文件。日期格式如`2022.5.8`，如果年份设置为0，则被认为是每年重复的纪念日（如生日）。
+
+注：纪念日和心跳都复现自[LizCubic](https://github.com/qingehao/LizCubic)项目。程序由`WoodwindHu`编写
 
 ##### 心跳
 1. 运行APP条件：联网状态，一个开放1883端口的mqtt服务器，两个HoloCubic。
