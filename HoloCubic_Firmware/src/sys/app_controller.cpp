@@ -7,7 +7,9 @@
 const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_AP",
                                      "APP_MESSAGE_WIFI_ALIVE", "APP_MESSAGE_WIFI_DISCONN",
                                      "APP_MESSAGE_UPDATE_TIME", "APP_MESSAGE_GET_PARAM",
-                                     "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_NONE"};
+                                     "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_READ_CFG",
+                                    "APP_MESSAGE_WRITE_CFG", "APP_MESSAGE_MQTT_DATA",
+                                    "APP_MESSAGE_NONE"};
 
 AppController::AppController(const char *name)
 {
@@ -15,7 +17,7 @@ AppController::AppController(const char *name)
     app_num = 0;
     app_exit_flag = 0;
     cur_app_index = 0;
-    pre_app_index = 0;
+    pre_app_index = 0; 
     // appList = new APP_OBJ[APP_MAX_NUM];
     m_wifi_status = false;
     m_preWifiReqMillis = millis();
@@ -88,6 +90,15 @@ int AppController::app_uninstall(const APP_OBJ *app) // 将APP从app_controller�
     return 0;
 }
 
+void AppController::connect_mqtt()
+{
+    m_mqtt_status=1;
+    // init mqtt client
+    send_to("Heartbeat", "Heartbeat", APP_MESSAGE_READ_CFG, NULL, NULL);
+    // 连接wifi，并开启mqtt客户端
+    send_to("Heartbeat", CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
+}
+
 int AppController::main_process(ImuAction *act_info)
 {
     if (UNKNOWN != act_info->active)
@@ -103,7 +114,12 @@ int AppController::main_process(ImuAction *act_info)
     {
         send_to(CTRL_NAME, CTRL_NAME, APP_MESSAGE_WIFI_DISCONN, 0, NULL);
     }
-
+    
+    // 重连mqtt
+    if (1 == m_mqtt_status && doDelayMillisTime(MQTT_ALIVE_CYCLE, &m_preWifiReqMillis, false))
+    {
+        send_to("Heartbeat", CTRL_NAME, APP_MESSAGE_WIFI_CONN, 0, NULL);
+    }
     if (0 == app_exit_flag)
     {
         // 当前没有进入任何app
@@ -164,6 +180,19 @@ APP_OBJ *AppController::getAppByName(const char *name)
     return NULL;
 }
 
+int AppController::getAppIdxByName(const char *name)
+{
+    for (int pos = 0; pos < app_num; ++pos)
+    {
+        if (!strcmp(name, appList[pos]->app_name))
+        {
+            return pos;
+        }
+    }
+
+    return -1;
+}
+
 // 通信中心（消息转发）
 int AppController::send_to(const char *from, const char *to,
                            APP_MESSAGE_TYPE type, void *message,
@@ -171,7 +200,7 @@ int AppController::send_to(const char *from, const char *to,
 {
     APP_OBJ *fromApp = getAppByName(from); // 来自谁 有可能为空
     APP_OBJ *toApp = getAppByName(to);     // 发送给谁 有可能为空
-    if (type <= APP_MESSAGE_UPDATE_TIME)
+    if (type <= APP_MESSAGE_UPDATE_TIME || type == APP_MESSAGE_MQTT_DATA)
     {
         // 更新事件的请求者
         if (eventList.size() > EVENT_LIST_MAX_LENGTH)
@@ -302,6 +331,22 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
     break;
     case APP_MESSAGE_UPDATE_TIME:
     {
+    }
+    break;
+    case APP_MESSAGE_MQTT_DATA:
+    {
+        Serial.println("APP_MESSAGE_MQTT_DATA");
+        if (app_exit_flag == 1 && cur_app_index != getAppIdxByName("Heartbeat")) // 在其他app中
+        {
+            app_exit_flag = 0;
+            (*(appList[cur_app_index]->exit_callback))(NULL); // 退出当前app
+        }
+        if (app_exit_flag == 0)
+        {
+            app_exit_flag = 1; // 进入app, 如果已经在
+            cur_app_index = getAppIdxByName("Heartbeat");
+            (*(getAppByName("Heartbeat")->app_init))(); // 执行APP初始化
+        }
     }
     break;
     default:

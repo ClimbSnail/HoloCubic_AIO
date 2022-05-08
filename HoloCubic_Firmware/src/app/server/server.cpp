@@ -40,6 +40,8 @@ void start_web_config()
     server.on("/picture_setting", picture_setting);
     server.on("/media_setting", media_setting);
     server.on("/screen_setting", screen_setting);
+    server.on("/heartbeat_setting", heartbeat_setting);
+    server.on("/anniversary_setting", anniversary_setting);
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -55,6 +57,8 @@ void start_web_config()
     server.on("/savePictureConf", savePictureConf);
     server.on("/saveMediaConf", saveMediaConf);
     server.on("/saveScreenConf", saveScreenConf);
+    server.on("/saveHeartbeatConf", saveHeartbeatConf);
+    server.on("/saveAnniversaryConf", saveAnniversaryConf);
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);
