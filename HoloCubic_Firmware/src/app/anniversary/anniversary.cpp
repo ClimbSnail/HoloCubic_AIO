@@ -263,14 +263,19 @@ static void anniversary_process(AppController *sys,
     }
     if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(900000, &run_data->preTimeMillis, false))
     {
+        // 启动时先用持久化配置中的日期
+        run_data->anniversary_day_count = dateDiff(&(cfg_data.current_date), &(cfg_data.target_date[run_data->cur_anniversary]));
         // 尝试同步网络上的时钟
         sys->send_to(ANNIVERSARY_APP_NAME, CTRL_NAME,
                         APP_MESSAGE_WIFI_CONN, NULL, NULL);
         run_data->coactusUpdateFlag = 0x00;
         write_config(&cfg_data);
     }
-    get_date_diff();
-    tm *cur_target = &(cfg_data.target_date[run_data->cur_anniversary]);
+    else 
+    {
+        get_date_diff();
+    }
+    // tm *cur_target = &(cfg_data.target_date[run_data->cur_anniversary]);
     // Serial.printf("%d %d %d %d", cur_target->tm_year,  cur_target->tm_mon,  cur_target->tm_mday,  cur_target->tm_wday);
     // Serial.println(F(""));
     // Serial.printf("%d %d %d %d", cfg_data.target_date[run_data->cur_anniversary].tm_year,  cfg_data.target_date[run_data->cur_anniversary].tm_mon,  cfg_data.target_date[run_data->cur_anniversary].tm_mday,  cfg_data.target_date[run_data->cur_anniversary].tm_wday);
