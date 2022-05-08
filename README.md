@@ -150,13 +150,13 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 注：程序由`cnzxo`编写。
 
-##### 纪念日
+##### 纪念日（Anniversary）
 1. 运行APP条件：联网状态
 2. 第一次使用之前，要先在`WebServer App`的网页上填写纪念日名称和日期，目前可以设置两个纪念日。纪念日支持的字有`生日还有毕业养小恐龙种土豆老婆女朋友爸妈爷奶弟妹兄姐结婚纪念`，如果纪念日名称包含的字不在这个范围内，请自行生成字体文件并替换`src\app\anniversary\msyhbd_24.c`文件。日期格式如`2022.5.8`，如果年份设置为0，则被认为是每年重复的纪念日（如生日）。
 
 注：纪念日和心跳都复现自[LizCubic](https://github.com/qingehao/LizCubic)项目。程序由`WoodwindHu`编写
 
-##### 心跳
+##### 心跳（Heartbeat）
 1. 运行APP条件：联网状态，一个开放1883端口的mqtt服务器，两个HoloCubic。
 2. 第一次使用之前，要先在`WebServer App`的网页上填写role和mqtt_server。role可以选择0和1，分别代表互动的两个HoloCubic。mqtt_server填写自己的mqtt服务器地址。
 3. 设置完心跳APP之后，开机自动联网，并开启mqtt客户端。收到另一个HoloCubic的消息之后自动进入APP。正常方式进入APP则自动向另一个HoloCubic发送消息。
