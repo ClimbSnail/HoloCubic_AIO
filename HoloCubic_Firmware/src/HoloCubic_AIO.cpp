@@ -26,6 +26,8 @@
 #include "app/screen_share/screen_share.h"
 #include "app/file_manager/file_manager.h"
 #include "app/weather_old/weather_old.h"
+#include "app/anniversary/anniversary.h"
+#include "app/heartbeat/heartbeat.h"
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
@@ -115,6 +117,8 @@ void setup()
     app_controller->app_install(&bilibili_app);
     app_controller->app_install(&settings_app);
     app_controller->app_install(&game_2048_app);
+    app_controller->app_install(&anniversary_app);
+    app_controller->app_install(&heartbeat_app);
 
     // 优先显示屏幕 加快视觉上的开机时间
     app_controller->main_process(&mpu.action_info);
@@ -136,6 +140,13 @@ void setup()
                             rgb_cfg->brightness_step, rgb_cfg->time};
     // 初始化RGB任务
     rgb_thread_init(&rgb_setting);
+
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile("/heartbeat.cfg", (uint8_t *)info);
+    if (size != 0) // 如果已经设置过heartbeat了，则开启mqtt客户端
+    {
+        app_controller->connect_mqtt();
+    }
 
     // Update display in parallel thread.
     // xTaskCreate(

@@ -12,6 +12,7 @@ enum APP_MESSAGE_TYPE
     APP_MESSAGE_SET_PARAM, // 设置参数
     APP_MESSAGE_READ_CFG,  // 向磁盘读取参数
     APP_MESSAGE_WRITE_CFG, // 向磁盘写入参数
+    APP_MESSAGE_MQTT_DATA, // MQTT客户端收到消息
 
     APP_MESSAGE_NONE
 };

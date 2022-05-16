@@ -101,6 +101,18 @@ String file_size(int bytes)
                       "<label class=\"input\"><span>功耗控制（0低发热 1性能优先）</span><input type=\"text\"name=\"powerFlag\"value=\"%s\"></label>"  \
                       "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
+#define HEARTBEAT_SETTING "<form method=\"GET\" action=\"saveHeartbeatConf\">"                                                                                          \
+                        "<label class=\"input\"><span>Role(0:heart,1:beat)</span><input type=\"text\"name=\"role\"value=\"%s\"></label>"                            \
+                        "<label class=\"input\"><span>MQTT Server</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \
+                        "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
+#define ANNIVERSARY_SETTING "<form method=\"GET\" action=\"saveAnniversaryConf\">"                                                                                          \
+                        "<label class=\"input\"><span>事件0</span><input type=\"text\"name=\"event_name0\"value=\"%s\"></label>"                            \
+                        "<label class=\"input\"><span>日期0</span><input type=\"text\"name=\"target_date0\"value=\"%s\"></label>"                                                                                             \
+                        "<label class=\"input\"><span>事件1</span><input type=\"text\"name=\"event_name1\"value=\"%s\"></label>"                            \
+                        "<label class=\"input\"><span>日期1</span><input type=\"text\"name=\"target_date1\"value=\"%s\"></label>"                 \
+                        "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
 void init_page_header()
 {
     webpage_header = F("<!DOCTYPE html><html>");
@@ -153,6 +165,8 @@ void init_page_header()
     webpage_header += F("<li><a href='/picture_setting'>相册</a></li>");
     webpage_header += F("<li><a href='/media_setting'>媒体播放器</a></li>");
     webpage_header += F("<li><a href='/screen_setting'>屏幕分享</a></li>");
+    webpage_header += F("<li><a href='/heartbeat_setting'>心跳</a></li>");
+    webpage_header += F("<li><a href='/anniversary_setting'>纪念日</a></li>");
     webpage_header += F("</ul>");
 }
 
@@ -370,6 +384,46 @@ void screen_setting()
     Send_HTML(webpage);
 }
 
+void heartbeat_setting()
+{
+    char buf[2048];
+    char role[32];
+    char mqtt_server[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"role", role);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"mqtt_server", mqtt_server);
+    sprintf(buf, HEARTBEAT_SETTING, role, mqtt_server);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
+void anniversary_setting()
+{
+    char buf[2048];
+    char event_name0[32];
+    char target_date0[32];
+    char event_name1[32];
+    char target_date1[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_GET_PARAM,
+                            (void *)"event_name0", event_name0);
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_GET_PARAM,
+                            (void *)"target_date0", target_date0);
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_GET_PARAM,
+                            (void *)"event_name1", event_name1);
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_GET_PARAM,
+                            (void *)"target_date1", target_date1);
+    sprintf(buf, ANNIVERSARY_SETTING, event_name0, target_date0, event_name1, target_date1);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
 void saveSysConf(void)
 {
     Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
@@ -539,6 +593,46 @@ void saveScreenConf(void)
                             (void *)server.arg("powerFlag").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Screen share", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveHeartbeatConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"role",
+                            (void *)server.arg("role").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"mqtt_server",
+                            (void *)server.arg("mqtt_server").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveAnniversaryConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"event_name0",
+                            (void *)server.arg("event_name0").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"target_date0",
+                            (void *)server.arg("target_date0").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"event_name1",
+                            (void *)server.arg("event_name1").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"target_date1",
+                            (void *)server.arg("target_date1").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
 }
 

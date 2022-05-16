@@ -10,6 +10,7 @@
 #define CTRL_NAME "AppCtrl"
 #define APP_MAX_NUM 15             // 最大的可运行的APP数量
 #define WIFI_LIFE_CYCLE 60000      // wifi的生命周期（60s）
+#define MQTT_ALIVE_CYCLE 1000      // mqtt重连周期
 #define EVENT_LIST_MAX_LENGTH 10   // 消息队列的容量
 #define APP_CONTROLLER_NAME_LEN 16 // app控制器的名字长度
 
@@ -58,9 +59,11 @@ public:
     void write_config(SysMpuConfig *cfg);
     void read_config(RgbConfig *cfg);
     void write_config(RgbConfig *cfg);
+    void connect_mqtt(void);
 
 private:
     APP_OBJ *getAppByName(const char *name);
+    int getAppIdxByName(const char *name);
     int app_is_legal(const APP_OBJ *app_obj);
 
 private:
@@ -69,6 +72,7 @@ private:
     // std::list<const APP_OBJ *> app_list; // APP注册位(为了C语言可移植，放弃使用链表)
     std::list<EVENT_OBJ> eventList;   // 用来储存事件
     boolean m_wifi_status;            // 表示是wifi状态 true开启 false关闭
+    boolean m_mqtt_status;            // 表示是mqtt状态 true开启 false关闭
     unsigned long m_preWifiReqMillis; // 保存上一回请求的时间戳
     unsigned int app_num;
     boolean app_exit_flag; // 表示是否退出APP应用
