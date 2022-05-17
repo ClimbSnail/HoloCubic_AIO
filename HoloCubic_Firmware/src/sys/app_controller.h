@@ -8,7 +8,7 @@
 #include <list>
 
 #define CTRL_NAME "AppCtrl"
-#define APP_MAX_NUM 15             // 最大的可运行的APP数量
+#define APP_MAX_NUM 20             // 最大的可运行的APP数量
 #define WIFI_LIFE_CYCLE 60000      // wifi的生命周期（60s）
 #define MQTT_ALIVE_CYCLE 1000      // mqtt重连周期
 #define EVENT_LIST_MAX_LENGTH 10   // 消息队列的容量
@@ -39,9 +39,10 @@ public:
     AppController(const char *name = CTRL_NAME);
     ~AppController();
     void init(void);
-    void Display(void);                    // 显示接口
-    int app_install(APP_OBJ *app);         // 将APP注册到app_controller中
-    int app_uninstall(const APP_OBJ *app); // 将APP从app_controller中卸载（删除）
+    void Display(void); // 显示接口
+    int app_install(APP_OBJ *app,
+                    APP_TYPE app_type = APP_TYPE_REAL_TIME); // 将APP注册到app_controller中
+    int app_uninstall(const APP_OBJ *app);                   // 将APP从app_controller中卸载（删除）
     int main_process(ImuAction *act_info);
     void app_exit(void); // 提供给app退出的系统调用
     // 消息发送
@@ -68,7 +69,8 @@ private:
 
 private:
     char name[APP_CONTROLLER_NAME_LEN]; // app控制器的名字
-    APP_OBJ *appList[APP_MAX_NUM];      // 预留10个APP注册位
+    APP_OBJ *appList[APP_MAX_NUM];      // 预留APP_MAX_NUM个APP注册位
+    APP_TYPE appTypeList[APP_MAX_NUM];  // 对应APP的运行类型
     // std::list<const APP_OBJ *> app_list; // APP注册位(为了C语言可移植，放弃使用链表)
     std::list<EVENT_OBJ> eventList;   // 用来储存事件
     boolean m_wifi_status;            // 表示是wifi状态 true开启 false关闭

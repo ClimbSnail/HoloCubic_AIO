@@ -17,6 +17,14 @@ enum APP_MESSAGE_TYPE
     APP_MESSAGE_NONE
 };
 
+enum APP_TYPE
+{
+    APP_TYPE_REAL_TIME = 0, // 实时应用
+    APP_TYPE_BACKGROUND,    // 后台应用
+
+    APP_TYPE_NONE
+};
+
 class AppController;
 struct ImuAction;
 

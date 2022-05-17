@@ -11,6 +11,12 @@ IMU::IMU()
     action_info.isValid = true;
     action_info.active = UNKNOWN;
     action_info.long_time = true;
+    // 初始化数据
+    act_info_history.push_back(UNKNOWN);
+    act_info_history.push_back(UNKNOWN);
+    act_info_history.push_back(UNKNOWN);
+    act_info_history.push_back(UNKNOWN);
+    act_info_history.push_back(UNKNOWN);
     this->order = 0; // 表示方位
 }
 
@@ -111,45 +117,6 @@ ImuAction *IMU::update(int interval)
             }
         }
 
-        // if (!action_info.isValid)
-        // {
-        //     if (action_info.v_gy > 4000)
-        //     {
-        //         encoder_diff--;
-        //         action_info.isValid = 1;
-        //         action_info.active = TURN_LEFT;
-        //     }
-        //     else if (action_info.v_gy < -4000)
-        //     {
-        //         encoder_diff++;
-        //         action_info.isValid = 1;
-        //         action_info.active = TURN_RIGHT;
-        //     }
-        //     else
-        //     {
-        //         action_info.isValid = 0;
-        //     }
-        // }
-
-        // 上下
-        // if (!action_info.isValid)
-        // {
-        //     if (action_info.v_ax > 3000 && action_info.v_ax <= 5000)
-        //     {
-        //         action_info.isValid = 1;
-        //         action_info.active = UP;
-        //     }
-        //     else if (action_info.v_ax < -3000 && action_info.v_ax >= -5000)
-        //     {
-        //         action_info.isValid = 1;
-        //         action_info.active = DOWN;
-        //     }
-        //     else
-        //     {
-        //         action_info.isValid = 0;
-        //     }
-        // }
-
         if (!action_info.isValid)
         {
             if (action_info.v_ax > 5000)
@@ -192,6 +159,74 @@ ImuAction *IMU::update(int interval)
 
         last_update_time = millis();
     }
+    return &action_info;
+}
+
+ImuAction *IMU::getAction(void)
+{
+    getVirtureMotion6(&action_info);
+
+    ACTIVE_TYPE act_type = UNKNOWN;
+
+    if (UNKNOWN == act_type)
+    {
+        if (action_info.v_ay > 4000)
+        {
+            act_type = TURN_LEFT;
+        }
+        else if (action_info.v_ay < -4000)
+        {
+            act_type = TURN_RIGHT;
+        }
+        else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
+        {
+            // 震动检测
+            act_type = SHAKE;
+        }
+    }
+
+    if (UNKNOWN == act_type)
+    {
+        if (action_info.v_ax > 5000)
+        {
+            act_type = UP;
+        }
+        else if (action_info.v_ax < -5000)
+        {
+            act_type = DOWN;
+        }
+        else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
+        {
+            // 震动检测
+            act_type = SHAKE;
+        }
+    }
+
+    act_info_history.pop_front();
+    act_info_history.push_back(act_type);
+
+    if (!action_info.isValid)
+    {
+        if (act_info_history[4] ==  act_info_history[3] && act_info_history[3] == act_info_history[2])
+        {
+            if (act_type == ACTIVE_TYPE::UP)
+            {
+                action_info.isValid = 1;
+                action_info.active = GO_FORWORD;
+            }
+            else if (act_type == DOWN)
+            {
+                action_info.isValid = 1;
+                action_info.active = RETURN;
+            }
+        }
+        else if (UNKNOWN != act_type)
+        {
+            action_info.isValid = 1;
+            action_info.active = act_type;
+        }
+    }
+
     return &action_info;
 }
 

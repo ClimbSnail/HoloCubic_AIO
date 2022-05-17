@@ -8,8 +8,8 @@ const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_
                                      "APP_MESSAGE_WIFI_ALIVE", "APP_MESSAGE_WIFI_DISCONN",
                                      "APP_MESSAGE_UPDATE_TIME", "APP_MESSAGE_GET_PARAM",
                                      "APP_MESSAGE_SET_PARAM", "APP_MESSAGE_READ_CFG",
-                                    "APP_MESSAGE_WRITE_CFG", "APP_MESSAGE_MQTT_DATA",
-                                    "APP_MESSAGE_NONE"};
+                                     "APP_MESSAGE_WRITE_CFG", "APP_MESSAGE_MQTT_DATA",
+                                     "APP_MESSAGE_NONE"};
 
 AppController::AppController(const char *name)
 {
@@ -17,7 +17,7 @@ AppController::AppController(const char *name)
     app_num = 0;
     app_exit_flag = 0;
     cur_app_index = 0;
-    pre_app_index = 0; 
+    pre_app_index = 0;
     // appList = new APP_OBJ[APP_MAX_NUM];
     m_wifi_status = false;
     m_preWifiReqMillis = millis();
@@ -42,6 +42,7 @@ void AppController::init(void)
     appList[0] = new APP_OBJ();
     appList[0]->app_image = &app_loading;
     appList[0]->app_name = "None";
+    appTypeList[0] = APP_TYPE_REAL_TIME;
     app_control_display_scr(appList[cur_app_index]->app_image,
                             appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
@@ -71,7 +72,7 @@ int AppController::app_is_legal(const APP_OBJ *app_obj)
     return 0;
 }
 
-int AppController::app_install(APP_OBJ *app) // 将APP安装到app_controller中
+int AppController::app_install(APP_OBJ *app, APP_TYPE app_type) // 将APP安装到app_controller中
 {
     int ret_code = app_is_legal(app);
     if (0 != ret_code)
@@ -80,6 +81,7 @@ int AppController::app_install(APP_OBJ *app) // 将APP安装到app_controller中
     }
 
     appList[app_num] = app;
+    appTypeList[app_num] = app_type;
     ++app_num;
     return 0; // 安装成功
 }
@@ -92,11 +94,16 @@ int AppController::app_uninstall(const APP_OBJ *app) // 将APP从app_controller�
 
 void AppController::connect_mqtt()
 {
-    m_mqtt_status=1;
-    // init mqtt client
-    send_to("Heartbeat", "Heartbeat", APP_MESSAGE_READ_CFG, NULL, NULL);
-    // 连接wifi，并开启mqtt客户端
-    send_to("Heartbeat", CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
+    char info[128] = {0};
+    uint16_t size = g_flashCfg.readFile("/heartbeat.cfg", (uint8_t *)info);
+    if (size != 0) // 如果已经设置过heartbeat了，则开启mqtt客户端
+    {
+        m_mqtt_status = 1;
+        // init mqtt client
+        send_to("Heartbeat", "Heartbeat", APP_MESSAGE_READ_CFG, NULL, NULL);
+        // 连接wifi，并开启mqtt客户端
+        send_to("Heartbeat", CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
+    }
 }
 
 int AppController::main_process(ImuAction *act_info)
@@ -114,7 +121,7 @@ int AppController::main_process(ImuAction *act_info)
     {
         send_to(CTRL_NAME, CTRL_NAME, APP_MESSAGE_WIFI_DISCONN, 0, NULL);
     }
-    
+
     // 重连mqtt
     if (1 == m_mqtt_status && doDelayMillisTime(MQTT_ALIVE_CYCLE, &m_preWifiReqMillis, false))
     {

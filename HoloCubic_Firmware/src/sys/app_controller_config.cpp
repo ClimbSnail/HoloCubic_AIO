@@ -412,5 +412,8 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         write_config(&rgb_cfg);
     }
     break;
+    default:
+        break;
+        
     }
 }

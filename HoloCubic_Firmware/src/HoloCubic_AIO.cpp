@@ -31,6 +31,7 @@
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
+#include <esp32-hal-timer.h>
 
 /*** Component objects **7*/
 ImuAction *act_info;           // 存放mpu6050返回的数据
@@ -48,6 +49,13 @@ void TaskLvglUpdate(void *parameter)
 
         delay(5);
     }
+}
+
+TimerHandle_t xTimerAction = NULL;
+void actionCheckHandle(TimerHandle_t xTimer)
+{
+    // 定时获取动作
+    act_info = mpu.getAction();
 }
 
 void setup()
@@ -118,7 +126,7 @@ void setup()
     app_controller->app_install(&settings_app);
     app_controller->app_install(&game_2048_app);
     app_controller->app_install(&anniversary_app);
-    app_controller->app_install(&heartbeat_app);
+    app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
 
     // 优先显示屏幕 加快视觉上的开机时间
     app_controller->main_process(&mpu.action_info);
@@ -141,13 +149,13 @@ void setup()
     // 初始化RGB任务
     rgb_thread_init(&rgb_setting);
 
-    char info[128] = {0};
-    uint16_t size = g_flashCfg.readFile("/heartbeat.cfg", (uint8_t *)info);
-    if (size != 0) // 如果已经设置过heartbeat了，则开启mqtt客户端
-    {
-        app_controller->connect_mqtt();
-    }
+    // 定义一个mpu6050的动作检测定时器
+    xTimerAction = xTimerCreate("Action Check",
+                                200 / portTICK_PERIOD_MS,
+                                pdTRUE, (void *)0, actionCheckHandle);
+    xTimerStart(xTimerAction, 0);
 
+    //开启定时器
     // Update display in parallel thread.
     // xTaskCreate(
     //     TaskLvglUpdate,
@@ -161,7 +169,6 @@ void setup()
 void loop()
 {
     screen.routine();
-    act_info = mpu.update(200);
 
 #ifdef PEAK
     if (!mpu.Encoder_GetIsPush())
