@@ -10,7 +10,7 @@
 #include "DMADrawer.h"
 
 #include <string.h>
-#include <esp_heap_alloc_caps.h>
+#include <esp_heap_caps.h>
 #include <driver/spi_master.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

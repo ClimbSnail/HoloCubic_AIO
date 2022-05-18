@@ -67,9 +67,9 @@ void setup()
     Serial.print(F("ChipID(EfuseMac): "));
     Serial.println(ESP.getEfuseMac());
     // flash运行模式
-    // Serial.print(F("FlashChipMode: "));
-    // Serial.println(ESP.getFlashChipMode());
-    // Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
+    Serial.print(F("FlashChipMode: "));
+    Serial.println(ESP.getFlashChipMode());
+    Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
 
     app_controller = new AppController(); // APP控制器
 
@@ -136,6 +136,7 @@ void setup()
     mpu.init(app_controller->sys_cfg.mpu_order,
              app_controller->sys_cfg.auto_calibration_mpu,
              &app_controller->mpu_cfg); // 初始化比较耗时
+    Serial.println("Power: ON 6");
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;

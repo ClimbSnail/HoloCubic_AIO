@@ -5,8 +5,8 @@
  * Data Sheet:
  * http://read.pudn.com/downloads648/ebook/2620902/NT35310.pdf
  */
-#ifndef _Arduino_NT35310_H_
-#define _Arduino_NT35310_H_
+#ifndef _ARDUINO_NT35310_H_
+#define _ARDUINO_NT35310_H_
 
 #include <Arduino.h>
 #include <Print.h>
@@ -139,7 +139,7 @@ class Arduino_NT35310 : public Arduino_TFT
 {
 public:
   Arduino_NT35310(
-      Arduino_DataBus *bus, int8_t rst = -1, uint8_t r = 0,
+      Arduino_DataBus *bus, int8_t rst = GFX_NOT_DEFINED, uint8_t r = 0,
       bool ips = false, int16_t w = NT35310_TFTWIDTH, int16_t h = NT35310_TFTHEIGHT,
       uint8_t col_offset1 = 0, uint8_t row_offset1 = 0, uint8_t col_offset2 = 0, uint8_t row_offset2 = 0);
 
@@ -156,4 +156,4 @@ protected:
 private:
 };
 
-#endif
+#endif // _ARDUINO_NT35310_H_

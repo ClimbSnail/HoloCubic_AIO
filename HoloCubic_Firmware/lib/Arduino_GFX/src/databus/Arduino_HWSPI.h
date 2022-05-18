@@ -5,6 +5,7 @@
 #ifndef _ARDUINO_HWSPI_H_
 #define _ARDUINO_HWSPI_H_
 
+#include <SPI.h>
 #include "Arduino_DataBus.h"
 
 #if !defined(LITTLE_FOOT_PRINT)
@@ -17,12 +18,16 @@ class Arduino_HWSPI : public Arduino_DataBus
 {
 public:
 #if defined(ESP32)
-  Arduino_HWSPI(int8_t dc, int8_t cs = -1, int8_t sck = -1, int8_t mosi = -1, int8_t miso = -1, bool is_shared_interface = true); // Constructor
+  Arduino_HWSPI(int8_t dc, int8_t cs = GFX_NOT_DEFINED, int8_t sck = GFX_NOT_DEFINED, int8_t mosi = GFX_NOT_DEFINED, int8_t miso = GFX_NOT_DEFINED, SPIClass *spi = &SPI, bool is_shared_interface = true); // Constructor
+#elif defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
+  Arduino_HWSPI(int8_t dc, int8_t cs = GFX_NOT_DEFINED, SPIClass *spi = &LCD_SPI, bool is_shared_interface = true); // Constructor
+#elif defined(RTL8722DM) && defined(BOARD_RTL8722DM)
+  Arduino_HWSPI(int8_t dc, int8_t cs = GFX_NOT_DEFINED, SPIClass *spi = &SPI1, bool is_shared_interface = true); // Constructor
 #else
-  Arduino_HWSPI(int8_t dc, int8_t cs = -1, bool is_shared_interface = true); // Constructor
+  Arduino_HWSPI(int8_t dc, int8_t cs = GFX_NOT_DEFINED, SPIClass *spi = &SPI, bool is_shared_interface = true); // Constructor
 #endif
 
-  void begin(int32_t speed = 0, int8_t dataMode = -1) override;
+  void begin(int32_t speed = 0, int8_t dataMode = GFX_NOT_DEFINED) override;
   void beginWrite() override;
   void endWrite() override;
   void writeCommand(uint8_t) override;
@@ -48,10 +53,12 @@ private:
   INLINE void CS_HIGH(void);
   INLINE void CS_LOW(void);
 
+
   int8_t _dc, _cs;
 #if defined(ESP32)
   int8_t _sck, _mosi, _miso;
 #endif
+  SPIClass *_spi;
   bool _is_shared_interface;
 
   // CLASS INSTANCE VARIABLES --------------------------------------------

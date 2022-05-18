@@ -34,7 +34,7 @@ void Arduino_SSD1283A::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_SSD1283A::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -112,14 +112,6 @@ void Arduino_SSD1283A::writeAddrWindow(int16_t x, int16_t y, uint16_t w, uint16_
   // TODO: it works, but should have better way
   switch (_rotation)
   {
-  case 0:
-    v1 = y + h - 1 + _yStart;
-    v2 = y + _yStart;
-    v3 = v2;
-    h1 = x + w - 1 + _xStart;
-    h2 = x + _xStart;
-    h3 = h2;
-    break;
   case 1:
     v1 = x + w - 1 + _xStart;
     v2 = x + _xStart;
@@ -142,6 +134,14 @@ void Arduino_SSD1283A::writeAddrWindow(int16_t x, int16_t y, uint16_t w, uint16_
     v3 = v1;
     h1 = y + h - 1 + _yStart;
     h2 = y + _yStart;
+    h3 = h2;
+    break;
+  default: // case 0:
+    v1 = y + h - 1 + _yStart;
+    v2 = y + _yStart;
+    v3 = v2;
+    h1 = x + w - 1 + _xStart;
+    h2 = x + _xStart;
     h3 = h2;
     break;
   }
@@ -172,10 +172,6 @@ void Arduino_SSD1283A::setRotation(uint8_t r)
   _bus->beginWrite();
   switch (_rotation)
   {
-  case 0:
-    _bus->writeCommand16(SSD1283A_ENTRY_MODE);
-    _bus->write16(0x6830);
-    break;
   case 1:
     _bus->writeCommand16(SSD1283A_ENTRY_MODE);
     _bus->write16(0x6828);
@@ -187,6 +183,10 @@ void Arduino_SSD1283A::setRotation(uint8_t r)
   case 3:
     _bus->writeCommand(SSD1283A_ENTRY_MODE);
     _bus->write16(0x6818);
+    break;
+  default: // case 0:
+    _bus->writeCommand16(SSD1283A_ENTRY_MODE);
+    _bus->write16(0x6830);
     break;
   }
   _bus->endWrite();

@@ -11,6 +11,8 @@ Arduino_Canvas_3bit::Arduino_Canvas_3bit(int16_t w, int16_t h, Arduino_G *output
 
 void Arduino_Canvas_3bit::begin(int32_t speed)
 {
+    _output->begin(speed);
+
     size_t s = (_width * _height + 1) / 2;
 #if defined(ESP32)
     if (psramFound())
@@ -28,8 +30,6 @@ void Arduino_Canvas_3bit::begin(int32_t speed)
     {
         Serial.println(F("_framebuffer allocation failed."));
     }
-
-    _output->begin(speed);
 }
 
 void Arduino_Canvas_3bit::writePixelPreclipped(int16_t x, int16_t y, uint16_t color)

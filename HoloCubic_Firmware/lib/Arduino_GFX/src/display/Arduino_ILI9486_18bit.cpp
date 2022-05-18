@@ -18,7 +18,7 @@ void Arduino_ILI9486_18bit::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_ILI9486_18bit::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -31,7 +31,7 @@ void Arduino_ILI9486_18bit::tftInit()
   else
   {
     // Software Rest
-    _bus->sendCommand(ILI9486_SWRST);
+    _bus->sendCommand(ILI9486_SWRESET);
     delay(ILI9486_RST_DELAY);
   }
 
@@ -39,7 +39,7 @@ void Arduino_ILI9486_18bit::tftInit()
   delay(ILI9486_SLPIN_DELAY);
 
   _bus->sendCommand(0x3A);
-  _bus->sendData(0x66);
+  _bus->sendData(0x66); // 18-bit color
 
   _bus->sendCommand(0xC2);
   _bus->sendData(0x44);
@@ -140,20 +140,19 @@ void Arduino_ILI9486_18bit::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    r = (ILI9486_MAD_BGR | ILI9486_MAD_MX);
-    break;
   case 1:
-    r = (ILI9486_MAD_BGR | ILI9486_MAD_MV);
+    r = (ILI9486_MADCTL_BGR | ILI9486_MADCTL_MV);
     break;
   case 2:
-    r = (ILI9486_MAD_BGR | ILI9486_MAD_MY);
+    r = (ILI9486_MADCTL_BGR | ILI9486_MADCTL_MY);
     break;
   case 3:
-    r = (ILI9486_MAD_BGR | ILI9486_MAD_MV | ILI9486_MAD_MX | ILI9486_MAD_MY);
+    r = (ILI9486_MADCTL_BGR | ILI9486_MADCTL_MV | ILI9486_MADCTL_MX | ILI9486_MADCTL_MY);
+    break;
+  default: // case 0:
+    r = (ILI9486_MADCTL_BGR | ILI9486_MADCTL_MX);
     break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(ILI9486_MADCTL);
   _bus->write(r);

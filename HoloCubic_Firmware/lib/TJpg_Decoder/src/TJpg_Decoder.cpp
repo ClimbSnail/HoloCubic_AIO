@@ -75,7 +75,7 @@ void TJpg_Decoder::setCallback(SketchCallback sketchCallback)
 ** Function name:           jd_input (declared static)
 ** Description:             Called by tjpgd.c to get more data
 ***************************************************************************************/
-uint16_t TJpg_Decoder::jd_input(JDEC* jdec, uint8_t* buf, uint16_t len)
+unsigned int TJpg_Decoder::jd_input(JDEC* jdec, uint8_t* buf, unsigned int len)
 {
   TJpg_Decoder *thisPtr = TJpgDec.thisPtr;
   jdec = jdec; // Supress warning
@@ -94,7 +94,7 @@ uint16_t TJpg_Decoder::jd_input(JDEC* jdec, uint8_t* buf, uint16_t len)
     thisPtr->array_index += len;
   }
 
-#ifdef TJPGD_LOAD_SPIFFS
+#ifdef TJPGD_LOAD_FFS
   // Handle SPIFFS input
   else if (thisPtr->jpg_source == TJPG_FS_FILE) {
     // Check how many bytes are available
@@ -138,7 +138,7 @@ uint16_t TJpg_Decoder::jd_input(JDEC* jdec, uint8_t* buf, uint16_t len)
 ** Description:             Called by tjpgd.c with an image block for rendering
 ***************************************************************************************/
 // Pass image block back to the sketch for rendering, may be a complete or partial MCU
-uint16_t TJpg_Decoder::jd_output(JDEC* jdec, void* bitmap, JRECT* jrect)
+int TJpg_Decoder::jd_output(JDEC* jdec, void* bitmap, JRECT* jrect)
 {
   // This is a static function so create a pointer to access other members of the class
   TJpg_Decoder *thisPtr = TJpgDec.thisPtr;
@@ -156,7 +156,7 @@ uint16_t TJpg_Decoder::jd_output(JDEC* jdec, void* bitmap, JRECT* jrect)
 }
 
 
-#if defined (TJPGD_LOAD_SD_LIBRARY) || defined (TJPGD_LOAD_SPIFFS)
+#if defined (TJPGD_LOAD_SD_LIBRARY) || defined (TJPGD_LOAD_FFS)
 
 /***************************************************************************************
 ** Function name:           drawJpg
@@ -244,63 +244,41 @@ JRESULT TJpg_Decoder::getJpgSize(uint16_t *w, uint16_t *h, const String& pFilena
 
 #endif
 
-#ifdef TJPGD_LOAD_SPIFFS
+#ifdef TJPGD_LOAD_FFS
 
 /***************************************************************************************
 ** Function name:           drawFsJpg
-** Description:             Draw a named jpg SPIFFS file at x,y (name in char array)
+** Description:             Draw a named jpg file at x,y (name in char array)
 ***************************************************************************************/
 // Call specific to SPIFFS
-JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, const char *pFilename) {
-#ifdef USE_LITTLEFS
+JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, const char *pFilename, fs::FS &fs) {
   // Check if file exists
-  if ( !LittleFS.exists(pFilename) )
+  if ( !fs.exists(pFilename) )
   {
     Serial.println(F("Jpeg file not found"));
     return JDR_INP;
   }
 
-    return drawFsJpg(x, y, LittleFS.open( pFilename, "r"));
-#else
-  // Check if file exists
-  if ( !SPIFFS.exists(pFilename) )
-  {
-    Serial.println(F("Jpeg file not found"));
-    return JDR_INP;
-  }
-
-    return drawFsJpg(x, y, SPIFFS.open( pFilename, "r"));
-#endif
+    return drawFsJpg(x, y, fs.open( pFilename, "r"));
 }
 
 /***************************************************************************************
 ** Function name:           drawFsJpg
-** Description:             Draw a named jpg SPIFFS file at x,y (name in String)
+** Description:             Draw a named jpg file at x,y (name in String)
 ***************************************************************************************/
-JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, const String& pFilename) {
-#ifdef USE_LITTLEFS
+JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, const String& pFilename, fs::FS &fs) {
   // Check if file exists
-  if ( !LittleFS.exists(pFilename) )
+  if ( !fs.exists(pFilename) )
   {
     Serial.println(F("Jpeg file not found"));
     return JDR_INP;
   }
-
-    return drawFsJpg(x, y, LittleFS.open( pFilename, "r"));
-#else
-  // Check if file exists
-  if ( !SPIFFS.exists(pFilename) )
-  {
-    Serial.println(F("Jpeg file not found"));
-    return JDR_INP;
-  }
-#endif
-    return drawFsJpg(x, y, SPIFFS.open( pFilename, "r"));
+  return drawFsJpg(x, y, fs.open( pFilename, "r"));
 }
 
 /***************************************************************************************
 ** Function name:           drawFsJpg
-** Description:             Draw a jpg with opened SPIFFS file handle at x,y
+** Description:             Draw a jpg with opened file handle at x,y
 ***************************************************************************************/
 JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, fs::File inFile) {
   JDEC jdec;
@@ -314,7 +292,7 @@ JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, fs::File inFile) {
 
   jpgFile = inFile;
 
-  jresult = jd_prepare(&jdec, jd_input, workspace, TJPGD_WORKSPACE_SIZE, 0);
+  jresult = jd_prepare(&jdec, jd_input, workspace, TJPGD_WORKSPACE_SIZE, (unsigned int)0);
 
   // Extract image and render
   if (jresult == JDR_OK) {
@@ -330,59 +308,37 @@ JRESULT TJpg_Decoder::drawFsJpg(int32_t x, int32_t y, fs::File inFile) {
 
 /***************************************************************************************
 ** Function name:           getFsJpgSize
-** Description:             Get width and height of a jpg saved in  SPIFFS
+** Description:             Get width and height of a jpg saved in SPIFFS or LittleFS
 ***************************************************************************************/
 // Call specific to SPIFFS
-JRESULT TJpg_Decoder::getFsJpgSize(uint16_t *w, uint16_t *h, const char *pFilename) {
-#ifdef USE_LITTLEFS
+JRESULT TJpg_Decoder::getFsJpgSize(uint16_t *w, uint16_t *h, const char *pFilename, fs::FS &fs) {
   // Check if file exists
-  if ( !LittleFS.exists(pFilename) )
+  if ( !fs.exists(pFilename) )
   {
     Serial.println(F("Jpeg file not found"));
     return JDR_INP;
   }
 
-    return getFsJpgSize(w, h, LittleFS.open( pFilename, "r"));
-#else
-  // Check if file exists
-  if ( !SPIFFS.exists(pFilename) )
-  {
-    Serial.println(F("Jpeg file not found"));
-    return JDR_INP;
-  }
-
-    return getFsJpgSize(w, h, SPIFFS.open( pFilename, "r"));
-#endif
+    return getFsJpgSize(w, h, fs.open( pFilename, "r"));
 }
 
 /***************************************************************************************
 ** Function name:           getFsJpgSize
-** Description:             Get width and height of a jpg saved in  SPIFFS
+** Description:             Get width and height of a jpg saved in SPIFFS or LittleFS
 ***************************************************************************************/
-JRESULT TJpg_Decoder::getFsJpgSize(uint16_t *w, uint16_t *h, const String& pFilename) {
-#ifdef USE_LITTLEFS
+JRESULT TJpg_Decoder::getFsJpgSize(uint16_t *w, uint16_t *h, const String& pFilename, fs::FS &fs) {
   // Check if file exists
-  if ( !LittleFS.exists(pFilename) )
+  if ( !fs.exists(pFilename) )
   {
     Serial.println(F("Jpeg file not found"));
     return JDR_INP;
   }
 
-    return getFsJpgSize(w, h, LittleFS.open( pFilename, "r"));
-#else
-  // Check if file exists
-  if ( !SPIFFS.exists(pFilename) )
-  {
-    Serial.println(F("Jpeg file not found"));
-    return JDR_INP;
-  }
-
-    return getFsJpgSize(w, h, SPIFFS.open( pFilename, "r"));
-#endif
+    return getFsJpgSize(w, h, fs.open( pFilename, "r"));
 }
 
 /***************************************************************************************
-** Function name:           drawFsJpg
+** Function name:           getFsJpgSize
 ** Description:             Get width and height of a jpg saved in SPIFFS
 ***************************************************************************************/
 JRESULT TJpg_Decoder::getFsJpgSize(uint16_t *w, uint16_t *h, fs::File inFile) {
@@ -521,7 +477,7 @@ JRESULT TJpg_Decoder::getSdJpgSize(uint16_t *w, uint16_t *h, File inFile) {
   *w = 0;
   *h = 0;
 
-  jpg_source = TJPG_FS_FILE;
+  jpg_source = TJPG_SD_FILE;
 
   jpgSdFile = inFile;
 

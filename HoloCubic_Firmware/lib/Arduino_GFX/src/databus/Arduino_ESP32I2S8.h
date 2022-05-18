@@ -2,14 +2,15 @@
  * start rewrite from:
  * https://github.com/lovyan03/LovyanGFX/blob/master/src/lgfx/v0/platforms/LGFX_PARALLEL_ESP32.hpp
  */
-#ifdef ESP32
+#include "Arduino_DataBus.h"
+
+#if defined(ESP32) && (CONFIG_IDF_TARGET_ESP32)
+
 #ifndef _ARDUINO_ESP32I2S8_H_
 #define _ARDUINO_ESP32I2S8_H_
 
 #include <driver/i2s.h>
 #include <soc/i2s_reg.h>
-
-#include "Arduino_DataBus.h"
 
 #define SAFE_I2S_FIFO_WR_REG(i) (0x6000F000 + ((i)*0x1E000))
 #define SPI_MAX_PIXELS_AT_ONCE 32
@@ -53,6 +54,7 @@ private:
   uint32_t _csPinMask;  ///< Bitmask
 
   i2s_port_t _i2s_port = I2S_NUM_1;
+
   uint32_t _conf_reg_default = I2S_TX_MSB_RIGHT | I2S_TX_RIGHT_FIRST | I2S_RX_RIGHT_FIRST;
   uint32_t _conf_reg_start = _conf_reg_default | I2S_TX_START;
   uint32_t _sample_rate_conf_reg_32bit = 32 << I2S_TX_BITS_MOD_S | 32 << I2S_RX_BITS_MOD_S | 1 << I2S_TX_BCK_DIV_NUM_S | 1 << I2S_RX_BCK_DIV_NUM_S;
@@ -63,4 +65,5 @@ private:
 };
 
 #endif // _ARDUINO_ESP32I2S8_H_
-#endif // #ifdef ESP32
+
+#endif // #if defined(ESP32) && (CONFIG_IDF_TARGET_ESP32)

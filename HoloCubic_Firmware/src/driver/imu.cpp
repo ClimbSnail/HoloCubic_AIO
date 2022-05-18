@@ -12,11 +12,12 @@ IMU::IMU()
     action_info.active = UNKNOWN;
     action_info.long_time = true;
     // 初始化数据
-    act_info_history.push_back(UNKNOWN);
-    act_info_history.push_back(UNKNOWN);
-    act_info_history.push_back(UNKNOWN);
-    act_info_history.push_back(UNKNOWN);
-    act_info_history.push_back(UNKNOWN);
+    for (int pos = 0; pos < ACTION_HISTORY_BUF_LEN; ++pos)
+    {
+        // act_info_history.push_back(UNKNOWN);
+        act_info_history[pos] = UNKNOWN;
+    }
+    act_info_history_ind = ACTION_HISTORY_BUF_LEN - 1;
     this->order = 0; // 表示方位
 }
 
@@ -28,9 +29,11 @@ void IMU::init(uint8_t order, uint8_t auto_calibration,
     Wire.setClock(400000);
     unsigned long timeout = 5000;
     unsigned long preMillis = millis();
-    mpu = MPU6050(0x68);
+    mpu = MPU6050(0x68, &Wire);
+    Serial.print(F("Unable to connect to 4.\n"));
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, false))
         ;
+    Serial.print(F("Unable to connect to 5.\n"));
 
     if (!mpu.testConnection())
     {
@@ -96,20 +99,20 @@ ImuAction *IMU::update(int interval)
             {
                 encoder_diff--;
                 action_info.isValid = 1;
-                action_info.active = TURN_LEFT;
+                action_info.active = ACTIVE_TYPE::TURN_LEFT;
             }
             else if (action_info.v_ay < -4000)
             {
                 encoder_diff++;
                 action_info.isValid = 1;
-                action_info.active = TURN_RIGHT;
+                action_info.active = ACTIVE_TYPE::TURN_RIGHT;
             }
             else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
             {
                 // 震动检测
                 encoder_diff--;
                 action_info.isValid = 1;
-                action_info.active = SHAKE;
+                action_info.active = ACTIVE_TYPE::SHAKE;
             }
             else
             {
@@ -122,26 +125,26 @@ ImuAction *IMU::update(int interval)
             if (action_info.v_ax > 5000)
             {
                 action_info.isValid = 1;
-                action_info.active = UP;
+                action_info.active = ACTIVE_TYPE::UP;
                 delay(500);
                 getVirtureMotion6(&action_info);
                 if (action_info.v_ax > 5000)
                 {
                     action_info.isValid = 1;
-                    action_info.active = GO_FORWORD;
+                    action_info.active = ACTIVE_TYPE::GO_FORWORD;
                     encoder_state = LV_INDEV_STATE_PR;
                 }
             }
             else if (action_info.v_ax < -5000)
             {
                 action_info.isValid = 1;
-                action_info.active = DOWN;
+                action_info.active = ACTIVE_TYPE::DOWN;
                 delay(500);
                 getVirtureMotion6(&action_info);
                 if (action_info.v_ax < -5000)
                 {
                     action_info.isValid = 1;
-                    action_info.active = RETURN;
+                    action_info.active = ACTIVE_TYPE::RETURN;
                     encoder_state = LV_INDEV_STATE_REL;
                 }
             }
@@ -149,7 +152,7 @@ ImuAction *IMU::update(int interval)
             {
                 // 震动检测
                 action_info.isValid = 1;
-                action_info.active = SHAKE;
+                action_info.active = ACTIVE_TYPE::SHAKE;
             }
             else
             {
@@ -166,58 +169,62 @@ ImuAction *IMU::getAction(void)
 {
     getVirtureMotion6(&action_info);
 
-    ACTIVE_TYPE act_type = UNKNOWN;
+    ACTIVE_TYPE act_type = ACTIVE_TYPE::UNKNOWN;
 
-    if (UNKNOWN == act_type)
+    if (ACTIVE_TYPE::UNKNOWN == act_type)
     {
         if (action_info.v_ay > 4000)
         {
-            act_type = TURN_LEFT;
+            act_type = ACTIVE_TYPE::TURN_LEFT;
         }
         else if (action_info.v_ay < -4000)
         {
-            act_type = TURN_RIGHT;
+            act_type = ACTIVE_TYPE::TURN_RIGHT;
         }
         else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
         {
             // 震动检测
-            act_type = SHAKE;
+            act_type = ACTIVE_TYPE::SHAKE;
         }
     }
 
-    if (UNKNOWN == act_type)
+    if (ACTIVE_TYPE::UNKNOWN == act_type)
     {
         if (action_info.v_ax > 5000)
         {
-            act_type = UP;
+            act_type = ACTIVE_TYPE::UP;
         }
         else if (action_info.v_ax < -5000)
         {
-            act_type = DOWN;
+            act_type = ACTIVE_TYPE::DOWN;
         }
         else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
         {
             // 震动检测
-            act_type = SHAKE;
+            act_type = ACTIVE_TYPE::SHAKE;
         }
     }
 
-    act_info_history.pop_front();
-    act_info_history.push_back(act_type);
+    int index = (act_info_history_ind + 1) % ACTION_HISTORY_BUF_LEN;
+    act_info_history[index] = act_type;
+    // act_info_history.pop_front();
+    // act_info_history.push_back(act_type);
 
     if (!action_info.isValid)
     {
-        if (act_info_history[4] ==  act_info_history[3] && act_info_history[3] == act_info_history[2])
+        int second = (index + ACTION_HISTORY_BUF_LEN - 1) % ACTION_HISTORY_BUF_LEN;
+        int third = (index + ACTION_HISTORY_BUF_LEN - 2) % ACTION_HISTORY_BUF_LEN;
+        if (act_info_history[index] == act_info_history[second] && act_info_history[second] == act_info_history[third])
         {
             if (act_type == ACTIVE_TYPE::UP)
             {
                 action_info.isValid = 1;
-                action_info.active = GO_FORWORD;
+                action_info.active = ACTIVE_TYPE::GO_FORWORD;
             }
-            else if (act_type == DOWN)
+            else if (act_type == ACTIVE_TYPE::DOWN)
             {
                 action_info.isValid = 1;
-                action_info.active = RETURN;
+                action_info.active = ACTIVE_TYPE::RETURN;
             }
         }
         else if (UNKNOWN != act_type)

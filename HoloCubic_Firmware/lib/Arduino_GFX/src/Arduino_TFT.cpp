@@ -11,23 +11,16 @@ Arduino_TFT::Arduino_TFT(
     Arduino_DataBus *bus, int8_t rst, uint8_t r,
     bool ips, int16_t w, int16_t h,
     uint8_t col_offset1, uint8_t row_offset1, uint8_t col_offset2, uint8_t row_offset2)
-    : Arduino_GFX(w, h)
+    : Arduino_GFX(w, h), _bus(bus), _rst(rst), _ips(ips),
+      COL_OFFSET1(col_offset1), ROW_OFFSET1(row_offset1),
+      COL_OFFSET2(col_offset2), ROW_OFFSET2(row_offset2)
 {
-  _bus = bus;
-  _rst = rst;
   _rotation = r;
-  _ips = ips;
-  WIDTH = w;
-  HEIGHT = h;
-  COL_OFFSET1 = col_offset1;
-  ROW_OFFSET1 = row_offset1;
-  COL_OFFSET2 = col_offset2;
-  ROW_OFFSET2 = row_offset2;
 }
 
 void Arduino_TFT::begin(int32_t speed)
 {
-  if (_override_datamode >= 0)
+  if (_override_datamode != GFX_NOT_DEFINED)
   {
     _bus->begin(speed, _override_datamode);
   }
@@ -199,24 +192,21 @@ void Arduino_TFT::setRotation(uint8_t r)
   Arduino_GFX::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    _xStart = COL_OFFSET1;
-    _yStart = ROW_OFFSET1;
-    break;
-
   case 1:
     _xStart = ROW_OFFSET1;
     _yStart = COL_OFFSET2;
     break;
-
   case 2:
     _xStart = COL_OFFSET2;
     _yStart = ROW_OFFSET2;
     break;
-
   case 3:
     _xStart = ROW_OFFSET2;
     _yStart = COL_OFFSET1;
+    break;
+  default: // case 0:
+    _xStart = COL_OFFSET1;
+    _yStart = ROW_OFFSET1;
     break;
   }
   _currentX = 0xFFFF;
@@ -225,13 +215,13 @@ void Arduino_TFT::setRotation(uint8_t r)
   _currentH = 0xFFFF;
 }
 
-// TFT optimization code, too big for ATMEL family
-#if !defined(LITTLE_FOOT_PRINT)
-
 void Arduino_TFT::writeColor(uint16_t color)
 {
   _bus->write16(color);
 }
+
+// TFT optimization code, too big for ATMEL family
+#if !defined(LITTLE_FOOT_PRINT)
 
 void Arduino_TFT::writeBytes(uint8_t *data, uint32_t len)
 {
@@ -654,7 +644,8 @@ void Arduino_TFT::draw16bitRGBBitmap(int16_t x, int16_t y,
         {
           if (len)
           {
-            draw16bitRGBBitmap(x + i - len, y, &bitmap[offset - len], len, 1);
+            writeAddrWindow(x + i - len, y, len, 1);
+            _bus->writePixels(&bitmap[offset - len], len);
             len = 0;
           }
         }
@@ -662,7 +653,8 @@ void Arduino_TFT::draw16bitRGBBitmap(int16_t x, int16_t y,
       }
       if (len)
       {
-        draw16bitRGBBitmap(x + w - 1 - len, y, &bitmap[offset - len], len, 1);
+        writeAddrWindow(x + w - 1 - len, y, len, 1);
+        _bus->writePixels(&bitmap[offset - len], len);
         len = 0;
       }
     }
@@ -1066,8 +1058,15 @@ void Arduino_TFT::drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color
       endWrite();
     }
   }
-  else // 'Classic' built-in font
+  else // not gfxFont
 #endif // !defined(ATTINY_CORE)
+#if defined(U8G2_FONT_SUPPORT)
+      if (u8g2Font)
+  {
+    Arduino_GFX::drawChar(x, y, c, color, bg);
+  }
+  else // not u8g2Font
+#endif // defined(U8G2_FONT_SUPPORT)
   {
     block_w = 6 * textsize_x;
     block_h = 8 * textsize_y;
@@ -1083,11 +1082,6 @@ void Arduino_TFT::drawChar(int16_t x, int16_t y, unsigned char c, uint16_t color
     }
     else
     {
-      if (!_cp437 && (c >= 176))
-      {
-        c++; // Handle 'classic' charset behavior
-      }
-
       uint8_t col[5];
       for (int8_t i = 0; i < 5; i++)
       {

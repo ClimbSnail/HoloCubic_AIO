@@ -2,10 +2,12 @@
  * start rewrite from:
  * https://github.com/adafruit/Adafruit-GFX-Library.git
  */
-#ifndef _Arduino_DataBus_H_
-#define _Arduino_DataBus_H_
+#ifndef _ARDUINO_DATABUS_H_
+#define _ARDUINO_DATABUS_H_
 
 #include <Arduino.h>
+
+#define GFX_NOT_DEFINED -1
 
 #if defined(__AVR__)
 #define LITTLE_FOOT_PRINT // reduce program size for limited flash MCU
@@ -36,6 +38,9 @@ typedef uint32_t ARDUINOGFX_PORT_t;
 #define USE_FAST_PINIO   ///< Use direct PORT register access
 #define HAS_PORT_SET_CLR ///< PORTs have set & clear registers
 typedef uint32_t ARDUINOGFX_PORT_t;
+#elif defined(CONFIG_ARCH_CHIP_CXD56XX) // Sony Spresense
+#define USE_FAST_PINIO    ///< Use direct PORT register access
+typedef uint8_t ARDUINOGFX_PORT_t;
 #elif defined(RTL8722DM)
 #define USE_FAST_PINIO ///< Use direct PORT register access
 typedef uint32_t ARDUINOGFX_PORT_t;
@@ -78,8 +83,6 @@ typedef volatile ARDUINOGFX_PORT_t *PORTreg_t;
 #define SPI_DEFAULT_FREQ 8000000
 #elif defined(ARDUINO_ARCH_NRF52840)
 #define SPI_DEFAULT_FREQ 8000000
-#elif defined(ARDUINO_RASPBERRY_PI_PICO)
-#define SPI_DEFAULT_FREQ (F_CPU / 4)
 #elif defined(ESP8266) || defined(ESP32)
 #define SPI_DEFAULT_FREQ 40000000
 #elif defined(RTL8722DM)
@@ -90,6 +93,8 @@ typedef volatile ARDUINOGFX_PORT_t *PORTreg_t;
 #define SPI_DEFAULT_FREQ 36000000
 #elif defined(ARDUINO_BLACKPILL_F411CE)
 #define SPI_DEFAULT_FREQ 50000000
+#elif defined(F_CPU)
+#define SPI_DEFAULT_FREQ (F_CPU / 4)
 #else
 #define SPI_DEFAULT_FREQ 24000000 ///< Default SPI data clock frequency
 #endif
@@ -152,7 +157,7 @@ public:
 
     void unused() { UNUSED(_data16); } // avoid compiler warning
 
-    virtual void begin(int32_t speed, int8_t dataMode = -1) = 0;
+    virtual void begin(int32_t speed = SPI_DEFAULT_FREQ, int8_t dataMode = GFX_NOT_DEFINED) = 0;
     virtual void beginWrite() = 0;
     virtual void endWrite() = 0;
     virtual void writeCommand(uint8_t c) = 0;
@@ -160,6 +165,7 @@ public:
     virtual void write(uint8_t) = 0;
     virtual void write16(uint16_t) = 0;
     virtual void writeC8D8(uint8_t c, uint8_t d);
+    virtual void writeC16D16(uint16_t c, uint16_t d);
     virtual void writeC8D16(uint8_t c, uint16_t d);
     virtual void writeC8D16D16(uint8_t c, uint16_t d1, uint16_t d2);
     virtual void writeRepeat(uint16_t p, uint32_t len) = 0;
@@ -184,4 +190,4 @@ protected:
     int8_t _dataMode;
 };
 
-#endif
+#endif // _ARDUINO_DATABUS_H_

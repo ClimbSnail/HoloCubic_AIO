@@ -1,8 +1,8 @@
 #include "../Arduino_DataBus.h"
 #if !defined(LITTLE_FOOT_PRINT)
 
-#ifndef _Arduino_CANVAS_H_
-#define _Arduino_CANVAS_H_
+#ifndef _ARDUINO_CANVAS_H_
+#define _ARDUINO_CANVAS_H_
 
 #include "../Arduino_GFX.h"
 
@@ -15,6 +15,9 @@ public:
   void writePixelPreclipped(int16_t x, int16_t y, uint16_t color) override;
   void writeFastVLine(int16_t x, int16_t y, int16_t h, uint16_t color) override;
   void writeFastHLine(int16_t x, int16_t y, int16_t w, uint16_t color) override;
+  void writeFillRectPreclipped(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color) override;
+  void draw16bitRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h) override;
+  void draw16bitBeRGBBitmap(int16_t x, int16_t y, uint16_t *bitmap, int16_t w, int16_t h) override;
   void flush(void) override;
 
 protected:
@@ -25,6 +28,6 @@ protected:
 private:
 };
 
-#endif // _Arduino_CANVAS_H_
+#endif // _ARDUINO_CANVAS_H_
 
 #endif // !defined(LITTLE_FOOT_PRINT)

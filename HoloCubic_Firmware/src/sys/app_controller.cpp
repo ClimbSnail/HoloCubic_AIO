@@ -108,7 +108,8 @@ void AppController::connect_mqtt()
 
 int AppController::main_process(ImuAction *act_info)
 {
-    if (UNKNOWN != act_info->active)
+    Serial.print("Enter main_process: ");
+    if (ACTIVE_TYPE::UNKNOWN != act_info->active)
     {
         Serial.print(F("[Operate]\tact_info->active: "));
         Serial.println(active_type_info[act_info->active]);
@@ -131,14 +132,14 @@ int AppController::main_process(ImuAction *act_info)
     {
         // 当前没有进入任何app
         lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
-        if (TURN_LEFT == act_info->active)
+        if (ACTIVE_TYPE::TURN_LEFT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
             pre_app_index = cur_app_index;
             cur_app_index = (cur_app_index + 1) % app_num;
             Serial.println(String("Current App: ") + appList[cur_app_index]->app_name);
         }
-        else if (TURN_RIGHT == act_info->active)
+        else if (ACTIVE_TYPE::TURN_RIGHT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
             pre_app_index = cur_app_index;
@@ -147,7 +148,7 @@ int AppController::main_process(ImuAction *act_info)
             cur_app_index = (cur_app_index - 1 + app_num) % app_num; // 此处的3与p_processList的长度一致
             Serial.println(String("Current App: ") + appList[cur_app_index]->app_name);
         }
-        else if (GO_FORWORD == act_info->active)
+        else if (ACTIVE_TYPE::GO_FORWORD == act_info->active)
         {
             app_exit_flag = 1; // 进入app
             if (NULL != appList[cur_app_index]->app_init)
@@ -156,7 +157,7 @@ int AppController::main_process(ImuAction *act_info)
             }
         }
 
-        if (GO_FORWORD != act_info->active) // && UNKNOWN != act_info->active
+        if (ACTIVE_TYPE::GO_FORWORD != act_info->active) // && UNKNOWN != act_info->active
         {
             app_control_display_scr(appList[cur_app_index]->app_image,
                                     appList[cur_app_index]->app_name,
@@ -169,7 +170,7 @@ int AppController::main_process(ImuAction *act_info)
         // 运行APP进程 等效于把控制权交给当前APP
         (*(appList[cur_app_index]->main_process))(this, act_info);
     }
-    act_info->active = UNKNOWN;
+    act_info->active = ACTIVE_TYPE::UNKNOWN;
     act_info->isValid = 0;
     return 0;
 }

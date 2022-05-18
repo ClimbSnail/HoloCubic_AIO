@@ -59,7 +59,6 @@ private:
   ARDUINOGFX_PORT_t _rdPinMaskClr;   ///< Bitmask for data/command CLEAR (AND)
 
   PORTreg_t _dataPort;                 ///< PORT register for data/command
-  ARDUINOGFX_PORT_t _dataPinMaskSet;   ///< Bitmask for data/command SET (OR)
   ARDUINOGFX_PORT_t _dataPinMaskClr;   ///< Bitmask for data/command CLEAR (AND)
 
   // Lookup table for ESP32 parallel bus interface uses 1kbyte RAM,

@@ -26,6 +26,6 @@ protected:
       HEIGHT; ///< This is the 'raw' display height - never changes
 };
 
-#endif // _Arduino_G_H
+#endif // _ARDUINO_G_H_
 
 #endif // !defined(LITTLE_FOOT_PRINT)

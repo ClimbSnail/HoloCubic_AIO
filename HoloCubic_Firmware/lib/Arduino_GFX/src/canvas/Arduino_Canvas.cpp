@@ -4,13 +4,16 @@
 #include "../Arduino_GFX.h"
 #include "Arduino_Canvas.h"
 
-Arduino_Canvas::Arduino_Canvas(int16_t w, int16_t h, Arduino_G *output, int16_t output_x, int16_t output_y)
+Arduino_Canvas::Arduino_Canvas(
+    int16_t w, int16_t h, Arduino_G *output, int16_t output_x, int16_t output_y)
     : Arduino_GFX(w, h), _output(output), _output_x(output_x), _output_y(output_y)
 {
 }
 
 void Arduino_Canvas::begin(int32_t speed)
 {
+    _output->begin(speed);
+
     size_t s = _width * _height * 2;
 #if defined(ESP32)
     if (psramFound())
@@ -19,13 +22,16 @@ void Arduino_Canvas::begin(int32_t speed)
     }
     else
     {
-        // _framebuffer = (uint16_t *)malloc(s);
-        // hack for allocate memory over 63,360 pixels
-        s /= 2;
         _framebuffer = (uint16_t *)malloc(s);
-        uint16_t *tmp = (uint16_t *)malloc(s);
-        UNUSED(tmp);
-        log_v("_framebuffer delta: %d", tmp - _framebuffer);
+        if (!_framebuffer)
+        {
+            // hack for allocate memory over 63,360 pixels
+            s /= 2;
+            _framebuffer = (uint16_t *)malloc(s);
+            uint16_t *tmp = (uint16_t *)malloc(s);
+            UNUSED(tmp);
+            log_v("_framebuffer delta: %d", tmp - _framebuffer);
+        }
     }
 #else
     _framebuffer = (uint16_t *)malloc(s);
@@ -34,7 +40,6 @@ void Arduino_Canvas::begin(int32_t speed)
     {
         Serial.println(F("_framebuffer allocation failed."));
     }
-    _output->begin(speed);
 }
 
 void Arduino_Canvas::writePixelPreclipped(int16_t x, int16_t y, uint16_t color)
@@ -111,6 +116,128 @@ void Arduino_Canvas::writeFastHLine(int16_t x, int16_t y,
                     *(fb++) = color;
                 }
             }
+        }
+    }
+}
+
+void Arduino_Canvas::writeFillRectPreclipped(int16_t x, int16_t y,
+                                             int16_t w, int16_t h, uint16_t color)
+{
+    uint16_t *row = _framebuffer;
+    row += y * _width;
+    row += x;
+    for (int j = 0; j < h; j++)
+    {
+        for (int i = 0; i < w; i++)
+        {
+            row[i] = color;
+        }
+        row += _width;
+    }
+}
+
+void Arduino_Canvas::draw16bitRGBBitmap(int16_t x, int16_t y,
+                                        uint16_t *bitmap, int16_t w, int16_t h)
+{
+    if (
+        ((x + w - 1) < 0) || // Outside left
+        ((y + h - 1) < 0) || // Outside top
+        (x > _max_x) ||      // Outside right
+        (y > _max_y)         // Outside bottom
+    )
+    {
+        return;
+    }
+    else
+    {
+        int16_t xskip = 0;
+        if ((y + h - 1) > _max_y)
+        {
+            h -= (y + h - 1) - _max_y;
+        }
+        if (y < 0)
+        {
+            bitmap -= y * w;
+            h += y;
+            y = 0;
+        }
+        if ((x + w - 1) > _max_x)
+        {
+            xskip = (x + w - 1) - _max_x;
+            w -= xskip;
+        }
+        if (x < 0)
+        {
+            bitmap -= x;
+            xskip -= x;
+            w += x;
+            x = 0;
+        }
+        uint16_t *row = _framebuffer;
+        row += y * _width;
+        row += x;
+        for (int j = 0; j < h; j++)
+        {
+            for (int i = 0; i < w; i++)
+            {
+                row[i] = *bitmap++;
+            }
+            bitmap += xskip;
+            row += _width;
+        }
+    }
+}
+
+void Arduino_Canvas::draw16bitBeRGBBitmap(int16_t x, int16_t y,
+                                          uint16_t *bitmap, int16_t w, int16_t h)
+{
+    if (
+        ((x + w - 1) < 0) || // Outside left
+        ((y + h - 1) < 0) || // Outside top
+        (x > _max_x) ||      // Outside right
+        (y > _max_y)         // Outside bottom
+    )
+    {
+        return;
+    }
+    else
+    {
+        int16_t xskip = 0;
+        if ((y + h - 1) > _max_y)
+        {
+            h -= (y + h - 1) - _max_y;
+        }
+        if (y < 0)
+        {
+            bitmap -= y * w;
+            h += y;
+            y = 0;
+        }
+        if ((x + w - 1) > _max_x)
+        {
+            xskip = (x + w - 1) - _max_x;
+            w -= xskip;
+        }
+        if (x < 0)
+        {
+            bitmap -= x;
+            xskip -= x;
+            w += x;
+            x = 0;
+        }
+        uint16_t *row = _framebuffer;
+        row += y * _width;
+        row += x;
+        uint16_t color;
+        for (int j = 0; j < h; j++)
+        {
+            for (int i = 0; i < w; i++)
+            {
+                color = *bitmap++;
+                MSB_16_SET(row[i], color);
+            }
+            bitmap += xskip;
+            row += _width;
         }
     }
 }

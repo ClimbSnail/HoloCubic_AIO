@@ -6,7 +6,7 @@
 
 #include "Arduino_NRFXSPI.h"
 
-Arduino_NRFXSPI::Arduino_NRFXSPI(int8_t dc, int8_t cs /* = -1 */, int8_t sck /* = -1 */, int8_t mosi /* = -1 */, int8_t miso /* = -1 */)
+Arduino_NRFXSPI::Arduino_NRFXSPI(int8_t dc, int8_t cs /* = GFX_NOT_DEFINED */, int8_t sck /* = GFX_NOT_DEFINED */, int8_t mosi /* = GFX_NOT_DEFINED */, int8_t miso /* = GFX_NOT_DEFINED */)
     : _dc(dc), _cs(cs), _sck(sck), _mosi(mosi), _miso(miso)
 {
 }
@@ -23,7 +23,7 @@ void Arduino_NRFXSPI::begin(int32_t speed, int8_t dataMode)
   _dcPortSet = &reg->OUTSET;
   _dcPortClr = &reg->OUTCLR;
   _dcPinMask = 1UL << pin;
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pin = digitalPinToPinName((pin_size_t)_cs);
     reg = nrf_gpio_pin_port_decode(&pin);
@@ -269,7 +269,7 @@ INLINE void Arduino_NRFXSPI::DC_LOW(void)
 
 INLINE void Arduino_NRFXSPI::CS_HIGH(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPortSet = _csPinMask;
   }
@@ -277,7 +277,7 @@ INLINE void Arduino_NRFXSPI::CS_HIGH(void)
 
 INLINE void Arduino_NRFXSPI::CS_LOW(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPortClr = _csPinMask;
   }

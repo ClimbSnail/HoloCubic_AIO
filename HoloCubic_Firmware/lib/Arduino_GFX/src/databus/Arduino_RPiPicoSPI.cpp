@@ -3,22 +3,22 @@
 #include "Arduino_DataBus.h"
 #include "Arduino_RPiPicoSPI.h"
 
-Arduino_RPiPicoSPI::Arduino_RPiPicoSPI(int8_t dc /* = -1 */, int8_t cs /* = -1 */, int8_t sck /* = PIN_SPI0_SCK */, int8_t mosi /* = PIN_SPI0_MOSI */, int8_t miso /* = PIN_SPI0_MISO */, spi_inst_t *spi /* = spi0 */)
+Arduino_RPiPicoSPI::Arduino_RPiPicoSPI(int8_t dc /* = GFX_NOT_DEFINED */, int8_t cs /* = GFX_NOT_DEFINED */, int8_t sck /* = PIN_SPI0_SCK */, int8_t mosi /* = PIN_SPI0_MOSI */, int8_t miso /* = PIN_SPI0_MISO */, spi_inst_t *spi /* = spi0 */)
     : _dc(dc), _cs(cs), _sck(sck), _mosi(mosi), _miso(miso), _spi(spi)
 {
 }
 
-void Arduino_RPiPicoSPI::begin(int32_t speed /* = 0 */, int8_t dataMode /* = -1 */)
+void Arduino_RPiPicoSPI::begin(int32_t speed /* = 0 */, int8_t dataMode /* = GFX_NOT_DEFINED */)
 {
   // set SPI parameters
   _speed = speed ? speed : SPI_DEFAULT_FREQ;
-  _dataMode = (dataMode >= 0) ? dataMode : SPI_MODE0;
+  _dataMode = (dataMode != GFX_NOT_DEFINED) ? dataMode : SPI_MODE0;
   _spis = SPISettings(_speed, _bitOrder, _dataMode);
 
   // set pin mode
   pinMode(_dc, OUTPUT);
   digitalWrite(_dc, HIGH); // Data mode
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH); // disable chip select
@@ -33,7 +33,7 @@ void Arduino_RPiPicoSPI::begin(int32_t speed /* = 0 */, int8_t dataMode /* = -1 
   _dcPortSet = (PORTreg_t)&sio_hw->gpio_set;
   _dcPortClr = (PORTreg_t)&sio_hw->gpio_clr;
 
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
     _csPortSet = (PORTreg_t)&sio_hw->gpio_set;
@@ -208,12 +208,18 @@ INLINE void Arduino_RPiPicoSPI::DC_LOW(void)
 
 INLINE void Arduino_RPiPicoSPI::CS_HIGH(void)
 {
-  *_csPortSet = _csPinMask;
+  if (_cs != GFX_NOT_DEFINED)
+  {
+    *_csPortSet = _csPinMask;
+  }
 }
 
 INLINE void Arduino_RPiPicoSPI::CS_LOW(void)
 {
-  *_csPortClr = _csPinMask;
+  if (_cs != GFX_NOT_DEFINED)
+  {
+    *_csPortClr = _csPinMask;
+  }
 }
 
 #endif // #ifdef ARDUINO_RASPBERRY_PI_PICO

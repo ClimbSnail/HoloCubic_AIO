@@ -19,7 +19,7 @@ void Arduino_R61529::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_R61529::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -214,9 +214,6 @@ void Arduino_R61529::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    r = R61529_MADCTL_RGB;
-    break;
   case 1:
     r = R61529_MADCTL_MV | R61529_MADCTL_MX | R61529_MADCTL_RGB;
     break;
@@ -226,8 +223,10 @@ void Arduino_R61529::setRotation(uint8_t r)
   case 3:
     r = R61529_MADCTL_MV | R61529_MADCTL_RGB | R61529_MADCTL_GS;
     break;
+  default: // case 0:
+    r = R61529_MADCTL_RGB;
+    break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(R61529_MADCTL);
   _bus->write(r);

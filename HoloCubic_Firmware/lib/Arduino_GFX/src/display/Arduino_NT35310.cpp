@@ -62,7 +62,6 @@ void Arduino_NT35310::setRotation(uint8_t r)
     r = NT35310_MADCTL_RGB;
     break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(NT35310_SET_ADDRESS_MODE);
   _bus->write(r);
@@ -88,7 +87,7 @@ void Arduino_NT35310::displayOff(void)
 
 void Arduino_NT35310::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);

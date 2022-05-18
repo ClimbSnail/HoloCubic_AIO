@@ -2,20 +2,11 @@
  * start rewrite from:
  * https://github.com/adafruit/Adafruit-GFX-Library.git
  */
-#include <SPI.h>
 #include "Arduino_HWSPI.h"
 
-#if defined(ARDUINO_ARCH_SAMD) && defined(SEEED_GROVE_UI_WIRELESS)
-#define HWSPI LCD_SPI
-#elif defined(RTL8722DM)
-#define HWSPI SPI1
-#else
-#define HWSPI SPI
-#endif
-
 #if defined(SPI_HAS_TRANSACTION)
-#define SPI_BEGIN_TRANSACTION() HWSPI.beginTransaction(mySPISettings)
-#define SPI_END_TRANSACTION() HWSPI.endTransaction()
+#define SPI_BEGIN_TRANSACTION() _spi->beginTransaction(mySPISettings)
+#define SPI_END_TRANSACTION() _spi->endTransaction()
 #else
 #define SPI_BEGIN_TRANSACTION() \
   {                             \
@@ -33,12 +24,12 @@ static uint8_t mySPCR;
 #endif
 
 #if defined(ESP32)
-Arduino_HWSPI::Arduino_HWSPI(int8_t dc, int8_t cs /* = -1 */, int8_t sck /* = -1 */, int8_t mosi /* = -1 */, int8_t miso /* = -1 */, bool is_shared_interface /* = true */)
-    : _dc(dc), _cs(cs), _sck(sck), _mosi(mosi), _miso(miso), _is_shared_interface(is_shared_interface)
+Arduino_HWSPI::Arduino_HWSPI(int8_t dc, int8_t cs /* = GFX_NOT_DEFINED */, int8_t sck /* = GFX_NOT_DEFINED */, int8_t mosi /* = GFX_NOT_DEFINED */, int8_t miso /* = GFX_NOT_DEFINED */, SPIClass *spi, bool is_shared_interface /* = true */)
+    : _dc(dc), _cs(cs), _sck(sck), _mosi(mosi), _miso(miso), _spi(spi), _is_shared_interface(is_shared_interface)
 {
 #else
-Arduino_HWSPI::Arduino_HWSPI(int8_t dc, int8_t cs /* = -1 */, bool is_shared_interface /* = true */)
-    : _dc(dc), _cs(cs), _is_shared_interface(is_shared_interface)
+Arduino_HWSPI::Arduino_HWSPI(int8_t dc, int8_t cs /* = GFX_NOT_DEFINED */, SPIClass *spi, bool is_shared_interface /* = true */)
+    : _dc(dc), _cs(cs), _spi(spi), _is_shared_interface(is_shared_interface)
 {
 #endif
 }
@@ -50,7 +41,7 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
 
   pinMode(_dc, OUTPUT);
   digitalWrite(_dc, HIGH); // Data mode
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH); // Deselect
@@ -61,15 +52,13 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
 #if defined(ARDUINO_ARCH_NRF52840)
   uint32_t pin = digitalPinToPinName((pin_size_t)_dc);
   NRF_GPIO_Type *reg = nrf_gpio_pin_port_decode(&pin);
-  nrf_gpio_cfg_output(pin);
   _dcPortSet = &reg->OUTSET;
   _dcPortClr = &reg->OUTCLR;
   _dcPinMask = 1UL << pin;
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pin = digitalPinToPinName((pin_size_t)_cs);
     reg = nrf_gpio_pin_port_decode(&pin);
-    nrf_gpio_cfg_output(pin);
     _csPortSet = &reg->OUTSET;
     _csPortClr = &reg->OUTCLR;
     _csPinMask = 1UL << pin;
@@ -78,21 +67,21 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
   _dcPinMask = digitalPinToBitMask(_dc);
   _dcPortSet = (PORTreg_t)&sio_hw->gpio_set;
   _dcPortClr = (PORTreg_t)&sio_hw->gpio_clr;
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
     _csPortSet = (PORTreg_t)&sio_hw->gpio_set;
     _csPortClr = (PORTreg_t)&sio_hw->gpio_clr;
   }
-  else
+#elif defined(ESP32) && (CONFIG_IDF_TARGET_ESP32C3)
+  _dcPinMask = digitalPinToBitMask(_dc);
+  _dcPortSet = (PORTreg_t)&GPIO.out_w1ts;
+  _dcPortClr = (PORTreg_t)&GPIO.out_w1tc;
+  if (_cs != GFX_NOT_DEFINED)
   {
-    // No chip-select line defined; might be permanently tied to GND.
-    // Assign a valid GPIO register (though not used for CS), and an
-    // empty pin bitmask...the nonsense bit-twiddling might be faster
-    // than checking _cs and possibly branching.
-    _csPortSet = (PORTreg_t)_dcPortSet;
-    _csPortClr = (PORTreg_t)_dcPortClr;
-    _csPinMask = 0;
+    _csPinMask = digitalPinToBitMask(_cs);
+    _csPortSet = (PORTreg_t)&GPIO.out_w1ts;
+    _csPortClr = (PORTreg_t)&GPIO.out_w1tc;
   }
 #elif defined(ESP32)
   _dcPinMask = digitalPinToBitMask(_dc);
@@ -112,21 +101,11 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
     _csPortSet = (PORTreg_t)&GPIO.out1_w1ts.val;
     _csPortClr = (PORTreg_t)&GPIO.out1_w1tc.val;
   }
-  else if (_cs >= 0)
+  else if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
     _csPortSet = (PORTreg_t)&GPIO.out_w1ts;
     _csPortClr = (PORTreg_t)&GPIO.out_w1tc;
-  }
-  else
-  {
-    // No chip-select line defined; might be permanently tied to GND.
-    // Assign a valid GPIO register (though not used for CS), and an
-    // empty pin bitmask...the nonsense bit-twiddling might be faster
-    // than checking _cs and possibly branching.
-    _csPortSet = (PORTreg_t)_dcPortSet;
-    _csPortClr = (PORTreg_t)_dcPortClr;
-    _csPinMask = 0;
   }
 #elif defined(CORE_TEENSY)
 #if !defined(KINETISK)
@@ -134,7 +113,7 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
 #endif
   _dcPortSet = portSetRegister(_dc);
   _dcPortClr = portClearRegister(_dc);
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
 #if !defined(KINETISK)
     _csPinMask = digitalPinToBitMask(_cs);
@@ -142,66 +121,39 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
     _csPortSet = portSetRegister(_cs);
     _csPortClr = portClearRegister(_cs);
   }
-  else
-  {
-#if !defined(KINETISK)
-    _csPinMask = 0;
-#endif
-    _csPortSet = _dcPortSet;
-    _csPortClr = _dcPortClr;
-  }
 #else  // !CORE_TEENSY
   _dcPinMask = digitalPinToBitMask(_dc);
   _dcPortSet = &(PORT->Group[g_APinDescription[_dc].ulPort].OUTSET.reg);
   _dcPortClr = &(PORT->Group[g_APinDescription[_dc].ulPort].OUTCLR.reg);
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     _csPinMask = digitalPinToBitMask(_cs);
     _csPortSet = &(PORT->Group[g_APinDescription[_cs].ulPort].OUTSET.reg);
     _csPortClr = &(PORT->Group[g_APinDescription[_cs].ulPort].OUTCLR.reg);
   }
-  else
-  {
-    // No chip-select line defined; might be permanently tied to GND.
-    // Assign a valid GPIO register (though not used for CS), and an
-    // empty pin bitmask...the nonsense bit-twiddling might be faster
-    // than checking _cs and possibly branching.
-    _csPortSet = _dcPortSet;
-    _csPortClr = _dcPortClr;
-    _csPinMask = 0;
-  }
 #endif // end !CORE_TEENSY
 #else  // !HAS_PORT_SET_CLR
   _dcPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_dc));
   _dcPinMaskSet = digitalPinToBitMask(_dc);
-  if (_cs >= 0)
+  _dcPinMaskClr = ~_dcPinMaskSet;
+  if (_cs != GFX_NOT_DEFINED)
   {
     _csPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_cs));
     _csPinMaskSet = digitalPinToBitMask(_cs);
   }
-  else
-  {
-    // No chip-select line defined; might be permanently tied to GND.
-    // Assign a valid GPIO register (though not used for CS), and an
-    // empty pin bitmask...the nonsense bit-twiddling might be faster
-    // than checking _cs and possibly branching.
-    _csPort = _dcPort;
-    _csPinMaskSet = 0;
-  }
   _csPinMaskClr = ~_csPinMaskSet;
-  _dcPinMaskClr = ~_dcPinMaskSet;
 #endif // !HAS_PORT_SET_CLR
 #endif // USE_FAST_PINIO
 
 #if defined(ESP32)
-  HWSPI.begin(_sck, _miso, _mosi);
+  _spi->begin(_sck, _miso, _mosi);
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE0;
   }
   mySPISettings = SPISettings(_speed, MSBFIRST, _dataMode);
 #elif defined(ESP8266)
-  HWSPI.begin();
+  _spi->begin();
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE0;
@@ -209,14 +161,14 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
   mySPISettings = SPISettings(_speed, MSBFIRST, _dataMode);
 // Teensy 4.x
 #elif defined(__IMXRT1052__) || defined(__IMXRT1062__)
-  HWSPI.begin();
+  _spi->begin();
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE0;
   }
   mySPISettings = SPISettings(_speed, MSBFIRST, _dataMode);
 #elif defined(SPI_HAS_TRANSACTION)
-  HWSPI.begin();
+  _spi->begin();
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE2;
@@ -224,23 +176,23 @@ void Arduino_HWSPI::begin(int32_t speed, int8_t dataMode)
   mySPISettings = SPISettings(_speed, MSBFIRST, _dataMode);
 #elif defined(__AVR__) || defined(CORE_TEENSY)
   SPCRbackup = SPCR;
-  HWSPI.begin();
-  HWSPI.setClockDivider(SPI_CLOCK_DIV2);
+  _spi->begin();
+  _spi->setClockDivider(SPI_CLOCK_DIV2);
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE2;
   }
-  HWSPI.setDataMode(_dataMode);
+  _spi->setDataMode(_dataMode);
   mySPCR = SPCR;     // save our preferred state
   SPCR = SPCRbackup; // then restore
 #elif defined(__SAM3X8E__)
-  HWSPI.begin();
-  HWSPI.setClockDivider(21); //4MHz
+  _spi->begin();
+  _spi->setClockDivider(21); // 4MHz
   if (_dataMode < 0)
   {
     _dataMode = SPI_MODE2;
   }
-  HWSPI.setDataMode(_dataMode);
+  _spi->setDataMode(_dataMode);
 #elif defined(__arm__)
   if (_dataMode < 0)
   {
@@ -319,7 +271,23 @@ void Arduino_HWSPI::writeRepeat(uint16_t p, uint32_t len)
     WRITE(_data16.msb);
     WRITE(_data16.lsb);
   }
-#else  // !defined(LITTLE_FOOT_PRINT)
+#elif defined(ESP8266) || defined(CONFIG_ARCH_CHIP_CXD56XX)
+  MSB_16_SET(p, p);
+  uint32_t xferLen = (len < SPI_MAX_PIXELS_AT_ONCE) ? len : SPI_MAX_PIXELS_AT_ONCE;
+  for (uint32_t i = 0; i < xferLen; i++)
+  {
+    _buffer.v16[i] = p;
+  }
+
+  while (len)
+  {
+    xferLen = (len < SPI_MAX_PIXELS_AT_ONCE) ? len : SPI_MAX_PIXELS_AT_ONCE;
+    len -= xferLen;
+
+    xferLen += xferLen;
+    WRITEBUF(_buffer.v8, xferLen);
+  }
+#else  // other arch
   MSB_16_SET(p, p);
   uint32_t xferLen;
 
@@ -335,7 +303,7 @@ void Arduino_HWSPI::writeRepeat(uint16_t p, uint32_t len)
     xferLen += xferLen;
     WRITEBUF(_buffer.v8, xferLen);
   }
-#endif // !defined(LITTLE_FOOT_PRINT)
+#endif // other arch
 }
 
 void Arduino_HWSPI::writePixels(uint16_t *data, uint32_t len)
@@ -386,7 +354,7 @@ void Arduino_HWSPI::writeBytes(uint8_t *data, uint32_t len)
 void Arduino_HWSPI::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
 {
 #if defined(ESP8266) || defined(ESP32)
-  HWSPI.writePattern(data, len, repeat);
+  _spi->writePattern(data, len, repeat);
 #else  // !(defined(ESP8266) || defined(ESP32))
   while (repeat--)
   {
@@ -399,48 +367,52 @@ void Arduino_HWSPI::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
 INLINE void Arduino_HWSPI::WRITE(uint8_t d)
 {
 #if defined(SPI_HAS_TRANSACTION)
-  HWSPI.transfer(d);
+  _spi->transfer(d);
 #elif defined(__AVR__) || defined(CORE_TEENSY)
   SPCRbackup = SPCR;
   SPCR = mySPCR;
-  HWSPI.transfer(d);
+  _spi->transfer(d);
   SPCR = SPCRbackup;
 #elif defined(__arm__)
-  HWSPI.setClockDivider(21); //4MHz
-  HWSPI.setDataMode(_dataMode);
-  HWSPI.transfer(d);
+  _spi->setClockDivider(21); // 4MHz
+  _spi->setDataMode(_dataMode);
+  _spi->transfer(d);
 #endif
 }
 
 #if !defined(LITTLE_FOOT_PRINT)
+
 INLINE void Arduino_HWSPI::WRITE16(uint16_t d)
 {
 #if defined(ESP8266) || defined(ESP32)
-  HWSPI.write16(d);
+  _spi->write16(d);
 #elif defined(SPI_HAS_TRANSACTION)
-  HWSPI.transfer16(d);
+  _spi->transfer16(d);
 #elif defined(__AVR__) || defined(CORE_TEENSY)
   SPCRbackup = SPCR;
   SPCR = mySPCR;
-  HWSPI.transfer16(d);
+  _spi->transfer16(d);
   SPCR = SPCRbackup;
 #elif defined(__arm__)
-  HWSPI.setClockDivider(21); //4MHz
-  HWSPI.setDataMode(_dataMode);
-  HWSPI.transfer16(d);
+  _spi->setClockDivider(21); // 4MHz
+  _spi->setDataMode(_dataMode);
+  _spi->transfer16(d);
 #else
-  HWSPI.transfer16(d);
+  _spi->transfer16(d);
 #endif
 }
 
 INLINE void Arduino_HWSPI::WRITEBUF(uint8_t *buf, size_t count)
 {
 #if defined(ESP8266) || defined(ESP32)
-  HWSPI.writeBytes(buf, count);
-#else  // !(defined(ESP8266) || defined(ESP32))
-  HWSPI.transfer(buf, count);
-#endif // !(defined(ESP8266) || defined(ESP32))
+  _spi->writeBytes(buf, count);
+#elif defined(CONFIG_ARCH_CHIP_CXD56XX)
+  _spi->send(buf, count);
+#else  // other arch.
+  _spi->transfer(buf, count);
+#endif // other arch.
 }
+
 #endif // !defined(LITTLE_FOOT_PRINT)
 
 /******** low level bit twiddling **********/
@@ -481,7 +453,7 @@ INLINE void Arduino_HWSPI::DC_LOW(void)
 
 INLINE void Arduino_HWSPI::CS_HIGH(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)
@@ -501,7 +473,7 @@ INLINE void Arduino_HWSPI::CS_HIGH(void)
 
 INLINE void Arduino_HWSPI::CS_LOW(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
 #if defined(USE_FAST_PINIO)
 #if defined(HAS_PORT_SET_CLR)

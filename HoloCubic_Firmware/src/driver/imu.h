@@ -69,7 +69,9 @@ private:
 public:
     ImuAction action_info;
     // 用来储存历史动作
-    std::list<ACTIVE_TYPE> act_info_history;
+    // std::list<ACTIVE_TYPE> act_info_history;
+    ACTIVE_TYPE act_info_history[ACTION_HISTORY_BUF_LEN];
+    int act_info_history_ind; // 标志储存的位置
 
 public:
     IMU();

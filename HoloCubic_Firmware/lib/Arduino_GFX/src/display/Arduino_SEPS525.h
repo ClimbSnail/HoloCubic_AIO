@@ -48,7 +48,7 @@ class Arduino_SEPS525 : public Arduino_TFT
 {
 public:
   Arduino_SEPS525(
-      Arduino_DataBus *bus, int8_t rst = -1, uint8_t r = 0,
+      Arduino_DataBus *bus, int8_t rst = GFX_NOT_DEFINED, uint8_t r = 0,
       int16_t w = SEPS525_TFTWIDTH, int16_t h = SEPS525_TFTHEIGHT,
       uint8_t col_offset1 = 0, uint8_t row_offset1 = 0, uint8_t col_offset2 = 0, uint8_t row_offset2 = 0);
 

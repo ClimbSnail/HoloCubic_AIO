@@ -19,7 +19,7 @@ class Arduino_HX8352C : public Arduino_TFT
 {
 public:
   Arduino_HX8352C(
-      Arduino_DataBus *bus, int8_t rst = -1, uint8_t r = 0,
+      Arduino_DataBus *bus, int8_t rst = GFX_NOT_DEFINED, uint8_t r = 0,
       bool ips = false, int16_t w = HX8352C_TFTWIDTH, int16_t h = HX8352C_TFTHEIGHT,
       uint8_t col_offset1 = 0, uint8_t row_offset1 = 0, uint8_t col_offset2 = 0, uint8_t row_offset2 = 0);
 

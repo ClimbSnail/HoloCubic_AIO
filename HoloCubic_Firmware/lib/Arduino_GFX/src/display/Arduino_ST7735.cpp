@@ -9,9 +9,8 @@ Arduino_ST7735::Arduino_ST7735(
     bool ips, int16_t w, int16_t h,
     uint8_t col_offset1, uint8_t row_offset1, uint8_t col_offset2, uint8_t row_offset2,
     bool bgr)
-    : Arduino_TFT(bus, rst, r, ips, w, h, col_offset1, row_offset1, col_offset2, row_offset2)
+    : Arduino_TFT(bus, rst, r, ips, w, h, col_offset1, row_offset1, col_offset2, row_offset2), _bgr(bgr)
 {
-  _bgr = bgr;
 }
 
 void Arduino_ST7735::begin(int32_t speed)
@@ -35,7 +34,7 @@ void Arduino_ST7735::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_ST7735::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -60,9 +59,31 @@ void Arduino_ST7735::tftInit()
   {
     _bus->sendCommand(ST7735_INVON);
   }
-  _bus->sendCommand(ST7735_NORON); // 4: Normal display on, no args, w/delay
+
+  uint8_t gamma[] = {
+    BEGIN_WRITE,
+    WRITE_COMMAND_8, ST7735_GMCTRP1,  // Gamma Adjustments (pos. polarity), 16 args:
+    WRITE_DATA_8, 16,
+    0x09, 0x16, 0x09, 0x20,           // (Not entirely necessary, but provides
+    0x21, 0x1B, 0x13, 0x19,           //  accurate colors)
+    0x17, 0x15, 0x1E, 0x2B,
+    0x04, 0x05, 0x02, 0x0E,
+    END_WRITE,
+    BEGIN_WRITE,
+    WRITE_COMMAND_8, ST7735_GMCTRN1,  // Gamma Adjustments (neg. polarity), 16 args:
+    WRITE_DATA_8, 16,
+    0x0B, 0x14, 0x08, 0x1E,           // (Not entirely necessary, but provides
+    0x22, 0x1D, 0x18, 0x1E,           //  accurate colors)
+    0x1B, 0x1A, 0x24, 0x2B,
+    0x06, 0x06, 0x02, 0x0F,
+    END_WRITE,
+    DELAY, 10
+  };
+  _bus->batchOperation(gamma, sizeof(gamma)); // 4: Gamma correction
+
+  _bus->sendCommand(ST7735_NORON);  // 5: Normal display on, no args, w/delay
   delay(10);
-  _bus->sendCommand(ST7735_DISPON); // 5: Main screen turn on, no args, w/delay
+  _bus->sendCommand(ST7735_DISPON); // 6: Main screen turn on, no args, w/delay
 }
 
 void Arduino_ST7735::writeAddrWindow(int16_t x, int16_t y, uint16_t w, uint16_t h)
@@ -108,23 +129,19 @@ void Arduino_ST7735::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    r = ST7735_MADCTL_MX | ST7735_MADCTL_MY | (_bgr ? ST7735_MADCTL_BGR : ST7735_MADCTL_RGB);
-    break;
-
   case 1:
     r = ST7735_MADCTL_MY | ST7735_MADCTL_MV | (_bgr ? ST7735_MADCTL_BGR : ST7735_MADCTL_RGB);
     break;
-
   case 2:
     r = (_bgr ? ST7735_MADCTL_BGR : ST7735_MADCTL_RGB);
     break;
-
   case 3:
     r = ST7735_MADCTL_MX | ST7735_MADCTL_MV | (_bgr ? ST7735_MADCTL_BGR : ST7735_MADCTL_RGB);
     break;
+  default: // case 0:
+    r = ST7735_MADCTL_MX | ST7735_MADCTL_MY | (_bgr ? ST7735_MADCTL_BGR : ST7735_MADCTL_RGB);
+    break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(ST7735_MADCTL);
   _bus->write(r);

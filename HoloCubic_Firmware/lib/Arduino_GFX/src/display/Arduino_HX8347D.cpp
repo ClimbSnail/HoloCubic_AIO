@@ -25,7 +25,7 @@ void Arduino_HX8347D::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_HX8347D::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -144,10 +144,6 @@ void Arduino_HX8347D::setRotation(uint8_t r)
   _bus->beginWrite();
   switch (_rotation)
   {
-  case 0:
-    _bus->writeC8D8(0x36, 0x07);
-    _bus->writeC8D8(0x16, 0x40);
-    break;
   case 1:
     _bus->writeC8D8(0x36, 0x07);
     _bus->writeC8D8(0x16, 0x20);
@@ -159,6 +155,10 @@ void Arduino_HX8347D::setRotation(uint8_t r)
   case 3:
     _bus->writeC8D8(0x36, 0x03);
     _bus->writeC8D8(0x16, 0x60);
+    break;
+  default: // case 0:
+    _bus->writeC8D8(0x36, 0x07);
+    _bus->writeC8D8(0x16, 0x40);
     break;
   }
   _bus->endWrite();

@@ -33,23 +33,19 @@ void Arduino_ST7789::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    r = ST7789_MADCTL_MX | ST7789_MADCTL_MY | ST7789_MADCTL_RGB;
-    break;
-
   case 1:
-    r = ST7789_MADCTL_MY | ST7789_MADCTL_MV | ST7789_MADCTL_RGB;
-    break;
-
-  case 2:
-    r = ST7789_MADCTL_RGB;
-    break;
-
-  case 3:
     r = ST7789_MADCTL_MX | ST7789_MADCTL_MV | ST7789_MADCTL_RGB;
     break;
+  case 2:
+    r = ST7789_MADCTL_MX | ST7789_MADCTL_MY | ST7789_MADCTL_RGB;
+    break;
+  case 3:
+    r = ST7789_MADCTL_MY | ST7789_MADCTL_MV | ST7789_MADCTL_RGB;
+    break;
+  default: // case 0:
+    r = ST7789_MADCTL_RGB;
+    break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(ST7789_MADCTL);
   _bus->write(r);
@@ -98,7 +94,7 @@ void Arduino_ST7789::displayOff(void)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_ST7789::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);

@@ -35,7 +35,7 @@ void Arduino_SSD1351::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_SSD1351::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -104,9 +104,6 @@ void Arduino_SSD1351::setRotation(uint8_t r)
   uint8_t startline = (_rotation < 2) ? HEIGHT : 0;
   switch (_rotation)
   {
-  case 0:
-    r = 0b01110100;
-    break;
   case 1:
     r = 0b01110111;
     break;
@@ -116,8 +113,10 @@ void Arduino_SSD1351::setRotation(uint8_t r)
   case 3:
     r = 0b01100101;
     break;
+  default: // case 0:
+    r = 0b01110100;
+    break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(SSD1351_SETREMAP);
   _bus->write(r);

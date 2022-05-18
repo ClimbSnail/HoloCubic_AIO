@@ -6,7 +6,7 @@
 
 #include "Arduino_mbedSPI.h"
 
-Arduino_mbedSPI::Arduino_mbedSPI(int8_t dc, int8_t cs /* = -1 */)
+Arduino_mbedSPI::Arduino_mbedSPI(int8_t dc, int8_t cs /* = GFX_NOT_DEFINED */)
     : _dc(dc), _cs(cs)
 {
 }
@@ -22,7 +22,7 @@ void Arduino_mbedSPI::begin(int32_t speed, int8_t dataMode)
   _dcPortSet = &reg->OUTSET;
   _dcPortClr = &reg->OUTCLR;
   _dcPinMask = 1UL << pin;
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pin = digitalPinToPinName((pin_size_t)_cs);
     reg = nrf_gpio_pin_port_decode(&pin);
@@ -174,9 +174,6 @@ void Arduino_mbedSPI::writeBytes(uint8_t *data, uint32_t len)
 
 void Arduino_mbedSPI::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
 {
-#if defined(ESP8266) || defined(ESP32)
-  HWSPI.writePattern(data, len, repeat);
-#else  // !(defined(ESP8266) || defined(ESP32))
   while (repeat--)
   {
     for (uint8_t i = 0; i < len; i++)
@@ -184,7 +181,6 @@ void Arduino_mbedSPI::writePattern(uint8_t *data, uint8_t len, uint32_t repeat)
       write(data[i]);
     }
   }
-#endif // !(defined(ESP8266) || defined(ESP32))
 }
 
 INLINE void Arduino_mbedSPI::WRITE(uint8_t d)
@@ -217,7 +213,7 @@ INLINE void Arduino_mbedSPI::DC_LOW(void)
 
 INLINE void Arduino_mbedSPI::CS_HIGH(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPortSet = _csPinMask;
   }
@@ -225,7 +221,7 @@ INLINE void Arduino_mbedSPI::CS_HIGH(void)
 
 INLINE void Arduino_mbedSPI::CS_LOW(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPortClr = _csPinMask;
   }

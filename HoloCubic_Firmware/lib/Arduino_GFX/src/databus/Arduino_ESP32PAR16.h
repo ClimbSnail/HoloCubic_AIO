@@ -1,9 +1,9 @@
-#ifdef ESP32
+#include "Arduino_DataBus.h"
+
+#if defined(ESP32) && (CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)
 
 #ifndef _ARDUINO_ESP32PAR16_H_
 #define _ARDUINO_ESP32PAR16_H_
-
-#include "Arduino_DataBus.h"
 
 class Arduino_ESP32PAR16 : public Arduino_DataBus
 {
@@ -57,18 +57,15 @@ private:
   PORTreg_t _wrPortClr; ///< PORT register CLEAR
   uint32_t _wrPinMask;  ///< Bitmask
 
-  PORTreg_t _rdPortSet; ///< PORT register SET
-  PORTreg_t _rdPortClr; ///< PORT register CLEAR
-  uint32_t _rdPinMask;  ///< Bitmask
-
-  PORTreg_t _dataPortSet; ///< PORT register SET
-  PORTreg_t _dataPortClr; ///< PORT register CLEAR
-  uint32_t _dataClrMask;
-  // Lookup table for ESP32 parallel bus interface uses 2kbyte RAM,
-  uint32_t _xset_mask_lo[256];
-  uint32_t _xset_mask_hi[256];
+  uint32_t _data1ClrMask;
+  uint32_t _data2ClrMask;
+  // Lookup table for ESP32 parallel bus interface uses 4kbyte RAM
+  uint32_t _xset_mask1_lo[256];
+  uint32_t _xset_mask1_hi[256];
+  uint32_t _xset_mask2_lo[256];
+  uint32_t _xset_mask2_hi[256];
 };
 
 #endif // _ARDUINO_ESP32PAR16_H_
 
-#endif // #ifdef ESP32
+#endif // #if defined(ESP32) && (CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3)

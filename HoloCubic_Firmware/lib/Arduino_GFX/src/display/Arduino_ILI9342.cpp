@@ -28,9 +28,6 @@ void Arduino_ILI9342::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    r = (ILI9342_MADCTL_BGR);
-    break;
   case 1:
     r = (ILI9342_MADCTL_MV | ILI9342_MADCTL_MX | ILI9342_MADCTL_BGR);
     break;
@@ -39,6 +36,9 @@ void Arduino_ILI9342::setRotation(uint8_t r)
     break;
   case 3:
     r = (ILI9342_MADCTL_MV | ILI9342_MADCTL_MY | ILI9342_MADCTL_BGR);
+    break;
+  default: // case 0:
+    r = (ILI9342_MADCTL_BGR);
     break;
   }
   _bus->beginWrite();
@@ -88,7 +88,7 @@ void Arduino_ILI9342::displayOff(void)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_ILI9342::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);

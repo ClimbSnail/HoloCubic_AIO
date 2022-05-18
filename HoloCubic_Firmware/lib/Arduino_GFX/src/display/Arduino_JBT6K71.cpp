@@ -22,7 +22,7 @@ void Arduino_JBT6K71::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_JBT6K71::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -241,10 +241,6 @@ void Arduino_JBT6K71::setRotation(uint8_t r)
   uint16_t output_control, entry_mode;
   switch (_rotation)
   {
-  case 0:
-    output_control = 0x0027; //SS=0
-    entry_mode = 0x0010;     //ID=01
-    break;
   case 1:
     output_control = 0x0127; //SS=1
     entry_mode = 0x0018;
@@ -253,9 +249,13 @@ void Arduino_JBT6K71::setRotation(uint8_t r)
     output_control = 0x0127; //SS=1
     entry_mode = 0x0030;
     break;
-  default:                   // 3
+  case 3:
     output_control = 0x0027; //SS=0
     entry_mode = 0x0038;
+    break;
+  default:                   // case 0:
+    output_control = 0x0027; //SS=0
+    entry_mode = 0x0010;     //ID=01
     break;
   }
   _bus->beginWrite();

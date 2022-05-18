@@ -9,7 +9,7 @@
 
 #define WAIT_SPI_NOT_BUSY while (SPI1CMD & SPIBUSY)
 
-Arduino_ESP8266SPI::Arduino_ESP8266SPI(int8_t dc, int8_t cs /* = -1 */)
+Arduino_ESP8266SPI::Arduino_ESP8266SPI(int8_t dc, int8_t cs /* = GFX_NOT_DEFINED */)
     : _dc(dc), _cs(cs)
 {
 }
@@ -21,7 +21,7 @@ void Arduino_ESP8266SPI::begin(int32_t speed, int8_t dataMode)
 
   pinMode(_dc, OUTPUT);
   digitalWrite(_dc, HIGH); // Data mode
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     pinMode(_cs, OUTPUT);
     digitalWrite(_cs, HIGH); // Deselect
@@ -29,19 +29,10 @@ void Arduino_ESP8266SPI::begin(int32_t speed, int8_t dataMode)
 
   _dcPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_dc));
   _dcPinMaskSet = digitalPinToBitMask(_dc);
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     _csPort = (PORTreg_t)portOutputRegister(digitalPinToPort(_cs));
     _csPinMaskSet = digitalPinToBitMask(_cs);
-  }
-  else
-  {
-    // No chip-select line defined; might be permanently tied to GND.
-    // Assign a valid GPIO register (though not used for CS), and an
-    // empty pin bitmask...the nonsense bit-twiddling might be faster
-    // than checking _cs and possibly branching.
-    _csPort = _dcPort;
-    _csPinMaskSet = 0;
   }
   _csPinMaskClr = ~_csPinMaskSet;
   _dcPinMaskClr = ~_dcPinMaskSet;
@@ -369,7 +360,7 @@ INLINE void Arduino_ESP8266SPI::DC_LOW(void)
 
 INLINE void Arduino_ESP8266SPI::CS_HIGH(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPort |= _csPinMaskSet;
   }
@@ -377,7 +368,7 @@ INLINE void Arduino_ESP8266SPI::CS_HIGH(void)
 
 INLINE void Arduino_ESP8266SPI::CS_LOW(void)
 {
-  if (_cs >= 0)
+  if (_cs != GFX_NOT_DEFINED)
   {
     *_csPort &= _csPinMaskClr;
   }

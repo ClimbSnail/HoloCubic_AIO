@@ -63,7 +63,7 @@ class Arduino_SSD1283A : public Arduino_TFT
 {
 public:
   Arduino_SSD1283A(
-      Arduino_DataBus *bus, int8_t rst = -1, uint8_t r = 0,
+      Arduino_DataBus *bus, int8_t rst = GFX_NOT_DEFINED, uint8_t r = 0,
       int16_t w = SSD1283A_TFTWIDTH, int16_t h = SSD1283A_TFTHEIGHT,
       uint8_t col_offset1 = 2, uint8_t row_offset1 = 2, uint8_t col_offset2 = 2, uint8_t row_offset2 = 2);
 

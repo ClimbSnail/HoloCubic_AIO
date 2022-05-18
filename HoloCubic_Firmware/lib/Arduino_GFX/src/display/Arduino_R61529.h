@@ -123,7 +123,7 @@
 class Arduino_R61529 : public Arduino_TFT
 {
 public:
-  Arduino_R61529(Arduino_DataBus *bus, int8_t rst = -1, uint8_t r = 0, bool ips = false);
+  Arduino_R61529(Arduino_DataBus *bus, int8_t rst = GFX_NOT_DEFINED, uint8_t r = 0, bool ips = false);
 
   void begin(int32_t speed = 0) override;
   void writeAddrWindow(int16_t x, int16_t y, uint16_t w, uint16_t h) override;

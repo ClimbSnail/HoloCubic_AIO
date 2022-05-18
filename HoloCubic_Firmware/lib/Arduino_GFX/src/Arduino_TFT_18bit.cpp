@@ -14,6 +14,13 @@ Arduino_TFT_18bit::Arduino_TFT_18bit(
 {
 }
 
+void Arduino_TFT_18bit::writeColor(uint16_t color)
+{
+  _bus->write((color & 0xF800) >> 8);
+  _bus->write((color & 0x07E0) >> 3);
+  _bus->write(color << 3);
+}
+
 void Arduino_TFT_18bit::writePixelPreclipped(int16_t x, int16_t y, uint16_t color)
 {
   writeAddrWindow(x, y, 1, 1);
@@ -42,13 +49,6 @@ void Arduino_TFT_18bit::writeRepeat(uint16_t color, uint32_t len)
 
 // TFT optimization code, too big for ATMEL family
 #if !defined(LITTLE_FOOT_PRINT)
-
-void Arduino_TFT_18bit::writeColor(uint16_t color)
-{
-  _bus->write((color & 0xF800) >> 8);
-  _bus->write((color & 0x07E0) >> 3);
-  _bus->write(color << 3);
-}
 
 void Arduino_TFT_18bit::writePixels(uint16_t *data, uint32_t len)
 {
@@ -418,6 +418,96 @@ void Arduino_TFT_18bit::draw16bitRGBBitmap(int16_t x, int16_t y,
         _bus->write((d & 0xF800) >> 8);
         _bus->write((d & 0x07E0) >> 3);
         _bus->write(d << 3);
+      }
+    }
+    endWrite();
+  }
+}
+
+/**************************************************************************/
+/*!
+    @brief  Draw a RAM-resident 16-bit image (RGB 5/6/5) with a 1-bit mask
+            (set bits = opaque, unset bits = clear) at the specified (x,y) position.
+            BOTH buffers (color and mask) must be RAM-resident.
+    @param  x       Top left corner x coordinate
+    @param  y       Top left corner y coordinate
+    @param  bitmap  byte array with 16-bit color bitmap
+    @param  mask    byte array with monochrome mask bitmap
+    @param  w       Width of bitmap in pixels
+    @param  h       Height of bitmap in pixels
+*/
+/**************************************************************************/
+void Arduino_TFT_18bit::draw16bitRGBBitmap(int16_t x, int16_t y,
+                                           uint16_t *bitmap, uint8_t *mask, int16_t w, int16_t h)
+{
+  if (
+      ((x + w - 1) < 0) || // Outside left
+      ((y + h - 1) < 0) || // Outside top
+      (x > _max_x) ||      // Outside right
+      (y > _max_y)         // Outside bottom
+  )
+  {
+    return;
+  }
+  else if (
+      (x < 0) ||                // Clip left
+      (y < 0) ||                // Clip top
+      ((x + w - 1) > _max_x) || // Clip right
+      ((y + h - 1) > _max_y)    // Clip bottom
+  )
+  {
+    Arduino_GFX::draw16bitRGBBitmap(x, y, bitmap, mask, w, h);
+  }
+  else
+  {
+    uint16_t d;
+    int32_t offset = 0, maskIdx = 0, len = 0;
+    uint8_t byte = 0;
+    startWrite();
+    for (int16_t j = 0; j < h; j++, y++)
+    {
+      for (int16_t i = 0; i < w; i++)
+      {
+        if (i & 7)
+        {
+          byte <<= 1;
+        }
+        else
+        {
+          byte = mask[maskIdx++];
+        }
+        if (byte & 0x80)
+        {
+          len++;
+        }
+        else
+        {
+          if (len)
+          {
+            writeAddrWindow(x + i - len, y, len, 1);
+            for (int16_t i = len; i > 0; i--)
+            {
+              d = bitmap[offset - i];
+              _bus->write((d & 0xF800) >> 8);
+              _bus->write((d & 0x07E0) >> 3);
+              _bus->write(d << 3);
+            }
+            len = 0;
+          }
+        }
+        offset++;
+      }
+      if (len)
+      {
+        writeAddrWindow(x + w - 1 - len, y, len, 1);
+        for (int16_t i = len; i > 0; i--)
+        {
+          d = bitmap[offset - i];
+          _bus->write((d & 0xF800) >> 8);
+          _bus->write((d & 0x07E0) >> 3);
+          _bus->write(d << 3);
+        }
+        len = 0;
       }
     }
     endWrite();

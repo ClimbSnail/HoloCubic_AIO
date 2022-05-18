@@ -13,9 +13,9 @@
 class Arduino_RPiPicoSPI : public Arduino_DataBus
 {
 public:
-  Arduino_RPiPicoSPI(int8_t dc = -1, int8_t cs = -1, int8_t sck = PIN_SPI0_SCK, int8_t mosi = PIN_SPI0_MOSI, int8_t miso = PIN_SPI0_MISO, spi_inst_t *spi = spi0); // Constructor
+  Arduino_RPiPicoSPI(int8_t dc = GFX_NOT_DEFINED, int8_t cs = GFX_NOT_DEFINED, int8_t sck = PIN_SPI0_SCK, int8_t mosi = PIN_SPI0_MOSI, int8_t miso = PIN_SPI0_MISO, spi_inst_t *spi = spi0); // Constructor
 
-  void begin(int32_t speed = 0, int8_t dataMode = -1) override;
+  void begin(int32_t speed = 0, int8_t dataMode = GFX_NOT_DEFINED) override;
   void beginWrite() override;
   void endWrite() override;
   void writeCommand(uint8_t) override;

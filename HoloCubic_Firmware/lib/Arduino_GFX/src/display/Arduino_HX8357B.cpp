@@ -34,7 +34,6 @@ void Arduino_HX8357B::setRotation(uint8_t r)
     r = (HX8357B_MADCTL_MX | HX8357B_MADCTL_BGR);
     break;
   }
-
   _bus->beginWrite();
   _bus->writeC8D8(HX8357B_SET_ADDRESS_MODE, r);
   _bus->endWrite();
@@ -80,7 +79,7 @@ void Arduino_HX8357B::displayOff(void)
 
 void Arduino_HX8357B::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);

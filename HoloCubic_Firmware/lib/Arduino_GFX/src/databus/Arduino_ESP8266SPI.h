@@ -12,9 +12,9 @@
 class Arduino_ESP8266SPI : public Arduino_DataBus
 {
 public:
-  Arduino_ESP8266SPI(int8_t dc, int8_t cs = -1); // Constructor
+  Arduino_ESP8266SPI(int8_t dc, int8_t cs = GFX_NOT_DEFINED); // Constructor
 
-  void begin(int32_t speed = 0, int8_t dataMode = -1) override;
+  void begin(int32_t speed = 0, int8_t dataMode = GFX_NOT_DEFINED) override;
   void beginWrite() override;
   void endWrite() override;
   void writeCommand(uint8_t) override;

@@ -62,7 +62,6 @@ void Arduino_NT39125::setRotation(uint8_t r)
     r = NT39125_MADCTL_BGR | NT39125_MADCTL_MX;
     break;
   }
-
   _bus->beginWrite();
   _bus->writeCommand(NT39125_MADCTL);
   _bus->write(r);
@@ -88,7 +87,7 @@ void Arduino_NT39125::displayOff(void)
 
 void Arduino_NT39125::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);

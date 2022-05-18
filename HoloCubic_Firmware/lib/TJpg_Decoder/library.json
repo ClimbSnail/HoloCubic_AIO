@@ -1,10 +1,9 @@
 {
   "name": "TJpg_Decoder",
 
-  "version": "0.0.3",
+  "version": "1.0.5",
 
-  "keywords": "arduino, jpeg, jpg, decoder, tft, display, STM32, ESP8266, ESP32, M5Stack, ILI9341",
-
+  "keywords": "jpeg, jpg, tft, display, RP2040, STM32, ESP8266, ESP32",
   "description": "A JPEG decoder library based on Tiny JPEG Decompressor",
   "repository":
   {
@@ -20,5 +19,5 @@
     }
   ],
   "frameworks": "arduino",
-  "platforms": "espressif8266, espressif32, atmelavr, stm32"
+  "platforms": "*"
 }

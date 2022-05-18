@@ -1,8 +1,8 @@
 #include "../Arduino_DataBus.h"
 #if !defined(LITTLE_FOOT_PRINT)
 
-#ifndef _Arduino_CANVAS_INDEXED_H_
-#define _Arduino_CANVAS_INDEXED_H_
+#ifndef _ARDUINO_CANVAS_INDEXED_H_
+#define _ARDUINO_CANVAS_INDEXED_H_
 
 #include "../Arduino_GFX.h"
 
@@ -41,6 +41,6 @@ protected:
 private:
 };
 
-#endif // _Arduino_CANVAS_INDEXED_H_
+#endif // _ARDUINO_CANVAS_INDEXED_H_
 
 #endif // !defined(LITTLE_FOOT_PRINT)

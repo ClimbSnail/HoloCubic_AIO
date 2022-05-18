@@ -21,7 +21,7 @@ void Arduino_SEPS525::begin(int32_t speed)
 // a series of LCD commands stored in PROGMEM byte array.
 void Arduino_SEPS525::tftInit()
 {
-  if (_rst >= 0)
+  if (_rst != GFX_NOT_DEFINED)
   {
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, HIGH);
@@ -172,12 +172,6 @@ void Arduino_SEPS525::setRotation(uint8_t r)
   Arduino_TFT::setRotation(r);
   switch (_rotation)
   {
-  case 0:
-    _bus->sendCommand(SEPS525_DISPLAY_MODE_SET);
-    _bus->sendData(0x00);
-    _bus->sendCommand(SEPS525_MEMORY_WRITE_MODE);
-    _bus->sendData(0x66);
-    break;
   case 1:
     _bus->sendCommand(SEPS525_DISPLAY_MODE_SET);
     _bus->sendData(0x10);
@@ -195,6 +189,12 @@ void Arduino_SEPS525::setRotation(uint8_t r)
     _bus->sendData(0x20);
     _bus->sendCommand(SEPS525_MEMORY_WRITE_MODE);
     _bus->sendData(0x67);
+    break;
+  default: // case 0:
+    _bus->sendCommand(SEPS525_DISPLAY_MODE_SET);
+    _bus->sendData(0x00);
+    _bus->sendCommand(SEPS525_MEMORY_WRITE_MODE);
+    _bus->sendData(0x66);
     break;
   }
 }

@@ -1,7 +1,7 @@
 #ifdef ARDUINO_RASPBERRY_PI_PICO
 
-#ifndef _Arduino_RPIPICOPAR8_H_
-#define _Arduino_RPIPICOPAR8_H_
+#ifndef _ARDUINO_RPIPICOPAR8_H_
+#define _ARDUINO_RPIPICOPAR8_H_
 
 #include "Arduino_DataBus.h"
 
@@ -46,6 +46,6 @@ private:
   uint32_t _dataClrMask;
 };
 
-#endif // _Arduino_RPIPICOPAR8_H_
+#endif // _ARDUINO_RPIPICOPAR8_H_
 
 #endif // #ifdef ARDUINO_RASPBERRY_PI_PICO
