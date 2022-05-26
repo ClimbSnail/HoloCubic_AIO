@@ -29,12 +29,12 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 [^_^]:
-	![HomePage](Image/holocubic_main.jpg)
-
-[^_^]:
 	![HomePage](Image/holocubic_1080x1080.jpg)
 
-![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_1080x1080.jpg)
+[^_^]:
+	![HomePage](Image/holocubic_main.jpg)
+
+![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_main.jpg)
 
 [^_^]:
 	![HomePage](Image/holocubic_home.png)
@@ -52,6 +52,8 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
 ### 固件刷写工具（无需搭建任何IDE环境）
+刷机前准备：电脑上安装好USB转串口的驱动CH9102或者CP2102等等（确保能识别到串口）。
+
 下载群中的上位机进行刷机。
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
@@ -167,7 +169,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了。目前程序内部已修改完毕，无需额外修改。以下是此前版本的程序说明：
+3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了。目前程序内部已修改完毕，无需额外修改。以下是此前版本的程序说明(新人可忽略)：
 
 然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
