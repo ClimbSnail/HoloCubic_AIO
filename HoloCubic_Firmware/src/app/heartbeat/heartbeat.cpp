@@ -224,10 +224,19 @@ static void heartbeat_process(AppController *sys,
     delay(30);
 }
 
+static void heartbeat_background_task(AppController *sys,
+                                      const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int heartbeat_exit_callback(void *param)
 {
     // 释放资源
     heartbeat_gui_del();
+
+    // 释放运行数据
     if (NULL != run_data)
     {
         free(run_data);
@@ -336,5 +345,5 @@ static void heartbeat_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ heartbeat_app = {HEARTBEAT_APP_NAME, &app_heartbeat, "Author HQ\nVersion 2.0.0\n",
-                         heartbeat_init, heartbeat_process,
+                         heartbeat_init, heartbeat_process, heartbeat_background_task,
                          heartbeat_exit_callback, heartbeat_message_handle};

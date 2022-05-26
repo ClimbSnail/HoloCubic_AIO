@@ -147,6 +147,13 @@ static void game_2048_process(AppController *sys,
     delay(300);
 }
 
+static void game_2048_background_task(AppController *sys,
+                                      const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int game_2048_exit_callback(void *param)
 {
     // 查杀定时器
@@ -160,9 +167,13 @@ static int game_2048_exit_callback(void *param)
     }
 
     game_2048_gui_del();
-    // 释放资源
-    free(run_data);
-    run_data = NULL;
+
+    // 释放运行数据
+    if (NULL != run_data)
+    {
+        free(run_data);
+        run_data = NULL;
+    }
 }
 
 static void game_2048_message_handle(const char *from, const char *to,
@@ -193,5 +204,5 @@ static void game_2048_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ game_2048_app = {G2048_APP_NAME, &app_game_2048, "",
-                         game_2048_init, game_2048_process,
+                         game_2048_init, game_2048_process, game_2048_background_task,
                          game_2048_exit_callback, game_2048_message_handle};

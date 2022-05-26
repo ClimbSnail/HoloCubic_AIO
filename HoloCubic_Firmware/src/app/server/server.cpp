@@ -131,12 +131,23 @@ static void server_process(AppController *sys,
     }
 }
 
+static void server_background_task(AppController *sys,
+                                   const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int server_exit_callback(void *param)
 {
     setting_gui_del();
-    // 释放运行时参数
-    free(run_data);
-    run_data = NULL;
+
+    // 释放运行数据
+    if (NULL != run_data)
+    {
+        free(run_data);
+        run_data = NULL;
+    }
 }
 
 static void server_message_handle(const char *from, const char *to,
@@ -169,5 +180,5 @@ static void server_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ server_app = {SERVER_APP_NAME, &app_server, "",
-                      server_init, server_process,
+                      server_init, server_process, server_background_task,
                       server_exit_callback, server_message_handle};

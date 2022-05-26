@@ -102,6 +102,13 @@ static void idea_process(AppController *sys,
     delay(20);                                                     //改变这个延时函数就能改变特效播放的快慢
 }
 
+static void idea_background_task(AppController *sys,
+                                 const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int idea_exit_callback(void *param)
 {
     if (NULL != screen_buf)
@@ -118,5 +125,5 @@ static void idea_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ idea_app = {IDEA_APP_NAME, &app_idea, "", idea_init,
-                    idea_process, idea_exit_callback,
+                    idea_process, idea_background_task, idea_exit_callback,
                     idea_message_handle};

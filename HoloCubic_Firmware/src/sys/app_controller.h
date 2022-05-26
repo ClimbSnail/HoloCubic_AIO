@@ -40,9 +40,13 @@ public:
     ~AppController();
     void init(void);
     void Display(void); // 显示接口
+    // 将APP注册到app_controller中
     int app_install(APP_OBJ *app,
-                    APP_TYPE app_type = APP_TYPE_REAL_TIME); // 将APP注册到app_controller中
-    int app_uninstall(const APP_OBJ *app);                   // 将APP从app_controller中卸载（删除）
+                    APP_TYPE app_type = APP_TYPE_REAL_TIME);
+    // 将APP从app_controller中卸载（删除）
+    int app_uninstall(const APP_OBJ *app);
+    // 将APP的后台任务从任务队列中移除(自能通过APP退出的时候，移除自身的后台任务)
+    int remove_backgroud_task(void);
     int main_process(ImuAction *act_info);
     void app_exit(void); // 提供给app退出的系统调用
     // 消息发送

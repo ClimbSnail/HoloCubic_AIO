@@ -186,6 +186,13 @@ static void picture_process(AppController *sys,
     delay(300);
 }
 
+static void picture_background_task(AppController *sys,
+                                    const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int picture_exit_callback(void *param)
 {
     photo_gui_del();
@@ -195,8 +202,11 @@ static int picture_exit_callback(void *param)
     tft->setSwapBytes(run_data->tftSwapStatus);
 
     // 释放运行数据
-    free(run_data);
-    run_data = NULL;
+    if (NULL != run_data)
+    {
+        free(run_data);
+        run_data = NULL;
+    }
 }
 
 static void picture_message_handle(const char *from, const char *to,
@@ -244,5 +254,5 @@ static void picture_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ picture_app = {PICTURE_APP_NAME, &app_picture, "",
-                       picture_init, picture_process,
+                       picture_init, picture_process, picture_background_task,
                        picture_exit_callback, picture_message_handle};

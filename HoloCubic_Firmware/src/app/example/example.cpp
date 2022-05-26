@@ -65,11 +65,31 @@ static void example_process(AppController *sys,
     // delay(300);
 }
 
+static void example_background_task(AppController *sys,
+                                    const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+
+    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 example_message_handle 函数
+    // sys->send_to(EXAMPLE_APP_NAME, CTRL_NAME,
+    //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
+
+    // 也可以移除自身的后台任务，放在本APP可控的地方最合适
+    // sys->remove_backgroud_task();
+
+    // 程序需要时可以适当加延时
+    // delay(300);
+}
+
 static int example_exit_callback(void *param)
 {
     // 释放资源
-    free(run_data);
-    run_data = NULL;
+    if (NULL != run_data)
+    {
+        free(run_data);
+        run_data = NULL;
+    }
 }
 
 static void example_message_handle(const char *from, const char *to,
@@ -111,5 +131,5 @@ static void example_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ example_app = {EXAMPLE_APP_NAME, &app_example, "Author HQ\nVersion 2.0.0\n",
-                       example_init, example_process,
+                       example_init, example_process, example_background_task,
                        example_exit_callback, example_message_handle};

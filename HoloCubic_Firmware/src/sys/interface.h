@@ -46,6 +46,10 @@ struct APP_OBJ
     void (*main_process)(AppController *sys,
                          const ImuAction *act_info);
 
+    // APP的任务的入口指针（一般一分钟内会调用一次）
+    void (*background_task)(AppController *sys,
+                            const ImuAction *act_info);
+
     // 退出之前需要处理的回调函数 可为空
     int (*exit_callback)(void *param);
 

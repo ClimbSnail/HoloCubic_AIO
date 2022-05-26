@@ -315,6 +315,13 @@ static void screen_share_process(AppController *sys,
     }
 }
 
+static void screen_background_task(AppController *sys,
+                                   const ImuAction *act_info)
+{
+    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
+    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+}
+
 static int screen_exit_callback(void *param)
 {
     stop_share_config();
@@ -347,9 +354,12 @@ static int screen_exit_callback(void *param)
                             0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
 
-    // 释放运行时参数
-    free(run_data);
-    run_data = NULL;
+    // 释放运行数据
+    if (NULL != run_data)
+    {
+        free(run_data);
+        run_data = NULL;
+    }
 }
 
 static void screen_message_handle(const char *from, const char *to,
@@ -430,5 +440,5 @@ static void screen_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ screen_share_app = {SCREEN_SHARE_APP_NAME, &app_screen, "",
-                            screen_share_init, screen_share_process,
+                            screen_share_init, screen_share_process, screen_background_task,
                             screen_exit_callback, screen_message_handle};

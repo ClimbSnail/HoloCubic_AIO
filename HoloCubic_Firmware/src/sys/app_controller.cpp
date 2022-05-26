@@ -101,6 +101,12 @@ int AppController::app_install(APP_OBJ *app, APP_TYPE app_type)
     return 0; // 安装成功
 }
 
+// 将APP的后台任务从任务队列中移除(自能通过APP退出的时候，移除自身的后台任务)
+int AppController::remove_backgroud_task(void)
+{
+    return 0; // 安装成功
+}
+
 // 将APP从app_controller中卸载（删除）
 int AppController::app_uninstall(const APP_OBJ *app)
 {

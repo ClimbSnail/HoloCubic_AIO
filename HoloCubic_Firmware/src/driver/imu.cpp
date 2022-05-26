@@ -168,11 +168,16 @@ ImuAction *IMU::update(int interval)
 
 ImuAction *IMU::getAction(void)
 {
+    // 基本方法: 通过对近来的动作数据简单的分析，确定出动作的类型
     ImuAction tmp_info;
     getVirtureMotion6(&tmp_info);
 
+    // Serial.printf("gx = %d\tgy = %d\tgz = %d", tmp_info.v_gx, tmp_info.v_gy, tmp_info.v_gz);
+    // Serial.printf("\tax = %d\tay = %d\taz = %d\n", tmp_info.v_ax, tmp_info.v_ay, tmp_info.v_az);
+
     tmp_info.active = ACTIVE_TYPE::UNKNOWN;
 
+    // 原先判断的只是加速度，现在要加上陀螺仪
     if (ACTIVE_TYPE::UNKNOWN == tmp_info.active)
     {
         if (tmp_info.v_ay > 4000)
@@ -207,31 +212,48 @@ ImuAction *IMU::getAction(void)
         }
     }
 
+    // 储存当前检测的动作数据到动作缓冲区中
     act_info_history_ind = (act_info_history_ind + 1) % ACTION_HISTORY_BUF_LEN;
     int index = act_info_history_ind;
     act_info_history[index] = tmp_info.active;
 
+    // 本次流程的动作识别
     if (!action_info.isValid)
     {
+        bool isHoldDown = false;// 长按的标志位
+        // 本次流程的动作识别
         int second = (index + ACTION_HISTORY_BUF_LEN - 1) % ACTION_HISTORY_BUF_LEN;
         int third = (index + ACTION_HISTORY_BUF_LEN - 2) % ACTION_HISTORY_BUF_LEN;
+        // 先识别"短按" （注：不要写成else if）
+        if (ACTIVE_TYPE::UNKNOWN != tmp_info.active)
+        {
+            action_info.isValid = 1;
+            action_info.active = tmp_info.active;
+        }
+        // 识别"长按","长按"相对"短按"高级（所以键值升级放在短按之后）
         if (act_info_history[index] == act_info_history[second] && act_info_history[second] == act_info_history[third])
         {
+            // 目前只识别前后的长按
             if (ACTIVE_TYPE::UP == tmp_info.active)
             {
+                isHoldDown = true;
                 action_info.isValid = 1;
                 action_info.active = ACTIVE_TYPE::GO_FORWORD;
             }
             else if (ACTIVE_TYPE::DOWN == tmp_info.active)
             {
+                isHoldDown = true;
                 action_info.isValid = 1;
                 action_info.active = ACTIVE_TYPE::RETURN;
             }
-        }
-        else if (ACTIVE_TYPE::UNKNOWN != tmp_info.active)
-        {
-            action_info.isValid = 1;
-            action_info.active = tmp_info.active;
+            // 如需左右的长按可在此处添加"else if"的逻辑
+
+            if(isHoldDown)
+            {
+            // 本次识别为长按，则手动清除识别过的历史数据 避免对下次动作识别的影响
+            act_info_history[second] = ACTIVE_TYPE::UNKNOWN;
+            act_info_history[third] = ACTIVE_TYPE::UNKNOWN;
+            }
         }
     }
 
