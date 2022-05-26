@@ -14,10 +14,10 @@ bool tmfromString(const char *date_str, struct tm *date);
 #define ANNIVERSARY_CONFIG_PATH "/anniversary.cfg"
 struct AN_Config
 {
-    unsigned long anniversary_cnt; // 事件个数    
-    String event_name[MAX_ANNIVERSARY_CNT]; // 事件名称
-    struct tm target_date[MAX_ANNIVERSARY_CNT]; // 目标日  
-    struct tm current_date; 
+    unsigned long anniversary_cnt;              // 事件个数
+    String event_name[MAX_ANNIVERSARY_CNT];     // 事件名称
+    struct tm target_date[MAX_ANNIVERSARY_CNT]; // 目标日
+    struct tm current_date;
 };
 
 static long long get_timestamp(String url);
@@ -30,7 +30,7 @@ static void write_config(AN_Config *cfg)
     memset(tmp, 0, 16);
     snprintf(tmp, 16, "%u\n", cfg->anniversary_cnt);
     w_data += tmp;
-    for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i) 
+    for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i)
     {
         w_data = w_data + cfg->event_name[i] + "\n";
         memset(tmp, 0, 16);
@@ -55,29 +55,29 @@ static void read_config(AN_Config *cfg)
     {
         // 默认值
         cfg->anniversary_cnt = 2;
-        cfg->event_name[0] = "生日还有"; 
+        cfg->event_name[0] = "生日还有";
         cfg->target_date[0].tm_year = 0; // 设置为零则每年重复
-        cfg->target_date[0].tm_mon = 1; 
-        cfg->target_date[0].tm_mday = 1; 
-        cfg->event_name[1] = "毕业还有"; 
-        cfg->target_date[1].tm_year = 2025; 
-        cfg->target_date[1].tm_mon = 7; 
-        cfg->target_date[1].tm_mday = 4; 
+        cfg->target_date[0].tm_mon = 1;
+        cfg->target_date[0].tm_mday = 1;
+        cfg->event_name[1] = "毕业还有";
+        cfg->target_date[1].tm_year = 2025;
+        cfg->target_date[1].tm_mon = 7;
+        cfg->target_date[1].tm_mday = 4;
         write_config(cfg);
         Serial.printf("Write config successful\n");
     }
     else
     {
         // 解析数据
-        char *param[MAX_ANNIVERSARY_CNT*2+2] = {0};
-        analyseParam(info, MAX_ANNIVERSARY_CNT*2+2, param);
+        char *param[MAX_ANNIVERSARY_CNT * 2 + 2] = {0};
+        analyseParam(info, MAX_ANNIVERSARY_CNT * 2 + 2, param);
         cfg->anniversary_cnt = atol(param[0]);
-        for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i) 
+        for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i)
         {
-            cfg->event_name[i] = param[2*i+1];
-            tmfromString(param[2*i+2], &(cfg->target_date[i]));
+            cfg->event_name[i] = param[2 * i + 1];
+            tmfromString(param[2 * i + 2], &(cfg->target_date[i]));
         }
-        tmfromString(param[MAX_ANNIVERSARY_CNT*2+1], &(cfg->current_date));
+        tmfromString(param[MAX_ANNIVERSARY_CNT * 2 + 1], &(cfg->current_date));
     }
 }
 
@@ -113,13 +113,16 @@ bool tmfromString(const char *date_str, struct tm *date)
         }
         else if (c == '.')
         {
-            if (dots == 0) {
+            if (dots == 0)
+            {
                 date->tm_year = acc;
             }
-            else if (dots == 1) {
+            else if (dots == 1)
+            {
                 date->tm_mon = acc;
             }
-            if (dots == 2) {
+            if (dots == 2)
+            {
                 // Too much dots (there must be 3 dots)
                 return false;
             }
@@ -133,7 +136,8 @@ bool tmfromString(const char *date_str, struct tm *date)
         }
     }
 
-    if (dots != 2) {
+    if (dots != 2)
+    {
         // Too few dots (there must be 3 dots)
         return false;
     }
@@ -141,29 +145,32 @@ bool tmfromString(const char *date_str, struct tm *date)
     return true;
 }
 
-
-static int dateDiff(struct tm* date1, struct tm* date2)
+static int dateDiff(struct tm *date1, struct tm *date2)
 {
     int y1, m1, d1;
     int y2, m2, d2;
     m1 = (date1->tm_mon + 9) % 12;
-    y1 = (date1->tm_year - m1/10);
-    d1 = 365 * y1 + y1/4 -y1/100 + y1/400 + (m1*306+5)/10 + (date1->tm_mday - 1);
+    y1 = (date1->tm_year - m1 / 10);
+    d1 = 365 * y1 + y1 / 4 - y1 / 100 + y1 / 400 + (m1 * 306 + 5) / 10 + (date1->tm_mday - 1);
 
-    m2 = (date2->tm_mon +9) % 12;
-    if (date2->tm_year == 0) {
-        if (date2->tm_mon < date1->tm_mon || (date2->tm_mon == date1->tm_mon && date2->tm_mon < date1->tm_mon)) {
-            y2 = date1->tm_year + 1 - m2/10;
+    m2 = (date2->tm_mon + 9) % 12;
+    if (date2->tm_year == 0)
+    {
+        if (date2->tm_mon < date1->tm_mon || (date2->tm_mon == date1->tm_mon && date2->tm_mon < date1->tm_mon))
+        {
+            y2 = date1->tm_year + 1 - m2 / 10;
         }
-        else {
-            y2 = date1->tm_year - m2/10;
+        else
+        {
+            y2 = date1->tm_year - m2 / 10;
         }
     }
-    else {
-        y2 = date2->tm_year - m2/10;
+    else
+    {
+        y2 = date2->tm_year - m2 / 10;
     }
-    d2 = 365*y2 +y2/4 -y2/100 + y2/400 +(m2*306+5)/10 + (date2->tm_mday - 1);
-    return (d2 -d1);
+    d2 = 365 * y2 + y2 / 4 - y2 / 100 + y2 / 400 + (m2 * 306 + 5) / 10 + (date2->tm_mday - 1);
+    return (d2 - d1);
 }
 
 static void get_date_diff()
@@ -171,17 +178,16 @@ static void get_date_diff()
     time_t timep = run_data->preNetTimestamp / 1000;
     struct tm *p_tm;
     // time(&timep);
-    p_tm = localtime(&timep); 
-    
-    cfg_data.current_date.tm_year = p_tm -> tm_year + 1900;
-    cfg_data.current_date.tm_mon = p_tm -> tm_mon + 1;
-    cfg_data.current_date.tm_mday = p_tm -> tm_mday;
+    p_tm = localtime(&timep);
+
+    cfg_data.current_date.tm_year = p_tm->tm_year + 1900;
+    cfg_data.current_date.tm_mon = p_tm->tm_mon + 1;
+    cfg_data.current_date.tm_mday = p_tm->tm_mday;
 
     // Serial.printf("current_date %d %d %d\n", cfg_data.current_date.tm_year, cfg_data.current_date.tm_mon, cfg_data.current_date.tm_mday);
 
     run_data->anniversary_day_count = dateDiff(&(cfg_data.current_date), &(cfg_data.target_date[run_data->cur_anniversary]));
 }
-
 
 static void date_update()
 {
@@ -225,14 +231,14 @@ static long long get_timestamp(String url)
     return run_data->preNetTimestamp;
 }
 
-static int anniversary_init(void)
+static int anniversary_init(AppController *sys)
 {
     anniversary_gui_init();
     // 获取配置参数
     read_config(&cfg_data);
     // 初始化运行时的参数
     run_data = (AnniversaryAppRunData *)calloc(1, sizeof(AnniversaryAppRunData));
-    run_data->cur_anniversary=0;
+    run_data->cur_anniversary = 0;
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
     run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
@@ -243,7 +249,7 @@ static int anniversary_init(void)
 }
 
 static void anniversary_process(AppController *sys,
-                            const ImuAction *act_info)
+                                const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
@@ -267,11 +273,11 @@ static void anniversary_process(AppController *sys,
         run_data->anniversary_day_count = dateDiff(&(cfg_data.current_date), &(cfg_data.target_date[run_data->cur_anniversary]));
         // 尝试同步网络上的时钟
         sys->send_to(ANNIVERSARY_APP_NAME, CTRL_NAME,
-                        APP_MESSAGE_WIFI_CONN, NULL, NULL);
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
         run_data->coactusUpdateFlag = 0x00;
         write_config(&cfg_data);
     }
-    else 
+    else
     {
         get_date_diff();
     }
@@ -300,8 +306,8 @@ static int anniversary_exit_callback(void *param)
 }
 
 static void anniversary_message_handle(const char *from, const char *to,
-                                   APP_MESSAGE_TYPE type, void *message,
-                                   void *ext_info)
+                                       APP_MESSAGE_TYPE type, void *message,
+                                       void *ext_info)
 {
     // 目前主要是wifi开关类事件（用于功耗控制）
     switch (type)
@@ -343,7 +349,7 @@ static void anniversary_message_handle(const char *from, const char *to,
         }
         else if (!strcmp(param_key, "target_date0"))
         {
-            struct tm* tmp_tm = &(cfg_data.target_date[0]);
+            struct tm *tmp_tm = &(cfg_data.target_date[0]);
             snprintf((char *)ext_info, 32, "%d.%d.%d", tmp_tm->tm_year, tmp_tm->tm_mon, tmp_tm->tm_mday);
         }
         else if (!strcmp(param_key, "event_name1"))
@@ -352,7 +358,7 @@ static void anniversary_message_handle(const char *from, const char *to,
         }
         else if (!strcmp(param_key, "target_date1"))
         {
-            struct tm* tmp_tm = &(cfg_data.target_date[1]);
+            struct tm *tmp_tm = &(cfg_data.target_date[1]);
             snprintf((char *)ext_info, 32, "%d.%d.%d", tmp_tm->tm_year, tmp_tm->tm_mon, tmp_tm->tm_mday);
         }
     }
@@ -385,5 +391,5 @@ static void anniversary_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ anniversary_app = {ANNIVERSARY_APP_NAME, &app_anniversary, "Author Hu Qianjiang\nVersion 0.0.1\n",
-                       anniversary_init, anniversary_process,
-                       anniversary_exit_callback, anniversary_message_handle};
+                           anniversary_init, anniversary_process,
+                           anniversary_exit_callback, anniversary_message_handle};

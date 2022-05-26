@@ -147,7 +147,7 @@ int analysis_uart_data(int data_len, uint8_t *data)
     }
 }
 
-static int settings_init(void)
+static int settings_init(AppController *sys)
 {
     // 初始化运行时的参数
     settings_gui_init();
@@ -161,7 +161,7 @@ static int settings_init(void)
 }
 
 static void settings_process(AppController *sys,
-                      const ImuAction *act_info)
+                             const ImuAction *act_info)
 {
     if (RETURN == act_info->active)
     {
@@ -204,8 +204,8 @@ static int settings_exit_callback(void *param)
 }
 
 static void settings_message_handle(const char *from, const char *to,
-                             APP_MESSAGE_TYPE type, void *message,
-                             void *ext_info)
+                                    APP_MESSAGE_TYPE type, void *message,
+                                    void *ext_info)
 {
     // 目前事件主要是wifi开关类事件（用于功耗控制）
     switch (type)

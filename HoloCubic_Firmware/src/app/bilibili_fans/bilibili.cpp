@@ -88,7 +88,7 @@ static MyHttpResult http_request(String uid = "344470052")
     return result;
 }
 
-static int bilibili_init(void)
+static int bilibili_init(AppController *sys)
 {
     bilibili_gui_init();
     // 获取配置信息

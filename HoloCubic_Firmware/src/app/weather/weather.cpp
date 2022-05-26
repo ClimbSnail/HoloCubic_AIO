@@ -265,7 +265,7 @@ static void UpdateTime_RTC(long long timestamp)
     display_time(t, LV_SCR_LOAD_ANIM_NONE);
 }
 
-static int weather_init(void)
+static int weather_init(AppController *sys)
 {
     tft->setSwapBytes(true);
     weather_gui_init();

@@ -60,7 +60,6 @@ public:
     void write_config(SysMpuConfig *cfg);
     void read_config(RgbConfig *cfg);
     void write_config(RgbConfig *cfg);
-    void connect_mqtt(void);
 
 private:
     APP_OBJ *getAppByName(const char *name);
@@ -74,12 +73,13 @@ private:
     // std::list<const APP_OBJ *> app_list; // APP注册位(为了C语言可移植，放弃使用链表)
     std::list<EVENT_OBJ> eventList;   // 用来储存事件
     boolean m_wifi_status;            // 表示是wifi状态 true开启 false关闭
-    boolean m_mqtt_status;            // 表示是mqtt状态 true开启 false关闭
     unsigned long m_preWifiReqMillis; // 保存上一回请求的时间戳
     unsigned int app_num;
     boolean app_exit_flag; // 表示是否退出APP应用
     int cur_app_index;     // 当前运行的APP下标
     int pre_app_index;     // 上一次运行的APP下标
+
+    TimerHandle_t xTimerEventDeal; // 事件处理定时器
 
 public:
     SysUtilConfig sys_cfg;

@@ -146,7 +146,7 @@ static bool readJpegFromBuffer(uint8_t *const end)
     return isFound;
 }
 
-static int screen_share_init(void)
+static int screen_share_init(AppController *sys)
 {
     // 获取配置信息
     read_config(&cfg_data);

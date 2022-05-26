@@ -29,6 +29,9 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 [^_^]:
+	![HomePage](Image/holocubic_main.jpg)
+
+[^_^]:
 	![HomePage](Image/holocubic_1080x1080.jpg)
 
 ![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_1080x1080.jpg)
@@ -164,7 +167,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
+3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了。目前程序内部已修改完毕，无需额外修改。以下是此前版本的程序说明：
 
 然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
@@ -175,7 +178,7 @@ PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度
         _mosi = (_spi_num == VSPI) ? MOSI : 13;
         _ss = (_spi_num == VSPI) ? SS : 15;
 ```
-这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
+硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚SPI引脚的MISO替换为26。
 
 ### 程序框架图
 

@@ -33,20 +33,20 @@
 #include <esp32-hal.h>
 #include <esp32-hal-timer.h>
 
+static bool isCheckAction = false;
+
 /*** Component objects **7*/
-ImuAction *act_info;           // 存放mpu6050返回的数据
+ImuAction *act_info; // 存放mpu6050返回的数据
+
 AppController *app_controller; // APP控制器
 
 TaskHandle_t handleTaskLvgl;
 void TaskLvglUpdate(void *parameter)
 {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
     for (;;)
     {
-        screen.routine();
-        // lv_task_handler();
-
+        lv_task_handler();
         delay(5);
     }
 }
@@ -54,8 +54,8 @@ void TaskLvglUpdate(void *parameter)
 TimerHandle_t xTimerAction = NULL;
 void actionCheckHandle(TimerHandle_t xTimer)
 {
-    // 定时获取动作
-    act_info = mpu.getAction();
+    // 标志需要检测动作
+    isCheckAction = true;
 }
 
 void setup()
@@ -67,9 +67,9 @@ void setup()
     Serial.print(F("ChipID(EfuseMac): "));
     Serial.println(ESP.getEfuseMac());
     // flash运行模式
-    Serial.print(F("FlashChipMode: "));
-    Serial.println(ESP.getFlashChipMode());
-    Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
+    // Serial.print(F("FlashChipMode: "));
+    // Serial.println(ESP.getFlashChipMode());
+    // Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
 
     app_controller = new AppController(); // APP控制器
 
@@ -136,7 +136,6 @@ void setup()
     mpu.init(app_controller->sys_cfg.mpu_order,
              app_controller->sys_cfg.auto_calibration_mpu,
              &app_controller->mpu_cfg); // 初始化比较耗时
-    Serial.println("Power: ON 6");
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;
@@ -150,6 +149,8 @@ void setup()
     // 初始化RGB任务
     rgb_thread_init(&rgb_setting);
 
+    // 先初始化一次动作数据 防空指针
+    act_info = mpu.getAction();
     // 定义一个mpu6050的动作检测定时器
     xTimerAction = xTimerCreate("Action Check",
                                 200 / portTICK_PERIOD_MS,
@@ -184,6 +185,11 @@ void loop()
         }
     }
 #endif
+    if (isCheckAction)
+    {
+        isCheckAction = false;
+        act_info = mpu.getAction();
+    }
     app_controller->main_process(act_info); // 运行当前进程
     // Serial.println(ambLight.getLux() / 50.0);
     // rgb.setBrightness(ambLight.getLux() / 500.0);

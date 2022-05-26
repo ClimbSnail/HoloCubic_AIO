@@ -55,7 +55,7 @@ void screen_draw_pixel(int32_t x, int32_t y, uint16_t color) //指定GUI库的�
     screen_buf[y * SCREEN_WIDTH + x] = color;
 }
 
-static int idea_init(void)
+static int idea_init(AppController *sys)
 {
     screen_buf = (uint8_t *)malloc(SCREEN_HEIGHT * SCREEN_WIDTH); //动态分配一块屏幕分辨率大小的空间
     if (screen_buf == NULL)

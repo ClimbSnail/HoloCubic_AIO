@@ -251,6 +251,10 @@ void AppController::write_config(RgbConfig *cfg)
     snprintf(tmp, 25, "%f\n", cfg->brightness_step);
     w_data += tmp;
 
+    if (cfg->time < 10)
+    {
+        cfg->time = 10;
+    }
     memset(tmp, 0, 25);
     snprintf(tmp, 25, "%d\n", cfg->time);
     w_data += tmp;
@@ -414,6 +418,5 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
     break;
     default:
         break;
-        
     }
 }

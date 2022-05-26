@@ -139,7 +139,7 @@ static void release_player_docoder(void)
     }
 }
 
-static int media_player_init(void)
+static int media_player_init(AppController *sys)
 {
     // 调整RGB模式  HSV色彩模式
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,

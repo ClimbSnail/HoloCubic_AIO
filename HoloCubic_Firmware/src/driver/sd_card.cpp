@@ -73,6 +73,7 @@ void SdCard::init()
 {
 
     SPIClass *sd_spi = new SPIClass(HSPI); // another SPI
+    sd_spi->begin(14, 26, 13, 15);         // Replace default HSPI pins
     if (!SD.begin(15, *sd_spi, 80000000))  // SD-Card SS pin is 15
     {
         Serial.println("Card Mount Failed");
@@ -214,7 +215,7 @@ File_Info *SdCard::listDir(const char *dirname)
         // 船家创建新节点的文件名
         file_node->file_name = (char *)malloc(filename_len);
         strncpy(file_node->file_name, fn, filename_len); //
-        file_node->file_name[filename_len] = 0;                             //
+        file_node->file_name[filename_len] = 0;          //
         // 下一个节点赋空
         file_node->next_node = NULL;
 

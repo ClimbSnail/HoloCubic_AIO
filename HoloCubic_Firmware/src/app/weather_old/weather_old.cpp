@@ -194,7 +194,7 @@ static void UpdateTime_RTC(long long timestamp, lv_scr_load_anim_t anim_type)
     display_time_old(date.c_str(), time.c_str(), anim_type);
 }
 
-static int weather_init(void)
+static int weather_init(AppController *sys)
 {
     weather_old_gui_init();
     // 获取配置信息

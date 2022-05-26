@@ -28,7 +28,7 @@ static ExampleAppRunData *run_data = NULL;
 // 考虑到所有的APP公用内存，尽量减少 forever_data 的数据占用
 static ExampleAppForeverData forever_data;
 
-static int example_init(void)
+static int example_init(AppController *sys)
 {
     // 初始化运行时的参数
     example_gui_init();

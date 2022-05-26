@@ -28,7 +28,7 @@ struct FileManagerAppRunData
 };
 
 static FileManagerAppRunData *run_data = NULL;
-static int file_maneger_init(void)
+static int file_maneger_init(AppController *sys)
 {
     file_maneger_gui_init();
     // 初始化运行时参数
@@ -41,7 +41,7 @@ static int file_maneger_init(void)
 }
 
 static void file_maneger_process(AppController *sys,
-                          const ImuAction *action)
+                                 const ImuAction *action)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
 
@@ -99,8 +99,8 @@ static int file_maneger_exit_callback(void *param)
 }
 
 static void file_maneger_message_handle(const char *from, const char *to,
-                                 APP_MESSAGE_TYPE type, void *message,
-                                 void *ext_info)
+                                        APP_MESSAGE_TYPE type, void *message,
+                                        void *ext_info)
 {
     switch (type)
     {

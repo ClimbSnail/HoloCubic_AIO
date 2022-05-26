@@ -47,7 +47,7 @@ struct Game2048AppRunData
 
 static Game2048AppRunData *run_data = NULL;
 
-static int game_2048_init(void)
+static int game_2048_init(AppController *sys)
 {
     // 初始化运行时的参数
     game_2048_gui_init();
@@ -86,7 +86,7 @@ static int game_2048_init(void)
 }
 
 static void game_2048_process(AppController *sys,
-                       const ImuAction *act_info)
+                              const ImuAction *act_info)
 {
     if (RETURN == act_info->active)
     {
@@ -166,8 +166,8 @@ static int game_2048_exit_callback(void *param)
 }
 
 static void game_2048_message_handle(const char *from, const char *to,
-                              APP_MESSAGE_TYPE type, void *message,
-                              void *ext_info)
+                                     APP_MESSAGE_TYPE type, void *message,
+                                     void *ext_info)
 {
     // 目前事件主要是wifi开关类事件（用于功耗控制）
     switch (type)

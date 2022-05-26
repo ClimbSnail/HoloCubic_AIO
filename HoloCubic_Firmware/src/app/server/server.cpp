@@ -75,7 +75,7 @@ void stop_web_config()
     server.close();
 }
 
-static int server_init(void)
+static int server_init(AppController *sys)
 {
     server_gui_init();
     // 初始化运行时参数

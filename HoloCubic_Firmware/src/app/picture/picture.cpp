@@ -101,7 +101,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return pfile;
 }
 
-static int picture_init(void)
+static int picture_init(AppController *sys)
 {
     photo_gui_init();
     // 获取配置信息

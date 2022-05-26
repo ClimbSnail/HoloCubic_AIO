@@ -47,7 +47,7 @@ struct SysMpuConfig
 
 struct ImuAction
 {
-    ACTIVE_TYPE active;
+    volatile ACTIVE_TYPE active;
     boolean isValid;
     boolean long_time;
     int16_t v_ax; // v表示虚拟参数（用于调整6050的初始方位）
