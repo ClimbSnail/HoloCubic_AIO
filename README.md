@@ -28,32 +28,18 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 ### 本固件设计了一套低耦合框架，更有利于多功能的实现
 B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
-[^_^]:
-	![HomePage](Image/holocubic_1080x1080.jpg)
 
-[^_^]:
-	![HomePage](Image/holocubic_main.jpg)
 
-![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_main.jpg)
+![HomePage](Image/holocubic_main.jpg)
 
-[^_^]:
-	![HomePage](Image/holocubic_home.png)
+![HomePage](Image/holocubic_home.png)
 
-![HomePage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_home.png)
+![UploadPage](Image/holocubic_upload.png)
 
-[^_^]:
-	![UploadPage](Image/holocubic_upload.png)
+![SettingPage](Image/holocubic_setting.png)
 
-![UploadPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_upload.png)
-
-[^_^]:
-	![SettingPage](Image/holocubic_setting.png)
-
-![SettingPage](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_setting.png)
 
 ### 固件刷写工具（无需搭建任何IDE环境）
-刷机前准备：电脑上安装好USB转串口的驱动CH9102或者CP2102等等（确保能识别到串口）。
-
 下载群中的上位机进行刷机。
 1. `bootloader_dio_40m.bin`启动的`bootloader`。
 2. `partitions.bin`分区文件
@@ -68,8 +54,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 本上位机与AIO固件一样，坚持开源，开源地址：https://github.com/ClimbSnail/HoloCubic_AIO_Tool
 
-[^_^]:
-	![AIO_TOOL](Image/holocubic_aio_tool.png)
+![AIO_TOOL](Image/holocubic_aio_tool.png)
 
 ![AIO_TOOL](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_aio_tool.png)
 
@@ -162,14 +147,15 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 注：纪念日和心跳都复现自[LizCubic](https://github.com/qingehao/LizCubic)项目。程序由`WoodwindHu`编写
 
 ##### 心跳（Heartbeat）
-1. 运行APP条件：联网状态，一个开放1883端口的mqtt服务器，两个HoloCubic。
-2. 第一次使用之前，要先在`WebServer App`的网页上填写role和mqtt_server。role可以选择0和1，分别代表互动的两个HoloCubic。mqtt_server填写自己的mqtt服务器地址。
+1. 运行APP条件：联网状态（需要开启性能模式），一个开放1883端口的mqtt服务器，两个HoloCubic。
+2. 第一次使用之前，要先在`WebServer App`的网页上填写配置。role可以选择0和1，分别代表互动的两个HoloCubic。client_id为设备的唯一标识，这里请将这两个Holocubic设置成同一个QQ号。mqtt_server填写自己的mqtt服务器地址,port填写端口号。用户名以及密码根据具体的服务器配置而定。
 3. 设置完心跳APP之后，开机自动联网，并开启mqtt客户端。收到另一个HoloCubic的消息之后自动进入APP。正常方式进入APP则自动向另一个HoloCubic发送消息。
+4. 群内不定时更新免费的服务，具体配置参数可以问管理或者群友。
 
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了。目前程序内部已修改完毕，无需额外修改。以下是此前版本的程序说明(新人可忽略)：
+3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
 
 然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
@@ -180,12 +166,11 @@ PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度
         _mosi = (_spi_num == VSPI) ? MOSI : 13;
         _ss = (_spi_num == VSPI) ? SS : 15;
 ```
-硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚SPI引脚的MISO替换为26。
+这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
 
 ### 程序框架图
 
-[^_^]:
-	![HoloCubic_AIO_Frame](Image/holocubic_AIO_Frame.png)
+![HoloCubic_AIO_Frame](Image/holocubic_AIO_Frame.png)
 
 ![HoloCubic_AIO_Frame](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_AIO_Frame.png)
 

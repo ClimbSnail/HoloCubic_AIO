@@ -97,21 +97,25 @@ String file_size(int bytes)
                       "<label class=\"input\"><span>功耗控制（0低发热 1性能优先）</span><input type=\"text\"name=\"powerFlag\"value=\"%s\"></label>"  \
                       "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define SCREEN_SETTING "<form method=\"GET\" action=\"saveScreenConf\">"                                                                                             \
-                      "<label class=\"input\"><span>功耗控制（0低发热 1性能优先）</span><input type=\"text\"name=\"powerFlag\"value=\"%s\"></label>"  \
-                      "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+#define SCREEN_SETTING "<form method=\"GET\" action=\"saveScreenConf\">"                                                                                           \
+                       "<label class=\"input\"><span>功耗控制（0低发热 1性能优先）</span><input type=\"text\"name=\"powerFlag\"value=\"%s\"></label>" \
+                       "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define HEARTBEAT_SETTING "<form method=\"GET\" action=\"saveHeartbeatConf\">"                                                                                          \
-                        "<label class=\"input\"><span>Role(0:heart,1:beat)</span><input type=\"text\"name=\"role\"value=\"%s\"></label>"                            \
-                        "<label class=\"input\"><span>MQTT Server</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \
+#define HEARTBEAT_SETTING "<form method=\"GET\" action=\"saveHeartbeatConf\">"                                                                            \
+                          "<label class=\"input\"><span>Role(0:heart,1:beat)</span><input type=\"text\"name=\"role\"value=\"%s\"></label>"                \
+                          "<label class=\"input\"><span>MQTT ClientID(推荐QQ号)</span><input type=\"text\"name=\"mqtt_client_id\"value=\"%s\"></label>"                    \  
+                        "<label class=\"input\"><span>MQTT ServerIp</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \  
+                        "<label class=\"input\"><span>MQTT 端口号(1883)</span><input type=\"text\"name=\"mqtt_port\"value=\"%s\"></label>"             \
+                        "<label class=\"input\"><span>MQTT 服务用户名(可不填)</span><input type=\"text\"name=\"mqtt_user\"value=\"%s\"></label>"  \
+                        "<label class=\"input\"><span>MQTT 服务密码(可不填)</span><input type=\"text\"name=\"mqtt_password\"value=\"%s\"></label>" \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define ANNIVERSARY_SETTING "<form method=\"GET\" action=\"saveAnniversaryConf\">"                                                                                          \
-                        "<label class=\"input\"><span>事件0</span><input type=\"text\"name=\"event_name0\"value=\"%s\"></label>"                            \
-                        "<label class=\"input\"><span>日期0</span><input type=\"text\"name=\"target_date0\"value=\"%s\"></label>"                                                                                             \
-                        "<label class=\"input\"><span>事件1</span><input type=\"text\"name=\"event_name1\"value=\"%s\"></label>"                            \
-                        "<label class=\"input\"><span>日期1</span><input type=\"text\"name=\"target_date1\"value=\"%s\"></label>"                 \
-                        "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+#define ANNIVERSARY_SETTING "<form method=\"GET\" action=\"saveAnniversaryConf\">"                                                      \
+                            "<label class=\"input\"><span>事件0</span><input type=\"text\"name=\"event_name0\"value=\"%s\"></label>"  \
+                            "<label class=\"input\"><span>日期0</span><input type=\"text\"name=\"target_date0\"value=\"%s\"></label>" \
+                            "<label class=\"input\"><span>事件1</span><input type=\"text\"name=\"event_name1\"value=\"%s\"></label>"  \
+                            "<label class=\"input\"><span>日期1</span><input type=\"text\"name=\"target_date1\"value=\"%s\"></label>" \
+                            "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 void init_page_header()
 {
@@ -388,15 +392,29 @@ void heartbeat_setting()
 {
     char buf[2048];
     char role[32];
+    char client_id[32];
     char mqtt_server[32];
+    char port[32];
+    char server_user[32];
+    char server_password[32];
     // 读取数据
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
+
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"role", role);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"client_id", client_id);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"mqtt_server", mqtt_server);
-    sprintf(buf, HEARTBEAT_SETTING, role, mqtt_server);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"port", port);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"server_user", server_user);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"server_password", server_password);
+
+    sprintf(buf, HEARTBEAT_SETTING, role, client_id, mqtt_server, port, server_user, server_password);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -605,8 +623,24 @@ void saveHeartbeatConf(void)
                             (void *)server.arg("role").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
+                            (void *)"client_id",
+                            (void *)server.arg("mqtt_client_id").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_server",
                             (void *)server.arg("mqtt_server").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"port",
+                            (void *)server.arg("mqtt_port").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"server_user",
+                            (void *)server.arg("mqtt_user").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"server_password",
+                            (void *)server.arg("mqtt_password").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);

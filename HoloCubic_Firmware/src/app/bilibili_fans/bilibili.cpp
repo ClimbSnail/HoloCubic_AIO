@@ -6,7 +6,7 @@
 #define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
 #define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
 
-// 天气的持久化配置
+// Bilibili的持久化配置
 #define B_CONFIG_PATH "/bilibili.cfg"
 struct B_Config
 {

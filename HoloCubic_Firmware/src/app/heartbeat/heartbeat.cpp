@@ -7,6 +7,12 @@
 
 #define HEARTBEAT_APP_NAME "Heartbeat"
 
+#define DEFALUT_MQTT_IP "120.79.216.105"
+#define DEFALUT_MQTT_IP_CLIMBL "climb.dynv6.net"
+#define DEFALUT_MQTT_IP_CLIMBSNAIL "climbsnail.cn"
+#define DEFALUT_MQTT_PORT 1883
+
+// Bilibili的持久化配置
 #define HEARTBEAT_CONFIG_PATH "/heartbeat.cfg"
 
 extern AppController *app_controller; // APP控制器
@@ -14,10 +20,14 @@ extern AppController *app_controller; // APP控制器
 // 常驻数据，可以不随APP的生命周期而释放或删除
 struct HeartbeatAppForeverData
 {
-    long role;                  // 0: heart, 1: beat
-    char liz_mqtt_subtopic[10]; // "/beat"
-    char liz_mqtt_pubtopic[10]; // "/heart"
-    char client_id[10];         // "hc_heart"
+    int role;                   // 0: heart, 1: beat
+    char liz_mqtt_subtopic[32]; // "AIO-beat"
+    char liz_mqtt_pubtopic[32]; // "AIO-heart"
+    char client_id[32];         // 用户设置的ID
+    char connect_client_id[64]; // 连接是使用的client_id default "AIO"+MAC+client_id
+    char server_user[16];       // 服务的用户名
+    char server_password[16];   // 服务的密码
+    uint16_t port;              // mqtt服务器端口 1883
     IPAddress mqtt_server;
     WiFiClient espClient;      // 定义wifiClient实例
     PubSubClient *mqtt_client; //(mqtt_server, 1883, callback, espClient);
@@ -27,9 +37,7 @@ struct HeartbeatAppForeverData
 
 void HeartbeatAppForeverData::callback(char *topic, byte *payload, unsigned int length)
 {
-    Serial.print("Message arrived [");
-    Serial.print(topic); // 打印主题信息
-    Serial.print("] ");
+    Serial.printf("Message arrived [%s]", topic);
     for (int i = 0; i < length; i++)
     {
         Serial.print((char)payload[i]); // 打印主题内容
@@ -43,33 +51,48 @@ HeartbeatAppForeverData hb_cfg;
 
 static void write_config(HeartbeatAppForeverData *cfg)
 {
-    char tmp[16];
+    char tmp[32];
     String w_data;
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%ld\n", cfg->role);
+
+    memset(tmp, 0, 32);
+    snprintf(tmp, 16, "%d\n", cfg->role);
     w_data += tmp;
-    w_data = w_data + cfg->mqtt_server.toString() + "\n";
+
     if (cfg->role == 0)
     {
-        strcpy(cfg->liz_mqtt_subtopic, "/beat");
-        strcpy(cfg->liz_mqtt_pubtopic, "/heart");
-        strcpy(cfg->client_id, "hc_heart");
+        snprintf(cfg->liz_mqtt_subtopic, 32, "AIO-beat-%s", cfg->client_id);
+        snprintf(cfg->liz_mqtt_pubtopic, 32, "AIO-heart-%s", cfg->client_id);
     }
     else
     {
-        strcpy(cfg->liz_mqtt_subtopic, "/heart");
-        strcpy(cfg->liz_mqtt_pubtopic, "/beat");
-        strcpy(cfg->client_id, "hc_beat");
+        snprintf(cfg->liz_mqtt_subtopic, 32, "AIO-heart-%s", cfg->client_id);
+        snprintf(cfg->liz_mqtt_pubtopic, 32, "AIO-beat-%s", cfg->client_id);
     }
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%s\n", cfg->liz_mqtt_subtopic);
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%s\n", cfg->liz_mqtt_subtopic);
     w_data += tmp;
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%s\n", cfg->liz_mqtt_pubtopic);
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%s\n", cfg->liz_mqtt_pubtopic);
     w_data += tmp;
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%s\n", cfg->client_id);
+
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%s\n", cfg->client_id);
     w_data += tmp;
+
+    w_data = w_data + cfg->mqtt_server.toString() + "\n";
+
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%u\n", cfg->port);
+    w_data += tmp;
+
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%s\n", cfg->server_user);
+    w_data += tmp;
+
+    memset(tmp, 0, 32);
+    snprintf(tmp, 32, "%s\n", cfg->server_password);
+    w_data += tmp;
+
     g_flashCfg.writeFile(HEARTBEAT_CONFIG_PATH, w_data.c_str());
 }
 
@@ -77,7 +100,7 @@ static void read_config(HeartbeatAppForeverData *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
-    char info[128] = {0};
+    char info[256] = {0};
     uint16_t size = g_flashCfg.readFile(HEARTBEAT_CONFIG_PATH, (uint8_t *)info);
     Serial.printf("size %d\n", size);
     info[size] = 0;
@@ -85,34 +108,74 @@ static void read_config(HeartbeatAppForeverData *cfg)
     {
         // 设置了mqtt服务器才能运行！
         Serial.println("Please config mqtt first!");
+        // 默认值
+        cfg->role = 0; // 角色
+        strcpy(cfg->client_id, "");
+        cfg->mqtt_server.fromString(DEFALUT_MQTT_IP);
+        cfg->port = DEFALUT_MQTT_PORT; // mqtt服务端口
+        strcpy(cfg->server_user, "");
+        strcpy(cfg->server_password, "");
+        write_config(cfg);
     }
     else
     {
         // 解析数据
-        char *param[5] = {0};
-        analyseParam(info, 5, param);
-        cfg->role = atol(param[0]);
-        Serial.printf("hb_role %ld\n", cfg->role);
-        cfg->mqtt_server.fromString(param[1]);
+        char *param[8] = {0};
+        analyseParam(info, 8, param);
+        cfg->role = atoi(param[0]);
+        Serial.printf(HEARTBEAT_APP_NAME " role %d\n", cfg->role);
+
+        strcpy(cfg->liz_mqtt_subtopic, param[1]);
+        Serial.printf("mqtt_subtopic %s\n", cfg->liz_mqtt_subtopic);
+
+        strcpy(cfg->liz_mqtt_pubtopic, param[2]);
+        Serial.printf("mqtt_pubtopic %s\n", cfg->liz_mqtt_pubtopic);
+
+        strcpy(cfg->client_id, param[3]);
+        Serial.printf("mqtt_client_id %s\n", cfg->client_id);
+
+        cfg->mqtt_server.fromString(param[4]);
         Serial.printf("mqtt_server %s\n", cfg->mqtt_server.toString().c_str());
-        strcpy(cfg->liz_mqtt_subtopic, param[2]);
-        Serial.printf("liz_mqtt_subtopic %s\n", cfg->liz_mqtt_subtopic);
-        strcpy(cfg->liz_mqtt_pubtopic, param[3]);
-        Serial.printf("liz_mqtt_pubtopic %s\n", cfg->liz_mqtt_pubtopic);
-        strcpy(cfg->client_id, param[4]);
-        Serial.printf("client_id %s\n", cfg->client_id);
+
+        cfg->port = atol(param[5]);
+        Serial.printf("mqtt_port %u\n", cfg->port);
+
+        strcpy(cfg->server_user, param[6]);
+        Serial.printf("mqtt_server_user %s\n", cfg->server_user);
+
+        strcpy(cfg->server_password, param[7]);
+        Serial.printf("mqtt_server_password %s\n", cfg->server_password);
     }
+
+    if (!strcmp(cfg->mqtt_server.toString().c_str(), DEFALUT_MQTT_IP) || !strcmp(cfg->mqtt_server.toString().c_str(), DEFALUT_MQTT_IP_CLIMBL) || !strcmp(cfg->mqtt_server.toString().c_str(), DEFALUT_MQTT_IP_CLIMBSNAIL))
+    {
+        snprintf(cfg->connect_client_id, 64, "AIO-%llu-%s", ESP.getEfuseMac(), cfg->client_id);
+    }
+    else
+    {
+        snprintf(cfg->connect_client_id, 64, "%s", cfg->client_id);
+    }
+    Serial.printf("connect_client_id : %s\n", cfg->connect_client_id);
 }
 
 void HeartbeatAppForeverData::mqtt_reconnect()
 {
-    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection...\n");
     if (NULL == mqtt_client)
     {
         Serial.print("MQTT Client Error!\n");
+        return;
     }
+    char *user = NULL;
+    char *password = NULL;
     // Attempt to connect
-    if (mqtt_client->connect(client_id))
+    if (strcmp(server_user, ""))
+    {
+        user = server_user;
+        password = server_password;
+    }
+
+    if (mqtt_client->connect(connect_client_id, user, password))
     {
         Serial.println("mqtt connected");
         // 连接成功时订阅主题
@@ -130,6 +193,10 @@ struct HeartbeatAppRunData
 {
     uint8_t send_cnt = 0;
     uint8_t recv_cnt = 0;
+    unsigned long preUpdataMillis;     // 上一回更新的毫秒数
+    unsigned long timeUpdataInterval;  // 更新时间计数器
+    unsigned long heartContinueMillis; // 心跳的持续时间
+    unsigned long lastHeartUpdataTime; // 上次心跳的更新时间
 };
 
 // 保存APP运行时的参数信息，理论上关闭APP时推荐在 xxx_exit_callback 中释放掉
@@ -144,17 +211,23 @@ static int heartbeat_init(AppController *sys)
     run_data = (HeartbeatAppRunData *)calloc(1, sizeof(HeartbeatAppRunData));
     run_data->send_cnt = 0;
     run_data->recv_cnt = 0;
+    run_data->timeUpdataInterval = 5000; // 日期时钟更新的时间间隔30000(30s)
+    // run_data->preUpdataMillis = millis() - run_data->timeUpdataInterval;
+    run_data->preUpdataMillis = millis();
+    run_data->heartContinueMillis = 10000; // 心跳的持续时间10s
+    // 上次心跳的更新时间
+    run_data->lastHeartUpdataTime = millis() - run_data->heartContinueMillis;
 
     // 初始化MQTT
     char info[128] = {0};
-    uint16_t size = g_flashCfg.readFile("/heartbeat.cfg", (uint8_t *)info);
+    uint16_t size = g_flashCfg.readFile(HEARTBEAT_CONFIG_PATH, (uint8_t *)info);
     if (size != 0) // 如果已经设置过heartbeat了，则开启mqtt客户端
     {
         // 获取配置参数
         read_config(&hb_cfg);
         if (NULL == hb_cfg.mqtt_client)
         {
-            hb_cfg.mqtt_client = new PubSubClient(hb_cfg.mqtt_server, 1883, hb_cfg.callback, hb_cfg.espClient);
+            hb_cfg.mqtt_client = new PubSubClient(hb_cfg.mqtt_server, hb_cfg.port, hb_cfg.callback, hb_cfg.espClient);
         }
         // 连接wifi，并开启mqtt客户端
         sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
@@ -177,9 +250,9 @@ static void heartbeat_process(AppController *sys,
         if (NULL != hb_cfg.mqtt_client)
         {
             hb_cfg.mqtt_client->publish(hb_cfg.liz_mqtt_pubtopic, "hello!");
+            Serial.printf(HEARTBEAT_APP_NAME " sent publish %s successful\n", hb_cfg.liz_mqtt_pubtopic);
         }
-        Serial.printf("sent publish %s successful", hb_cfg.liz_mqtt_pubtopic);
-        Serial.println();
+
         // 发送指示灯
         // RgbParam rgb_setting = {LED_MODE_RGB,
         //                     0, 0, 0,
@@ -205,16 +278,26 @@ static void heartbeat_process(AppController *sys,
         if (NULL != hb_cfg.mqtt_client)
         {
             hb_cfg.mqtt_client->publish(hb_cfg.liz_mqtt_pubtopic, MQTT_SEND_MSG);
+            Serial.printf(HEARTBEAT_APP_NAME " sent publish %s successful\n", hb_cfg.liz_mqtt_pubtopic);
         }
-        Serial.printf("sent publish %s successful", hb_cfg.liz_mqtt_pubtopic);
+    }
+
+    if (millis() - run_data->lastHeartUpdataTime >= run_data->heartContinueMillis)
+    {
+        // 用于停止heart
+        heartbeat_set_sr_type(SEND);
     }
 
     if (NULL != hb_cfg.mqtt_client)
     {
-        // 发送请求。如果是wifi相关的消息，
-        // 当请求完成后自动会调用 heartbeat_message_handle 函数
-        sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME,
-                     APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
+        // 以下减少网络请求的压力
+        if (doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preUpdataMillis, false))
+        {
+            // 发送请求。如果是wifi相关的消息，
+            // 当请求完成后自动会调用 heartbeat_message_handle 函数
+            sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME,
+                         APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
+        }
     }
 
     // 程序需要时可以适当加延时
@@ -258,7 +341,10 @@ static void heartbeat_message_handle(const char *from, const char *to,
         {
             hb_cfg.mqtt_reconnect();
         }
-        hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+        else
+        {
+            hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+        }
     }
     break;
     case APP_MESSAGE_WIFI_AP:
@@ -273,7 +359,10 @@ static void heartbeat_message_handle(const char *from, const char *to,
         {
             hb_cfg.mqtt_reconnect();
         }
-        hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+        else
+        {
+            hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+        }
     }
     break;
     case APP_MESSAGE_GET_PARAM:
@@ -281,11 +370,27 @@ static void heartbeat_message_handle(const char *from, const char *to,
         char *param_key = (char *)message;
         if (!strcmp(param_key, "role"))
         {
-            snprintf((char *)ext_info, 32, "%ld", hb_cfg.role);
+            snprintf((char *)ext_info, 32, "%d", hb_cfg.role);
+        }
+        else if (!strcmp(param_key, "client_id"))
+        {
+            snprintf((char *)ext_info, 32, "%s", hb_cfg.client_id);
         }
         else if (!strcmp(param_key, "mqtt_server"))
         {
             snprintf((char *)ext_info, 32, "%s", hb_cfg.mqtt_server.toString().c_str());
+        }
+        else if (!strcmp(param_key, "port"))
+        {
+            snprintf((char *)ext_info, 32, "%u", hb_cfg.port);
+        }
+        else if (!strcmp(param_key, "server_user"))
+        {
+            snprintf((char *)ext_info, 32, "%s", hb_cfg.server_user);
+        }
+        else if (!strcmp(param_key, "server_password"))
+        {
+            snprintf((char *)ext_info, 32, "%s", hb_cfg.server_password);
         }
     }
     break;
@@ -296,14 +401,33 @@ static void heartbeat_message_handle(const char *from, const char *to,
         if (!strcmp(param_key, "role"))
         {
             hb_cfg.role = atol(param_val);
-            Serial.printf("hb role %ld", hb_cfg.role);
+            Serial.printf("hb role %d", hb_cfg.role);
             Serial.println();
+        }
+        else if (!strcmp(param_key, "client_id"))
+        {
+            snprintf((char *)hb_cfg.client_id, 32, "%s", param_val);
+            Serial.printf("mqtt_client_id %s\n", hb_cfg.client_id);
         }
         else if (!strcmp(param_key, "mqtt_server"))
         {
             hb_cfg.mqtt_server.fromString(param_val);
-            Serial.printf("mqtt_server %s", hb_cfg.mqtt_server.toString().c_str());
-            Serial.println();
+            Serial.printf("mqtt_server %s\n", hb_cfg.mqtt_server.toString().c_str());
+        }
+        else if (!strcmp(param_key, "port"))
+        {
+            hb_cfg.port = atol(param_val);
+            Serial.printf("mqtt_port %u\n", hb_cfg.port);
+        }
+        else if (!strcmp(param_key, "server_user"))
+        {
+            snprintf((char *)hb_cfg.server_user, 16, "%s", param_val);
+            Serial.printf("mqtt_server %s\n", param_val);
+        }
+        else if (!strcmp(param_key, "server_password"))
+        {
+            snprintf((char *)hb_cfg.server_password, 16, "%s", param_val);
+            Serial.printf("mqtt_server %s\n", param_val);
         }
     }
     break;
@@ -319,14 +443,16 @@ static void heartbeat_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_MQTT_DATA:
     {
-        if (run_data->send_cnt > 0) //已经手动发送过了
-        {
-            heartbeat_set_sr_type(HEART);
-        }
-        else
-        {
-            heartbeat_set_sr_type(RECV);
-        }
+        // if (run_data->send_cnt > 0) //已经手动发送过了
+        // {
+        //     heartbeat_set_sr_type(HEART);
+        // }
+        // else
+        // {
+        //     heartbeat_set_sr_type(RECV);
+        // }
+        heartbeat_set_sr_type(HEART);
+        run_data->lastHeartUpdataTime = millis();
         /* 亮一下 */
         // RgbParam rgb_setting = {LED_MODE_RGB,
         //                     0, 0, 0,
