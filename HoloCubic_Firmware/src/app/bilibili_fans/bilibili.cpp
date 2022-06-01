@@ -219,10 +219,26 @@ static void update_fans_num()
         //处理JSON数据
         int code = jsonDocument["code"];
         JsonObject data = jsonDocument["data"];
-        int follower = data["follower"].as<int>();
-        int following = data["following"].as<int>();
-        userInfo->follower = follower;
-        userInfo->following = following;
+        // {
+            int black = jsonDocument["black"];
+            int follower = data["follower"];
+            int following = data["following"];
+            String mid = data["mid"];
+            int whisper = data["whisper"];
+            // 更新数据
+            userInfo->follower = follower;
+            userInfo->following = following;
+        // }
+        String message = jsonDocument["message"];
+        int ttl = jsonDocument["ttl"];
+        Serial.println(code);
+        Serial.println(black);
+        Serial.println(follower);
+        Serial.println(following);
+        Serial.println(mid);
+        Serial.println(whisper);
+        Serial.println(message);
+        Serial.println(ttl);
         Serial.print("[HTTP] HTTP Request success.");
         Serial.println(payload);
         // 更新刷新状态
