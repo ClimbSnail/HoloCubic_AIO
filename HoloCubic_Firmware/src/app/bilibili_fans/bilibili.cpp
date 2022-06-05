@@ -1,20 +1,23 @@
+#include <ArduinoJson.h>
+
 #include "bilibili.h"
 #include "bilibili_gui.h"
 #include "sys/app_controller.h"
 #include "../../common.h"
 
-#define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
-#define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
+#define BILIBILI_API "https://api.bilibili.com/x/relation/stat?vmid="
+// #define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
 
 // Bilibili的持久化配置
 #define B_CONFIG_PATH "/bilibili.cfg"
-struct B_Config
+
+struct BilibiliConfig
 {
     String bili_uid;              // bilibili的uid
     unsigned long updataInterval; // 更新的时间间隔(s)
 };
 
-static void write_config(const B_Config *cfg)
+static void write_config(const BilibiliConfig *cfg)
 {
     char tmp[16];
     // 将配置数据保存在文件中（持久化）
@@ -26,7 +29,7 @@ static void write_config(const B_Config *cfg)
     g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
 }
 
-static void read_config(B_Config *cfg)
+static void read_config(BilibiliConfig *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
@@ -50,92 +53,106 @@ static void read_config(B_Config *cfg)
     }
 }
 
-struct BilibiliAppRunData
+struct BilibiliRunData
 {
-    unsigned int fans_num;
-    unsigned int follow_num;
     unsigned int refresh_status;
     unsigned long refresh_time_millis;
 };
 
-struct MyHttpResult
+struct BilibiliUserInfo
 {
-    int httpCode = 0;
-    String httpResponse = "";
+    unsigned int follower = 0;
+    unsigned int following = 0;
 };
 
-static B_Config cfg_data;
-static BilibiliAppRunData *run_data = NULL;
-
-static MyHttpResult http_request(String uid = "344470052")
+struct HttpResponse
 {
-    // String url = "http://www.dtmb.top/api/fans/index?id=" + uid;
-    MyHttpResult result;
-    String url = FANS_API + uid;
+    int httpCode = 0;
+    String httpPayload = "";
+};
+
+static BilibiliConfig cfg_data;
+static BilibiliRunData *run_data = NULL;
+struct BilibiliUserInfo *userInfo = NULL;
+
+static HttpResponse http_request(String uid = "344470052")
+{
+    // HTTP请求结果
+    HttpResponse result;
+    // API接口地址+用户UID
+    String url = BILIBILI_API + uid;
+    // 创建HTTP客户端
     HTTPClient *httpClient = new HTTPClient();
+    // 设置超时时间
     httpClient->setTimeout(1000);
+    // 发起HTTP请求
     bool status = httpClient->begin(url);
+    // 请求失败
     if (status == false)
     {
         result.httpCode = -1;
+        result.httpPayload = "";
         return result;
     }
-    int httpCode = httpClient->GET();
-    String httpResponse = httpClient->getString();
+    // 获取返回结果
+    result.httpCode = httpClient->GET();          //状态码
+    result.httpPayload = httpClient->getString(); //请求结果
+    // 关闭HTTP客户端
     httpClient->end();
-    result.httpCode = httpCode;
-    result.httpResponse = httpResponse;
     return result;
 }
 
 static int bilibili_init(AppController *sys)
 {
+    // 界面初始化
     bilibili_gui_init();
     // 获取配置信息
     read_config(&cfg_data);
     // 初始化运行时参数
-    run_data = (BilibiliAppRunData *)malloc(sizeof(BilibiliAppRunData));
-    run_data->fans_num = 0;
-    run_data->follow_num = 0;
+    run_data = (BilibiliRunData *)malloc(sizeof(BilibiliRunData));
     run_data->refresh_status = 0;
     run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
+    // 初始化用户信息
+    userInfo = (BilibiliUserInfo *)malloc(sizeof(BilibiliUserInfo));
+    userInfo->follower = 0;
+    userInfo->following = 0;
 }
 
 static void bilibili_process(AppController *sys,
                              const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
+    // 退出APP
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit();
         return;
     }
-
-    char fans_num[20] = {0};
-    char follow_num[20] = {0};
-    if (run_data->fans_num >= 10000)
+    // 临时缓存
+    char follower[20] = {0};
+    char following[20] = {0};
+    // 粉丝数过万
+    if (userInfo->follower >= 10000)
     {
-        // 粉丝过万的
-        snprintf(fans_num, 20, "%3.1fw", run_data->fans_num * 1.0 / 10000);
+        snprintf(follower, 20, "%3.1fw", userInfo->follower * 1.0 / 10000);
     }
     else
     {
-        snprintf(fans_num, 20, "%d", run_data->fans_num);
+        snprintf(follower, 20, "%d", userInfo->follower);
     }
-
-    if (run_data->follow_num >= 10000)
+    // 关注数过万
+    if (userInfo->following >= 10000)
     {
-        // 关注过万的
-        snprintf(follow_num, 20, "%3.1fw", run_data->follow_num * 1.0 / 10000);
+        snprintf(following, 20, "%3.1fw", userInfo->following * 1.0 / 10000);
     }
     else
     {
-        snprintf(follow_num, 20, "%d", run_data->follow_num);
+        snprintf(following, 20, "%d", userInfo->following);
     }
 
     if (0 == run_data->refresh_status)
     {
-        display_bilibili("bilibili", anim_type, fans_num, follow_num);
+        display_bilibili("bilibili", anim_type, follower, following);
         // 以下减少网络请求的压力
         if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
         {
@@ -145,7 +162,7 @@ static void bilibili_process(AppController *sys,
     }
     else
     {
-        display_bilibili("bilibili", anim_type, fans_num, follow_num);
+        display_bilibili("bilibili", anim_type, follower, following);
     }
 
     delay(300);
@@ -168,36 +185,64 @@ static int bilibili_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    if (NULL != userInfo)
+    {
+        free(userInfo);
+        userInfo = NULL;
+    }
 }
 
 static void update_fans_num()
 {
-    MyHttpResult result = http_request(cfg_data.bili_uid);
-    if (-1 == result.httpCode)
+    // 发起HTTP请求获取粉丝信息
+    HttpResponse response = http_request(cfg_data.bili_uid);
+    if (-1 == response.httpCode)
     {
-        Serial.println("[HTTP] Http request failed.");
+        Serial.println("[HTTP] HTTP request failed.");
         return;
     }
-    if (result.httpCode > 0)
+    if (response.httpCode <= 0)
     {
-        if (result.httpCode == HTTP_CODE_OK || result.httpCode == HTTP_CODE_MOVED_PERMANENTLY)
-        {
-            String payload = result.httpResponse;
-            Serial.println("[HTTP] OK");
-            Serial.println(payload);
-            int startIndex_1 = payload.indexOf("follower") + 10;
-            int endIndex_1 = payload.indexOf('}', startIndex_1);
-            int startIndex_2 = payload.indexOf("following") + 11;
-            int endIndex_2 = payload.indexOf(',', startIndex_2);
-            String res = payload.substring(startIndex_1, endIndex_1);
-            run_data->fans_num = payload.substring(startIndex_1, endIndex_1).toInt();
-            run_data->follow_num = payload.substring(startIndex_2, endIndex_2).toInt();
-            run_data->refresh_status = 1;
-        }
+        Serial.println("[HTTP] HTTP request ERROR");
+        return;
     }
-    else
+    if (response.httpCode == HTTP_CODE_OK || response.httpCode == HTTP_CODE_MOVED_PERMANENTLY)
     {
-        Serial.println("[HTTP] ERROR");
+        //获取负载
+        String payload = response.httpPayload;
+        // JSON文档容量
+        const size_t jsonCapacity = JSON_OBJECT_SIZE(4) + JSON_OBJECT_SIZE(5) + 70;
+        //创建JSON文档对象
+        DynamicJsonDocument jsonDocument(jsonCapacity);
+        //解析JSON数据
+        deserializeJson(jsonDocument, payload);
+        //处理JSON数据
+        int code = jsonDocument["code"];
+        JsonObject data = jsonDocument["data"];
+        // {
+            int black = jsonDocument["black"];
+            int follower = data["follower"];
+            int following = data["following"];
+            String mid = data["mid"];
+            int whisper = data["whisper"];
+            // 更新数据
+            userInfo->follower = follower;
+            userInfo->following = following;
+        // }
+        String message = jsonDocument["message"];
+        int ttl = jsonDocument["ttl"];
+        Serial.println(code);
+        Serial.println(black);
+        Serial.println(follower);
+        Serial.println(following);
+        Serial.println(mid);
+        Serial.println(whisper);
+        Serial.println(message);
+        Serial.println(ttl);
+        Serial.print("[HTTP] HTTP Request success.");
+        Serial.println(payload);
+        // 更新刷新状态
+        run_data->refresh_status = 1;
     }
 }
 
