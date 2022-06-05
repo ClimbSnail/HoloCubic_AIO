@@ -59,6 +59,7 @@ String file_size(int bytes)
                     "<label class=\"input\"><span>屏幕方向 (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%s\"></label>"                                                                                                                            \
                     "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%s\"></label>"                                                                                                                       \
                     "<label class=\"input\"><span>MPU6050自动校准</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
+                    "<label class=\"input\"><span>开机自启的APP名字</span><input type=\"text\"name=\"auto_start_app\"value=\"%s\"></label>"                                                                                                                      \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define RGB_SETTING "<form method=\"GET\" action=\"saveRgbConf\">"                                                                                             \
@@ -202,6 +203,7 @@ void sys_setting()
     char max_brightness[32];
     char time[32];
     char auto_calibration_mpu[32];
+    char auto_start_app[32];
     // 读取数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
@@ -225,6 +227,8 @@ void sys_setting()
                             (void *)"time", time);
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
                             (void *)"auto_calibration_mpu", auto_calibration_mpu);
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"auto_start_app", auto_start_app);
     SysUtilConfig cfg = app_controller->sys_cfg;
     // 主要为了处理启停MPU自动校准的单选框
     if (0 == cfg.auto_calibration_mpu)
@@ -232,14 +236,16 @@ void sys_setting()
         sprintf(buf, SYS_SETTING,
                 ssid_0, password_0,
                 power_mode, backLight, rotation,
-                mpu_order, "checked=\"checked\"", "");
+                mpu_order, "checked=\"checked\"", "",
+                auto_start_app);
     }
     else
     {
         sprintf(buf, SYS_SETTING,
                 ssid_0, password_0,
                 power_mode, backLight, rotation,
-                mpu_order, "", "checked=\"checked\"");
+                mpu_order, "", "checked=\"checked\"",
+                auto_start_app);
     }
     webpage = buf;
     Send_HTML(webpage);
@@ -474,6 +480,10 @@ void saveSysConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"auto_calibration_mpu",
                             (void *)server.arg("auto_calibration_mpu").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"auto_start_app",
+                            (void *)server.arg("auto_start_app").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);

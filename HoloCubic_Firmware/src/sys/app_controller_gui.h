@@ -29,6 +29,7 @@ extern "C"
 
 #include "lvgl.h"
     extern const lv_img_dsc_t app_loading;
+    extern const lv_img_dsc_t app_loading1;
 
 #ifdef __cplusplus
 } /* extern "C" */

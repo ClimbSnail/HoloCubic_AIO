@@ -128,6 +128,8 @@ void setup()
     app_controller->app_install(&anniversary_app);
     app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
 
+    // 自启动APP
+    app_controller->app_auto_start();
     // 优先显示屏幕 加快视觉上的开机时间
     app_controller->main_process(&mpu.action_info);
 

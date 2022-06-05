@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.0.7"
+#define AIO_VERSION "2.0.8"
 
 #include "Arduino.h"
 #include "driver/rgb_led.h"
@@ -57,6 +57,7 @@ struct SysUtilConfig
     String password_1;
     String ssid_2;
     String password_2;
+    String auto_start_app;        // 开机自启的APP名字
     uint8_t power_mode;           // 功耗模式（0为节能模式 1为性能模式）
     uint8_t backLight;            // 屏幕亮度（1-100）
     uint8_t rotation;             // 屏幕旋转方向

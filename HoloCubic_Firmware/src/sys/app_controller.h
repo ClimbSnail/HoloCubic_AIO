@@ -40,6 +40,7 @@ public:
     ~AppController();
     void init(void);
     void Display(void); // 显示接口
+    int app_auto_start();
     // 将APP注册到app_controller中
     int app_install(APP_OBJ *app,
                     APP_TYPE app_type = APP_TYPE_REAL_TIME);

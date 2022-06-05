@@ -55,7 +55,7 @@ void AppController::init(void)
     app_control_gui_init();
     appList[0] = new APP_OBJ();
     appList[0]->app_image = &app_loading;
-    appList[0]->app_name = "None";
+    appList[0]->app_name = "Loading...";
     appTypeList[0] = APP_TYPE_REAL_TIME;
     app_control_display_scr(appList[cur_app_index]->app_image,
                             appList[cur_app_index]->app_name,
@@ -112,6 +112,21 @@ int AppController::app_uninstall(const APP_OBJ *app)
 {
     // todo
     return 0;
+}
+
+int AppController::app_auto_start()
+{
+    // APP自启动
+    int index = this->getAppIdxByName(sys_cfg.auto_start_app.c_str());
+    if (index < 0)
+    {
+        // 没找到相关的APP
+        return 0;
+    }
+    // 进入自启动的APP
+    app_exit_flag = 1; // 进入app, 如果已经在
+    cur_app_index = index;
+    (*(appList[cur_app_index]->app_init))(this); // 执行APP初始化
 }
 
 int AppController::main_process(ImuAction *act_info)

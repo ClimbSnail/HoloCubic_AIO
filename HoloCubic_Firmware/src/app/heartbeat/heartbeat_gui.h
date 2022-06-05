@@ -1,5 +1,5 @@
-#ifndef APP_EXAMPLE_GUI_H
-#define APP_EXAMPLE_GUI_H
+#ifndef APP_HEARTBEAT_GUI_H
+#define APP_HEARTBEAT_GUI_H
 
 #ifdef __cplusplus
 extern "C"
