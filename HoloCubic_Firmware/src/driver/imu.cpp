@@ -31,10 +31,8 @@ void IMU::init(uint8_t order, uint8_t auto_calibration,
     unsigned long preMillis = millis();
     // mpu = MPU6050(0x68, &Wire);
     mpu = MPU6050(0x68);
-    Serial.print(F("Unable to connect to 4.\n"));
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, false))
         ;
-    Serial.print(F("Unable to connect to 5.\n"));
 
     if (!mpu.testConnection())
     {
