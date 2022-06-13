@@ -6,8 +6,6 @@
 #include "docoder.h"
 #include "DMADrawer.h"
 
-#include <SD.h>
-
 #define MEDIA_PLAYER_APP_NAME "Media"
 
 #define VIDEO_WIDTH 240L
@@ -111,7 +109,7 @@ static bool video_start(bool create_new)
     char file_name[FILENAME_MAX_LEN] = {0};
     snprintf(file_name, FILENAME_MAX_LEN, "%s/%s", run_data->movie_file->file_name, run_data->pfile->file_name);
 
-    run_data->file = SD.open(file_name);
+    run_data->file = tf.open(file_name);
     if (NULL != strstr(run_data->pfile->file_name, ".mjpeg") || NULL != strstr(run_data->pfile->file_name, ".MJPEG"))
     {
         // 直接解码mjpeg格式的视频

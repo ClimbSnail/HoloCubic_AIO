@@ -105,6 +105,7 @@ String file_size(int bytes)
 #define HEARTBEAT_SETTING "<form method=\"GET\" action=\"saveHeartbeatConf\">"                                                                            \
                           "<label class=\"input\"><span>Role(0:heart,1:beat)</span><input type=\"text\"name=\"role\"value=\"%s\"></label>"                \
                           "<label class=\"input\"><span>MQTT ClientID(推荐QQ号)</span><input type=\"text\"name=\"mqtt_client_id\"value=\"%s\"></label>"                    \  
+                          "<label class=\"input\"><span>MQTT SubTopic(推荐对方QQ号)</span><input type=\"text\"name=\"mqtt_subtopic\"value=\"%s\"></label>"                    \  
                         "<label class=\"input\"><span>MQTT ServerIp</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \  
                         "<label class=\"input\"><span>MQTT 端口号(1883)</span><input type=\"text\"name=\"mqtt_port\"value=\"%s\"></label>"             \
                         "<label class=\"input\"><span>MQTT 服务用户名(可不填)</span><input type=\"text\"name=\"mqtt_user\"value=\"%s\"></label>"  \
@@ -399,6 +400,7 @@ void heartbeat_setting()
     char buf[2048];
     char role[32];
     char client_id[32];
+    char subtopic[32];
     char mqtt_server[32];
     char port[32];
     char server_user[32];
@@ -412,6 +414,8 @@ void heartbeat_setting()
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"client_id", client_id);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
+                            (void *)"subtopic", subtopic);
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"mqtt_server", mqtt_server);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"port", port);
@@ -420,7 +424,8 @@ void heartbeat_setting()
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"server_password", server_password);
 
-    sprintf(buf, HEARTBEAT_SETTING, role, client_id, mqtt_server, port, server_user, server_password);
+    sprintf(buf, HEARTBEAT_SETTING, role, client_id, subtopic, mqtt_server,
+            port, server_user, server_password);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -635,6 +640,10 @@ void saveHeartbeatConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"client_id",
                             (void *)server.arg("mqtt_client_id").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"subtopic",
+                            (void *)server.arg("mqtt_subtopic").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_server",
