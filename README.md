@@ -152,6 +152,14 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 3. 设置完心跳APP之后，开机自动联网，并开启mqtt客户端。收到另一个HoloCubic的消息之后自动进入APP。正常方式进入APP则自动向另一个HoloCubic发送消息。
 4. 群内不定时更新免费的服务，具体配置参数可以问管理或者群友。
 
+注：纪念日和心跳都复现自[LizCubic](https://github.com/qingehao/LizCubic)项目。程序由`WoodwindHu`编写
+
+##### 股票行情实时查看（Stock）
+1. 运行APP条件：必须是已经正常配置wifi。为避免wifi连接时，功率不够导致重启，请确保USB口供电充足。
+2. 第一次使用之前，要先在`WebServer App`的网页上修改自己想要的`股票代码`。
+
+注：程序由`redwolf`编写
+
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
@@ -188,6 +196,8 @@ platformIO模拟器 https://github.com/lvgl/lv_platformio
 关于lvgl的学习参考：`http://lvgl.100ask.org`、`http://lvgl.100ask.net`
 
 lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
+
+c文件中提取所有汉字：可以使用工程下的`get_font.py`脚本提取。`python get_font.py 字模.c文件的路径`
 
 ### 致谢
 * ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403

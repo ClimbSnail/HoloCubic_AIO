@@ -72,7 +72,7 @@ void display_app_scr_init(const void *src_img_path, const char *app_name)
     lv_obj_align(pre_app_name, pre_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
     lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
-    ANIEND
+    // ANIEND
     // lv_scr_load(app_scr);    // 加载屏幕
 }
 

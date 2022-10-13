@@ -77,7 +77,7 @@ typedef int16_t lv_coord_t;
  * The graphical objects and other related data are stored here. */
 
 /* 1: use custom malloc/free, 0: use the built-in `lv_mem_alloc` and `lv_mem_free` */
-#define LV_MEM_CUSTOM      0
+#define LV_MEM_CUSTOM      1
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #  define LV_MEM_SIZE    (32U * 1024U)
@@ -399,7 +399,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_FONT_MONTSERRAT_42    0
 #define LV_FONT_MONTSERRAT_44    0
 #define LV_FONT_MONTSERRAT_46    0
-#define LV_FONT_MONTSERRAT_48    0
+#define LV_FONT_MONTSERRAT_48    1
 
 /* Demonstrate special features */
 #define LV_FONT_MONTSERRAT_12_SUBPX      0
@@ -531,7 +531,7 @@ typedef void * lv_font_user_data_t;
 #define LV_USE_ARABIC_PERSIAN_CHARS 0
 
 /*Change the built in (v)snprintf functions*/
-#define LV_SPRINTF_CUSTOM   0
+#define LV_SPRINTF_CUSTOM   1
 #if LV_SPRINTF_CUSTOM
 #  define LV_SPRINTF_INCLUDE <stdio.h>
 #  define lv_snprintf     snprintf

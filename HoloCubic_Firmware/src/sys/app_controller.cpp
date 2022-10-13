@@ -54,7 +54,7 @@ void AppController::init(void)
 
     app_control_gui_init();
     appList[0] = new APP_OBJ();
-    appList[0]->app_image = &app_loading;
+    appList[0]->app_image = &app_loading1;
     appList[0]->app_name = "Loading...";
     appTypeList[0] = APP_TYPE_REAL_TIME;
     app_control_display_scr(appList[cur_app_index]->app_image,

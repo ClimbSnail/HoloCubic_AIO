@@ -28,6 +28,7 @@
 #include "app/weather_old/weather_old.h"
 #include "app/anniversary/anniversary.h"
 #include "app/heartbeat/heartbeat.h"
+#include "app/stockmarket/stockmarket.h"
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
@@ -127,17 +128,25 @@ void setup()
     app_controller->app_install(&game_2048_app);
     app_controller->app_install(&anniversary_app);
     app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
+    app_controller->app_install(&stockmarket_app);
 
     // 自启动APP
-    // app_controller->app_auto_start();
+    app_controller->app_auto_start();
     // 优先显示屏幕 加快视觉上的开机时间
     app_controller->main_process(&mpu.action_info);
 
+    Serial.print(F("lv_port_indev_init: start"));
+
     /*** Init IMU as input device ***/
-    lv_port_indev_init();
+    // lv_port_indev_init();
+
+    Serial.print(F("lv_port_indev_init: end"));
+
     mpu.init(app_controller->sys_cfg.mpu_order,
              app_controller->sys_cfg.auto_calibration_mpu,
              &app_controller->mpu_cfg); // 初始化比较耗时
+
+    Serial.print(F("mpu.init"));
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;

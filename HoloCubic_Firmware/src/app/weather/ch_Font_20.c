@@ -13,6 +13,25 @@
 
 
 static const uint8_t glyph_bitmap[] = {
+/* 
+ */
+0xff,0xff,0xff,0xff,0xff,0xf0,  //@@@@@@@@@@@
+0xff,0x88,0x88,0x88,0x8f,0xf0,  //@@%%%%%%%@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x00,0x00,0x00,0x0f,0xf0,  //@@.......@@
+0xff,0x88,0x88,0x88,0x8f,0xf0,  //@@%%%%%%%@@
+0xff,0xff,0xff,0xff,0xff,0xf0,  //@@@@@@@@@@@
+
+
 /*   */
 
 
@@ -2230,6 +2249,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x00,0x00,0x00,0x07,0xdf,0xff,0xff,0xed,0x40,  //.........*@@@@@@@@*.
 
 
+/* 亿 */
+0x00,0x00,0xba,0x60,0x00,0x00,0x00,0x00,0x00,0x00,  //....%%*+............
+0x00,0x02,0xff,0xc9,0xff,0xff,0xff,0xff,0xff,0x20,  //...+@@@%@@@@@@@@@@+.
+0x00,0x07,0xff,0x69,0xff,0xff,0xff,0xff,0xff,0x20,  //...%@@*%@@@@@@@@@@+.
+0x00,0x0d,0xfe,0x06,0xaa,0xaa,0xaa,0xef,0xfe,0x10,  //..+@@@+*%%%%%%@@@@+.
+0x00,0x5f,0xf9,0x00,0x00,0x00,0x06,0xff,0xf5,0x00,  //..*@@%.......*@@@*..
+0x00,0xcf,0xf4,0x00,0x00,0x00,0x3e,0xff,0x80,0x00,  //..@@@*......+@@@%...
+0x04,0xff,0xf4,0x00,0x00,0x01,0xdf,0xfa,0x00,0x00,  //.*@@@*.....+@@@%+...
+0x0c,0xff,0xf4,0x00,0x00,0x0b,0xff,0xc1,0x00,0x00,  //+@@@@*....+%@@@+....
+0x5f,0xff,0xf4,0x00,0x00,0x7f,0xfe,0x20,0x00,0x00,  //*@@@@*....*@@@+.....
+0x9f,0xff,0xf4,0x00,0x02,0xef,0xf5,0x00,0x00,0x00,  //%@@@@*...+@@@*......
+0x5f,0xcf,0xf4,0x00,0x0c,0xff,0x90,0x00,0x00,0x00,  //*@@@@*..+@@@%.......
+0x1d,0x5f,0xf4,0x00,0x6f,0xfd,0x00,0x00,0x00,0x00,  //+@*@@*..*@@@+.......
+0x05,0x5f,0xf4,0x00,0xdf,0xf4,0x00,0x00,0x0c,0x61,  //.**@@*.+@@@*....+@*+
+0x00,0x5f,0xf4,0x07,0xff,0xa0,0x00,0x00,0x1f,0xf9,  //..*@@*.*@@%.....+@@%
+0x00,0x5f,0xf4,0x0c,0xff,0x30,0x00,0x00,0x3f,0xf7,  //..*@@*.@@@+.....+@@*
+0x00,0x5f,0xf4,0x0f,0xfd,0x00,0x00,0x00,0x6f,0xf4,  //..*@@*+@@@......*@@*
+0x00,0x5f,0xf4,0x0e,0xfe,0x51,0x00,0x03,0xdf,0xe1,  //..*@@*+@@@*++.++@@@+
+0x00,0x5f,0xf4,0x0b,0xff,0xff,0xff,0xff,0xff,0xa0,  //..*@@*.%@@@@@@@@@@%.
+0x00,0x5f,0xf4,0x01,0xcf,0xff,0xff,0xff,0xfd,0x20,  //..*@@*.+@@@@@@@@@@+.
+0x00,0x5f,0xf4,0x00,0x04,0x78,0x88,0x87,0x50,0x00,  //..*@@*..+**%%%%%*+..
+
+
 /* 什 */
 0x00,0x00,0xba,0x50,0x00,0x06,0xff,0x70,0x00,0x00,  //....%%*+...*@@%.....
 0x00,0x02,0xff,0xd0,0x00,0x06,0xff,0x70,0x00,0x00,  //...+@@@+...*@@%.....
@@ -2272,6 +2314,28 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x3f,0xf7,0x6f,0xff,0xff,0xff,0xff,0xff,0xfa,  //..+@@**@@@@@@@@@@@@%
 0x00,0x3f,0xf7,0x6f,0xff,0xff,0xff,0xff,0xff,0xfa,  //..+@@**@@@@@@@@@@@@%
 0x00,0x3f,0xf7,0x00,0x00,0x00,0x00,0x00,0x00,0x00,  //..+@@*..............
+
+
+/* 今 */
+0x00,0x00,0x00,0x00,0x9f,0xff,0x30,0x00,0x00,0x00,  //........%@@@+.......
+0x00,0x00,0x00,0x07,0xff,0xff,0xa0,0x00,0x00,0x00,  //.......*@@@@%+......
+0x00,0x00,0x00,0x6e,0xfe,0xdf,0xf8,0x00,0x00,0x00,  //......*@@@@@@%......
+0x00,0x00,0x07,0xff,0xf5,0x2e,0xff,0x80,0x00,0x00,  //.....%@@@*+@@@%+....
+0x00,0x01,0xaf,0xfe,0x60,0x04,0xef,0xfa,0x10,0x00,  //...+%@@@*..*@@@%+...
+0x00,0x5d,0xff,0xe5,0x4b,0x10,0x4e,0xff,0xd4,0x00,  //.+*@@@@**@+.*@@@@*..
+0x4c,0xff,0xfc,0x34,0xff,0xb0,0x02,0xcf,0xff,0xb3,  //*@@@@@+*@@@+.+@@@@@+
+0x3e,0xfe,0x80,0x00,0xbf,0xf9,0x00,0x08,0xef,0xe4,  //*@@@%+.+@@@%..+%@@@*
+0x06,0xa2,0x00,0x00,0x1e,0xfe,0x10,0x00,0x2a,0x60,  //.*%+....+@@@+...+%*.
+0x00,0x00,0x00,0x00,0x05,0xa1,0x00,0x00,0x00,0x00,  //.........*%+........
+0x00,0x6f,0xff,0xff,0xff,0xff,0xff,0xff,0xf1,0x00,  //..*@@@@@@@@@@@@@@+..
+0x00,0x6f,0xff,0xff,0xff,0xff,0xff,0xff,0xf1,0x00,  //..*@@@@@@@@@@@@@@+..
+0x00,0x49,0x99,0x99,0x99,0x99,0x9e,0xff,0xd0,0x00,  //..*%%%%%%%%%%@@@@+..
+0x00,0x00,0x00,0x00,0x00,0x00,0x5f,0xfe,0x40,0x00,  //............*@@@*...
+0x00,0x00,0x00,0x00,0x00,0x03,0xef,0xf7,0x00,0x00,  //...........+@@@%....
+0x00,0x00,0x00,0x00,0x00,0x1d,0xff,0xa0,0x00,0x00,  //..........+@@@%+....
+0x00,0x00,0x00,0x00,0x01,0xcf,0xfc,0x00,0x00,0x00,  //.........+@@@@+.....
+0x00,0x00,0x00,0x00,0x07,0xff,0xd2,0x00,0x00,0x00,  //.........*@@@+......
+0x00,0x00,0x00,0x00,0x00,0x4b,0x30,0x00,0x00,0x00,  //..........*@+.......
 
 
 /* 介 */
@@ -2339,6 +2403,30 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x4f,0xf4,0x0e,0xff,0xff,0xff,0xff,0xff,0xe0,  //..*@@*.@@@@@@@@@@@@
 0x00,0x4f,0xf4,0x0e,0xff,0xff,0xff,0xff,0xff,0xe0,  //..*@@*.@@@@@@@@@@@@
 0x00,0x4e,0xe4,0x07,0x77,0x77,0x77,0x77,0xbf,0xe0,  //..*@@*.%%%%%%%%%@@@
+
+
+/* 代 */
+0x00,0x00,0x8a,0x60,0x01,0xcc,0x60,0x5b,0x20,0x00,  //....%%*+.+@@*.*@+...
+0x00,0x00,0xdf,0xe0,0x01,0xff,0x82,0xef,0xe7,0x00,  //...+@@@+.+@@%+@@@%+.
+0x00,0x04,0xff,0x90,0x01,0xff,0x80,0x2c,0xfe,0x30,  //...*@@%..+@@%.+@@@*.
+0x00,0x0a,0xff,0x40,0x00,0xff,0x90,0x00,0xa4,0x00,  //...%@@*..+@@%..+%*..
+0x00,0x2e,0xfc,0x00,0x00,0xef,0xa0,0x00,0x00,0x00,  //..+@@@+...@@%.......
+0x00,0x9f,0xf7,0x00,0x00,0xdf,0xc5,0x68,0xac,0xd2,  //..%@@%....@@@**%%@@+
+0x02,0xef,0xf7,0x69,0xbd,0xef,0xff,0xff,0xff,0xf3,  //.+@@@**%@@@@@@@@@@@*
+0x0a,0xff,0xf7,0xaf,0xff,0xff,0xff,0xed,0xb9,0x82,  //.%@@@*%@@@@@@@@@@%%+
+0x5f,0xff,0xf7,0x8d,0xb9,0xcf,0xf3,0x00,0x00,0x00,  //*@@@@*%@@%@@@++.....
+0x9f,0xef,0xf7,0x00,0x00,0x6f,0xf3,0x00,0x00,0x00,  //%@@@@*....*@@+......
+0x7f,0x8f,0xf7,0x00,0x00,0x4f,0xf5,0x00,0x00,0x00,  //*@%@@*....*@@*......
+0x4c,0x1f,0xf7,0x00,0x00,0x2f,0xf8,0x00,0x00,0x00,  //*@+@@*....+@@%......
+0x14,0x1f,0xf7,0x00,0x00,0x0e,0xfb,0x00,0x00,0x00,  //+*+@@*....+@@%......
+0x00,0x1f,0xf7,0x00,0x00,0x0b,0xfe,0x00,0x00,0x00,  //..+@@*.....@@@+.....
+0x00,0x1f,0xf7,0x00,0x00,0x08,0xff,0x30,0x09,0x50,  //..+@@*.....%@@+..%*+
+0x00,0x1f,0xf7,0x00,0x00,0x04,0xff,0x80,0x0d,0xf9,  //..+@@*.....*@@%..@@%
+0x00,0x1f,0xf7,0x00,0x00,0x00,0xdf,0xe0,0x0e,0xf8,  //..+@@*.....+@@@++@@%
+0x00,0x1f,0xf7,0x00,0x00,0x00,0x7f,0xf9,0x5f,0xf4,  //..+@@*......%@@%*@@*
+0x00,0x1f,0xf7,0x00,0x00,0x00,0x0d,0xff,0xff,0xe0,  //..+@@*......+@@@@@@+
+0x00,0x1f,0xf7,0x00,0x00,0x00,0x04,0xef,0xff,0x80,  //..+@@*.......*@@@@%.
+0x00,0x1f,0xf7,0x00,0x00,0x00,0x00,0x2a,0xc9,0x00,  //..+@@*........+%@%+.
 
 
 /* 令 */
@@ -2410,6 +2498,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x5f,0xf3,0x0e,0xf9,0x05,0xff,0xff,0xff,0x60,  //..*@@+.@@%.*@@@@@@*
 0x00,0x5f,0xf3,0x0e,0xf9,0x01,0xff,0xff,0xfc,0x10,  //..*@@+.@@%.+@@@@@@+
 0x00,0x5f,0xf3,0x0e,0xf9,0x00,0x9a,0x98,0x60,0x00,  //..*@@+.@@%..%%%%*+.
+
+
+/* 价 */
+0x00,0x00,0xb9,0x50,0x00,0x0a,0xff,0x80,0x00,0x00,  //....%%*....%@@%.....
+0x00,0x01,0xff,0xb0,0x00,0x3f,0xff,0xc0,0x00,0x00,  //...+@@@...*@@@@+....
+0x00,0x06,0xff,0x60,0x00,0xcf,0xef,0xf7,0x00,0x00,  //...*@@*..+@@@@@*....
+0x00,0x0c,0xfe,0x10,0x08,0xff,0x69,0xfe,0x20,0x00,  //...@@@+..%@@*%@@+...
+0x00,0x2f,0xfa,0x00,0x5f,0xfb,0x01,0xef,0xc1,0x00,  //..+@@%..*@@%++@@@+..
+0x00,0x9f,0xf6,0x03,0xef,0xd1,0x00,0x5f,0xfb,0x00,  //..%@@*.+@@@+..*@@@+.
+0x01,0xef,0xf6,0x3d,0xfe,0x30,0x00,0x07,0xff,0xc1,  //.+@@@*+@@@+....%@@@+
+0x08,0xff,0xf7,0xef,0xe4,0x00,0x00,0x00,0x9f,0xf8,  //.%@@@%@@@*......%@@%
+0x1e,0xff,0xf6,0xbe,0xbf,0xf4,0x00,0xcf,0xeb,0xe2,  //+@@@@*@@@@@*..@@@%@+
+0x8f,0xff,0xf6,0x37,0x7f,0xf4,0x00,0xcf,0xe1,0x80,  //%@@@@*+**@@*..@@@+%.
+0x6f,0xef,0xf6,0x00,0x7f,0xf4,0x00,0xcf,0xe0,0x00,  //*@@@@*..*@@*..@@@...
+0x2f,0x8f,0xf6,0x00,0x7f,0xf4,0x00,0xcf,0xe0,0x00,  //+@%@@*..%@@*..@@@...
+0x07,0x4f,0xf6,0x00,0x8f,0xf3,0x00,0xcf,0xe0,0x00,  //.**@@*..%@@+..@@@...
+0x00,0x4f,0xf6,0x00,0xaf,0xf2,0x00,0xcf,0xe0,0x00,  //..*@@*..%@@+..@@@...
+0x00,0x4f,0xf6,0x00,0xef,0xe0,0x00,0xcf,0xe0,0x00,  //..*@@*.+@@@+..@@@...
+0x00,0x4f,0xf6,0x04,0xff,0xb0,0x00,0xcf,0xe0,0x00,  //..*@@*.*@@%...@@@...
+0x00,0x4f,0xf6,0x0c,0xff,0x60,0x00,0xcf,0xe0,0x00,  //..*@@*+@@@*...@@@...
+0x00,0x4f,0xf6,0x8f,0xfd,0x00,0x00,0xcf,0xe0,0x00,  //..*@@*%@@@+...@@@...
+0x00,0x4f,0xf6,0x6e,0xf6,0x00,0x00,0xcf,0xe0,0x00,  //..*@@**@@*....@@@...
+0x00,0x4f,0xf6,0x05,0x80,0x00,0x00,0xcf,0xe0,0x00,  //..*@@*.*%.....@@@...
 
 
 /* 任 */
@@ -2734,6 +2845,28 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0xbf,0xb0,0x3f,0xff,0xff,0xff,0xff,0xff,0x70,  //..%@@.+@@@@@@@@@@@%.
 0x00,0xbf,0xb0,0x3f,0xff,0xff,0xff,0xff,0xff,0x70,  //..%@@.+@@@@@@@@@@@%.
 0x00,0xbf,0xb0,0x3f,0xf9,0x44,0x44,0x46,0xff,0x70,  //..%@@.+@@%******@@%.
+
+
+/* 值 */
+0x00,0x09,0xb7,0x00,0x00,0x0d,0xfa,0x00,0x00,0x00,  //...%%*+....@@%......
+0x00,0x0e,0xfb,0xdf,0xff,0xff,0xff,0xff,0xff,0xf4,  //..+@@@@@@@@@@@@@@@@*
+0x00,0x4f,0xf6,0xdf,0xff,0xff,0xff,0xff,0xff,0xf4,  //..*@@*@@@@@@@@@@@@@*
+0x00,0x9f,0xe1,0x22,0x22,0x2d,0xfb,0x22,0x22,0x20,  //..%@@++++++@@%++++++
+0x01,0xef,0xa0,0x6f,0xff,0xff,0xff,0xff,0xff,0x60,  //.+@@%.*@@@@@@@@@@@*.
+0x06,0xff,0x60,0x6f,0xfe,0xee,0xee,0xee,0xff,0x60,  //.*@@*.*@@@@@@@@@@@*.
+0x0c,0xff,0x60,0x6f,0xf0,0x00,0x00,0x00,0xff,0x60,  //+@@@*.*@@+.....+@@*.
+0x5f,0xff,0x60,0x6f,0xff,0xff,0xff,0xff,0xff,0x60,  //*@@@*.*@@@@@@@@@@@*.
+0xaf,0xff,0x60,0x6f,0xfd,0xdd,0xdd,0xdd,0xff,0x60,  //%@@@*.*@@@@@@@@@@@*.
+0x8e,0xff,0x60,0x6f,0xf0,0x00,0x00,0x00,0xff,0x60,  //%@@@*.*@@+.....+@@*.
+0x58,0xff,0x60,0x6f,0xff,0xff,0xff,0xff,0xff,0x60,  //*%@@*.*@@@@@@@@@@@*.
+0x32,0xff,0x60,0x6f,0xfd,0xdd,0xdd,0xdd,0xff,0x60,  //++@@*.*@@@@@@@@@@@*.
+0x00,0xff,0x60,0x6f,0xf0,0x00,0x00,0x00,0xff,0x60,  //.+@@*.*@@+.....+@@*.
+0x00,0xff,0x60,0x6f,0xff,0xff,0xff,0xff,0xff,0x60,  //.+@@*.*@@@@@@@@@@@*.
+0x00,0xff,0x60,0x6f,0xfd,0xdd,0xdd,0xdd,0xff,0x60,  //.+@@*.*@@@@@@@@@@@*.
+0x00,0xff,0x60,0x6f,0xf0,0x00,0x00,0x00,0xff,0x60,  //.+@@*.*@@+.....+@@*.
+0x00,0xff,0x6d,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,  //.+@@*@@@@@@@@@@@@@@@
+0x00,0xff,0x6d,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,  //.+@@*@@@@@@@@@@@@@@@
+0x00,0xff,0x62,0x22,0x22,0x22,0x22,0x22,0x22,0x22,  //.+@@*+++++++++++++++
 
 
 /* 偃 */
@@ -6466,6 +6599,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x6f,0xf1,0x00,0x04,0x98,0x61,0x00,0x00,0x00,  //..*@@+...*%%*+......
 
 
+/* 微 */
+0x00,0x07,0x80,0x00,0xcf,0x00,0x00,0x4c,0x90,0x00,  //...*%+..@@+...*@%+..
+0x00,0x4e,0xfa,0x00,0xcf,0x00,0x00,0x7f,0xb0,0x00,  //..*@@%..@@+...%@%...
+0x04,0xef,0xda,0xf5,0xcf,0x3f,0xb0,0xbf,0x60,0x00,  //.*@@@%@*@@+@%.%@*...
+0x4e,0xfe,0x37,0xf5,0xcf,0x3f,0xb0,0xef,0xff,0xfa,  //*@@@+%@*@@+@%+@@@@@%
+0x8f,0xe3,0x07,0xf5,0xcf,0x3f,0xb3,0xff,0xff,0xfa,  //%@@+.%@*@@+@%*@@@@@%
+0x0a,0x20,0x07,0xf5,0xcf,0x3f,0xb8,0xf8,0x6f,0xf3,  //+%+..%@*@@+@%%@%*@@+
+0x00,0x00,0x07,0xff,0xff,0xff,0xbd,0xf6,0x2f,0xe0,  //.....%@@@@@@%@@*+@@.
+0x00,0x03,0x9c,0xff,0xff,0xff,0xbf,0xf7,0x3f,0xc0,  //...+%@@@@@@@@@@*+@@.
+0x00,0x5e,0xfc,0xff,0xff,0xff,0x9a,0xf8,0x5f,0xb0,  //..*@@@@@@@@@%%@%*@%.
+0x19,0xff,0x95,0xee,0xee,0xee,0x71,0xfb,0x7f,0x80,  //+%@@%*@@@@@@%+@%%@%.
+0xbf,0xff,0x70,0x00,0x00,0x00,0x00,0xed,0xaf,0x60,  //@@@@*.........@@%@*.
+0x7f,0xff,0x70,0xdf,0xff,0xff,0x00,0xbf,0xef,0x20,  //*@@@*.@@@@@@..@@@@+.
+0x28,0xcf,0x70,0xdf,0xee,0xff,0x00,0x8f,0xfd,0x00,  //+%@@*.@@@@@@..%@@@+.
+0x00,0xcf,0x70,0xdf,0x21,0xff,0x00,0x4f,0xf9,0x00,  //..@@*.@@++@@..*@@%..
+0x00,0xcf,0x70,0xef,0x11,0xff,0x00,0x4f,0xf9,0x00,  //..@@*.@@++@@..*@@%..
+0x00,0xcf,0x70,0xfe,0x01,0xff,0x75,0xcf,0xfe,0x30,  //..@@*+@@++@@**@@@@+.
+0x00,0xcf,0x74,0xfb,0x01,0xff,0xfd,0xff,0xef,0xd2,  //..@@**@@.+@@@@@@@@@+
+0x00,0xcf,0x7a,0xf7,0x02,0xff,0xef,0xf9,0x4f,0xf8,  //..@@*%@%.+@@@@@%*@@%
+0x00,0xcf,0x9e,0xe1,0x05,0xfd,0x2e,0xd1,0x09,0xf3,  //..@@%@@+.*@@+@@+.%@+
+0x00,0xcf,0x75,0x60,0x00,0xa2,0x07,0x20,0x00,0x80,  //..@@***..+%+.*+..+%.
+
+
 /* 德 */
 0x00,0x03,0xb4,0x00,0x00,0x07,0xff,0x00,0x00,0x00,  //...+@*.....%@@+.....
 0x00,0x0b,0xfe,0x10,0x00,0x07,0xff,0x00,0x00,0x00,  //..+@@@+....%@@+.....
@@ -6599,6 +6755,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x7f,0xf2,0x00,0x00,0x0a,0xfe,0x00,0x00,0x00,  //..*@@+.....%@@......
 0x00,0x7f,0xf2,0x00,0x00,0x0a,0xfe,0x00,0x00,0x00,  //..*@@+.....%@@......
 0x00,0x7f,0xf2,0x00,0x00,0x0a,0xfe,0x00,0x00,0x00,  //..*@@+.....%@@......
+
+
+/* 总 */
+0x00,0x00,0x05,0xb7,0x00,0x00,0x4d,0xa6,0x00,0x00,  //....+*@*....*@%*....
+0x00,0x00,0x0d,0xfe,0x30,0x01,0xdf,0xe3,0x00,0x00,  //....+@@@*..+@@@*....
+0x00,0x00,0x04,0xee,0x80,0x0a,0xff,0x60,0x00,0x00,  //.....*@@%..%@@*.....
+0x00,0x2f,0xff,0xff,0xff,0xff,0xff,0xff,0xf4,0x00,  //..+@@@@@@@@@@@@@@*..
+0x00,0x2f,0xff,0xff,0xff,0xff,0xff,0xff,0xf4,0x00,  //..+@@@@@@@@@@@@@@*..
+0x00,0x2f,0xfc,0x66,0x66,0x66,0x66,0xbf,0xf4,0x00,  //..+@@@********@@@*..
+0x00,0x2f,0xfa,0x00,0x00,0x00,0x00,0x9f,0xf4,0x00,  //..+@@%........%@@*..
+0x00,0x2f,0xfa,0x00,0x00,0x00,0x00,0x9f,0xf4,0x00,  //..+@@%........%@@*..
+0x00,0x2f,0xfa,0x00,0x00,0x00,0x00,0x9f,0xf4,0x00,  //..+@@%........%@@*..
+0x00,0x2f,0xff,0xff,0xff,0xff,0xff,0xff,0xf4,0x00,  //..+@@@@@@@@@@@@@@*..
+0x00,0x2f,0xff,0xff,0xff,0xff,0xff,0xff,0xf4,0x00,  //..+@@@@@@@@@@@@@@*..
+0x00,0x16,0x66,0x66,0x6e,0xc6,0x66,0x66,0x61,0x00,  //..+******@@******+..
+0x00,0x00,0x00,0x00,0x9f,0xf5,0x00,0x00,0x00,0x00,  //........%@@*........
+0x02,0xc7,0x4f,0xf6,0x2e,0xfe,0x30,0x01,0x7c,0x20,  //.+@%*@@*+@@@+..+*@+.
+0x08,0xff,0x5f,0xf6,0x05,0xff,0x66,0x23,0xff,0x80,  //.%@@*@@*.*@@**+*@@%.
+0x1e,0xfb,0x2f,0xf6,0x00,0x85,0x0a,0xe3,0xbf,0xe1,  //+@@@+@@*..%*.%@+@@@+
+0x7f,0xf5,0x2f,0xf9,0x00,0x00,0x3e,0xfe,0x5f,0xf7,  //%@@*+@@%+..++@@@*@@%
+0x17,0xb0,0x0f,0xff,0xff,0xff,0xff,0xf9,0x0c,0x82,  //+%@++@@@@@@@@@@%+@%+
+0x00,0x00,0x09,0xff,0xff,0xff,0xff,0xd1,0x00,0x00,  //.....%@@@@@@@@@+....
+0x00,0x00,0x00,0x46,0x77,0x77,0x64,0x00,0x00,0x00,  //......********+.....
 
 
 /* 恩 */
@@ -6736,6 +6915,30 @@ static const uint8_t glyph_bitmap[] = {
 0x6f,0xf9,0x6e,0xff,0x70,0x0e,0xff,0xff,0xf4,0x00,  //*@@%*@@@*.+@@@@@@*..
 0x3e,0xf3,0x6e,0xfa,0x00,0x0b,0xff,0xff,0xb0,0x00,  //+@@+*@@%+..@@@@@@+..
 0x02,0x90,0x05,0x90,0x00,0x05,0x99,0x86,0x00,0x00,  //.+%..*%+...*%%%*+...
+
+
+/* 手 */
+0x00,0x00,0x11,0x22,0x34,0x56,0x78,0x9b,0xcc,0x00,  //..+++++++****%%%@@..
+0x05,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x30,  //.*@@@@@@@@@@@@@@@@+.
+0x02,0xff,0xff,0xff,0xff,0xff,0xfe,0xdc,0xb9,0x40,  //.+@@@@@@@@@@@@@@%%*.
+0x00,0x88,0x76,0x65,0x4f,0xfd,0x00,0x00,0x00,0x00,  //..%%%****@@@+.......
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x03,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x40,  //.+@@@@@@@@@@@@@@@@*.
+0x03,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x40,  //.+@@@@@@@@@@@@@@@@*.
+0x02,0x88,0x88,0x88,0x9f,0xfe,0x88,0x88,0x88,0x20,  //.+%%%%%%%@@@%%%%%%+.
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0xaf,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xfa,  //%@@@@@@@@@@@@@@@@@@%
+0xaf,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xfa,  //%@@@@@@@@@@@@@@@@@@%
+0x69,0x99,0x99,0x99,0x9f,0xfe,0x99,0x99,0x99,0x96,  //*%%%%%%%%@@@%%%%%%%*
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x00,0x00,0x00,0x00,0x0f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x00,0x00,0x00,0x00,0x1f,0xfd,0x00,0x00,0x00,0x00,  //........+@@@........
+0x00,0x00,0x11,0x00,0x7f,0xfc,0x00,0x00,0x00,0x00,  //....++++%@@@........
+0x00,0x00,0x5f,0xff,0xff,0xf8,0x00,0x00,0x00,0x00,  //....*@@@@@@%........
+0x00,0x00,0x2f,0xff,0xff,0xd1,0x00,0x00,0x00,0x00,  //....+@@@@@@+........
+0x00,0x00,0x0b,0xbb,0xa7,0x10,0x00,0x00,0x00,0x00,  //....+@@%%%+.........
 
 
 /* 扎 */
@@ -6946,6 +7149,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x00,0x05,0xff,0xff,0xe1,0x00,0x00,0x00,0x00,  //.....*@@@@@+........
 0x00,0x00,0x01,0xff,0xec,0x40,0x00,0x00,0x00,0x00,  //.....+@@@@*.........
 0x00,0x00,0x00,0x10,0x00,0x00,0x00,0x00,0x00,0x00,  //......+++...........
+
+
+/* 收 */
+0x00,0x00,0x0d,0xf9,0x00,0x2d,0xa4,0x00,0x00,0x00,  //.....@@%..+@%*......
+0x00,0x00,0x0d,0xf9,0x00,0x7f,0xf4,0x00,0x00,0x00,  //.....@@%..*@@*......
+0x0e,0xf6,0x0d,0xf9,0x00,0xbf,0xe0,0x00,0x00,0x00,  //.@@*.@@%..@@@+......
+0x0e,0xf6,0x0d,0xf9,0x02,0xff,0xff,0xff,0xff,0xf8,  //.@@*.@@%.+@@@@@@@@@%
+0x0e,0xf6,0x0d,0xf9,0x08,0xff,0xff,0xff,0xff,0xf8,  //.@@*.@@%.%@@@@@@@@@%
+0x0e,0xf6,0x0d,0xf9,0x1e,0xfd,0x88,0x8a,0xff,0xa5,  //.@@*.@@%+@@@%%%%@@%*
+0x0e,0xf6,0x0d,0xf9,0x8f,0xfa,0x00,0x06,0xff,0x10,  //.@@*.@@%%@@%...*@@+.
+0x0e,0xf6,0x0d,0xfc,0xef,0xfd,0x00,0x09,0xfe,0x00,  //.@@*.@@@@@@@+..%@@..
+0x0e,0xf6,0x0d,0xfb,0xef,0xff,0x20,0x0d,0xfb,0x00,  //.@@*.@@@@@@@+..@@%..
+0x0e,0xf6,0x0d,0xf9,0x7c,0xef,0x60,0x2f,0xf7,0x00,  //.@@*.@@%*@@@*.+@@*..
+0x0e,0xf6,0x0d,0xf9,0x05,0xaf,0xc0,0x7f,0xf3,0x00,  //.@@*.@@%+*%@@+%@@+..
+0x0e,0xf6,0x0d,0xf9,0x00,0x5f,0xf5,0xdf,0xc0,0x00,  //.@@*+@@%..*@@*@@@...
+0x0e,0xfa,0xdf,0xf9,0x00,0x0d,0xfe,0xff,0x60,0x00,  //.@@%@@@%..+@@@@@*...
+0x1f,0xff,0xff,0xf9,0x00,0x07,0xff,0xfd,0x00,0x00,  //+@@@@@@%...*@@@@+...
+0x8f,0xff,0xbe,0xf9,0x00,0x03,0xff,0xfb,0x00,0x00,  //%@@@@@@%...+@@@@+...
+0x3f,0xe6,0x0d,0xf9,0x00,0x3e,0xff,0xff,0xa0,0x00,  //+@@*+@@%..*@@@@@%+..
+0x09,0x20,0x0d,0xf9,0x07,0xef,0xfb,0xef,0xfb,0x20,  //.%+..@@%+*@@@%@@@@+.
+0x00,0x00,0x0d,0xfb,0xcf,0xff,0x90,0x3e,0xff,0xe6,  //.....@@%@@@@%++@@@@*
+0x00,0x00,0x0d,0xf9,0xaf,0xe7,0x00,0x02,0xcf,0xe2,  //.....@@%%@@%+..+@@@+
+0x00,0x00,0x0d,0xf9,0x2b,0x20,0x00,0x00,0x09,0x50,  //.....@@%+@+.....+%*.
 
 
 /* 政 */
@@ -7295,6 +7521,30 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x03,0xff,0xff,0xff,0xff,0xff,0xff,0x20,0x00,  //...+@@@@@@@@@@@@+...
 0x00,0x03,0xff,0xed,0xdd,0xdd,0xde,0xff,0x20,0x00,  //...+@@@@@@@@@@@@+...
 0x00,0x03,0xff,0x50,0x00,0x00,0x05,0xff,0x20,0x00,  //...+@@*......*@@+...
+
+
+/* 昨 */
+0x00,0x00,0x00,0x00,0x4c,0x92,0x00,0x00,0x00,0x00,  //........*@%+.......
+0x00,0x00,0x00,0x00,0x7f,0xf1,0x00,0x00,0x00,0x00,  //........%@@+.......
+0xcf,0xff,0xff,0x80,0xcf,0xc0,0x00,0x00,0x00,0x00,  //@@@@@@%.@@@........
+0xcf,0xff,0xff,0x82,0xff,0xff,0xff,0xff,0xff,0x90,  //@@@@@@%+@@@@@@@@@@%
+0xcf,0xb5,0xdf,0x88,0xff,0xff,0xff,0xff,0xff,0x90,  //@@%*@@%%@@@@@@@@@@%
+0xcf,0x80,0xdf,0x9e,0xfd,0xff,0xc7,0x77,0x77,0x50,  //@@%.@@%@@@@@@%%%%%*
+0xcf,0x80,0xdf,0xef,0xf8,0xff,0x90,0x00,0x00,0x00,  //@@%.@@@@@%@@%......
+0xcf,0x80,0xdf,0xdf,0xf4,0xff,0x90,0x00,0x00,0x00,  //@@%.@@@@@*@@%......
+0xcf,0xff,0xff,0x8e,0xd1,0xff,0x90,0x00,0x00,0x00,  //@@@@@@%@@+@@%......
+0xcf,0xff,0xff,0x88,0x80,0xff,0xff,0xff,0xff,0x00,  //@@@@@@%%%+@@@@@@@@+
+0xcf,0xb5,0xdf,0x82,0x20,0xff,0xff,0xff,0xff,0x00,  //@@%*@@%+++@@@@@@@@+
+0xcf,0x80,0xdf,0x80,0x00,0xff,0xb7,0x77,0x77,0x00,  //@@%.@@%..+@@@*****+
+0xcf,0x80,0xdf,0x80,0x00,0xff,0x90,0x00,0x00,0x00,  //@@%.@@%..+@@%......
+0xcf,0x80,0xdf,0x80,0x00,0xff,0x90,0x00,0x00,0x00,  //@@%.@@%..+@@%......
+0xcf,0x80,0xdf,0x80,0x00,0xff,0xff,0xff,0xff,0x50,  //@@%.@@%..+@@@@@@@@*
+0xcf,0x80,0xdf,0x80,0x00,0xff,0xff,0xff,0xff,0x50,  //@@%.@@%..+@@@@@@@@*
+0xcf,0xff,0xff,0x80,0x00,0xff,0xb7,0x77,0x77,0x20,  //@@@@@@%..+@@@*****+
+0xcf,0xff,0xff,0x80,0x00,0xff,0x90,0x00,0x00,0x00,  //@@@@@@%..+@@%......
+0xcf,0xb5,0xdf,0x80,0x00,0xff,0x90,0x00,0x00,0x00,  //@@%*@@%..+@@%......
+0xcf,0x80,0xdf,0x80,0x00,0xff,0x90,0x00,0x00,0x00,  //@@%.@@%..+@@%......
+0x00,0x00,0x00,0x00,0x00,0xff,0x90,0x00,0x00,0x00,  //.........+@@%......
 
 
 /* 昭 */
@@ -10730,6 +10980,29 @@ static const uint8_t glyph_bitmap[] = {
 0x00,0x00,0xaf,0xf1,0x00,0x00,0x00,0x0c,0xfe,0x00,  //....%@@+.......@@@..
 
 
+/* 码 */
+0x4f,0xff,0xff,0xff,0x5f,0xff,0xff,0xff,0xfd,0x00,  //*@@@@@@@*@@@@@@@@@.
+0x4f,0xff,0xff,0xff,0x5f,0xff,0xff,0xff,0xfc,0x00,  //*@@@@@@@*@@@@@@@@@.
+0x27,0x8f,0xfa,0x77,0x27,0x77,0x77,0x7e,0xfa,0x00,  //+*%@@%**+******@@%.
+0x00,0x5f,0xf3,0x00,0x06,0xff,0x10,0x0e,0xf9,0x00,  //..*@@+...*@@+..@@%.
+0x00,0x9f,0xe0,0x00,0x08,0xfe,0x00,0x0f,0xf8,0x00,  //..%@@+...%@@+.+@@%.
+0x00,0xdf,0xb0,0x00,0x09,0xfd,0x00,0x2f,0xf7,0x00,  //.+@@%....%@@..+@@*.
+0x03,0xff,0x60,0x00,0x0a,0xfc,0x00,0x3f,0xf5,0x00,  //.+@@*....%@@..+@@*.
+0x09,0xff,0xff,0xff,0x0c,0xfb,0x00,0x4f,0xf4,0x00,  //.%@@@@@@+@@@..*@@*.
+0x0e,0xff,0xff,0xff,0x0d,0xff,0xff,0xff,0xff,0xd0,  //+@@@@@@@+@@@@@@@@@@
+0x6f,0xff,0x8a,0xff,0x0d,0xff,0xff,0xff,0xff,0xc0,  //*@@@%%@@+@@@@@@@@@@
+0x9f,0xff,0x47,0xff,0x06,0x77,0x77,0x77,0xdf,0xc0,  //%@@@**@@+*******@@@
+0x3f,0xff,0x47,0xff,0x00,0x00,0x00,0x00,0xcf,0xb0,  //+@@@**@@+.......@@@
+0x0a,0xff,0x47,0xff,0x00,0x00,0x00,0x00,0xdf,0xa0,  //.%@@**@@+.......@@%
+0x03,0xff,0x47,0xff,0x6f,0xff,0xff,0xf0,0xdf,0xa0,  //.+@@**@@*@@@@@@.@@%
+0x03,0xff,0x47,0xff,0x6f,0xff,0xff,0xf0,0xef,0x90,  //.+@@**@@*@@@@@@.@@%
+0x03,0xff,0xff,0xff,0x37,0x77,0x77,0x70,0xff,0x90,  //.+@@@@@@+******+@@%
+0x03,0xff,0xff,0xff,0x00,0x00,0x00,0x04,0xff,0x80,  //.+@@@@@@+......*@@%
+0x03,0xff,0x8a,0xff,0x00,0x06,0xff,0xff,0xff,0x60,  //.+@@%%@@+..*@@@@@@*
+0x00,0x00,0x00,0x00,0x00,0x04,0xff,0xff,0xfd,0x10,  //...........*@@@@@@+
+0x00,0x00,0x00,0x00,0x00,0x01,0xbb,0xba,0x82,0x00,  //...........+%%%%%+.
+
+
 /* 碑 */
 0x00,0x00,0x00,0x00,0x00,0x04,0xdc,0x60,0x00,0x00,  //...........*@@*.....
 0x2f,0xff,0xff,0xf7,0x00,0x08,0xff,0x40,0x00,0x00,  //+@@@@@@*...%@@*.....
@@ -11284,6 +11557,29 @@ static const uint8_t glyph_bitmap[] = {
 0x8f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf8,  //%@@@@@@@@@@@@@@@@@@%
 0x48,0x88,0x88,0x88,0xdf,0xe8,0x88,0x88,0x88,0x84,  //*%%%%%%%@@@%%%%%%%%*
 0x00,0x00,0x00,0x00,0xbf,0xc0,0x00,0x00,0x00,0x00,  //........@@@.........
+
+
+/* 股 */
+0x0a,0xff,0xff,0xfe,0x00,0xdf,0xff,0xff,0xf9,0x00,  //.%@@@@@@..@@@@@@@%..
+0x0a,0xff,0xff,0xfe,0x00,0xdf,0xff,0xff,0xf9,0x00,  //.%@@@@@@..@@@@@@@%..
+0x0a,0xfc,0x7a,0xfe,0x00,0xef,0xa6,0x6c,0xf9,0x00,  //.%@@%%@@..@@%**@@%..
+0x0a,0xfa,0x06,0xfe,0x00,0xff,0x50,0x0a,0xf9,0x00,  //.%@%.*@@.+@@*..%@%..
+0x0a,0xfa,0x06,0xfe,0x03,0xff,0x40,0x0a,0xfc,0x00,  //.%@%.*@@.+@@*..%@@+.
+0x0a,0xff,0xff,0xfe,0x09,0xfe,0x00,0x09,0xff,0xf9,  //.%@@@@@@+%@@+..%@@@%
+0x0a,0xff,0xff,0xfe,0x2e,0xf9,0x00,0x04,0xff,0xf6,  //.%@@@@@@+@@%...*@@@*
+0x0a,0xfb,0x49,0xfe,0x03,0xb1,0x00,0x00,0x36,0x61,  //.%@@*%@@.+%+....+**+
+0x0a,0xfa,0x06,0xfe,0x4f,0xff,0xff,0xff,0xff,0xd0,  //.%@%.*@@*@@@@@@@@@@.
+0x0a,0xf9,0x06,0xfe,0x4f,0xff,0xff,0xff,0xff,0xd0,  //.%@%.*@@*@@@@@@@@@@.
+0x0b,0xff,0xff,0xfe,0x16,0xdf,0x66,0x67,0xef,0xb0,  //.@@@@@@@+*@@****@@@.
+0x0b,0xff,0xff,0xfe,0x05,0xff,0x60,0x09,0xff,0x30,  //.@@@@@@@.*@@*..%@@+.
+0x0d,0xfa,0x49,0xfe,0x00,0xcf,0xe5,0x7f,0xf9,0x00,  //.@@%*%@@.+@@@*%@@%..
+0x0e,0xf7,0x06,0xfe,0x00,0x2d,0xfe,0xff,0xc0,0x00,  //+@@*.*@@..+@@@@@@+..
+0x2f,0xf5,0x06,0xfe,0x00,0x04,0xff,0xfe,0x20,0x00,  //+@@*.*@@...*@@@@+...
+0x6f,0xf2,0x0a,0xfe,0x00,0x5e,0xff,0xff,0xd4,0x00,  //*@@++%@@..*@@@@@@*..
+0xaf,0xd9,0xff,0xfe,0x5c,0xff,0xfc,0xcf,0xff,0xb3,  //%@@%@@@@*@@@@@@@@@@+
+0x2e,0x94,0xff,0xf9,0x6f,0xfe,0x80,0x08,0xef,0xe3,  //+@%*@@@%*@@@%++%@@@+
+0x05,0x30,0x76,0x40,0x0d,0xa2,0x00,0x00,0x3a,0x80,  //.*++%**++@%+....+%%.
+0x00,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,  //.........+..........
 
 
 /* 肥 */
@@ -13188,6 +13484,28 @@ static const uint8_t glyph_bitmap[] = {
 0x7b,0xbb,0xbb,0xbb,0xbb,0xbb,0xbb,0xbb,0xbb,0xb8,  //%@@@@@@@@@@@@@@@@@@%
 
 
+/* 量 */
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..%@@@@@@@@@@@@@@%..
+0x00,0xbf,0xe5,0x55,0x55,0x55,0x55,0x5e,0xfb,0x00,  //..%@@**********@@%..
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..%@@@@@@@@@@@@@@%..
+0x00,0xbf,0xe2,0x22,0x22,0x22,0x22,0x2e,0xfb,0x00,  //..%@@++++++++++@@%..
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..%@@@@@@@@@@@@@@%..
+0x00,0x45,0x55,0x55,0x55,0x55,0x55,0x55,0x54,0x00,  //..****************..
+0x8f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xf9,  //%@@@@@@@@@@@@@@@@@@%
+0x36,0x66,0x66,0x66,0x66,0x66,0x66,0x66,0x66,0x64,  //********************
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..@@@@@@@@@@@@@@@@..
+0x00,0xbf,0xc5,0x55,0x8f,0xf8,0x55,0x5c,0xfb,0x00,  //..@@@***%@@%***@@@..
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..@@@@@@@@@@@@@@@@..
+0x00,0xbf,0xb2,0x22,0x6f,0xf6,0x22,0x2c,0xfb,0x00,  //..@@@+++*@@*+++@@@..
+0x00,0xbf,0xff,0xff,0xff,0xff,0xff,0xff,0xfb,0x00,  //..@@@@@@@@@@@@@@@@..
+0x00,0x45,0x55,0x55,0x8f,0xf8,0x55,0x55,0x54,0x00,  //..******%@@%******..
+0x06,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x70,  //.*@@@@@@@@@@@@@@@@%.
+0x02,0x55,0x55,0x55,0x8f,0xf8,0x55,0x55,0x55,0x20,  //.+******%@@%******+.
+0x9f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xfa,  //%@@@@@@@@@@@@@@@@@@%
+0x9f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xfa,  //%@@@@@@@@@@@@@@@@@@%
+0x46,0x66,0x66,0x66,0x66,0x66,0x66,0x66,0x66,0x64,  //********************
+
+
 /* 金 */
 0x00,0x00,0x00,0x00,0x9f,0xfe,0x40,0x00,0x00,0x00,  //........%@@@*.......
 0x00,0x00,0x00,0x06,0xff,0xff,0x60,0x00,0x00,0x00,  //.......*@@@@*.......
@@ -14534,681 +14852,698 @@ static const uint8_t glyph_bitmap[] = {
 
 
 static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
-    {.bitmap_index = 0,	.adv_w = 6, .box_h = 0, .box_w = 6, .ofs_x = 0, .ofs_y = 5},/*( )*/
-    {.bitmap_index = 0,	.adv_w = 7, .box_h = 15, .box_w = 6, .ofs_x = 2, .ofs_y = 5},/*(!)*/
-    {.bitmap_index = 45,	.adv_w = 9, .box_h = 5, .box_w = 4, .ofs_x = 5, .ofs_y = 15},/*(")*/
-    {.bitmap_index = 55,	.adv_w = 14, .box_h = 14, .box_w = 16, .ofs_x = -1, .ofs_y = 6},/*(#)*/
-    {.bitmap_index = 167,	.adv_w = 11, .box_h = 19, .box_w = 10, .ofs_x = 1, .ofs_y = 3},/*($)*/
-    {.bitmap_index = 262,	.adv_w = 18, .box_h = 15, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(%)*/
-    {.bitmap_index = 397,	.adv_w = 19, .box_h = 15, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(&)*/
-    {.bitmap_index = 532,	.adv_w = 5, .box_h = 5, .box_w = 4, .ofs_x = 1, .ofs_y = 15},/*(')*/
-    {.bitmap_index = 542,	.adv_w = 9, .box_h = 18, .box_w = 8, .ofs_x = 2, .ofs_y = 2},/*(()*/
-    {.bitmap_index = 614,	.adv_w = 6, .box_h = 18, .box_w = 8, .ofs_x = -1, .ofs_y = 2},/*())*/
-    {.bitmap_index = 686,	.adv_w = 9, .box_h = 8, .box_w = 10, .ofs_x = 0, .ofs_y = 12},/*(*)*/
-    {.bitmap_index = 726,	.adv_w = 13, .box_h = 10, .box_w = 10, .ofs_x = 3, .ofs_y = 6},/*(+)*/
-    {.bitmap_index = 776,	.adv_w = 3, .box_h = 5, .box_w = 4, .ofs_x = -1, .ofs_y = 2},/*(,)*/
-    {.bitmap_index = 786,	.adv_w = 8, .box_h = 3, .box_w = 6, .ofs_x = 2, .ofs_y = 9},/*(-)*/
-    {.bitmap_index = 795,	.adv_w = 5, .box_h = 4, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(.)*/
-    {.bitmap_index = 803,	.adv_w = 10, .box_h = 18, .box_w = 12, .ofs_x = -1, .ofs_y = 2},/*(/)*/
-    {.bitmap_index = 911,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(0)*/
-    {.bitmap_index = 986,	.adv_w = 8, .box_h = 15, .box_w = 6, .ofs_x = 2, .ofs_y = 5},/*(1)*/
-    {.bitmap_index = 1031,	.adv_w = 10, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(2)*/
-    {.bitmap_index = 1106,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(3)*/
-    {.bitmap_index = 1181,	.adv_w = 12, .box_h = 15, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(4)*/
-    {.bitmap_index = 1271,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(5)*/
-    {.bitmap_index = 1346,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(6)*/
-    {.bitmap_index = 1421,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(7)*/
-    {.bitmap_index = 1496,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(8)*/
-    {.bitmap_index = 1571,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(9)*/
-    {.bitmap_index = 1646,	.adv_w = 5, .box_h = 11, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(:)*/
-    {.bitmap_index = 1668,	.adv_w = 5, .box_h = 13, .box_w = 6, .ofs_x = -1, .ofs_y = 3},/*(;)*/
-    {.bitmap_index = 1707,	.adv_w = 13, .box_h = 12, .box_w = 10, .ofs_x = 3, .ofs_y = 6},/*(<)*/
-    {.bitmap_index = 1767,	.adv_w = 12, .box_h = 8, .box_w = 10, .ofs_x = 2, .ofs_y = 7},/*(=)*/
-    {.bitmap_index = 1807,	.adv_w = 13, .box_h = 13, .box_w = 10, .ofs_x = 3, .ofs_y = 5},/*(>)*/
-    {.bitmap_index = 1872,	.adv_w = 9, .box_h = 15, .box_w = 10, .ofs_x = 0, .ofs_y = 5},/*(?)*/
-    {.bitmap_index = 1947,	.adv_w = 19, .box_h = 17, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(@)*/
-    {.bitmap_index = 2100,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(A)*/
-    {.bitmap_index = 2205,	.adv_w = 13, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(B)*/
-    {.bitmap_index = 2295,	.adv_w = 13, .box_h = 15, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(C)*/
-    {.bitmap_index = 2385,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 2, .ofs_y = 5},/*(D)*/
-    {.bitmap_index = 2490,	.adv_w = 10, .box_h = 15, .box_w = 8, .ofs_x = 2, .ofs_y = 5},/*(E)*/
-    {.bitmap_index = 2550,	.adv_w = 10, .box_h = 15, .box_w = 8, .ofs_x = 2, .ofs_y = 5},/*(F)*/
-    {.bitmap_index = 2610,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(G)*/
-    {.bitmap_index = 2715,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(H)*/
-    {.bitmap_index = 2805,	.adv_w = 5, .box_h = 15, .box_w = 4, .ofs_x = 2, .ofs_y = 5},/*(I)*/
-    {.bitmap_index = 2835,	.adv_w = 7, .box_h = 15, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(J)*/
-    {.bitmap_index = 2895,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(K)*/
-    {.bitmap_index = 2985,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(L)*/
-    {.bitmap_index = 3060,	.adv_w = 19, .box_h = 15, .box_w = 18, .ofs_x = 2, .ofs_y = 5},/*(M)*/
-    {.bitmap_index = 3195,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 2, .ofs_y = 5},/*(N)*/
-    {.bitmap_index = 3300,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(O)*/
-    {.bitmap_index = 3405,	.adv_w = 12, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(P)*/
-    {.bitmap_index = 3480,	.adv_w = 17, .box_h = 17, .box_w = 16, .ofs_x = 1, .ofs_y = 3},/*(Q)*/
-    {.bitmap_index = 3616,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(R)*/
-    {.bitmap_index = 3706,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(S)*/
-    {.bitmap_index = 3781,	.adv_w = 13, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(T)*/
-    {.bitmap_index = 3886,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(U)*/
-    {.bitmap_index = 3976,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(V)*/
-    {.bitmap_index = 4081,	.adv_w = 23, .box_h = 15, .box_w = 24, .ofs_x = 0, .ofs_y = 5},/*(W)*/
-    {.bitmap_index = 4261,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(X)*/
-    {.bitmap_index = 4366,	.adv_w = 13, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(Y)*/
-    {.bitmap_index = 4471,	.adv_w = 12, .box_h = 15, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(Z)*/
-    {.bitmap_index = 4561,	.adv_w = 7, .box_h = 19, .box_w = 6, .ofs_x = 2, .ofs_y = 1},/*([)*/
-    {.bitmap_index = 4618,	.adv_w = 11, .box_h = 18, .box_w = 12, .ofs_x = -1, .ofs_y = 2},/*(\)*/
-    {.bitmap_index = 4726,	.adv_w = 6, .box_h = 19, .box_w = 6, .ofs_x = 1, .ofs_y = 1},/*(])*/
-    {.bitmap_index = 4783,	.adv_w = 14, .box_h = 9, .box_w = 14, .ofs_x = 1, .ofs_y = 11},/*(^)*/
-    {.bitmap_index = 4846,	.adv_w = 9, .box_h = 2, .box_w = 10, .ofs_x = 0, .ofs_y = 0},/*(_)*/
-    {.bitmap_index = 4856,	.adv_w = 7, .box_h = 3, .box_w = 6, .ofs_x = 1, .ofs_y = 18},/*(`)*/
-    {.bitmap_index = 4865,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(a)*/
-    {.bitmap_index = 4920,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(b)*/
-    {.bitmap_index = 5016,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(c)*/
-    {.bitmap_index = 5071,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(d)*/
-    {.bitmap_index = 5167,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(e)*/
-    {.bitmap_index = 5222,	.adv_w = 8, .box_h = 16, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(f)*/
-    {.bitmap_index = 5286,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(g)*/
-    {.bitmap_index = 5382,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(h)*/
-    {.bitmap_index = 5478,	.adv_w = 5, .box_h = 16, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(i)*/
-    {.bitmap_index = 5510,	.adv_w = 5, .box_h = 22, .box_w = 8, .ofs_x = -2, .ofs_y = 0},/*(j)*/
-    {.bitmap_index = 5598,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(k)*/
-    {.bitmap_index = 5694,	.adv_w = 4, .box_h = 16, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(l)*/
-    {.bitmap_index = 5726,	.adv_w = 19, .box_h = 11, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(m)*/
-    {.bitmap_index = 5825,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(n)*/
-    {.bitmap_index = 5880,	.adv_w = 12, .box_h = 11, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(o)*/
-    {.bitmap_index = 5946,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(p)*/
-    {.bitmap_index = 6042,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(q)*/
-    {.bitmap_index = 6138,	.adv_w = 8, .box_h = 11, .box_w = 8, .ofs_x = 1, .ofs_y = 5},/*(r)*/
-    {.bitmap_index = 6182,	.adv_w = 9, .box_h = 11, .box_w = 8, .ofs_x = 1, .ofs_y = 5},/*(s)*/
-    {.bitmap_index = 6226,	.adv_w = 7, .box_h = 14, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(t)*/
-    {.bitmap_index = 6282,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(u)*/
-    {.bitmap_index = 6337,	.adv_w = 12, .box_h = 11, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(v)*/
-    {.bitmap_index = 6403,	.adv_w = 18, .box_h = 11, .box_w = 20, .ofs_x = -1, .ofs_y = 5},/*(w)*/
-    {.bitmap_index = 6513,	.adv_w = 11, .box_h = 11, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(x)*/
-    {.bitmap_index = 6579,	.adv_w = 12, .box_h = 17, .box_w = 12, .ofs_x = 0, .ofs_y = 0},/*(y)*/
-    {.bitmap_index = 6681,	.adv_w = 10, .box_h = 11, .box_w = 10, .ofs_x = 0, .ofs_y = 5},/*(z)*/
-    {.bitmap_index = 6736,	.adv_w = 7, .box_h = 18, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*({)*/
-    {.bitmap_index = 6790,	.adv_w = 5, .box_h = 22, .box_w = 4, .ofs_x = 2, .ofs_y = 0},/*(|)*/
-    {.bitmap_index = 6834,	.adv_w = 7, .box_h = 18, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*(})*/
-    {.bitmap_index = 6888,	.adv_w = 13, .box_h = 5, .box_w = 12, .ofs_x = 2, .ofs_y = 8},/*(~)*/
-    {.bitmap_index = 6918,	.adv_w = 6, .box_h = 0, .box_w = 6, .ofs_x = 0, .ofs_y = 5},/*()*/
-    {.bitmap_index = 6918,	.adv_w = 7, .box_h = 6, .box_w = 6, .ofs_x = 1, .ofs_y = 14},/*(°)*/
-    {.bitmap_index = 6936,	.adv_w = 7, .box_h = 6, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*(。)*/
-    {.bitmap_index = 6954,	.adv_w = 20, .box_h = 3, .box_w = 20, .ofs_x = 0, .ofs_y = 10},/*(一)*/
-    {.bitmap_index = 6984,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(七)*/
-    {.bitmap_index = 7184,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(万)*/
-    {.bitmap_index = 7384,	.adv_w = 20, .box_h = 17, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(三)*/
-    {.bitmap_index = 7554,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(上)*/
-    {.bitmap_index = 7744,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(丘)*/
-    {.bitmap_index = 7944,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(东)*/
-    {.bitmap_index = 8154,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(严)*/
-    {.bitmap_index = 8354,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(个)*/
-    {.bitmap_index = 8554,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(中)*/
-    {.bitmap_index = 8734,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(丰)*/
-    {.bitmap_index = 8944,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(临)*/
-    {.bitmap_index = 9144,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(丹)*/
-    {.bitmap_index = 9344,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(主)*/
-    {.bitmap_index = 9544,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(丽)*/
-    {.bitmap_index = 9724,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(义)*/
-    {.bitmap_index = 9934,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(乌)*/
-    {.bitmap_index = 10134,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(乐)*/
-    {.bitmap_index = 10344,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(九)*/
-    {.bitmap_index = 10544,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(乡)*/
-    {.bitmap_index = 10744,	.adv_w = 20, .box_h = 15, .box_w = 20, .ofs_x = 0, .ofs_y = 4},/*(二)*/
-    {.bitmap_index = 10894,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(云)*/
-    {.bitmap_index = 11084,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(五)*/
-    {.bitmap_index = 11274,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(井)*/
-    {.bitmap_index = 11484,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(亚)*/
-    {.bitmap_index = 11674,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(交)*/
-    {.bitmap_index = 11874,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(京)*/
-    {.bitmap_index = 12084,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(亳)*/
-    {.bitmap_index = 12264,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(什)*/
-    {.bitmap_index = 12464,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(仁)*/
-    {.bitmap_index = 12644,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(介)*/
-    {.bitmap_index = 12844,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(仓)*/
-    {.bitmap_index = 13044,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(仙)*/
-    {.bitmap_index = 13224,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(令)*/
-    {.bitmap_index = 13424,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(仪)*/
-    {.bitmap_index = 13634,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(们)*/
-    {.bitmap_index = 13844,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(任)*/
-    {.bitmap_index = 14044,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(伊)*/
-    {.bitmap_index = 14244,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(休)*/
-    {.bitmap_index = 14444,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(优)*/
-    {.bitmap_index = 14654,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(伦)*/
-    {.bitmap_index = 14854,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(低)*/
-    {.bitmap_index = 15054,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(余)*/
-    {.bitmap_index = 15264,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(佛)*/
-    {.bitmap_index = 15464,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(作)*/
-    {.bitmap_index = 15664,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(佳)*/
-    {.bitmap_index = 15864,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(依)*/
-    {.bitmap_index = 16064,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(侯)*/
-    {.bitmap_index = 16264,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(保)*/
-    {.bitmap_index = 16464,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(信)*/
-    {.bitmap_index = 16664,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(偃)*/
-    {.bitmap_index = 16844,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(儋)*/
-    {.bitmap_index = 17024,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(元)*/
-    {.bitmap_index = 17224,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(充)*/
-    {.bitmap_index = 17434,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(光)*/
-    {.bitmap_index = 17644,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(克)*/
-    {.bitmap_index = 17854,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(兖)*/
-    {.bitmap_index = 18034,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(公)*/
-    {.bitmap_index = 18244,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(六)*/
-    {.bitmap_index = 18444,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兰)*/
-    {.bitmap_index = 18644,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(共)*/
-    {.bitmap_index = 18844,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(关)*/
-    {.bitmap_index = 19044,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兴)*/
-    {.bitmap_index = 19244,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兵)*/
-    {.bitmap_index = 19444,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(冀)*/
-    {.bitmap_index = 19624,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(内)*/
-    {.bitmap_index = 19813,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(冈)*/
-    {.bitmap_index = 19993,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(冶)*/
-    {.bitmap_index = 20173,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(冷)*/
-    {.bitmap_index = 20373,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凉)*/
-    {.bitmap_index = 20563,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凌)*/
-    {.bitmap_index = 20763,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(凤)*/
-    {.bitmap_index = 20943,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(凭)*/
-    {.bitmap_index = 21153,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凯)*/
-    {.bitmap_index = 21353,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(则)*/
-    {.bitmap_index = 21563,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(利)*/
-    {.bitmap_index = 21773,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(别)*/
-    {.bitmap_index = 21983,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(力)*/
-    {.bitmap_index = 22193,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(勒)*/
-    {.bitmap_index = 22403,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(匀)*/
-    {.bitmap_index = 22613,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(包)*/
-    {.bitmap_index = 22813,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(化)*/
-    {.bitmap_index = 23033,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(北)*/
-    {.bitmap_index = 23243,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(区)*/
-    {.bitmap_index = 23433,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(十)*/
-    {.bitmap_index = 23633,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(华)*/
-    {.bitmap_index = 23843,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(南)*/
-    {.bitmap_index = 24053,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(博)*/
-    {.bitmap_index = 24263,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(卫)*/
-    {.bitmap_index = 24453,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(原)*/
-    {.bitmap_index = 24653,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(厦)*/
-    {.bitmap_index = 24853,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(县)*/
-    {.bitmap_index = 25053,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(双)*/
-    {.bitmap_index = 25243,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(口)*/
-    {.bitmap_index = 25414,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(古)*/
-    {.bitmap_index = 25614,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(句)*/
-    {.bitmap_index = 25824,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(台)*/
-    {.bitmap_index = 26034,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(叶)*/
-    {.bitmap_index = 26234,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(合)*/
-    {.bitmap_index = 26424,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(吉)*/
-    {.bitmap_index = 26634,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(同)*/
-    {.bitmap_index = 26814,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(名)*/
-    {.bitmap_index = 27014,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(吕)*/
-    {.bitmap_index = 27176,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(启)*/
-    {.bitmap_index = 27376,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(吴)*/
-    {.bitmap_index = 27556,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(吾)*/
-    {.bitmap_index = 27736,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(周)*/
-    {.bitmap_index = 27936,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(呼)*/
-    {.bitmap_index = 28136,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(和)*/
-    {.bitmap_index = 28336,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(咸)*/
-    {.bitmap_index = 28516,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(哈)*/
-    {.bitmap_index = 28716,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(唐)*/
-    {.bitmap_index = 28916,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(商)*/
-    {.bitmap_index = 29126,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(喀)*/
-    {.bitmap_index = 29326,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(嘉)*/
-    {.bitmap_index = 29516,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(嘴)*/
-    {.bitmap_index = 29716,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(四)*/
-    {.bitmap_index = 29896,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(回)*/
-    {.bitmap_index = 30067,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(固)*/
-    {.bitmap_index = 30238,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(国)*/
-    {.bitmap_index = 30409,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(图)*/
-    {.bitmap_index = 30580,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(地)*/
-    {.bitmap_index = 30780,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(圳)*/
-    {.bitmap_index = 30970,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(坊)*/
-    {.bitmap_index = 31150,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(坛)*/
-    {.bitmap_index = 31360,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(城)*/
-    {.bitmap_index = 31570,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(埠)*/
-    {.bitmap_index = 31770,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(堰)*/
-    {.bitmap_index = 31950,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(塔)*/
-    {.bitmap_index = 32150,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(壁)*/
-    {.bitmap_index = 32350,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(壮)*/
-    {.bitmap_index = 32530,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(夏)*/
-    {.bitmap_index = 32730,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(多)*/
-    {.bitmap_index = 32920,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(大)*/
-    {.bitmap_index = 33120,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(天)*/
-    {.bitmap_index = 33310,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(太)*/
-    {.bitmap_index = 33510,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(头)*/
-    {.bitmap_index = 33700,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(夷)*/
-    {.bitmap_index = 33910,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(奉)*/
-    {.bitmap_index = 34100,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(奎)*/
-    {.bitmap_index = 34280,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(如)*/
-    {.bitmap_index = 34480,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(姚)*/
-    {.bitmap_index = 34660,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(姜)*/
-    {.bitmap_index = 34840,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(威)*/
-    {.bitmap_index = 35040,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(娄)*/
-    {.bitmap_index = 35230,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(子)*/
-    {.bitmap_index = 35420,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(孝)*/
-    {.bitmap_index = 35610,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(孟)*/
-    {.bitmap_index = 35800,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宁)*/
-    {.bitmap_index = 36000,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(安)*/
-    {.bitmap_index = 36200,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(定)*/
-    {.bitmap_index = 36400,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宜)*/
-    {.bitmap_index = 36600,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宝)*/
-    {.bitmap_index = 36800,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宣)*/
-    {.bitmap_index = 37000,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宫)*/
-    {.bitmap_index = 37200,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(家)*/
-    {.bitmap_index = 37400,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(容)*/
-    {.bitmap_index = 37600,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宾)*/
-    {.bitmap_index = 37800,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宿)*/
-    {.bitmap_index = 38000,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(密)*/
-    {.bitmap_index = 38200,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(富)*/
-    {.bitmap_index = 38390,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(察)*/
-    {.bitmap_index = 38590,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(封)*/
-    {.bitmap_index = 38800,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(尔)*/
-    {.bitmap_index = 39010,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(尚)*/
-    {.bitmap_index = 39199,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(尾)*/
-    {.bitmap_index = 39399,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(屯)*/
-    {.bitmap_index = 39579,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(山)*/
-    {.bitmap_index = 39759,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岑)*/
-    {.bitmap_index = 39939,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(岗)*/
-    {.bitmap_index = 40119,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(岛)*/
-    {.bitmap_index = 40308,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岩)*/
-    {.bitmap_index = 40488,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岭)*/
-    {.bitmap_index = 40668,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岳)*/
-    {.bitmap_index = 40848,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(峡)*/
-    {.bitmap_index = 41048,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峨)*/
-    {.bitmap_index = 41228,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峪)*/
-    {.bitmap_index = 41408,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峰)*/
-    {.bitmap_index = 41598,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(崃)*/
-    {.bitmap_index = 41778,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(崇)*/
-    {.bitmap_index = 41988,	.adv_w = 21, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(嵊)*/
-    {.bitmap_index = 42168,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(川)*/
-    {.bitmap_index = 42368,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(州)*/
-    {.bitmap_index = 42568,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(左)*/
-    {.bitmap_index = 42768,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(巩)*/
-    {.bitmap_index = 42948,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(差)*/
-    {.bitmap_index = 43148,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(巴)*/
-    {.bitmap_index = 43338,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(市)*/
-    {.bitmap_index = 43548,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(布)*/
-    {.bitmap_index = 43748,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(师)*/
-    {.bitmap_index = 43958,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(常)*/
-    {.bitmap_index = 44158,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(平)*/
-    {.bitmap_index = 44348,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(年)*/
-    {.bitmap_index = 44558,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(广)*/
-    {.bitmap_index = 44758,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(庄)*/
-    {.bitmap_index = 44958,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(庆)*/
-    {.bitmap_index = 45158,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(库)*/
-    {.bitmap_index = 45358,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(应)*/
-    {.bitmap_index = 45568,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(底)*/
-    {.bitmap_index = 45768,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(店)*/
-    {.bitmap_index = 45978,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(度)*/
-    {.bitmap_index = 46188,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(康)*/
-    {.bitmap_index = 46388,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(廊)*/
-    {.bitmap_index = 46598,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(延)*/
-    {.bitmap_index = 46798,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(建)*/
-    {.bitmap_index = 46998,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(开)*/
-    {.bitmap_index = 47198,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(张)*/
-    {.bitmap_index = 47408,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(弱)*/
-    {.bitmap_index = 47598,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(强)*/
-    {.bitmap_index = 47798,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(当)*/
-    {.bitmap_index = 47978,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(彦)*/
-    {.bitmap_index = 48168,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(彭)*/
-    {.bitmap_index = 48348,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(征)*/
-    {.bitmap_index = 48548,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(徐)*/
-    {.bitmap_index = 48748,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(德)*/
-    {.bitmap_index = 48958,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(徽)*/
-    {.bitmap_index = 49158,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(志)*/
-    {.bitmap_index = 49358,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(忠)*/
-    {.bitmap_index = 49538,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(忻)*/
-    {.bitmap_index = 49718,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(怀)*/
-    {.bitmap_index = 49918,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(恩)*/
-    {.bitmap_index = 50108,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(惠)*/
-    {.bitmap_index = 50308,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(感)*/
-    {.bitmap_index = 50508,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(慈)*/
-    {.bitmap_index = 50688,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(成)*/
-    {.bitmap_index = 50898,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(房)*/
-    {.bitmap_index = 51108,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(扎)*/
-    {.bitmap_index = 51318,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(扬)*/
-    {.bitmap_index = 51528,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(承)*/
-    {.bitmap_index = 51728,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(抚)*/
-    {.bitmap_index = 51908,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(拉)*/
-    {.bitmap_index = 52118,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(指)*/
-    {.bitmap_index = 52328,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(掖)*/
-    {.bitmap_index = 52508,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(揭)*/
-    {.bitmap_index = 52718,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(攀)*/
-    {.bitmap_index = 52938,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(政)*/
-    {.bitmap_index = 53148,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(敦)*/
-    {.bitmap_index = 53358,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(文)*/
-    {.bitmap_index = 53558,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(斯)*/
-    {.bitmap_index = 53758,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(新)*/
-    {.bitmap_index = 53978,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(方)*/
-    {.bitmap_index = 54188,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(施)*/
-    {.bitmap_index = 54398,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(族)*/
-    {.bitmap_index = 54598,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(无)*/
-    {.bitmap_index = 54798,	.adv_w = 18, .box_h = 20, .box_w = 16, .ofs_x = 2, .ofs_y = 1},/*(日)*/
-    {.bitmap_index = 54958,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(旧)*/
-    {.bitmap_index = 55138,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(昆)*/
-    {.bitmap_index = 55338,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(昌)*/
-    {.bitmap_index = 55500,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(明)*/
-    {.bitmap_index = 55680,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(春)*/
-    {.bitmap_index = 55880,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(昭)*/
-    {.bitmap_index = 56080,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(晋)*/
-    {.bitmap_index = 56260,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(普)*/
-    {.bitmap_index = 56460,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(景)*/
-    {.bitmap_index = 56660,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(暨)*/
-    {.bitmap_index = 56850,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(曲)*/
-    {.bitmap_index = 57039,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(更)*/
-    {.bitmap_index = 57239,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(最)*/
-    {.bitmap_index = 57439,	.adv_w = 18, .box_h = 20, .box_w = 18, .ofs_x = 0, .ofs_y = 1},/*(月)*/
-    {.bitmap_index = 57619,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(有)*/
-    {.bitmap_index = 57829,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(朔)*/
-    {.bitmap_index = 58009,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(朝)*/
-    {.bitmap_index = 58229,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(木)*/
-    {.bitmap_index = 58429,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(本)*/
-    {.bitmap_index = 58639,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(来)*/
-    {.bitmap_index = 58839,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(杭)*/
-    {.bitmap_index = 59049,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(松)*/
-    {.bitmap_index = 59249,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(林)*/
-    {.bitmap_index = 59449,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(枝)*/
-    {.bitmap_index = 59629,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(枣)*/
-    {.bitmap_index = 59809,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(染)*/
-    {.bitmap_index = 60009,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(查)*/
-    {.bitmap_index = 60209,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(柳)*/
-    {.bitmap_index = 60389,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(树)*/
-    {.bitmap_index = 60599,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(株)*/
-    {.bitmap_index = 60799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(根)*/
-    {.bitmap_index = 60999,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(格)*/
-    {.bitmap_index = 61199,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(桂)*/
-    {.bitmap_index = 61399,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(桃)*/
-    {.bitmap_index = 61609,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(桐)*/
-    {.bitmap_index = 61789,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(桥)*/
-    {.bitmap_index = 61989,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(桦)*/
-    {.bitmap_index = 62169,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(梁)*/
-    {.bitmap_index = 62369,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(梅)*/
-    {.bitmap_index = 62579,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(梧)*/
-    {.bitmap_index = 62759,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(棱)*/
-    {.bitmap_index = 62939,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(楚)*/
-    {.bitmap_index = 63139,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(榆)*/
-    {.bitmap_index = 63319,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(樟)*/
-    {.bitmap_index = 63499,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(武)*/
-    {.bitmap_index = 63699,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(毕)*/
-    {.bitmap_index = 63899,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(民)*/
-    {.bitmap_index = 64099,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(气)*/
-    {.bitmap_index = 64309,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(水)*/
-    {.bitmap_index = 64489,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(永)*/
-    {.bitmap_index = 64699,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(汉)*/
-    {.bitmap_index = 64899,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汕)*/
-    {.bitmap_index = 65079,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汝)*/
-    {.bitmap_index = 65259,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(江)*/
-    {.bitmap_index = 65439,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(池)*/
-    {.bitmap_index = 65639,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(污)*/
-    {.bitmap_index = 65849,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汨)*/
-    {.bitmap_index = 66029,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汾)*/
-    {.bitmap_index = 66209,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沁)*/
-    {.bitmap_index = 66389,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沂)*/
-    {.bitmap_index = 66569,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沅)*/
-    {.bitmap_index = 66749,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沈)*/
-    {.bitmap_index = 66929,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(沙)*/
-    {.bitmap_index = 67129,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(没)*/
-    {.bitmap_index = 67329,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沧)*/
-    {.bitmap_index = 67509,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(河)*/
-    {.bitmap_index = 67719,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(油)*/
-    {.bitmap_index = 67929,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(治)*/
-    {.bitmap_index = 68119,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泉)*/
-    {.bitmap_index = 68329,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泊)*/
-    {.bitmap_index = 68539,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(波)*/
-    {.bitmap_index = 68739,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(泰)*/
-    {.bitmap_index = 68939,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(泸)*/
-    {.bitmap_index = 69119,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泽)*/
-    {.bitmap_index = 69329,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洛)*/
-    {.bitmap_index = 69529,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(津)*/
-    {.bitmap_index = 69729,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洪)*/
-    {.bitmap_index = 69929,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(洮)*/
-    {.bitmap_index = 70109,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(洱)*/
-    {.bitmap_index = 70289,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洲)*/
-    {.bitmap_index = 70489,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(流)*/
-    {.bitmap_index = 70699,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(济)*/
-    {.bitmap_index = 70899,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浏)*/
-    {.bitmap_index = 71079,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浙)*/
-    {.bitmap_index = 71259,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浩)*/
-    {.bitmap_index = 71439,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(浮)*/
-    {.bitmap_index = 71649,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(海)*/
-    {.bitmap_index = 71849,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(涟)*/
-    {.bitmap_index = 72029,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(涿)*/
-    {.bitmap_index = 72219,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淄)*/
-    {.bitmap_index = 72399,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淖)*/
-    {.bitmap_index = 72579,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淮)*/
-    {.bitmap_index = 72759,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(深)*/
-    {.bitmap_index = 72959,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(清)*/
-    {.bitmap_index = 73159,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(温)*/
-    {.bitmap_index = 73359,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(渭)*/
-    {.bitmap_index = 73539,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(港)*/
-    {.bitmap_index = 73749,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(湖)*/
-    {.bitmap_index = 73969,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(湘)*/
-    {.bitmap_index = 74149,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(湛)*/
-    {.bitmap_index = 74329,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(湾)*/
-    {.bitmap_index = 74539,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(源)*/
-    {.bitmap_index = 74749,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(溧)*/
-    {.bitmap_index = 74929,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(溪)*/
-    {.bitmap_index = 75109,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滁)*/
-    {.bitmap_index = 75289,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滋)*/
-    {.bitmap_index = 75469,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(滕)*/
-    {.bitmap_index = 75659,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(满)*/
-    {.bitmap_index = 75859,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滦)*/
-    {.bitmap_index = 76039,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(滨)*/
-    {.bitmap_index = 76239,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(漯)*/
-    {.bitmap_index = 76429,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(漳)*/
-    {.bitmap_index = 76609,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潍)*/
-    {.bitmap_index = 76789,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(潜)*/
-    {.bitmap_index = 76989,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潞)*/
-    {.bitmap_index = 77169,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潭)*/
-    {.bitmap_index = 77349,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潮)*/
-    {.bitmap_index = 77529,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(澳)*/
-    {.bitmap_index = 77739,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(濮)*/
-    {.bitmap_index = 77919,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(灌)*/
-    {.bitmap_index = 78109,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(灯)*/
-    {.bitmap_index = 78309,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(灵)*/
-    {.bitmap_index = 78499,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(烟)*/
-    {.bitmap_index = 78699,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(焦)*/
-    {.bitmap_index = 78899,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(煌)*/
-    {.bitmap_index = 79079,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(照)*/
-    {.bitmap_index = 79269,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(熟)*/
-    {.bitmap_index = 79469,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(牙)*/
-    {.bitmap_index = 79669,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(牡)*/
-    {.bitmap_index = 79849,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(特)*/
-    {.bitmap_index = 80059,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(狮)*/
-    {.bitmap_index = 80269,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(玉)*/
-    {.bitmap_index = 80459,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(玛)*/
-    {.bitmap_index = 80659,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(珠)*/
-    {.bitmap_index = 80859,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(珲)*/
-    {.bitmap_index = 81039,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(理)*/
-    {.bitmap_index = 81229,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(琼)*/
-    {.bitmap_index = 81419,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(瑞)*/
-    {.bitmap_index = 81629,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(瓦)*/
-    {.bitmap_index = 81829,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(瓯)*/
-    {.bitmap_index = 82009,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(甘)*/
-    {.bitmap_index = 82219,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(田)*/
-    {.bitmap_index = 82399,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(甸)*/
-    {.bitmap_index = 82609,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(界)*/
-    {.bitmap_index = 82799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(疆)*/
-    {.bitmap_index = 82999,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(登)*/
-    {.bitmap_index = 83199,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(白)*/
-    {.bitmap_index = 83388,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(百)*/
-    {.bitmap_index = 83588,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(皇)*/
-    {.bitmap_index = 83778,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(皋)*/
-    {.bitmap_index = 83958,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(益)*/
-    {.bitmap_index = 84158,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盐)*/
-    {.bitmap_index = 84358,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盖)*/
-    {.bitmap_index = 84558,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盘)*/
-    {.bitmap_index = 84758,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(省)*/
-    {.bitmap_index = 84958,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(眉)*/
-    {.bitmap_index = 85148,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(看)*/
-    {.bitmap_index = 85338,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(石)*/
-    {.bitmap_index = 85538,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(碑)*/
-    {.bitmap_index = 85718,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(磐)*/
-    {.bitmap_index = 85898,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(祥)*/
-    {.bitmap_index = 86078,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(票)*/
-    {.bitmap_index = 86278,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(福)*/
-    {.bitmap_index = 86478,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(禹)*/
-    {.bitmap_index = 86640,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(秦)*/
-    {.bitmap_index = 86820,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(穆)*/
-    {.bitmap_index = 87000,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(穴)*/
-    {.bitmap_index = 87200,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(竹)*/
-    {.bitmap_index = 87400,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(简)*/
-    {.bitmap_index = 87610,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(米)*/
-    {.bitmap_index = 87800,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(级)*/
-    {.bitmap_index = 88000,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(纳)*/
-    {.bitmap_index = 88210,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(绍)*/
-    {.bitmap_index = 88420,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(绥)*/
-    {.bitmap_index = 88600,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(维)*/
-    {.bitmap_index = 88800,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(绵)*/
-    {.bitmap_index = 88980,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(编)*/
-    {.bitmap_index = 89190,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(罗)*/
-    {.bitmap_index = 89380,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(老)*/
-    {.bitmap_index = 89580,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(耒)*/
-    {.bitmap_index = 89760,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(聊)*/
-    {.bitmap_index = 89970,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肃)*/
-    {.bitmap_index = 90150,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肇)*/
-    {.bitmap_index = 90330,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肥)*/
-    {.bitmap_index = 90510,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(胶)*/
-    {.bitmap_index = 90720,	.adv_w = 18, .box_h = 21, .box_w = 16, .ofs_x = 2, .ofs_y = 1},/*(自)*/
-    {.bitmap_index = 90888,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(舒)*/
-    {.bitmap_index = 91098,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(舞)*/
-    {.bitmap_index = 91298,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(舟)*/
-    {.bitmap_index = 91508,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(良)*/
-    {.bitmap_index = 91708,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(色)*/
-    {.bitmap_index = 91908,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(节)*/
-    {.bitmap_index = 92118,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芜)*/
-    {.bitmap_index = 92298,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芝)*/
-    {.bitmap_index = 92478,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芦)*/
-    {.bitmap_index = 92658,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(芬)*/
-    {.bitmap_index = 92868,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(花)*/
-    {.bitmap_index = 93078,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(苏)*/
-    {.bitmap_index = 93288,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(茂)*/
-    {.bitmap_index = 93498,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(荆)*/
-    {.bitmap_index = 93678,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(荥)*/
-    {.bitmap_index = 93868,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(莆)*/
-    {.bitmap_index = 94058,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(莞)*/
-    {.bitmap_index = 94238,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(莱)*/
-    {.bitmap_index = 94438,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(菏)*/
-    {.bitmap_index = 94618,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(萍)*/
-    {.bitmap_index = 94798,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(营)*/
-    {.bitmap_index = 94998,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(萨)*/
-    {.bitmap_index = 95198,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(葛)*/
-    {.bitmap_index = 95388,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(葫)*/
-    {.bitmap_index = 95568,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(蒙)*/
-    {.bitmap_index = 95778,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蓥)*/
-    {.bitmap_index = 95958,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(藏)*/
-    {.bitmap_index = 96168,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(虎)*/
-    {.bitmap_index = 96368,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(虞)*/
-    {.bitmap_index = 96558,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蚌)*/
-    {.bitmap_index = 96738,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蛟)*/
-    {.bitmap_index = 96918,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(行)*/
-    {.bitmap_index = 97128,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(衡)*/
-    {.bitmap_index = 97338,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(衢)*/
-    {.bitmap_index = 97518,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(襄)*/
-    {.bitmap_index = 97698,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(西)*/
-    {.bitmap_index = 97898,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(讷)*/
-    {.bitmap_index = 98078,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(许)*/
-    {.bitmap_index = 98288,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(语)*/
-    {.bitmap_index = 98488,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(诸)*/
-    {.bitmap_index = 98698,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(调)*/
-    {.bitmap_index = 98908,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(贝)*/
-    {.bitmap_index = 99098,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(贡)*/
-    {.bitmap_index = 99278,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(贵)*/
-    {.bitmap_index = 99488,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(贺)*/
-    {.bitmap_index = 99688,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(资)*/
-    {.bitmap_index = 99898,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(赣)*/
-    {.bitmap_index = 100078,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(赤)*/
-    {.bitmap_index = 100288,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(轻)*/
-    {.bitmap_index = 100488,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(辉)*/
-    {.bitmap_index = 100668,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(辑)*/
-    {.bitmap_index = 100878,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(辛)*/
-    {.bitmap_index = 101088,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(辽)*/
-    {.bitmap_index = 101268,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(达)*/
-    {.bitmap_index = 101468,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(迁)*/
-    {.bitmap_index = 101668,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(运)*/
-    {.bitmap_index = 101868,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(远)*/
-    {.bitmap_index = 102078,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(连)*/
-    {.bitmap_index = 102288,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(通)*/
-    {.bitmap_index = 102488,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(遂)*/
-    {.bitmap_index = 102668,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(遵)*/
-    {.bitmap_index = 102868,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邓)*/
-    {.bitmap_index = 103048,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邛)*/
-    {.bitmap_index = 103228,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邡)*/
-    {.bitmap_index = 103408,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邢)*/
-    {.bitmap_index = 103588,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(那)*/
-    {.bitmap_index = 103778,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(邮)*/
-    {.bitmap_index = 103978,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邯)*/
-    {.bitmap_index = 104158,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邳)*/
-    {.bitmap_index = 104338,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邵)*/
-    {.bitmap_index = 104518,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邹)*/
-    {.bitmap_index = 104698,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郏)*/
-    {.bitmap_index = 104878,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(郑)*/
-    {.bitmap_index = 105078,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郭)*/
-    {.bitmap_index = 105258,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郴)*/
-    {.bitmap_index = 105438,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郸)*/
-    {.bitmap_index = 105618,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(都)*/
-    {.bitmap_index = 105818,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鄂)*/
-    {.bitmap_index = 105998,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(酒)*/
-    {.bitmap_index = 106198,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(醴)*/
-    {.bitmap_index = 106378,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(里)*/
-    {.bitmap_index = 106568,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(重)*/
-    {.bitmap_index = 106758,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(金)*/
-    {.bitmap_index = 106958,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(钟)*/
-    {.bitmap_index = 107158,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(钢)*/
-    {.bitmap_index = 107378,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(钦)*/
-    {.bitmap_index = 107558,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(铁)*/
-    {.bitmap_index = 107758,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(铜)*/
-    {.bitmap_index = 107968,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(银)*/
-    {.bitmap_index = 108168,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(锡)*/
-    {.bitmap_index = 108378,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(锦)*/
-    {.bitmap_index = 108578,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(镇)*/
-    {.bitmap_index = 108788,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(长)*/
-    {.bitmap_index = 108988,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(门)*/
-    {.bitmap_index = 109177,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(间)*/
-    {.bitmap_index = 109366,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(阆)*/
-    {.bitmap_index = 109528,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(阜)*/
-    {.bitmap_index = 109708,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(防)*/
-    {.bitmap_index = 109918,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(阳)*/
-    {.bitmap_index = 110098,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(阴)*/
-    {.bitmap_index = 110278,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(阿)*/
-    {.bitmap_index = 110478,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(陆)*/
-    {.bitmap_index = 110678,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(陇)*/
-    {.bitmap_index = 110858,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(陕)*/
-    {.bitmap_index = 111038,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(陵)*/
-    {.bitmap_index = 111238,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(随)*/
-    {.bitmap_index = 111448,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(雄)*/
-    {.bitmap_index = 111648,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(雅)*/
-    {.bitmap_index = 111848,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(集)*/
-    {.bitmap_index = 112048,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(霍)*/
-    {.bitmap_index = 112228,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(霸)*/
-    {.bitmap_index = 112428,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(青)*/
-    {.bitmap_index = 112628,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(靖)*/
-    {.bitmap_index = 112828,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鞍)*/
-    {.bitmap_index = 113008,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(韩)*/
-    {.bitmap_index = 113208,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(音)*/
-    {.bitmap_index = 113408,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(韶)*/
-    {.bitmap_index = 113588,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(顶)*/
-    {.bitmap_index = 113778,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(项)*/
-    {.bitmap_index = 113968,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(顺)*/
-    {.bitmap_index = 114158,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(额)*/
-    {.bitmap_index = 114358,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(风)*/
-    {.bitmap_index = 114558,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(饶)*/
-    {.bitmap_index = 114738,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(首)*/
-    {.bitmap_index = 114938,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(香)*/
-    {.bitmap_index = 115138,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(马)*/
-    {.bitmap_index = 115328,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(驻)*/
-    {.bitmap_index = 115538,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(骅)*/
-    {.bitmap_index = 115718,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(高)*/
-    {.bitmap_index = 115918,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鲁)*/
-    {.bitmap_index = 116108,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鸡)*/
-    {.bitmap_index = 116288,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(鸭)*/
-    {.bitmap_index = 116468,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鹤)*/
-    {.bitmap_index = 116648,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鹰)*/
-    {.bitmap_index = 116828,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(鹿)*/
-    {.bitmap_index = 117038,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(麻)*/
-    {.bitmap_index = 117238,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(黄)*/
-    {.bitmap_index = 117448,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(黑)*/
-    {.bitmap_index = 117638,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鼎)*/
-    {.bitmap_index = 117818,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(齐)*/
-    {.bitmap_index = 118018,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(龙)*/
-    {.bitmap_index = 118228,	.adv_w = 7, .box_h = 5, .box_w = 6, .ofs_x = 2, .ofs_y = 2},/*(，)*/
+    {.bitmap_index = 0,	.adv_w = 13, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(
+)*/
+    {.bitmap_index = 90,	.adv_w = 6, .box_h = 0, .box_w = 6, .ofs_x = 0, .ofs_y = 5},/*( )*/
+    {.bitmap_index = 90,	.adv_w = 7, .box_h = 15, .box_w = 6, .ofs_x = 2, .ofs_y = 5},/*(!)*/
+    {.bitmap_index = 135,	.adv_w = 9, .box_h = 5, .box_w = 4, .ofs_x = 5, .ofs_y = 15},/*(")*/
+    {.bitmap_index = 145,	.adv_w = 14, .box_h = 14, .box_w = 16, .ofs_x = -1, .ofs_y = 6},/*(#)*/
+    {.bitmap_index = 257,	.adv_w = 11, .box_h = 19, .box_w = 10, .ofs_x = 1, .ofs_y = 3},/*($)*/
+    {.bitmap_index = 352,	.adv_w = 18, .box_h = 15, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(%)*/
+    {.bitmap_index = 487,	.adv_w = 19, .box_h = 15, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(&)*/
+    {.bitmap_index = 622,	.adv_w = 5, .box_h = 5, .box_w = 4, .ofs_x = 1, .ofs_y = 15},/*(')*/
+    {.bitmap_index = 632,	.adv_w = 9, .box_h = 18, .box_w = 8, .ofs_x = 2, .ofs_y = 2},/*(()*/
+    {.bitmap_index = 704,	.adv_w = 6, .box_h = 18, .box_w = 8, .ofs_x = -1, .ofs_y = 2},/*())*/
+    {.bitmap_index = 776,	.adv_w = 9, .box_h = 8, .box_w = 10, .ofs_x = 0, .ofs_y = 12},/*(*)*/
+    {.bitmap_index = 816,	.adv_w = 13, .box_h = 10, .box_w = 10, .ofs_x = 3, .ofs_y = 6},/*(+)*/
+    {.bitmap_index = 866,	.adv_w = 3, .box_h = 5, .box_w = 4, .ofs_x = -1, .ofs_y = 2},/*(,)*/
+    {.bitmap_index = 876,	.adv_w = 8, .box_h = 3, .box_w = 6, .ofs_x = 2, .ofs_y = 9},/*(-)*/
+    {.bitmap_index = 885,	.adv_w = 5, .box_h = 4, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(.)*/
+    {.bitmap_index = 893,	.adv_w = 10, .box_h = 18, .box_w = 12, .ofs_x = -1, .ofs_y = 2},/*(/)*/
+    {.bitmap_index = 1001,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(0)*/
+    {.bitmap_index = 1076,	.adv_w = 8, .box_h = 15, .box_w = 6, .ofs_x = 2, .ofs_y = 5},/*(1)*/
+    {.bitmap_index = 1121,	.adv_w = 10, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(2)*/
+    {.bitmap_index = 1196,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(3)*/
+    {.bitmap_index = 1271,	.adv_w = 12, .box_h = 15, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(4)*/
+    {.bitmap_index = 1361,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(5)*/
+    {.bitmap_index = 1436,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(6)*/
+    {.bitmap_index = 1511,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(7)*/
+    {.bitmap_index = 1586,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(8)*/
+    {.bitmap_index = 1661,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(9)*/
+    {.bitmap_index = 1736,	.adv_w = 5, .box_h = 11, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(:)*/
+    {.bitmap_index = 1758,	.adv_w = 5, .box_h = 13, .box_w = 6, .ofs_x = -1, .ofs_y = 3},/*(;)*/
+    {.bitmap_index = 1797,	.adv_w = 13, .box_h = 12, .box_w = 10, .ofs_x = 3, .ofs_y = 6},/*(<)*/
+    {.bitmap_index = 1857,	.adv_w = 12, .box_h = 8, .box_w = 10, .ofs_x = 2, .ofs_y = 7},/*(=)*/
+    {.bitmap_index = 1897,	.adv_w = 13, .box_h = 13, .box_w = 10, .ofs_x = 3, .ofs_y = 5},/*(>)*/
+    {.bitmap_index = 1962,	.adv_w = 9, .box_h = 15, .box_w = 10, .ofs_x = 0, .ofs_y = 5},/*(?)*/
+    {.bitmap_index = 2037,	.adv_w = 19, .box_h = 17, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(@)*/
+    {.bitmap_index = 2190,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(A)*/
+    {.bitmap_index = 2295,	.adv_w = 13, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(B)*/
+    {.bitmap_index = 2385,	.adv_w = 13, .box_h = 15, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(C)*/
+    {.bitmap_index = 2475,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 2, .ofs_y = 5},/*(D)*/
+    {.bitmap_index = 2580,	.adv_w = 10, .box_h = 15, .box_w = 8, .ofs_x = 2, .ofs_y = 5},/*(E)*/
+    {.bitmap_index = 2640,	.adv_w = 10, .box_h = 15, .box_w = 8, .ofs_x = 2, .ofs_y = 5},/*(F)*/
+    {.bitmap_index = 2700,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(G)*/
+    {.bitmap_index = 2805,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(H)*/
+    {.bitmap_index = 2895,	.adv_w = 5, .box_h = 15, .box_w = 4, .ofs_x = 2, .ofs_y = 5},/*(I)*/
+    {.bitmap_index = 2925,	.adv_w = 7, .box_h = 15, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(J)*/
+    {.bitmap_index = 2985,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(K)*/
+    {.bitmap_index = 3075,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(L)*/
+    {.bitmap_index = 3150,	.adv_w = 19, .box_h = 15, .box_w = 18, .ofs_x = 2, .ofs_y = 5},/*(M)*/
+    {.bitmap_index = 3285,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 2, .ofs_y = 5},/*(N)*/
+    {.bitmap_index = 3390,	.adv_w = 15, .box_h = 15, .box_w = 14, .ofs_x = 1, .ofs_y = 5},/*(O)*/
+    {.bitmap_index = 3495,	.adv_w = 12, .box_h = 15, .box_w = 10, .ofs_x = 2, .ofs_y = 5},/*(P)*/
+    {.bitmap_index = 3570,	.adv_w = 17, .box_h = 17, .box_w = 16, .ofs_x = 1, .ofs_y = 3},/*(Q)*/
+    {.bitmap_index = 3706,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(R)*/
+    {.bitmap_index = 3796,	.adv_w = 11, .box_h = 15, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(S)*/
+    {.bitmap_index = 3871,	.adv_w = 13, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(T)*/
+    {.bitmap_index = 3976,	.adv_w = 14, .box_h = 15, .box_w = 12, .ofs_x = 2, .ofs_y = 5},/*(U)*/
+    {.bitmap_index = 4066,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(V)*/
+    {.bitmap_index = 4171,	.adv_w = 23, .box_h = 15, .box_w = 24, .ofs_x = 0, .ofs_y = 5},/*(W)*/
+    {.bitmap_index = 4351,	.adv_w = 14, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(X)*/
+    {.bitmap_index = 4456,	.adv_w = 13, .box_h = 15, .box_w = 14, .ofs_x = 0, .ofs_y = 5},/*(Y)*/
+    {.bitmap_index = 4561,	.adv_w = 12, .box_h = 15, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(Z)*/
+    {.bitmap_index = 4651,	.adv_w = 7, .box_h = 19, .box_w = 6, .ofs_x = 2, .ofs_y = 1},/*([)*/
+    {.bitmap_index = 4708,	.adv_w = 11, .box_h = 18, .box_w = 12, .ofs_x = -1, .ofs_y = 2},/*(\)*/
+    {.bitmap_index = 4816,	.adv_w = 6, .box_h = 19, .box_w = 6, .ofs_x = 1, .ofs_y = 1},/*(])*/
+    {.bitmap_index = 4873,	.adv_w = 14, .box_h = 9, .box_w = 14, .ofs_x = 1, .ofs_y = 11},/*(^)*/
+    {.bitmap_index = 4936,	.adv_w = 9, .box_h = 2, .box_w = 10, .ofs_x = 0, .ofs_y = 0},/*(_)*/
+    {.bitmap_index = 4946,	.adv_w = 7, .box_h = 3, .box_w = 6, .ofs_x = 1, .ofs_y = 18},/*(`)*/
+    {.bitmap_index = 4955,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(a)*/
+    {.bitmap_index = 5010,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(b)*/
+    {.bitmap_index = 5106,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(c)*/
+    {.bitmap_index = 5161,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(d)*/
+    {.bitmap_index = 5257,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(e)*/
+    {.bitmap_index = 5312,	.adv_w = 8, .box_h = 16, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(f)*/
+    {.bitmap_index = 5376,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(g)*/
+    {.bitmap_index = 5472,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(h)*/
+    {.bitmap_index = 5568,	.adv_w = 5, .box_h = 16, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(i)*/
+    {.bitmap_index = 5600,	.adv_w = 5, .box_h = 22, .box_w = 8, .ofs_x = -2, .ofs_y = 0},/*(j)*/
+    {.bitmap_index = 5688,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(k)*/
+    {.bitmap_index = 5784,	.adv_w = 4, .box_h = 16, .box_w = 4, .ofs_x = 1, .ofs_y = 5},/*(l)*/
+    {.bitmap_index = 5816,	.adv_w = 19, .box_h = 11, .box_w = 18, .ofs_x = 1, .ofs_y = 5},/*(m)*/
+    {.bitmap_index = 5915,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(n)*/
+    {.bitmap_index = 5970,	.adv_w = 12, .box_h = 11, .box_w = 12, .ofs_x = 1, .ofs_y = 5},/*(o)*/
+    {.bitmap_index = 6036,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(p)*/
+    {.bitmap_index = 6132,	.adv_w = 12, .box_h = 16, .box_w = 12, .ofs_x = 1, .ofs_y = 0},/*(q)*/
+    {.bitmap_index = 6228,	.adv_w = 8, .box_h = 11, .box_w = 8, .ofs_x = 1, .ofs_y = 5},/*(r)*/
+    {.bitmap_index = 6272,	.adv_w = 9, .box_h = 11, .box_w = 8, .ofs_x = 1, .ofs_y = 5},/*(s)*/
+    {.bitmap_index = 6316,	.adv_w = 7, .box_h = 14, .box_w = 8, .ofs_x = 0, .ofs_y = 5},/*(t)*/
+    {.bitmap_index = 6372,	.adv_w = 11, .box_h = 11, .box_w = 10, .ofs_x = 1, .ofs_y = 5},/*(u)*/
+    {.bitmap_index = 6427,	.adv_w = 12, .box_h = 11, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(v)*/
+    {.bitmap_index = 6493,	.adv_w = 18, .box_h = 11, .box_w = 20, .ofs_x = -1, .ofs_y = 5},/*(w)*/
+    {.bitmap_index = 6603,	.adv_w = 11, .box_h = 11, .box_w = 12, .ofs_x = 0, .ofs_y = 5},/*(x)*/
+    {.bitmap_index = 6669,	.adv_w = 12, .box_h = 17, .box_w = 12, .ofs_x = 0, .ofs_y = 0},/*(y)*/
+    {.bitmap_index = 6771,	.adv_w = 10, .box_h = 11, .box_w = 10, .ofs_x = 0, .ofs_y = 5},/*(z)*/
+    {.bitmap_index = 6826,	.adv_w = 7, .box_h = 18, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*({)*/
+    {.bitmap_index = 6880,	.adv_w = 5, .box_h = 22, .box_w = 4, .ofs_x = 2, .ofs_y = 0},/*(|)*/
+    {.bitmap_index = 6924,	.adv_w = 7, .box_h = 18, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*(})*/
+    {.bitmap_index = 6978,	.adv_w = 13, .box_h = 5, .box_w = 12, .ofs_x = 2, .ofs_y = 8},/*(~)*/
+    {.bitmap_index = 7008,	.adv_w = 6, .box_h = 0, .box_w = 6, .ofs_x = 0, .ofs_y = 5},/*()*/
+    {.bitmap_index = 7008,	.adv_w = 7, .box_h = 6, .box_w = 6, .ofs_x = 1, .ofs_y = 14},/*(°)*/
+    {.bitmap_index = 7026,	.adv_w = 7, .box_h = 6, .box_w = 6, .ofs_x = 1, .ofs_y = 2},/*(。)*/
+    {.bitmap_index = 7044,	.adv_w = 20, .box_h = 3, .box_w = 20, .ofs_x = 0, .ofs_y = 10},/*(一)*/
+    {.bitmap_index = 7074,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(七)*/
+    {.bitmap_index = 7274,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(万)*/
+    {.bitmap_index = 7474,	.adv_w = 20, .box_h = 17, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(三)*/
+    {.bitmap_index = 7644,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(上)*/
+    {.bitmap_index = 7834,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(丘)*/
+    {.bitmap_index = 8034,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(东)*/
+    {.bitmap_index = 8244,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(严)*/
+    {.bitmap_index = 8444,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(个)*/
+    {.bitmap_index = 8644,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(中)*/
+    {.bitmap_index = 8824,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(丰)*/
+    {.bitmap_index = 9034,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(临)*/
+    {.bitmap_index = 9234,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(丹)*/
+    {.bitmap_index = 9434,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(主)*/
+    {.bitmap_index = 9634,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(丽)*/
+    {.bitmap_index = 9814,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(义)*/
+    {.bitmap_index = 10024,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(乌)*/
+    {.bitmap_index = 10224,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(乐)*/
+    {.bitmap_index = 10434,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(九)*/
+    {.bitmap_index = 10634,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(乡)*/
+    {.bitmap_index = 10834,	.adv_w = 20, .box_h = 15, .box_w = 20, .ofs_x = 0, .ofs_y = 4},/*(二)*/
+    {.bitmap_index = 10984,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(云)*/
+    {.bitmap_index = 11174,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(五)*/
+    {.bitmap_index = 11364,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(井)*/
+    {.bitmap_index = 11574,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(亚)*/
+    {.bitmap_index = 11764,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(交)*/
+    {.bitmap_index = 11964,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(京)*/
+    {.bitmap_index = 12174,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(亳)*/
+    {.bitmap_index = 12354,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(亿)*/
+    {.bitmap_index = 12554,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(什)*/
+    {.bitmap_index = 12754,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(仁)*/
+    {.bitmap_index = 12934,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(今)*/
+    {.bitmap_index = 13124,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(介)*/
+    {.bitmap_index = 13324,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(仓)*/
+    {.bitmap_index = 13524,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(仙)*/
+    {.bitmap_index = 13704,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(代)*/
+    {.bitmap_index = 13914,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(令)*/
+    {.bitmap_index = 14114,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(仪)*/
+    {.bitmap_index = 14324,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(们)*/
+    {.bitmap_index = 14534,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(价)*/
+    {.bitmap_index = 14734,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(任)*/
+    {.bitmap_index = 14934,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(伊)*/
+    {.bitmap_index = 15134,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(休)*/
+    {.bitmap_index = 15334,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(优)*/
+    {.bitmap_index = 15544,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(伦)*/
+    {.bitmap_index = 15744,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(低)*/
+    {.bitmap_index = 15944,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(余)*/
+    {.bitmap_index = 16154,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(佛)*/
+    {.bitmap_index = 16354,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(作)*/
+    {.bitmap_index = 16554,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(佳)*/
+    {.bitmap_index = 16754,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(依)*/
+    {.bitmap_index = 16954,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(侯)*/
+    {.bitmap_index = 17154,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(保)*/
+    {.bitmap_index = 17354,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(信)*/
+    {.bitmap_index = 17554,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(值)*/
+    {.bitmap_index = 17744,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(偃)*/
+    {.bitmap_index = 17924,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(儋)*/
+    {.bitmap_index = 18104,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(元)*/
+    {.bitmap_index = 18304,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(充)*/
+    {.bitmap_index = 18514,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(光)*/
+    {.bitmap_index = 18724,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(克)*/
+    {.bitmap_index = 18934,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(兖)*/
+    {.bitmap_index = 19114,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(公)*/
+    {.bitmap_index = 19324,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(六)*/
+    {.bitmap_index = 19524,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兰)*/
+    {.bitmap_index = 19724,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(共)*/
+    {.bitmap_index = 19924,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(关)*/
+    {.bitmap_index = 20124,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兴)*/
+    {.bitmap_index = 20324,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(兵)*/
+    {.bitmap_index = 20524,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(冀)*/
+    {.bitmap_index = 20704,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(内)*/
+    {.bitmap_index = 20893,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(冈)*/
+    {.bitmap_index = 21073,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(冶)*/
+    {.bitmap_index = 21253,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(冷)*/
+    {.bitmap_index = 21453,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凉)*/
+    {.bitmap_index = 21643,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凌)*/
+    {.bitmap_index = 21843,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(凤)*/
+    {.bitmap_index = 22023,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(凭)*/
+    {.bitmap_index = 22233,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(凯)*/
+    {.bitmap_index = 22433,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(则)*/
+    {.bitmap_index = 22643,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(利)*/
+    {.bitmap_index = 22853,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(别)*/
+    {.bitmap_index = 23063,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(力)*/
+    {.bitmap_index = 23273,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(勒)*/
+    {.bitmap_index = 23483,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(匀)*/
+    {.bitmap_index = 23693,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(包)*/
+    {.bitmap_index = 23893,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(化)*/
+    {.bitmap_index = 24113,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(北)*/
+    {.bitmap_index = 24323,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(区)*/
+    {.bitmap_index = 24513,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(十)*/
+    {.bitmap_index = 24713,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(华)*/
+    {.bitmap_index = 24923,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(南)*/
+    {.bitmap_index = 25133,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(博)*/
+    {.bitmap_index = 25343,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(卫)*/
+    {.bitmap_index = 25533,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(原)*/
+    {.bitmap_index = 25733,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(厦)*/
+    {.bitmap_index = 25933,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(县)*/
+    {.bitmap_index = 26133,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(双)*/
+    {.bitmap_index = 26323,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(口)*/
+    {.bitmap_index = 26494,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(古)*/
+    {.bitmap_index = 26694,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(句)*/
+    {.bitmap_index = 26904,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(台)*/
+    {.bitmap_index = 27114,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(叶)*/
+    {.bitmap_index = 27314,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(合)*/
+    {.bitmap_index = 27504,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(吉)*/
+    {.bitmap_index = 27714,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(同)*/
+    {.bitmap_index = 27894,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(名)*/
+    {.bitmap_index = 28094,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(吕)*/
+    {.bitmap_index = 28256,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(启)*/
+    {.bitmap_index = 28456,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(吴)*/
+    {.bitmap_index = 28636,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(吾)*/
+    {.bitmap_index = 28816,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(周)*/
+    {.bitmap_index = 29016,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(呼)*/
+    {.bitmap_index = 29216,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(和)*/
+    {.bitmap_index = 29416,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(咸)*/
+    {.bitmap_index = 29596,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(哈)*/
+    {.bitmap_index = 29796,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(唐)*/
+    {.bitmap_index = 29996,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(商)*/
+    {.bitmap_index = 30206,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(喀)*/
+    {.bitmap_index = 30406,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(嘉)*/
+    {.bitmap_index = 30596,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(嘴)*/
+    {.bitmap_index = 30796,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(四)*/
+    {.bitmap_index = 30976,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(回)*/
+    {.bitmap_index = 31147,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(固)*/
+    {.bitmap_index = 31318,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(国)*/
+    {.bitmap_index = 31489,	.adv_w = 19, .box_h = 19, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(图)*/
+    {.bitmap_index = 31660,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(地)*/
+    {.bitmap_index = 31860,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(圳)*/
+    {.bitmap_index = 32050,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(坊)*/
+    {.bitmap_index = 32230,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(坛)*/
+    {.bitmap_index = 32440,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(城)*/
+    {.bitmap_index = 32650,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(埠)*/
+    {.bitmap_index = 32850,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(堰)*/
+    {.bitmap_index = 33030,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(塔)*/
+    {.bitmap_index = 33230,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(壁)*/
+    {.bitmap_index = 33430,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(壮)*/
+    {.bitmap_index = 33610,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(夏)*/
+    {.bitmap_index = 33810,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(多)*/
+    {.bitmap_index = 34000,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(大)*/
+    {.bitmap_index = 34200,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(天)*/
+    {.bitmap_index = 34390,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(太)*/
+    {.bitmap_index = 34590,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(头)*/
+    {.bitmap_index = 34780,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(夷)*/
+    {.bitmap_index = 34990,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(奉)*/
+    {.bitmap_index = 35180,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(奎)*/
+    {.bitmap_index = 35360,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(如)*/
+    {.bitmap_index = 35560,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(姚)*/
+    {.bitmap_index = 35740,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(姜)*/
+    {.bitmap_index = 35920,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(威)*/
+    {.bitmap_index = 36120,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(娄)*/
+    {.bitmap_index = 36310,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(子)*/
+    {.bitmap_index = 36500,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(孝)*/
+    {.bitmap_index = 36690,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(孟)*/
+    {.bitmap_index = 36880,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宁)*/
+    {.bitmap_index = 37080,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(安)*/
+    {.bitmap_index = 37280,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(定)*/
+    {.bitmap_index = 37480,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宜)*/
+    {.bitmap_index = 37680,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宝)*/
+    {.bitmap_index = 37880,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宣)*/
+    {.bitmap_index = 38080,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宫)*/
+    {.bitmap_index = 38280,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(家)*/
+    {.bitmap_index = 38480,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(容)*/
+    {.bitmap_index = 38680,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宾)*/
+    {.bitmap_index = 38880,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(宿)*/
+    {.bitmap_index = 39080,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(密)*/
+    {.bitmap_index = 39280,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(富)*/
+    {.bitmap_index = 39470,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(察)*/
+    {.bitmap_index = 39670,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(封)*/
+    {.bitmap_index = 39880,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(尔)*/
+    {.bitmap_index = 40090,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(尚)*/
+    {.bitmap_index = 40279,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(尾)*/
+    {.bitmap_index = 40479,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(屯)*/
+    {.bitmap_index = 40659,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(山)*/
+    {.bitmap_index = 40839,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岑)*/
+    {.bitmap_index = 41019,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 2},/*(岗)*/
+    {.bitmap_index = 41199,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(岛)*/
+    {.bitmap_index = 41388,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岩)*/
+    {.bitmap_index = 41568,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岭)*/
+    {.bitmap_index = 41748,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(岳)*/
+    {.bitmap_index = 41928,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(峡)*/
+    {.bitmap_index = 42128,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峨)*/
+    {.bitmap_index = 42308,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峪)*/
+    {.bitmap_index = 42488,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(峰)*/
+    {.bitmap_index = 42678,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(崃)*/
+    {.bitmap_index = 42858,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(崇)*/
+    {.bitmap_index = 43068,	.adv_w = 21, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(嵊)*/
+    {.bitmap_index = 43248,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(川)*/
+    {.bitmap_index = 43448,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(州)*/
+    {.bitmap_index = 43648,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(左)*/
+    {.bitmap_index = 43848,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(巩)*/
+    {.bitmap_index = 44028,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(差)*/
+    {.bitmap_index = 44228,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(巴)*/
+    {.bitmap_index = 44418,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(市)*/
+    {.bitmap_index = 44628,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(布)*/
+    {.bitmap_index = 44828,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(师)*/
+    {.bitmap_index = 45038,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(常)*/
+    {.bitmap_index = 45238,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(平)*/
+    {.bitmap_index = 45428,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(年)*/
+    {.bitmap_index = 45638,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(广)*/
+    {.bitmap_index = 45838,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(庄)*/
+    {.bitmap_index = 46038,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(庆)*/
+    {.bitmap_index = 46238,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(库)*/
+    {.bitmap_index = 46438,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(应)*/
+    {.bitmap_index = 46648,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(底)*/
+    {.bitmap_index = 46848,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(店)*/
+    {.bitmap_index = 47058,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(度)*/
+    {.bitmap_index = 47268,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(康)*/
+    {.bitmap_index = 47468,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(廊)*/
+    {.bitmap_index = 47678,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(延)*/
+    {.bitmap_index = 47878,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(建)*/
+    {.bitmap_index = 48078,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(开)*/
+    {.bitmap_index = 48278,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(张)*/
+    {.bitmap_index = 48488,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(弱)*/
+    {.bitmap_index = 48678,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(强)*/
+    {.bitmap_index = 48878,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(当)*/
+    {.bitmap_index = 49058,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(彦)*/
+    {.bitmap_index = 49248,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(彭)*/
+    {.bitmap_index = 49428,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(征)*/
+    {.bitmap_index = 49628,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(徐)*/
+    {.bitmap_index = 49828,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(微)*/
+    {.bitmap_index = 50028,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(德)*/
+    {.bitmap_index = 50238,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(徽)*/
+    {.bitmap_index = 50438,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(志)*/
+    {.bitmap_index = 50638,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(忠)*/
+    {.bitmap_index = 50818,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(忻)*/
+    {.bitmap_index = 50998,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(怀)*/
+    {.bitmap_index = 51198,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(总)*/
+    {.bitmap_index = 51398,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(恩)*/
+    {.bitmap_index = 51588,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(惠)*/
+    {.bitmap_index = 51788,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(感)*/
+    {.bitmap_index = 51988,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(慈)*/
+    {.bitmap_index = 52168,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(成)*/
+    {.bitmap_index = 52378,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(房)*/
+    {.bitmap_index = 52588,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(手)*/
+    {.bitmap_index = 52798,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(扎)*/
+    {.bitmap_index = 53008,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(扬)*/
+    {.bitmap_index = 53218,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(承)*/
+    {.bitmap_index = 53418,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(抚)*/
+    {.bitmap_index = 53598,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(拉)*/
+    {.bitmap_index = 53808,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(指)*/
+    {.bitmap_index = 54018,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(掖)*/
+    {.bitmap_index = 54198,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(揭)*/
+    {.bitmap_index = 54408,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(攀)*/
+    {.bitmap_index = 54628,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(收)*/
+    {.bitmap_index = 54828,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(政)*/
+    {.bitmap_index = 55038,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(敦)*/
+    {.bitmap_index = 55248,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(文)*/
+    {.bitmap_index = 55448,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(斯)*/
+    {.bitmap_index = 55648,	.adv_w = 20, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(新)*/
+    {.bitmap_index = 55868,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(方)*/
+    {.bitmap_index = 56078,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(施)*/
+    {.bitmap_index = 56288,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(族)*/
+    {.bitmap_index = 56488,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(无)*/
+    {.bitmap_index = 56688,	.adv_w = 18, .box_h = 20, .box_w = 16, .ofs_x = 2, .ofs_y = 1},/*(日)*/
+    {.bitmap_index = 56848,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(旧)*/
+    {.bitmap_index = 57028,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(昆)*/
+    {.bitmap_index = 57228,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(昌)*/
+    {.bitmap_index = 57390,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(明)*/
+    {.bitmap_index = 57570,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(春)*/
+    {.bitmap_index = 57770,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(昨)*/
+    {.bitmap_index = 57980,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(昭)*/
+    {.bitmap_index = 58180,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(晋)*/
+    {.bitmap_index = 58360,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(普)*/
+    {.bitmap_index = 58560,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(景)*/
+    {.bitmap_index = 58760,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(暨)*/
+    {.bitmap_index = 58950,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(曲)*/
+    {.bitmap_index = 59139,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(更)*/
+    {.bitmap_index = 59339,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(最)*/
+    {.bitmap_index = 59539,	.adv_w = 18, .box_h = 20, .box_w = 18, .ofs_x = 0, .ofs_y = 1},/*(月)*/
+    {.bitmap_index = 59719,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(有)*/
+    {.bitmap_index = 59929,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(朔)*/
+    {.bitmap_index = 60109,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(朝)*/
+    {.bitmap_index = 60329,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(木)*/
+    {.bitmap_index = 60529,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(本)*/
+    {.bitmap_index = 60739,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(来)*/
+    {.bitmap_index = 60939,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(杭)*/
+    {.bitmap_index = 61149,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(松)*/
+    {.bitmap_index = 61349,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(林)*/
+    {.bitmap_index = 61549,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(枝)*/
+    {.bitmap_index = 61729,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(枣)*/
+    {.bitmap_index = 61909,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(染)*/
+    {.bitmap_index = 62109,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(查)*/
+    {.bitmap_index = 62309,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(柳)*/
+    {.bitmap_index = 62489,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(树)*/
+    {.bitmap_index = 62699,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(株)*/
+    {.bitmap_index = 62899,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(根)*/
+    {.bitmap_index = 63099,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(格)*/
+    {.bitmap_index = 63299,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(桂)*/
+    {.bitmap_index = 63499,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(桃)*/
+    {.bitmap_index = 63709,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(桐)*/
+    {.bitmap_index = 63889,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(桥)*/
+    {.bitmap_index = 64089,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(桦)*/
+    {.bitmap_index = 64269,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(梁)*/
+    {.bitmap_index = 64469,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(梅)*/
+    {.bitmap_index = 64679,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(梧)*/
+    {.bitmap_index = 64859,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(棱)*/
+    {.bitmap_index = 65039,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(楚)*/
+    {.bitmap_index = 65239,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(榆)*/
+    {.bitmap_index = 65419,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(樟)*/
+    {.bitmap_index = 65599,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(武)*/
+    {.bitmap_index = 65799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(毕)*/
+    {.bitmap_index = 65999,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(民)*/
+    {.bitmap_index = 66199,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(气)*/
+    {.bitmap_index = 66409,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(水)*/
+    {.bitmap_index = 66589,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(永)*/
+    {.bitmap_index = 66799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(汉)*/
+    {.bitmap_index = 66999,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汕)*/
+    {.bitmap_index = 67179,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汝)*/
+    {.bitmap_index = 67359,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(江)*/
+    {.bitmap_index = 67539,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(池)*/
+    {.bitmap_index = 67739,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(污)*/
+    {.bitmap_index = 67949,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汨)*/
+    {.bitmap_index = 68129,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(汾)*/
+    {.bitmap_index = 68309,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沁)*/
+    {.bitmap_index = 68489,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沂)*/
+    {.bitmap_index = 68669,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沅)*/
+    {.bitmap_index = 68849,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沈)*/
+    {.bitmap_index = 69029,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(沙)*/
+    {.bitmap_index = 69229,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(没)*/
+    {.bitmap_index = 69429,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(沧)*/
+    {.bitmap_index = 69609,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(河)*/
+    {.bitmap_index = 69819,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(油)*/
+    {.bitmap_index = 70029,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(治)*/
+    {.bitmap_index = 70219,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泉)*/
+    {.bitmap_index = 70429,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泊)*/
+    {.bitmap_index = 70639,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(波)*/
+    {.bitmap_index = 70839,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(泰)*/
+    {.bitmap_index = 71039,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(泸)*/
+    {.bitmap_index = 71219,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(泽)*/
+    {.bitmap_index = 71429,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洛)*/
+    {.bitmap_index = 71629,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(津)*/
+    {.bitmap_index = 71829,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洪)*/
+    {.bitmap_index = 72029,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(洮)*/
+    {.bitmap_index = 72209,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(洱)*/
+    {.bitmap_index = 72389,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(洲)*/
+    {.bitmap_index = 72589,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(流)*/
+    {.bitmap_index = 72799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(济)*/
+    {.bitmap_index = 72999,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浏)*/
+    {.bitmap_index = 73179,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浙)*/
+    {.bitmap_index = 73359,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(浩)*/
+    {.bitmap_index = 73539,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(浮)*/
+    {.bitmap_index = 73749,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(海)*/
+    {.bitmap_index = 73949,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(涟)*/
+    {.bitmap_index = 74129,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(涿)*/
+    {.bitmap_index = 74319,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淄)*/
+    {.bitmap_index = 74499,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淖)*/
+    {.bitmap_index = 74679,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(淮)*/
+    {.bitmap_index = 74859,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(深)*/
+    {.bitmap_index = 75059,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(清)*/
+    {.bitmap_index = 75259,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(温)*/
+    {.bitmap_index = 75459,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(渭)*/
+    {.bitmap_index = 75639,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(港)*/
+    {.bitmap_index = 75849,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(湖)*/
+    {.bitmap_index = 76069,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(湘)*/
+    {.bitmap_index = 76249,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(湛)*/
+    {.bitmap_index = 76429,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(湾)*/
+    {.bitmap_index = 76639,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(源)*/
+    {.bitmap_index = 76849,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(溧)*/
+    {.bitmap_index = 77029,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(溪)*/
+    {.bitmap_index = 77209,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滁)*/
+    {.bitmap_index = 77389,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滋)*/
+    {.bitmap_index = 77569,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(滕)*/
+    {.bitmap_index = 77759,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(满)*/
+    {.bitmap_index = 77959,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(滦)*/
+    {.bitmap_index = 78139,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(滨)*/
+    {.bitmap_index = 78339,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(漯)*/
+    {.bitmap_index = 78529,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(漳)*/
+    {.bitmap_index = 78709,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潍)*/
+    {.bitmap_index = 78889,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(潜)*/
+    {.bitmap_index = 79089,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潞)*/
+    {.bitmap_index = 79269,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潭)*/
+    {.bitmap_index = 79449,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(潮)*/
+    {.bitmap_index = 79629,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(澳)*/
+    {.bitmap_index = 79839,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(濮)*/
+    {.bitmap_index = 80019,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(灌)*/
+    {.bitmap_index = 80209,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(灯)*/
+    {.bitmap_index = 80409,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(灵)*/
+    {.bitmap_index = 80599,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(烟)*/
+    {.bitmap_index = 80799,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(焦)*/
+    {.bitmap_index = 80999,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(煌)*/
+    {.bitmap_index = 81179,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(照)*/
+    {.bitmap_index = 81369,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(熟)*/
+    {.bitmap_index = 81569,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(牙)*/
+    {.bitmap_index = 81769,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(牡)*/
+    {.bitmap_index = 81949,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(特)*/
+    {.bitmap_index = 82159,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(狮)*/
+    {.bitmap_index = 82369,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(玉)*/
+    {.bitmap_index = 82559,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(玛)*/
+    {.bitmap_index = 82759,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(珠)*/
+    {.bitmap_index = 82959,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(珲)*/
+    {.bitmap_index = 83139,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(理)*/
+    {.bitmap_index = 83329,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(琼)*/
+    {.bitmap_index = 83519,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(瑞)*/
+    {.bitmap_index = 83729,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(瓦)*/
+    {.bitmap_index = 83929,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(瓯)*/
+    {.bitmap_index = 84109,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(甘)*/
+    {.bitmap_index = 84319,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(田)*/
+    {.bitmap_index = 84499,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(甸)*/
+    {.bitmap_index = 84709,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(界)*/
+    {.bitmap_index = 84899,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(疆)*/
+    {.bitmap_index = 85099,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(登)*/
+    {.bitmap_index = 85299,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(白)*/
+    {.bitmap_index = 85488,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(百)*/
+    {.bitmap_index = 85688,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(皇)*/
+    {.bitmap_index = 85878,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(皋)*/
+    {.bitmap_index = 86058,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(益)*/
+    {.bitmap_index = 86258,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盐)*/
+    {.bitmap_index = 86458,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盖)*/
+    {.bitmap_index = 86658,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(盘)*/
+    {.bitmap_index = 86858,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(省)*/
+    {.bitmap_index = 87058,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(眉)*/
+    {.bitmap_index = 87248,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(看)*/
+    {.bitmap_index = 87438,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(石)*/
+    {.bitmap_index = 87638,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(码)*/
+    {.bitmap_index = 87838,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(碑)*/
+    {.bitmap_index = 88018,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(磐)*/
+    {.bitmap_index = 88198,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(祥)*/
+    {.bitmap_index = 88378,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(票)*/
+    {.bitmap_index = 88578,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(福)*/
+    {.bitmap_index = 88778,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(禹)*/
+    {.bitmap_index = 88940,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(秦)*/
+    {.bitmap_index = 89120,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(穆)*/
+    {.bitmap_index = 89300,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(穴)*/
+    {.bitmap_index = 89500,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(竹)*/
+    {.bitmap_index = 89700,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(简)*/
+    {.bitmap_index = 89910,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(米)*/
+    {.bitmap_index = 90100,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(级)*/
+    {.bitmap_index = 90300,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(纳)*/
+    {.bitmap_index = 90510,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(绍)*/
+    {.bitmap_index = 90720,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(绥)*/
+    {.bitmap_index = 90900,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(维)*/
+    {.bitmap_index = 91100,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(绵)*/
+    {.bitmap_index = 91280,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(编)*/
+    {.bitmap_index = 91490,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(罗)*/
+    {.bitmap_index = 91680,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(老)*/
+    {.bitmap_index = 91880,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(耒)*/
+    {.bitmap_index = 92060,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(聊)*/
+    {.bitmap_index = 92270,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肃)*/
+    {.bitmap_index = 92450,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肇)*/
+    {.bitmap_index = 92630,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(股)*/
+    {.bitmap_index = 92830,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(肥)*/
+    {.bitmap_index = 93010,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(胶)*/
+    {.bitmap_index = 93220,	.adv_w = 18, .box_h = 21, .box_w = 16, .ofs_x = 2, .ofs_y = 1},/*(自)*/
+    {.bitmap_index = 93388,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(舒)*/
+    {.bitmap_index = 93598,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(舞)*/
+    {.bitmap_index = 93798,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(舟)*/
+    {.bitmap_index = 94008,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(良)*/
+    {.bitmap_index = 94208,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(色)*/
+    {.bitmap_index = 94408,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(节)*/
+    {.bitmap_index = 94618,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芜)*/
+    {.bitmap_index = 94798,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芝)*/
+    {.bitmap_index = 94978,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(芦)*/
+    {.bitmap_index = 95158,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(芬)*/
+    {.bitmap_index = 95368,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(花)*/
+    {.bitmap_index = 95578,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(苏)*/
+    {.bitmap_index = 95788,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(茂)*/
+    {.bitmap_index = 95998,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(荆)*/
+    {.bitmap_index = 96178,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(荥)*/
+    {.bitmap_index = 96368,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(莆)*/
+    {.bitmap_index = 96558,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(莞)*/
+    {.bitmap_index = 96738,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(莱)*/
+    {.bitmap_index = 96938,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(菏)*/
+    {.bitmap_index = 97118,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(萍)*/
+    {.bitmap_index = 97298,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(营)*/
+    {.bitmap_index = 97498,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(萨)*/
+    {.bitmap_index = 97698,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(葛)*/
+    {.bitmap_index = 97888,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(葫)*/
+    {.bitmap_index = 98068,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(蒙)*/
+    {.bitmap_index = 98278,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蓥)*/
+    {.bitmap_index = 98458,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(藏)*/
+    {.bitmap_index = 98668,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(虎)*/
+    {.bitmap_index = 98868,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(虞)*/
+    {.bitmap_index = 99058,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蚌)*/
+    {.bitmap_index = 99238,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(蛟)*/
+    {.bitmap_index = 99418,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(行)*/
+    {.bitmap_index = 99628,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(衡)*/
+    {.bitmap_index = 99838,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(衢)*/
+    {.bitmap_index = 100018,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(襄)*/
+    {.bitmap_index = 100198,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(西)*/
+    {.bitmap_index = 100398,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(讷)*/
+    {.bitmap_index = 100578,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(许)*/
+    {.bitmap_index = 100788,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(语)*/
+    {.bitmap_index = 100988,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(诸)*/
+    {.bitmap_index = 101198,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(调)*/
+    {.bitmap_index = 101408,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(贝)*/
+    {.bitmap_index = 101598,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(贡)*/
+    {.bitmap_index = 101778,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(贵)*/
+    {.bitmap_index = 101988,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(贺)*/
+    {.bitmap_index = 102188,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(资)*/
+    {.bitmap_index = 102398,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(赣)*/
+    {.bitmap_index = 102578,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(赤)*/
+    {.bitmap_index = 102788,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(轻)*/
+    {.bitmap_index = 102988,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(辉)*/
+    {.bitmap_index = 103168,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(辑)*/
+    {.bitmap_index = 103378,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(辛)*/
+    {.bitmap_index = 103588,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(辽)*/
+    {.bitmap_index = 103768,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(达)*/
+    {.bitmap_index = 103968,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(迁)*/
+    {.bitmap_index = 104168,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(运)*/
+    {.bitmap_index = 104368,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(远)*/
+    {.bitmap_index = 104578,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(连)*/
+    {.bitmap_index = 104788,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(通)*/
+    {.bitmap_index = 104988,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(遂)*/
+    {.bitmap_index = 105168,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(遵)*/
+    {.bitmap_index = 105368,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邓)*/
+    {.bitmap_index = 105548,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邛)*/
+    {.bitmap_index = 105728,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邡)*/
+    {.bitmap_index = 105908,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邢)*/
+    {.bitmap_index = 106088,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(那)*/
+    {.bitmap_index = 106278,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(邮)*/
+    {.bitmap_index = 106478,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邯)*/
+    {.bitmap_index = 106658,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邳)*/
+    {.bitmap_index = 106838,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邵)*/
+    {.bitmap_index = 107018,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(邹)*/
+    {.bitmap_index = 107198,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郏)*/
+    {.bitmap_index = 107378,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(郑)*/
+    {.bitmap_index = 107578,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郭)*/
+    {.bitmap_index = 107758,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郴)*/
+    {.bitmap_index = 107938,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(郸)*/
+    {.bitmap_index = 108118,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(都)*/
+    {.bitmap_index = 108318,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鄂)*/
+    {.bitmap_index = 108498,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(酒)*/
+    {.bitmap_index = 108698,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(醴)*/
+    {.bitmap_index = 108878,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(里)*/
+    {.bitmap_index = 109068,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(重)*/
+    {.bitmap_index = 109258,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(量)*/
+    {.bitmap_index = 109448,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(金)*/
+    {.bitmap_index = 109648,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(钟)*/
+    {.bitmap_index = 109848,	.adv_w = 19, .box_h = 22, .box_w = 20, .ofs_x = 0, .ofs_y = 0},/*(钢)*/
+    {.bitmap_index = 110068,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(钦)*/
+    {.bitmap_index = 110248,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(铁)*/
+    {.bitmap_index = 110448,	.adv_w = 19, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(铜)*/
+    {.bitmap_index = 110658,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(银)*/
+    {.bitmap_index = 110858,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(锡)*/
+    {.bitmap_index = 111068,	.adv_w = 19, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(锦)*/
+    {.bitmap_index = 111268,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(镇)*/
+    {.bitmap_index = 111478,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(长)*/
+    {.bitmap_index = 111678,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(门)*/
+    {.bitmap_index = 111867,	.adv_w = 19, .box_h = 21, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(间)*/
+    {.bitmap_index = 112056,	.adv_w = 19, .box_h = 18, .box_w = 18, .ofs_x = 1, .ofs_y = 3},/*(阆)*/
+    {.bitmap_index = 112218,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(阜)*/
+    {.bitmap_index = 112398,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(防)*/
+    {.bitmap_index = 112608,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(阳)*/
+    {.bitmap_index = 112788,	.adv_w = 19, .box_h = 20, .box_w = 18, .ofs_x = 1, .ofs_y = 1},/*(阴)*/
+    {.bitmap_index = 112968,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(阿)*/
+    {.bitmap_index = 113168,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(陆)*/
+    {.bitmap_index = 113368,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(陇)*/
+    {.bitmap_index = 113548,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(陕)*/
+    {.bitmap_index = 113728,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 1, .ofs_y = 2},/*(陵)*/
+    {.bitmap_index = 113928,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 1, .ofs_y = 1},/*(随)*/
+    {.bitmap_index = 114138,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(雄)*/
+    {.bitmap_index = 114338,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(雅)*/
+    {.bitmap_index = 114538,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(集)*/
+    {.bitmap_index = 114738,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(霍)*/
+    {.bitmap_index = 114918,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(霸)*/
+    {.bitmap_index = 115118,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(青)*/
+    {.bitmap_index = 115318,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(靖)*/
+    {.bitmap_index = 115518,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鞍)*/
+    {.bitmap_index = 115698,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(韩)*/
+    {.bitmap_index = 115898,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(音)*/
+    {.bitmap_index = 116098,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(韶)*/
+    {.bitmap_index = 116278,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(顶)*/
+    {.bitmap_index = 116468,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(项)*/
+    {.bitmap_index = 116658,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(顺)*/
+    {.bitmap_index = 116848,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(额)*/
+    {.bitmap_index = 117048,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(风)*/
+    {.bitmap_index = 117248,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(饶)*/
+    {.bitmap_index = 117428,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(首)*/
+    {.bitmap_index = 117628,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(香)*/
+    {.bitmap_index = 117828,	.adv_w = 19, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(马)*/
+    {.bitmap_index = 118018,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(驻)*/
+    {.bitmap_index = 118228,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(骅)*/
+    {.bitmap_index = 118408,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(高)*/
+    {.bitmap_index = 118608,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鲁)*/
+    {.bitmap_index = 118798,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鸡)*/
+    {.bitmap_index = 118978,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 1, .ofs_y = 3},/*(鸭)*/
+    {.bitmap_index = 119158,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鹤)*/
+    {.bitmap_index = 119338,	.adv_w = 20, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鹰)*/
+    {.bitmap_index = 119518,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(鹿)*/
+    {.bitmap_index = 119728,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(麻)*/
+    {.bitmap_index = 119928,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(黄)*/
+    {.bitmap_index = 120138,	.adv_w = 20, .box_h = 19, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(黑)*/
+    {.bitmap_index = 120328,	.adv_w = 19, .box_h = 18, .box_w = 20, .ofs_x = 0, .ofs_y = 3},/*(鼎)*/
+    {.bitmap_index = 120508,	.adv_w = 20, .box_h = 20, .box_w = 20, .ofs_x = 0, .ofs_y = 2},/*(齐)*/
+    {.bitmap_index = 120708,	.adv_w = 20, .box_h = 21, .box_w = 20, .ofs_x = 0, .ofs_y = 1},/*(龙)*/
+    {.bitmap_index = 120918,	.adv_w = 7, .box_h = 5, .box_w = 6, .ofs_x = 2, .ofs_y = 2},/*(，)*/
 };
 
 
 static const uint16_t unicode_list_1[] = {
+    0x000a,	/*(
+)*/
     0x0020,	/*( )*/
     0x0021,	/*(!)*/
     0x0022,	/*(")*/
@@ -15335,14 +15670,18 @@ static const uint16_t unicode_list_1[] = {
     0x4ea4,	/*(交)*/
     0x4eac,	/*(京)*/
     0x4eb3,	/*(亳)*/
+    0x4ebf,	/*(亿)*/
     0x4ec0,	/*(什)*/
     0x4ec1,	/*(仁)*/
+    0x4eca,	/*(今)*/
     0x4ecb,	/*(介)*/
     0x4ed3,	/*(仓)*/
     0x4ed9,	/*(仙)*/
+    0x4ee3,	/*(代)*/
     0x4ee4,	/*(令)*/
     0x4eea,	/*(仪)*/
     0x4eec,	/*(们)*/
+    0x4ef7,	/*(价)*/
     0x4efb,	/*(任)*/
     0x4f0a,	/*(伊)*/
     0x4f11,	/*(休)*/
@@ -15357,6 +15696,7 @@ static const uint16_t unicode_list_1[] = {
     0x4faf,	/*(侯)*/
     0x4fdd,	/*(保)*/
     0x4fe1,	/*(信)*/
+    0x503c,	/*(值)*/
     0x5043,	/*(偃)*/
     0x510b,	/*(儋)*/
     0x5143,	/*(元)*/
@@ -15521,18 +15861,21 @@ static const uint16_t unicode_list_1[] = {
     0x5f6d,	/*(彭)*/
     0x5f81,	/*(征)*/
     0x5f90,	/*(徐)*/
+    0x5fae,	/*(微)*/
     0x5fb7,	/*(德)*/
     0x5fbd,	/*(徽)*/
     0x5fd7,	/*(志)*/
     0x5fe0,	/*(忠)*/
     0x5ffb,	/*(忻)*/
     0x6000,	/*(怀)*/
+    0x603b,	/*(总)*/
     0x6069,	/*(恩)*/
     0x60e0,	/*(惠)*/
     0x611f,	/*(感)*/
     0x6148,	/*(慈)*/
     0x6210,	/*(成)*/
     0x623f,	/*(房)*/
+    0x624b,	/*(手)*/
     0x624e,	/*(扎)*/
     0x626c,	/*(扬)*/
     0x627f,	/*(承)*/
@@ -15542,6 +15885,7 @@ static const uint16_t unicode_list_1[] = {
     0x6396,	/*(掖)*/
     0x63ed,	/*(揭)*/
     0x6500,	/*(攀)*/
+    0x6536,	/*(收)*/
     0x653f,	/*(政)*/
     0x6566,	/*(敦)*/
     0x6587,	/*(文)*/
@@ -15557,6 +15901,7 @@ static const uint16_t unicode_list_1[] = {
     0x660c,	/*(昌)*/
     0x660e,	/*(明)*/
     0x6625,	/*(春)*/
+    0x6628,	/*(昨)*/
     0x662d,	/*(昭)*/
     0x664b,	/*(晋)*/
     0x666e,	/*(普)*/
@@ -15710,6 +16055,7 @@ static const uint16_t unicode_list_1[] = {
     0x7709,	/*(眉)*/
     0x770b,	/*(看)*/
     0x77f3,	/*(石)*/
+    0x7801,	/*(码)*/
     0x7891,	/*(碑)*/
     0x78d0,	/*(磐)*/
     0x7965,	/*(祥)*/
@@ -15735,6 +16081,7 @@ static const uint16_t unicode_list_1[] = {
     0x804a,	/*(聊)*/
     0x8083,	/*(肃)*/
     0x8087,	/*(肇)*/
+    0x80a1,	/*(股)*/
     0x80a5,	/*(肥)*/
     0x80f6,	/*(胶)*/
     0x81ea,	/*(自)*/
@@ -15820,6 +16167,7 @@ static const uint16_t unicode_list_1[] = {
     0x91b4,	/*(醴)*/
     0x91cc,	/*(里)*/
     0x91cd,	/*(重)*/
+    0x91cf,	/*(量)*/
     0x91d1,	/*(金)*/
     0x949f,	/*(钟)*/
     0x94a2,	/*(钢)*/
@@ -15886,13 +16234,13 @@ static const uint16_t unicode_list_1[] = {
 
 static const lv_font_fmt_txt_cmap_t cmaps[] = {
     {
-        .range_start = 0x0020,
+        .range_start = 0x000a,
         .range_length = 0xff0c,
         .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY,
         .glyph_id_start = 0,
         .unicode_list = unicode_list_1,
         .glyph_id_ofs_list = NULL,
-        .list_length = 671,
+        .list_length = 685,
     }
 };
 
@@ -15909,7 +16257,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .kern_classes = 0,
 
     .last_letter = 0xff0c,
-    .last_glyph_id = 670,
+    .last_glyph_id = 684,
 };
 
 
@@ -15981,7 +16329,7 @@ static bool __user_font_get_glyph_dsc(const lv_font_t * font, lv_font_glyph_dsc_
 }
 
 
-//微软雅黑,Regular,12
+//Microsoft YaHei,,-1
 //字模高度：26
 //内部字体
 //使用排序和二分查表

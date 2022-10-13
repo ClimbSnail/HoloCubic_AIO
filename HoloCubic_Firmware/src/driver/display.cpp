@@ -4,7 +4,7 @@
 #include "lv_demo_encoder.h"
 #include "common.h"
 
-#define LV_HOR_RES_MAX_LEN 10 // 24
+#define LV_HOR_RES_MAX_LEN 100 // 24
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * LV_HOR_RES_MAX_LEN];
 

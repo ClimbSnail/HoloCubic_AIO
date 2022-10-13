@@ -72,17 +72,17 @@ static MyHttpResult http_request(String uid = "344470052")
     // String url = "http://www.dtmb.top/api/fans/index?id=" + uid;
     MyHttpResult result;
     String url = FANS_API + uid;
-    HTTPClient *httpClient = new HTTPClient();
-    httpClient->setTimeout(1000);
-    bool status = httpClient->begin(url);
+    HTTPClient httpClient;
+    httpClient.setTimeout(1000);
+    bool status = httpClient.begin(url);
     if (status == false)
     {
         result.httpCode = -1;
         return result;
     }
-    int httpCode = httpClient->GET();
-    String httpResponse = httpClient->getString();
-    httpClient->end();
+    int httpCode = httpClient.GET();
+    String httpResponse = httpClient.getString();
+    httpClient.end();
     result.httpCode = httpCode;
     result.httpResponse = httpResponse;
     return result;
