@@ -1,4 +1,5 @@
 # HoloCubic_AIO (All in one for HoloCubic)
+AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件中，并坚持开源。目前固件源码达`2w+`行，上位机源码`4k`行（均不含字库图片），诚邀大家共同开发AIO固件、上位机以及周边，让固件满足更多人的需求。
 
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）
@@ -12,7 +13,12 @@
 * 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
 * 开发人员持续加入中。。。。
 
-_**欢迎加入AIO内测QQ讨论群 755143193**_
+_**欢迎加入AIO内测QQ讨论群**_
+
+一群群号755143193
+二群群号860112883
+三群群号676732387
+四群群号749207817
 
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
@@ -27,8 +33,6 @@ _**欢迎加入AIO内测QQ讨论群 755143193**_
 
 ### 本固件设计了一套低耦合框架，更有利于多功能的实现
 B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
-
-
 
 ![HomePage](Image/holocubic_main.jpg)
 
@@ -75,6 +79,7 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 3. 开始使用时，应让电脑与`HoloCubic`处于同一网络环境（同网段）。如果之前没连接过wifi则需要使用电脑连接HoloCubic放出的热点名为`HoloCubic_AIO`无密码的wifi。
 4. 在浏览器地址栏输入`Local_IP`或者`AP_IP`（ http://192.168.4.2 也支持域名直接访问 http://holocubic ），即可进入管理设置后台。推荐使用`ip地址`访问。
 5. 网页里可设置系统参数、天气APP参数、相册参数、播放器参数等等。
+6. 由于当前APP数量多，切换查找比较繁琐，也可以在`Web Server`中配置`自启动APP`。
 
 ##### 文件管理器（File Manager）
 作用：通过无线网络管理内存卡上的文件。
@@ -197,7 +202,7 @@ platformIO模拟器 https://github.com/lvgl/lv_platformio
 
 lvgl的字体生成可以使用：`LvglFontTool V0.4` 已放置在Doc目录下
 
-c文件中提取所有汉字：可以使用工程下的`get_font.py`脚本提取。`python get_font.py 字模.c文件的路径`
+c文件中提取所有汉字：可以使用工程下的`Script/get_font.py`脚本提取。`python get_font.py 字模.c文件的路径`
 
 ### 致谢
 * ESP32内存分布 https://blog.csdn.net/espressif/article/details/112956403

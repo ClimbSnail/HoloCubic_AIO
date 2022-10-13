@@ -64,6 +64,7 @@ void setup()
     Serial.begin(115200);
 
     Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));
+    Serial.flush();
     // MAC ID可用作芯片唯一标识
     Serial.print(F("ChipID(EfuseMac): "));
     Serial.println(ESP.getEfuseMac());
@@ -132,21 +133,16 @@ void setup()
 
     // 自启动APP
     app_controller->app_auto_start();
+
     // 优先显示屏幕 加快视觉上的开机时间
     app_controller->main_process(&mpu.action_info);
-
-    Serial.print(F("lv_port_indev_init: start"));
 
     /*** Init IMU as input device ***/
     // lv_port_indev_init();
 
-    Serial.print(F("lv_port_indev_init: end"));
-
     mpu.init(app_controller->sys_cfg.mpu_order,
              app_controller->sys_cfg.auto_calibration_mpu,
              &app_controller->mpu_cfg); // 初始化比较耗时
-
-    Serial.print(F("mpu.init"));
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;

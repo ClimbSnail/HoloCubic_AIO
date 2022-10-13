@@ -207,7 +207,6 @@ int8_t I2Cdev::readWord(uint8_t devAddr, uint8_t regAddr, uint16_t *data, uint16
  * @return Number of bytes read (-1 indicates failure)
  */
 int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t *data, uint16_t timeout, void *wireObj) {
-    // #define I2CDEV_SERIAL_DEBUG 0
     #ifdef I2CDEV_SERIAL_DEBUG
         Serial.print("I2C (0x");
         Serial.print(devAddr, HEX);
@@ -285,7 +284,7 @@ int8_t I2Cdev::readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8
                 useWire->endTransmission();
                 useWire->beginTransmission(devAddr);
                 useWire->requestFrom((uint8_t)devAddr, (uint8_t)min((int)length - k, I2CDEVLIB_WIRE_BUFFER_LENGTH));
-                
+        
                 for (; useWire->available() && (timeout == 0 || millis() - t1 < timeout); count++) {
                     data[count] = useWire->read();
                     #ifdef I2CDEV_SERIAL_DEBUG
