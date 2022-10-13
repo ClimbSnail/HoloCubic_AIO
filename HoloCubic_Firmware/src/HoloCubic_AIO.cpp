@@ -28,6 +28,7 @@
 #include "app/weather_old/weather_old.h"
 #include "app/anniversary/anniversary.h"
 #include "app/heartbeat/heartbeat.h"
+#include "app/stockmarket/stockmarket.h"
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
@@ -127,6 +128,7 @@ void setup()
     app_controller->app_install(&game_2048_app);
     app_controller->app_install(&anniversary_app);
     app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
+    app_controller->app_install(&stockmarket_app);
 
     // 自启动APP
     // app_controller->app_auto_start();

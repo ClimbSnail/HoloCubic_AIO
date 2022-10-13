@@ -89,6 +89,11 @@ String file_size(int bytes)
                          "<label class=\"input\"><span>数据更新周期（毫秒）</span><input type=\"text\"name=\"updataInterval\"value=\"%s\"></label>" \
                          "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
+#define STOCK_SETTING "<form method=\"GET\" action=\"saveStockConf\">"                                                                                      \
+                         "<label class=\"input\"><span>股票代码,例如：sz000001或sh601126</span><input type=\"text\"name=\"stock_id\"value=\"%s\"></label>"                             \
+                         "<label class=\"input\"><span>数据更新周期（毫秒）</span><input type=\"text\"name=\"updataInterval\"value=\"%s\"></label>" \
+                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+
 #define PICTURE_SETTING "<form method=\"GET\" action=\"savePictureConf\">"                                                                                         \
                         "<label class=\"input\"><span>自动切换时间间隔（毫秒）</span><input type=\"text\"name=\"switchInterval\"value=\"%s\"></label>" \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
@@ -173,6 +178,7 @@ void init_page_header()
     webpage_header += F("<li><a href='/screen_setting'>屏幕分享</a></li>");
     webpage_header += F("<li><a href='/heartbeat_setting'>心跳</a></li>");
     webpage_header += F("<li><a href='/anniversary_setting'>纪念日</a></li>");
+    webpage_header += F("<li><a href='/stock_setting'>股票行情</a></li>");
     webpage_header += F("</ul>");
 }
 
@@ -346,6 +352,24 @@ void bili_setting()
     app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_GET_PARAM,
                             (void *)"updataInterval", updataInterval);
     sprintf(buf, BILIBILI_SETTING, bili_uid, updataInterval);
+    webpage = buf;
+    Send_HTML(webpage);
+}
+
+
+void stock_setting()
+{
+    char buf[2048];
+    char bili_uid[32];
+    char updataInterval[32];
+    // 读取数据
+    app_controller->send_to(SERVER_APP_NAME, "Stock", APP_MESSAGE_READ_CFG,
+                            NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Stock", APP_MESSAGE_GET_PARAM,
+                            (void *)"stock_id", bili_uid);
+    app_controller->send_to(SERVER_APP_NAME, "Stock", APP_MESSAGE_GET_PARAM,
+                            (void *)"updataInterval", updataInterval);
+    sprintf(buf, STOCK_SETTING, bili_uid, updataInterval);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -586,6 +610,22 @@ void saveBiliConf(void)
                             (void *)server.arg("updataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_WRITE_CFG,
+                            NULL, NULL);
+}
+
+void saveStockConf(void)
+{
+    Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
+    app_controller->send_to(SERVER_APP_NAME, "Stock",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"stock_id",
+                            (void *)server.arg("stock_id").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Stock",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"updataInterval",
+                            (void *)server.arg("updataInterval").c_str());
+    // 持久化数据
+    app_controller->send_to(SERVER_APP_NAME, "Stock", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
 }
 
