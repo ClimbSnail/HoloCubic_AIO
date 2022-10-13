@@ -37,6 +37,7 @@ void start_web_config()
     server.on("/weather_setting", weather_setting);
     server.on("/weather_old_setting", weather_old_setting);
     server.on("/bili_setting", bili_setting);
+    server.on("/stock_setting", stock_setting);
     server.on("/picture_setting", picture_setting);
     server.on("/media_setting", media_setting);
     server.on("/screen_setting", screen_setting);
@@ -54,6 +55,7 @@ void start_web_config()
     server.on("/saveWeatherConf", saveWeatherConf);
     server.on("/saveWeatherOldConf", saveWeatherOldConf);
     server.on("/saveBiliConf", saveBiliConf);
+    server.on("/saveStockConf", saveStockConf);
     server.on("/savePictureConf", savePictureConf);
     server.on("/saveMediaConf", saveMediaConf);
     server.on("/saveScreenConf", saveScreenConf);
