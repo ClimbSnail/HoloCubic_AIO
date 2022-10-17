@@ -35,10 +35,10 @@ static void write_config(const WT_Config *cfg)
     w_data = w_data + cfg->language + "\n";
     w_data = w_data + cfg->weather_key + "\n";
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->weatherUpdataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->weatherUpdataInterval);
     w_data += tmp;
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->timeUpdataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->timeUpdataInterval);
     w_data += tmp;
     g_flashCfg.writeFile(WEATHER_OLD_CONFIG_PATH, w_data.c_str());
 }
@@ -211,6 +211,7 @@ static int weather_init(AppController *sys)
     run_data->coactusUpdateFlag = 0x01;
 
     run_data->weather = {0, 0};
+    return 0;
 }
 
 static void weather_process(AppController *sys,
@@ -294,6 +295,7 @@ static int weather_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void weather_message_handle(const char *from, const char *to,
@@ -347,11 +349,11 @@ static void weather_message_handle(const char *from, const char *to,
         }
         else if (!strcmp(param_key, "weatherUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.weatherUpdataInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.weatherUpdataInterval);
         }
         else if (!strcmp(param_key, "timeUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.timeUpdataInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.timeUpdataInterval);
         }
         else
         {

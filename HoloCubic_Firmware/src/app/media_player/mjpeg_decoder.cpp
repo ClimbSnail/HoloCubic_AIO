@@ -199,6 +199,7 @@ bool MjpegPlayDocoder::video_play_screen(void)
     else
     {
     }
+    return true;
 }
 
 bool MjpegPlayDocoder::video_end(void)

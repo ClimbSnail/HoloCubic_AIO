@@ -38,6 +38,7 @@ static int file_maneger_init(AppController *sys)
     run_data->serverReflushPreMillis = 0;
     run_data->recvBuf = (uint8_t *)calloc(1, RECV_BUFFER_SIZE);
     run_data->sendBuf = (uint8_t *)calloc(1, SEND_BUFFER_SIZE);
+    return 0;
 }
 
 static void file_maneger_process(AppController *sys,
@@ -106,6 +107,7 @@ static int file_maneger_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void file_maneger_message_handle(const char *from, const char *to,

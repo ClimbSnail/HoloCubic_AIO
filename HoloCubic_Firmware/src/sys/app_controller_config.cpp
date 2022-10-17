@@ -244,10 +244,20 @@ void AppController::write_config(RgbConfig *cfg)
     snprintf(tmp, 25, "%d\n", cfg->step_2);
     w_data += tmp;
 
+    if (cfg->min_brightness < 0.01)
+    {
+        // 限制
+        cfg->min_brightness = 0.01;
+    }
     memset(tmp, 0, 25);
     snprintf(tmp, 25, "%f\n", cfg->min_brightness);
     w_data += tmp;
 
+    if (cfg->max_brightness < 0.01)
+    {
+        // 限制
+        cfg->max_brightness = 0.01;
+    }
     memset(tmp, 0, 25);
     snprintf(tmp, 25, "%f\n", cfg->max_brightness);
     w_data += tmp;

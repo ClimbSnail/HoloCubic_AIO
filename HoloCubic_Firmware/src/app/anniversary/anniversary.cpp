@@ -28,7 +28,7 @@ static void write_config(AN_Config *cfg)
     // 将配置数据保存在文件中（持久化）
     String w_data;
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->anniversary_cnt);
+    snprintf(tmp, 16, "%lu\n", cfg->anniversary_cnt);
     w_data += tmp;
     for (int i = 0; i < MAX_ANNIVERSARY_CNT; ++i)
     {
@@ -192,7 +192,9 @@ static void get_date_diff()
 static void date_update()
 {
     get_date_diff();
-    anniversary_gui_display_date(&(cfg_data.target_date[run_data->cur_anniversary]), run_data->anniversary_day_count, cfg_data.event_name[run_data->cur_anniversary].c_str());
+    anniversary_gui_display_date(&(cfg_data.target_date[run_data->cur_anniversary]),
+                                 run_data->anniversary_day_count,
+                                 cfg_data.event_name[run_data->cur_anniversary].c_str());
 }
 
 static long long get_timestamp(String url)
@@ -246,6 +248,7 @@ static int anniversary_init(AppController *sys)
     run_data->preTimeMillis = 0;
     run_data->coactusUpdateFlag = 0x01;
     Serial.printf("anniversary init successful\n");
+    return 0;
 }
 
 static void anniversary_process(AppController *sys,
@@ -315,6 +318,7 @@ static int anniversary_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void anniversary_message_handle(const char *from, const char *to,

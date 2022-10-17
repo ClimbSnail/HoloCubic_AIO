@@ -242,6 +242,7 @@ static int heartbeat_init(AppController *sys)
         // 连接wifi，并开启mqtt客户端
         sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
     }
+    return 0;
 }
 
 static void heartbeat_process(AppController *sys,
@@ -335,6 +336,7 @@ static int heartbeat_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void heartbeat_message_handle(const char *from, const char *to,

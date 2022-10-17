@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.1.0"
+#define AIO_VERSION "2.2.0"
 
 #include "Arduino.h"
 #include "driver/rgb_led.h"
@@ -32,6 +32,10 @@ boolean doDelayMillisTime(unsigned long interval,
 // 光感 (与MPU6050一致)
 #define AMB_I2C_SDA 32
 #define AMB_I2C_SCL 33
+
+// 屏幕尺寸
+#define SCREEN_HOR_RES 240     // 水平
+#define SCREEN_VER_RES 240     // 竖直
 
 // TFT屏幕接口
 // #define PEAK

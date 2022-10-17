@@ -38,10 +38,10 @@ static void write_config(WT_Config *cfg)
     w_data = w_data + cfg->tianqi_appsecret + "\n";
     w_data = w_data + cfg->tianqi_addr + "\n";
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->weatherUpdataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->weatherUpdataInterval);
     w_data += tmp;
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->timeUpdataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->timeUpdataInterval);
     w_data += tmp;
     g_flashCfg.writeFile(WEATHER_CONFIG_PATH, w_data.c_str());
 }
@@ -128,7 +128,10 @@ static void get_weather(void)
     http.setTimeout(1000);
     char api[128] = {0};
     // snprintf(api, 128, WEATHER_NOW_API, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
-    snprintf(api, 128, WEATHER_NOW_API_UPDATE, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
+    snprintf(api, 128, WEATHER_NOW_API_UPDATE,
+             cfg_data.tianqi_appid.c_str(),
+             cfg_data.tianqi_appsecret.c_str(),
+             cfg_data.tianqi_addr.c_str());
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -221,7 +224,10 @@ static void get_daliyWeather(short maxT[], short minT[])
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    snprintf(api, 128, WEATHER_DALIY_API, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
+    snprintf(api, 128, WEATHER_DALIY_API,
+             cfg_data.tianqi_appid.c_str(),
+             cfg_data.tianqi_appsecret.c_str(),
+             cfg_data.tianqi_addr.c_str());
     Serial.print("API = ");
     Serial.println(api);
     http.begin(api);
@@ -294,6 +300,8 @@ static int weather_init(AppController *sys)
     //     NULL,                                 /*作为任务输入传递的参数*/
     //     1,                                    /*任务的优先级*/
     //     &run_data->xHandle_task_task_update); /*任务句柄*/
+
+    return 0;
 }
 
 static void weather_process(AppController *sys,
@@ -382,6 +390,7 @@ static int weather_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 // static void task_update(void *parameter)
@@ -490,11 +499,11 @@ static void weather_message_handle(const char *from, const char *to,
         }
         else if (!strcmp(param_key, "weatherUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.weatherUpdataInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.weatherUpdataInterval);
         }
         else if (!strcmp(param_key, "timeUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.timeUpdataInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.timeUpdataInterval);
         }
         else
         {

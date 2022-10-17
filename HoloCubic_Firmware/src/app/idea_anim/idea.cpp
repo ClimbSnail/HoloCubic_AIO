@@ -69,6 +69,7 @@ static int idea_init(AppController *sys)
     my_gfx_op.fill_rect = NULL;                                  // gfx_fill_rect;
     create_ui(NULL, SCREEN_WIDTH, SCREEN_HEIGHT, 2, &my_gfx_op); // ui初始化
     screen_clear(0x0000);
+    return 0;
 }
 
 static void idea_process(AppController *sys,
@@ -116,6 +117,7 @@ static int idea_exit_callback(void *param)
         free(screen_buf);
         screen_buf = NULL;
     }
+    return 0;
 }
 
 static void idea_message_handle(const char *from, const char *to,

@@ -35,7 +35,6 @@ static lv_style_t label_style2;
 static lv_style_t label_style3;
 static lv_style_t label_style4;
 
-// LV_FONT_DECLARE(font_unicode);
 LV_FONT_DECLARE(lv_font_montserrat_20);
 LV_FONT_DECLARE(lv_font_montserrat_24);
 LV_FONT_DECLARE(lv_font_montserrat_40);
@@ -84,39 +83,27 @@ void weather_old_obj_del(void);
 void weather_old_gui_init(void)
 {
     lv_style_init(&default_style);
-    lv_style_set_bg_color(&default_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_PRESSED, LV_COLOR_GRAY);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED | LV_STATE_PRESSED, lv_color_hex(0xf88));
+    lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
 
-    // 天气页初始化
-    wc_scr[0] = lv_obj_create(NULL, NULL);
-    lv_obj_add_style(wc_scr[0], LV_BTN_PART_MAIN, &default_style);
     lv_style_init(&label_style1);
-    lv_style_set_text_opa(&label_style1, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&label_style1, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&label_style1, LV_STATE_DEFAULT, &lv_font_montserrat_24);
-    // lv_style_set_text_font(&label_style1, LV_STATE_DEFAULT, &font_unicode_kai_40);
+    lv_style_set_text_opa(&label_style1, LV_OPA_COVER);
+    lv_style_set_text_color(&label_style1, lv_color_white());
+    lv_style_set_text_font(&label_style1, &lv_font_montserrat_24);
+
     lv_style_init(&label_style2);
-    lv_style_set_text_opa(&label_style2, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&label_style2, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&label_style2, LV_STATE_DEFAULT, &lv_font_montserrat_40);
+    lv_style_set_text_opa(&label_style2, LV_OPA_COVER);
+    lv_style_set_text_color(&label_style2, lv_color_white());
+    lv_style_set_text_font(&label_style2, &lv_font_montserrat_40);
 
-    // 日期时间页初始化
-    wc_scr[1] = lv_obj_create(NULL, NULL);
-    lv_obj_add_style(wc_scr[1], LV_BTN_PART_MAIN, &default_style);
     lv_style_init(&label_style3);
-    lv_style_set_text_opa(&label_style3, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&label_style3, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&label_style3, LV_STATE_DEFAULT, &lv_font_montserrat_40);
+    lv_style_set_text_opa(&label_style3, LV_OPA_COVER);
+    lv_style_set_text_color(&label_style3, lv_color_white());
+    lv_style_set_text_font(&label_style3, &lv_font_montserrat_40);
 
-    // 硬件信息页初始化
-    wc_scr[2] = lv_obj_create(NULL, NULL);
-    lv_obj_add_style(wc_scr[2], LV_BTN_PART_MAIN, &default_style);
     lv_style_init(&label_style4);
-    lv_style_set_text_opa(&label_style4, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&label_style4, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&label_style4, LV_STATE_DEFAULT, &lv_font_montserrat_20);
+    lv_style_set_text_opa(&label_style4, LV_OPA_COVER);
+    lv_style_set_text_color(&label_style4, lv_color_white());
+    lv_style_set_text_font(&label_style4, &lv_font_montserrat_20);
 }
 
 void display_weather_old_init()
@@ -124,19 +111,24 @@ void display_weather_old_init()
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == wc_scr[0])
         return;
+
     weather_old_obj_del();
     lv_obj_clean(act_obj); // 清空此前页面
 
-    weather_image = lv_img_create(wc_scr[0], NULL);
+    // 天气页初始化
+    wc_scr[0] = lv_obj_create(NULL);
+    lv_obj_add_style(wc_scr[0], &default_style, LV_STATE_DEFAULT);
 
-    cityname_label = lv_label_create(wc_scr[0], NULL);
-    lv_obj_add_style(cityname_label, LV_LABEL_PART_MAIN, &label_style1);
+    weather_image = lv_img_create(wc_scr[0]);
 
-    temperature_label = lv_label_create(wc_scr[0], NULL);
-    lv_obj_add_style(temperature_label, LV_LABEL_PART_MAIN, &label_style2);
+    cityname_label = lv_label_create(wc_scr[0]);
+    lv_obj_add_style(cityname_label, &label_style1, LV_STATE_DEFAULT);
 
-    temperature_symbol = lv_label_create(wc_scr[0], NULL);
-    lv_obj_add_style(temperature_symbol, LV_LABEL_PART_MAIN, &label_style1);
+    temperature_label = lv_label_create(wc_scr[0]);
+    lv_obj_add_style(temperature_label, &label_style2, LV_STATE_DEFAULT);
+
+    temperature_symbol = lv_label_create(wc_scr[0]);
+    lv_obj_add_style(temperature_symbol, &label_style1, LV_STATE_DEFAULT);
 }
 
 void display_weather_old(const char *cityname, const char *temperature, int weathercode, lv_scr_load_anim_t anim_type)
@@ -155,13 +147,13 @@ void display_weather_old(const char *cityname, const char *temperature, int weat
     lv_img_set_src(weather_image, path);
     lv_label_set_text(cityname_label, cityname);
     lv_label_set_text_fmt(temperature_label, "%s", temperature);
-    // LV_ALIGN_OUT_RIGHT_MID
+    // LV_ALIGN_RIGHT_MID
     lv_label_set_text_fmt(temperature_symbol, "°C");
 
-    lv_obj_align(weather_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 160);
-    lv_obj_align(cityname_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 20, -45);
-    lv_obj_align(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
-    lv_obj_align(temperature_symbol, temperature_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
+    lv_obj_align(weather_image, LV_ALIGN_CENTER, 0, -30);
+    lv_obj_align(cityname_label, LV_ALIGN_BOTTOM_LEFT, 20, -30);
+    lv_obj_align_to(temperature_label, cityname_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
+    lv_obj_align_to(temperature_symbol, temperature_label, LV_ALIGN_OUT_RIGHT_BOTTOM, 10, 0);
 
     if (LV_SCR_LOAD_ANIM_NONE != anim_type)
     {
@@ -178,13 +170,19 @@ void display_time_old_init()
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == wc_scr[1])
         return;
+
     weather_old_obj_del();
     lv_obj_clean(act_obj); // 清空此前页面
-    time_image = lv_img_create(wc_scr[1], NULL);
-    date_label = lv_label_create(wc_scr[1], NULL);
-    lv_obj_add_style(date_label, LV_LABEL_PART_MAIN, &label_style3);
-    time_label = lv_label_create(wc_scr[1], NULL);
-    lv_obj_add_style(time_label, LV_LABEL_PART_MAIN, &label_style3);
+
+    // 日期时间页初始化
+    wc_scr[1] = lv_obj_create(NULL);
+    lv_obj_add_style(wc_scr[1], &default_style, LV_STATE_DEFAULT);
+
+    time_image = lv_img_create(wc_scr[1]);
+    date_label = lv_label_create(wc_scr[1]);
+    lv_obj_add_style(date_label, &label_style3, LV_STATE_DEFAULT);
+    time_label = lv_label_create(wc_scr[1]);
+    lv_obj_add_style(time_label, &label_style3, LV_STATE_DEFAULT);
 }
 
 void display_time_old(const char *date, const char *time, lv_scr_load_anim_t anim_type)
@@ -192,13 +190,13 @@ void display_time_old(const char *date, const char *time, lv_scr_load_anim_t ani
     display_time_old_init();
 
     lv_img_set_src(time_image, &rocket);
-    lv_obj_align(time_image, NULL, LV_ALIGN_OUT_TOP_MID, 0, 110);
+    lv_obj_align(time_image, LV_ALIGN_TOP_MID, 0, 30);
 
     lv_label_set_text(date_label, date);
-    lv_obj_align(date_label, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -95);
+    lv_obj_align(date_label, LV_ALIGN_CENTER, 0, 45);
 
     lv_label_set_text(time_label, time);
-    lv_obj_align(time_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 40, -50);
+    lv_obj_align(time_label, LV_ALIGN_CENTER, 0, 90);
 
     if (LV_SCR_LOAD_ANIM_NONE != anim_type)
     {
@@ -215,25 +213,31 @@ void display_hardware_old_init()
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == wc_scr[2])
         return;
+
     weather_old_obj_del();
     lv_obj_clean(act_obj); // 清空此前页面
-    cpu_temp_label = lv_label_create(wc_scr[2], NULL);
-    lv_obj_add_style(cpu_temp_label, LV_LABEL_PART_MAIN, &label_style4);
-    cpu_used_label = lv_label_create(wc_scr[2], NULL);
-    lv_obj_add_style(cpu_used_label, LV_LABEL_PART_MAIN, &label_style4);
-    mem_used_label = lv_label_create(wc_scr[2], NULL);
-    lv_obj_add_style(mem_used_label, LV_LABEL_PART_MAIN, &label_style4);
-    net_upload_label = lv_label_create(wc_scr[2], NULL);
-    lv_obj_add_style(net_upload_label, LV_LABEL_PART_MAIN, &label_style4);
-    net_download_label = lv_label_create(wc_scr[2], NULL);
-    lv_obj_add_style(net_download_label, LV_LABEL_PART_MAIN, &label_style4);
+
+    // 硬件信息页初始化
+    wc_scr[2] = lv_obj_create(NULL);
+    lv_obj_add_style(wc_scr[2], &default_style, LV_STATE_DEFAULT);
+
+    cpu_temp_label = lv_label_create(wc_scr[2]);
+    lv_obj_add_style(cpu_temp_label, &label_style4, LV_STATE_DEFAULT);
+    cpu_used_label = lv_label_create(wc_scr[2]);
+    lv_obj_add_style(cpu_used_label, &label_style4, LV_STATE_DEFAULT);
+    mem_used_label = lv_label_create(wc_scr[2]);
+    lv_obj_add_style(mem_used_label, &label_style4, LV_STATE_DEFAULT);
+    net_upload_label = lv_label_create(wc_scr[2]);
+    lv_obj_add_style(net_upload_label, &label_style4, LV_STATE_DEFAULT);
+    net_download_label = lv_label_create(wc_scr[2]);
+    lv_obj_add_style(net_download_label, &label_style4, LV_STATE_DEFAULT);
 
     // 绘制
-    lv_obj_align(cpu_temp_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 30);
-    lv_obj_align(cpu_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 60);
-    lv_obj_align(mem_used_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 90);
-    lv_obj_align(net_upload_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 120);
-    lv_obj_align(net_download_label, NULL, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 150);
+    lv_obj_align(cpu_temp_label, LV_ALIGN_BOTTOM_LEFT, 2, 30);
+    lv_obj_align(cpu_used_label, LV_ALIGN_BOTTOM_LEFT, 2, 60);
+    lv_obj_align(mem_used_label, LV_ALIGN_BOTTOM_LEFT, 2, 90);
+    lv_obj_align(net_upload_label, LV_ALIGN_BOTTOM_LEFT, 2, 120);
+    lv_obj_align(net_download_label, LV_ALIGN_BOTTOM_LEFT, 2, 150);
 }
 
 void display_hardware_old(const char *info, lv_scr_load_anim_t anim_type)
@@ -251,35 +255,26 @@ void display_hardware_old(const char *info, lv_scr_load_anim_t anim_type)
 
 void weather_old_obj_del(void)
 {
-    if (NULL != weather_image)
+    if (NULL != wc_scr[0])
     {
-        lv_obj_clean(weather_image);
-        lv_obj_clean(cityname_label);
-        lv_obj_clean(temperature_label);
-        lv_obj_clean(temperature_symbol);
+        lv_obj_clean(wc_scr[0]);
         weather_image = NULL;
         cityname_label = NULL;
         temperature_label = NULL;
         temperature_symbol = NULL;
     }
 
-    if (NULL != time_image)
+    if (NULL != wc_scr[1])
     {
-        lv_obj_clean(time_image);
-        lv_obj_clean(date_label);
-        lv_obj_clean(time_label);
+        lv_obj_clean(wc_scr[1]);
         time_image = NULL;
         date_label = NULL;
         time_label = NULL;
     }
 
-    if (NULL != cpu_temp_label)
+    if (NULL != wc_scr[2])
     {
-        lv_obj_clean(cpu_temp_label);
-        lv_obj_clean(cpu_used_label);
-        lv_obj_clean(mem_used_label);
-        lv_obj_clean(net_upload_label);
-        lv_obj_clean(net_download_label);
+        lv_obj_clean(wc_scr[2]);
         cpu_temp_label = NULL;
         cpu_used_label = NULL;
         mem_used_label = NULL;
@@ -290,14 +285,27 @@ void weather_old_obj_del(void)
 
 void weather_old_gui_del(void)
 {
-    weather_old_obj_del();
-
     for (int pos = 0; pos < 3; ++pos)
     {
         if (NULL != wc_scr[pos])
         {
             lv_obj_clean(wc_scr[pos]); // 清空此前页面
             wc_scr[pos] = NULL;
+
+            weather_image = NULL;
+            cityname_label = NULL;
+            temperature_label = NULL;
+            temperature_symbol = NULL;
+
+            time_image = NULL;
+            date_label = NULL;
+            time_label = NULL;
+
+            cpu_temp_label = NULL;
+            cpu_used_label = NULL;
+            mem_used_label = NULL;
+            net_upload_label = NULL;
+            net_download_label = NULL;
         }
     }
 

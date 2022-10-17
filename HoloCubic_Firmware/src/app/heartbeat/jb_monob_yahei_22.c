@@ -2091,6 +2091,11 @@ static const lv_font_fmt_txt_cmap_t cmaps[] = {
     }
 };
 
+static lv_font_fmt_txt_glyph_cache_t glyph_cache = {
+    .last_letter = 0x9001,
+    .last_glyph_id = 102,
+};
+
 
 static lv_font_fmt_txt_dsc_t font_dsc = {
     .glyph_bitmap = glyph_bitmap,
@@ -2103,8 +2108,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
     .kern_dsc = NULL,
     .kern_classes = 0,
 
-    .last_letter = 0x9001,
-    .last_glyph_id = 102,
+    .cache = &glyph_cache
 };
 
 
@@ -2132,16 +2136,16 @@ static const uint8_t * __user_font_get_bitmap(const lv_font_t * font, uint32_t u
     if( unicode_letter<fdsc->cmaps[0].range_start || unicode_letter>fdsc->cmaps[0].range_length ) return false;
 
     int i;
-    if( unicode_letter==fdsc->last_letter ){
-        i = fdsc->last_glyph_id;
+    if( unicode_letter==fdsc->cache->last_letter ){
+        i = fdsc->cache->last_glyph_id;
     }
     else{
         i = binsearch(fdsc->cmaps[0].unicode_list, fdsc->cmaps[0].list_length, unicode_letter);
     }
     if( i != -1 ) {
         const lv_font_fmt_txt_glyph_dsc_t * gdsc = &fdsc->glyph_dsc[i];
-        fdsc->last_glyph_id = i;
-        fdsc->last_letter = unicode_letter;
+        fdsc->cache->last_glyph_id = i;
+        fdsc->cache->last_letter = unicode_letter;
         return &fdsc->glyph_bitmap[gdsc->bitmap_index];
     }
     return NULL;
@@ -2154,16 +2158,16 @@ static bool __user_font_get_glyph_dsc(const lv_font_t * font, lv_font_glyph_dsc_
     if( unicode_letter<fdsc->cmaps[0].range_start || unicode_letter>fdsc->cmaps[0].range_length ) return false;
 
     int i;
-    if( unicode_letter==fdsc->last_letter ){
-        i = fdsc->last_glyph_id;
+    if( unicode_letter==fdsc->cache->last_letter ){
+        i = fdsc->cache->last_glyph_id;
     }
     else{
         i = binsearch(fdsc->cmaps[0].unicode_list, fdsc->cmaps[0].list_length, unicode_letter);
     }
     if( i != -1 ) {
         const lv_font_fmt_txt_glyph_dsc_t * gdsc = &fdsc->glyph_dsc[i];
-        fdsc->last_glyph_id = i;
-        fdsc->last_letter = unicode_letter;
+        fdsc->cache->last_glyph_id = i;
+        fdsc->cache->last_letter = unicode_letter;
         dsc_out->adv_w = gdsc->adv_w;
         dsc_out->box_h = gdsc->box_h;
         dsc_out->box_w = gdsc->box_w;

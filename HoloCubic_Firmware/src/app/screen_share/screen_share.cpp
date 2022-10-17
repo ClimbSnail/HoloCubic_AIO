@@ -105,7 +105,7 @@ bool screen_share_tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint1
                                                          // The DMA transfer of image block to the TFT is now in progress...
 
     // Return 1 to decode next block.
-    return 1;
+    return true;
 }
 
 static bool readJpegFromBuffer(uint8_t *const end)
@@ -197,6 +197,7 @@ static int screen_share_init(AppController *sys)
     // TJpgDec.setSwapBytes(true);
 
     Serial.print(F("防止过热，目前为限制为中速档!\n"));
+    return 0;
 }
 
 static void stop_share_config()
@@ -247,8 +248,8 @@ static void screen_share_process(AppController *sys,
 
         if (ss_client.connected())
         {
-
-            if (ss_client.available()) // 如果客户端处于连接状态client.connected()
+            // 如果客户端处于连接状态client.connected()
+            if (ss_client.available())
             {
                 ss_client.write("no");                                                                 // 向上位机发送当前帧未写入完指令
                 int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); //向缓冲区读取数据
@@ -299,6 +300,14 @@ static void screen_share_process(AppController *sys,
                 Serial.println(F("Controller was connected!"));
                 ss_client.write("ok"); // 向上位机发送下一帧发送指令
             }
+
+            // 预显示
+            display_screen_share(
+                "Screen Share",
+                WiFi.localIP().toString().c_str(),
+                "8081",
+                "Wait connect ....",
+                LV_SCR_LOAD_ANIM_NONE);
 
             unsigned long timeout = millis();
             while (ss_client.available() == 0)
@@ -360,6 +369,7 @@ static int screen_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void screen_message_handle(const char *from, const char *to,
@@ -370,7 +380,7 @@ static void screen_message_handle(const char *from, const char *to,
     {
     case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
+        Serial.print(F("APP_MESSAGE_WIFI_CONN enable\n"));
         display_screen_share(
             "Screen Share",
             WiFi.localIP().toString().c_str(),

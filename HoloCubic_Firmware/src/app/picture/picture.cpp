@@ -21,7 +21,7 @@ static void write_config(PIC_Config *cfg)
     // 将配置数据保存在文件中（持久化）
     String w_data;
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->switchInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->switchInterval);
     w_data += tmp;
     g_flashCfg.writeFile(PICTURE_CONFIG_PATH, w_data.c_str());
 }
@@ -126,6 +126,7 @@ static int picture_init(AppController *sys)
     TJpgDec.setJpgScale(1);
     // The decoder must be given the exact name of the rendering function above
     TJpgDec.setCallback(tft_output);
+    return 0;
 }
 
 static void picture_process(AppController *sys,
@@ -207,6 +208,7 @@ static int picture_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void picture_message_handle(const char *from, const char *to,
@@ -220,7 +222,7 @@ static void picture_message_handle(const char *from, const char *to,
         char *param_key = (char *)message;
         if (!strcmp(param_key, "switchInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.switchInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.switchInterval);
         }
         else
         {

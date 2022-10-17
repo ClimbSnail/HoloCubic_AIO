@@ -31,7 +31,7 @@ void release_file_info(File_Info *info);
 
 void join_path(char *dst_path, const char *pre_path, const char *rear_path);
 
-static const char *get_file_basename(const char *path);
+// static const char *get_file_basename(const char *path);
 
 class SdCard
 {

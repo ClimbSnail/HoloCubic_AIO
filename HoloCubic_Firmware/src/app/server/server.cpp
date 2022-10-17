@@ -85,6 +85,7 @@ static int server_init(AppController *sys)
     run_data->web_start = 0;
     run_data->req_sent = 0;
     run_data->serverReflushPreMillis = 0;
+    return 0;
 }
 
 static void server_process(AppController *sys,
@@ -150,6 +151,7 @@ static int server_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void server_message_handle(const char *from, const char *to,

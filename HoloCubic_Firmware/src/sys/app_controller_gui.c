@@ -23,19 +23,18 @@ void app_control_gui_init(void)
     }
 
     lv_style_init(&default_style);
-    lv_style_set_bg_color(&default_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_PRESSED, LV_COLOR_GRAY);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED | LV_STATE_PRESSED, lv_color_hex(0xf88));
+    lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
 
     lv_style_init(&app_name_style);
-    lv_style_set_text_opa(&app_name_style, LV_STATE_DEFAULT, LV_OPA_COVER);
-    lv_style_set_text_color(&app_name_style, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_style_set_text_font(&app_name_style, LV_STATE_DEFAULT, &lv_font_montserrat_24);
+    lv_style_set_text_opa(&app_name_style, LV_OPA_COVER);
+    lv_style_set_text_color(&app_name_style, lv_color_white());
+    lv_style_set_text_font(&app_name_style, &lv_font_montserrat_24);
 
     // APP图标页
-    app_scr = lv_obj_create(NULL, NULL);
-    lv_obj_add_style(app_scr, LV_BTN_PART_MAIN, &default_style);
+    app_scr = lv_obj_create(NULL);
+    lv_obj_add_style(app_scr, &default_style, LV_STATE_DEFAULT);
+    // 设置不显示滚动条
+    lv_obj_set_style_bg_opa(app_scr, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
 }
 
 void app_control_gui_release(void)
@@ -58,18 +57,17 @@ void display_app_scr_init(const void *src_img_path, const char *app_name)
     }
 
     lv_obj_clean(act_obj); // 清空此前页面
-    pre_app_image = lv_img_create(app_scr, NULL);
+    pre_app_image = lv_img_create(app_scr);
+    pre_img_path = src_img_path; // 保存历史
     lv_img_set_src(pre_app_image, src_img_path);
-    pre_img_path = src_img_path;
-
-    lv_obj_align(pre_app_image, NULL, LV_ALIGN_CENTER, 0, -20);
+    lv_obj_align(pre_app_image, LV_ALIGN_CENTER, 0, -20);
 
     // 添加APP的名字
-    pre_app_name = lv_label_create(app_scr, NULL);
-    lv_obj_add_style(pre_app_name, LV_LABEL_PART_MAIN, &app_name_style);
+    pre_app_name = lv_label_create(app_scr);
+    lv_obj_add_style(pre_app_name, &app_name_style, LV_STATE_DEFAULT);
     // lv_label_set_recolor(pre_app_name, true); //先得使能文本重绘色功能
     lv_label_set_text(pre_app_name, app_name);
-    lv_obj_align(pre_app_name, pre_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_obj_align_to(pre_app_name, pre_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
     lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
     // ANIEND
@@ -98,60 +96,51 @@ void app_control_display_scr(const void *src_img, const char *app_name, lv_scr_l
 
     if (LV_SCR_LOAD_ANIM_MOVE_LEFT == anim_type)
     {
-        now_start_x = -128;
-        now_end_x = 56;
-        old_start_x = 56;
-        old_end_x = 240;
+        // 120为半个屏幕大小 应用图标规定是128，一半刚好是64
+        now_start_x = -120 - 64;
+        now_end_x = 0;
+        old_start_x = 0;
+        old_end_x = 120 + 64;
     }
     else
     {
-        now_start_x = 240;
-        now_end_x = 56;
-        old_start_x = 56;
-        old_end_x = -128;
+        // 120为半个屏幕大小 应用图标规定是128，一半刚好是64
+        now_start_x = 120 + 64;
+        now_end_x = 0;
+        old_start_x = 0;
+        old_end_x = -120 - 64;
     }
 
-    now_app_image = lv_img_create(app_scr, NULL);
+    now_app_image = lv_img_create(app_scr);
     lv_img_set_src(now_app_image, src_img);
-    lv_obj_align(now_app_image, NULL, LV_ALIGN_CENTER, 0, -20);
+    lv_obj_align(now_app_image, LV_ALIGN_CENTER, 0, -20);
     // 添加APP的名字
-    now_app_name = lv_label_create(app_scr, NULL);
-    lv_obj_add_style(now_app_name, LV_LABEL_PART_MAIN, &app_name_style);
+    now_app_name = lv_label_create(app_scr);
+    lv_obj_add_style(now_app_name, &app_name_style, LV_STATE_DEFAULT);
     // lv_label_set_recolor(now_app_name, true); //先得使能文本重绘色功能
     lv_label_set_text(now_app_name, app_name);
     // 删除原先的APP name
     lv_obj_del(pre_app_name);
     pre_app_name = now_app_name;
-    lv_obj_align(now_app_name, now_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_obj_align_to(now_app_name, now_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
-    lv_anim_path_t path;
-    lv_anim_path_init(&path);
-    /*
-    lv_anim_path_linear lv_anim_path_bounce
-    lv_anim_path_overshoot lv_anim_path_ease_out
-    lv_anim_path_step
-    */
-    lv_anim_path_set_cb(&path, lv_anim_path_ease_out);
-    /*Optional for custom functions*/
-    // lv_anim_path_set_user_data(&path, &foo);
-
-    lv_anim_t now_app;
+    static lv_anim_t now_app;
     lv_anim_init(&now_app);
     lv_anim_set_exec_cb(&now_app, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_var(&now_app, now_app_image);
     lv_anim_set_values(&now_app, now_start_x, now_end_x);
-    uint32_t duration = lv_anim_speed_to_time(300, now_start_x, now_end_x); // 计算时间
+    uint32_t duration = lv_anim_speed_to_time(400, now_start_x, now_end_x); // 计算时间
     lv_anim_set_time(&now_app, duration);
-    lv_anim_set_path(&now_app, &path); // Default is linear
+    lv_anim_set_path_cb(&now_app, lv_anim_path_linear); //设置一个动画的路径
 
-    lv_anim_t pre_app;
+    static lv_anim_t pre_app;
     lv_anim_init(&pre_app);
     lv_anim_set_exec_cb(&pre_app, (lv_anim_exec_xcb_t)lv_obj_set_x);
     lv_anim_set_var(&pre_app, pre_app_image);
     lv_anim_set_values(&pre_app, old_start_x, old_end_x);
-    duration = lv_anim_speed_to_time(300, old_start_x, old_end_x); // 计算时间
+    duration = lv_anim_speed_to_time(400, old_start_x, old_end_x); // 计算时间
     lv_anim_set_time(&pre_app, duration);
-    lv_anim_set_path(&pre_app, &path); // Default is linear
+    lv_anim_set_path_cb(&pre_app, lv_anim_path_linear); //设置一个动画的路径
 
     lv_anim_start(&now_app);
     lv_anim_start(&pre_app);

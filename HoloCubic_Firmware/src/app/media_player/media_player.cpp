@@ -169,6 +169,7 @@ static int media_player_init(AppController *sys)
 
     // 创建播放
     video_start(false);
+    return 0;
 }
 
 static void media_player_process(AppController *sys,
@@ -293,6 +294,7 @@ static int media_player_exit_callback(void *param)
                             1, 1, 1,
                             0.15, 0.25, 0.001, 30};
     set_rgb(&rgb_setting);
+    return 0;
 }
 
 static void media_player_message_handle(const char *from, const char *to,

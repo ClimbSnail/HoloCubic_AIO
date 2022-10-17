@@ -14,10 +14,7 @@ static lv_style_t default_style;
 void game_2048_gui_init(void)
 {
     lv_style_init(&default_style);
-    lv_style_set_bg_color(&default_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_PRESSED, LV_COLOR_GRAY);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED | LV_STATE_PRESSED, lv_color_hex(0xaff));
+    lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
 
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
     if (act_obj == game_2048_gui)
@@ -25,14 +22,14 @@ void game_2048_gui_init(void)
     lv_obj_clean(act_obj); // 清空此前页面
 
     //创建屏幕对象
-    game_2048_gui = lv_obj_create(NULL, NULL);
-    lv_obj_add_style(game_2048_gui, LV_BTN_PART_MAIN, &default_style);
+    game_2048_gui = lv_obj_create(NULL);
+    lv_obj_add_style(game_2048_gui, &default_style, LV_STATE_DEFAULT);
 
     for (int i = 0; i < SCALE_SIZE * SCALE_SIZE; i++)
     {
-        img[i] = lv_img_create(game_2048_gui, NULL);
+        img[i] = lv_img_create(game_2048_gui);
         lv_img_set_src(img[i], &N0);
-        lv_obj_align(img[i], NULL, LV_ALIGN_IN_TOP_LEFT, 8 + i % 4 * 58, 8 + i / 4 * 58);
+        lv_obj_align(img[i], LV_ALIGN_TOP_LEFT, 8 + i % 4 * 58, 8 + i / 4 * 58);
     }
     lv_scr_load(game_2048_gui);
 }
@@ -80,12 +77,8 @@ void born(int i)
     lv_anim_set_var(&a, img[i]);
     lv_anim_set_time(&a, 300);
 
-    lv_anim_path_t path;
-    lv_anim_path_init(&path);
-    lv_anim_path_set_cb(&path, lv_anim_path_linear);
-
     /* 在动画中设置路径 */
-    lv_anim_set_path(&a, &path);
+    lv_anim_set_path_cb(&a, lv_anim_path_linear);
 
     lv_anim_set_values(&a, 0, 50);
     lv_anim_start(&a);
@@ -124,10 +117,7 @@ void zoom(int i)
     lv_anim_set_playback_time(&a, 100);
 
     //线性动画
-    lv_anim_path_t path;
-    lv_anim_path_init(&path);
-    lv_anim_path_set_cb(&path, lv_anim_path_linear);
-    lv_anim_set_path(&a, &path);
+    lv_anim_set_path_cb(&a, lv_anim_path_linear);
 
     lv_anim_set_values(&a, 50, 56);
     lv_anim_start(&a);
@@ -172,12 +162,8 @@ void move(int i, lv_anim_exec_xcb_t direction, int dist)
         lv_anim_set_values(&a, lv_obj_get_y(img[i]), lv_obj_get_y(img[i]) + dist * 58);
     }
 
-    lv_anim_path_t path;
-    lv_anim_path_init(&path);
-    //渐进效果
-    lv_anim_path_set_cb(&path, lv_anim_path_ease_in);
-    /* 在动画中设置路径 */
-    lv_anim_set_path(&a, &path);
+    // 在动画中设置路径
+    lv_anim_set_path_cb(&a, lv_anim_path_ease_in);
 
     lv_anim_start(&a);
 }
@@ -222,7 +208,7 @@ void showBoard(int *map)
     for (int i = 0; i < SCALE_SIZE * SCALE_SIZE; i++)
     {
         lv_img_set_src(img[i], getN(map[i]));
-        lv_obj_align(img[i], NULL, LV_ALIGN_IN_TOP_LEFT, 8 + i % 4 * 58, 8 + i / 4 * 58);
+        lv_obj_align(img[i], LV_ALIGN_TOP_LEFT, 8 + i % 4 * 58, 8 + i / 4 * 58);
     }
 }
 

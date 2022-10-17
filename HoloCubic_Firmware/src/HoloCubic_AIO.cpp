@@ -10,9 +10,9 @@
  ****************************************************/
 
 #include "driver/lv_port_indev.h"
-#include "driver/lv_port_fatfs.h"
-#include "common.h"
+#include "driver/lv_port_fs.h"
 
+#include "common.h"
 #include "sys/app_controller.h"
 
 #include "app/weather/weather.h"
@@ -44,11 +44,11 @@ AppController *app_controller; // APP控制器
 TaskHandle_t handleTaskLvgl;
 void TaskLvglUpdate(void *parameter)
 {
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    // ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     for (;;)
     {
         lv_task_handler();
-        delay(5);
+        vTaskDelay(5);
     }
 }
 
@@ -112,7 +112,9 @@ void setup()
 
     /*** Init micro SD-Card ***/
     tf.init();
-    lv_fs_if_init();
+
+    // lv_port_fs_init();
+    lv_fs_fatfs_init();
 
     app_controller->init();
     // 将APP"安装"到controller里
@@ -164,12 +166,11 @@ void setup()
                                 pdTRUE, (void *)0, actionCheckHandle);
     xTimerStart(xTimerAction, 0);
 
-    //开启定时器
     // Update display in parallel thread.
     // xTaskCreate(
     //     TaskLvglUpdate,
     //     "LvglThread",
-    //     20000,
+    //     16 * 1024,
     //     nullptr,
     //     configMAX_PRIORITIES - 1,
     //     &handleTaskLvgl);

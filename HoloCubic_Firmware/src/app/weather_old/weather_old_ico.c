@@ -1,5 +1,4 @@
-// #ifdef LV_LVGL_H_INCLUDE_SIMPLE
-#if defined(LV_LVGL_H_INCLUDE_SIMPLE)
+#if __has_include("lvgl.h")
 #include "lvgl.h"
 #else
 #include "lvgl/lvgl.h"

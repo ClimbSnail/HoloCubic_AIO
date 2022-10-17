@@ -18,7 +18,7 @@ static void write_config(const B_Config *cfg)
     String w_data;
     w_data = w_data + cfg->stock_id + "\n";
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->updataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->updataInterval);
     w_data += tmp;
     g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
 }
@@ -45,7 +45,7 @@ static void read_config(B_Config *cfg)
         cfg->stock_id = param[0];
         cfg->updataInterval = atol(param[1]);
     }
-//    cfg->stock_id = "sh601126";  // 股票代码
+    //    cfg->stock_id = "sh601126";  // 股票代码
 }
 
 struct StockmarketAppRunData
@@ -68,7 +68,7 @@ static MyHttpResult http_request(String uid = "sh601126")
 {
     String url = "http://hq.sinajs.cn/list=" + uid;
     MyHttpResult result;
-    
+
     HTTPClient httpClient;
     httpClient.setTimeout(1000);
     bool status = httpClient.begin(url);
@@ -77,8 +77,8 @@ static MyHttpResult http_request(String uid = "sh601126")
         result.httpCode = -1;
         return result;
     }
-    
-    httpClient.addHeader("referer","https://finance.sina.com.cn");
+
+    httpClient.addHeader("referer", "https://finance.sina.com.cn");
     int httpCode = httpClient.GET();
     String httpResponse = httpClient.getString();
     httpClient.end();
@@ -105,36 +105,38 @@ static int stockmarket_init(AppController *sys)
     run_data->stockdata.name[0] = '\0';
     run_data->stockdata.code[0] = '\0';
     run_data->refresh_status = 0;
-    run_data->stockdata.tradvolume =0;
+    run_data->stockdata.tradvolume = 0;
     run_data->stockdata.turnover = 0;
     run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
+
+    display_stockmarket(run_data->stockdata, LV_SCR_LOAD_ANIM_NONE);
+    return 0;
 }
 
 static void stockmarket_process(AppController *sys,
-                             const ImuAction *act_info)
+                                const ImuAction *act_info)
 {
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
     if (RETURN == act_info->active)
     {
         sys->send_to(STOCK_APP_NAME, CTRL_NAME,
-                            APP_MESSAGE_WIFI_DISCONN, NULL, NULL);
+                     APP_MESSAGE_WIFI_DISCONN, NULL, NULL);
         sys->app_exit(); // 退出APP
         return;
-    }    
-    
+    }
+
     // 以下减少网络请求的压力
     if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
     {
         sys->send_to(STOCK_APP_NAME, CTRL_NAME,
-                        APP_MESSAGE_WIFI_CONN, NULL, NULL);
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
     }
-    display_stockmarket(run_data->stockdata, anim_type);
 
     delay(300);
 }
 
 static void stockmarket_background_task(AppController *sys,
-                                     const ImuAction *act_info)
+                                        const ImuAction *act_info)
 {
     // 本函数为后台任务，主控制器会间隔一分钟调用此函数
     // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
@@ -150,6 +152,7 @@ static int stockmarket_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void update_stock_data()
@@ -167,33 +170,33 @@ static void update_stock_data()
             String payload = result.httpResponse;
             Serial.println("[HTTP] OK");
             Serial.println(payload);
-            int startIndex_1 = payload.indexOf(',')+1;
+            int startIndex_1 = payload.indexOf(',') + 1;
             int endIndex_1 = payload.indexOf(',', startIndex_1);
-            int startIndex_2 = payload.indexOf(',',endIndex_1)+1;
+            int startIndex_2 = payload.indexOf(',', endIndex_1) + 1;
             int endIndex_2 = payload.indexOf(',', startIndex_2);
-            int startIndex_3 = payload.indexOf(',',endIndex_2)+1;
+            int startIndex_3 = payload.indexOf(',', endIndex_2) + 1;
             int endIndex_3 = payload.indexOf(',', startIndex_3);
-            int startIndex_4 = payload.indexOf(',',endIndex_3)+1;
+            int startIndex_4 = payload.indexOf(',', endIndex_3) + 1;
             int endIndex_4 = payload.indexOf(',', startIndex_4);
-            int startIndex_5 = payload.indexOf(',',endIndex_4)+1;
+            int startIndex_5 = payload.indexOf(',', endIndex_4) + 1;
             int endIndex_5 = payload.indexOf(',', startIndex_5);
-            String Stockname = payload.substring(payload.indexOf('"')+1, payload.indexOf(','));   //股票名称
-            memset(run_data->stockdata.name,'\0',9);
-            for(int i=0;i<8;i++)
+            String Stockname = payload.substring(payload.indexOf('"') + 1, payload.indexOf(',')); //股票名称
+            memset(run_data->stockdata.name, '\0', 9);
+            for (int i = 0; i < 8; i++)
                 run_data->stockdata.name[i] = Stockname.charAt(i);
-            run_data->stockdata.name[8]='\0';
-            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();   //今日开盘价
-            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat();  //昨日收盘价
-            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();    //当前价
-            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();    //今日最高价
-            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();    //今日最低价
-            
+            run_data->stockdata.name[8] = '\0';
+            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();  //今日开盘价
+            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat(); //昨日收盘价
+            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();   //当前价
+            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();   //今日最高价
+            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();   //今日最低价
+
             run_data->stockdata.ChgValue = run_data->stockdata.NowQuo - run_data->stockdata.CloseQuo;
             run_data->stockdata.ChgPercent = run_data->stockdata.ChgValue / run_data->stockdata.CloseQuo * 100;
-            for(int i=0;i<8;i++)
+            for (int i = 0; i < 8; i++)
                 run_data->stockdata.code[i] = cfg_data.stock_id.charAt(i);
 
-            if(run_data->stockdata.ChgValue >= 0 )
+            if (run_data->stockdata.ChgValue >= 0)
             {
                 run_data->stockdata.updownflag = 1;
             }
@@ -201,19 +204,18 @@ static void update_stock_data()
             {
                 run_data->stockdata.updownflag = 0;
             }
-            int startIndex_6 = payload.indexOf(',',endIndex_5)+1;
+            int startIndex_6 = payload.indexOf(',', endIndex_5) + 1;
             int endIndex_6 = payload.indexOf(',', startIndex_6);
-            int startIndex_7 = payload.indexOf(',',endIndex_6)+1;
+            int startIndex_7 = payload.indexOf(',', endIndex_6) + 1;
             int endIndex_7 = payload.indexOf(',', startIndex_7);
-            int startIndex_8 = payload.indexOf(',',endIndex_7)+1;
+            int startIndex_8 = payload.indexOf(',', endIndex_7) + 1;
             int endIndex_8 = payload.indexOf(',', startIndex_8);
-            int startIndex_9 = payload.indexOf(',',endIndex_8)+1;
+            int startIndex_9 = payload.indexOf(',', endIndex_8) + 1;
             int endIndex_9 = payload.indexOf(',', startIndex_9);
-            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat();    //成交量
-            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();      //成交额
+            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat(); //成交量
+            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();   //成交额
             // Serial.printf("chg= %.2f\r\n",run_data->stockdata.ChgValue);
             // Serial.printf("chgpercent= %.2f%%\r\n",run_data->stockdata.ChgPercent);
-
         }
     }
     else
@@ -223,8 +225,8 @@ static void update_stock_data()
 }
 
 static void stockmarket_message_handle(const char *from, const char *to,
-                                    APP_MESSAGE_TYPE type, void *message,
-                                    void *ext_info)
+                                       APP_MESSAGE_TYPE type, void *message,
+                                       void *ext_info)
 {
     switch (type)
     {
@@ -233,6 +235,7 @@ static void stockmarket_message_handle(const char *from, const char *to,
         Serial.print(millis());
         Serial.println("[SYS] stockmarket_event_notification");
         update_stock_data();
+        display_stockmarket(run_data->stockdata, LV_SCR_LOAD_ANIM_NONE);
     }
     break;
     case APP_MESSAGE_UPDATE_TIME:
@@ -286,5 +289,5 @@ static void stockmarket_message_handle(const char *from, const char *to,
 }
 
 APP_OBJ stockmarket_app = {STOCK_APP_NAME, &app_stockmarket, "", stockmarket_init,
-                        stockmarket_process, stockmarket_background_task,
-                        stockmarket_exit_callback, stockmarket_message_handle};
+                           stockmarket_process, stockmarket_background_task,
+                           stockmarket_exit_callback, stockmarket_message_handle};

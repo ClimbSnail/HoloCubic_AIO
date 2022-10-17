@@ -11,14 +11,14 @@ static lv_style_t default_style;
 
 void photo_gui_init()
 {
-    image_scr = lv_obj_create(NULL, NULL);
+    image_scr = lv_obj_create(NULL);
 
     lv_style_init(&default_style);
-    lv_style_set_bg_color(&default_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_PRESSED, LV_COLOR_GRAY);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED, LV_COLOR_BLACK);
-    lv_style_set_bg_color(&default_style, LV_STATE_FOCUSED | LV_STATE_PRESSED, lv_color_hex(0xf88));
-    lv_obj_add_style(image_scr, LV_BTN_PART_MAIN, &default_style);
+    lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
+    // lv_style_set_bg_color(&default_style, lv_palette_main(lv_palette_t p));
+    // lv_style_set_bg_color(&default_style, lv_color_black());
+
+    lv_obj_add_style(image_scr, &default_style, LV_STATE_DEFAULT);
 }
 
 void display_photo_init()
@@ -27,7 +27,7 @@ void display_photo_init()
     if (act_obj == image_scr)
         return;
     lv_obj_clean(act_obj); // 清空此前页面
-    photo_image = lv_img_create(image_scr, NULL);
+    photo_image = lv_img_create(image_scr);
 }
 
 void display_photo(const char *file_name, lv_scr_load_anim_t anim_type)
@@ -36,7 +36,7 @@ void display_photo(const char *file_name, lv_scr_load_anim_t anim_type)
     char lv_file_name[PIC_FILENAME_MAX_LEN] = {0};
     sprintf(lv_file_name, "S:%s", file_name);
     lv_img_set_src(photo_image, lv_file_name);
-    lv_obj_align(photo_image, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_align(photo_image, LV_ALIGN_CENTER, 0, 0);
     lv_scr_load_anim(image_scr, anim_type, 0, 0, false);
 }
 

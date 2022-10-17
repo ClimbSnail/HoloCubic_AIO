@@ -21,7 +21,7 @@ static void write_config(const B_Config *cfg)
     String w_data;
     w_data = w_data + cfg->bili_uid + "\n";
     memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%u\n", cfg->updataInterval);
+    snprintf(tmp, 16, "%lu\n", cfg->updataInterval);
     w_data += tmp;
     g_flashCfg.writeFile(B_CONFIG_PATH, w_data.c_str());
 }
@@ -99,6 +99,7 @@ static int bilibili_init(AppController *sys)
     run_data->follow_num = 0;
     run_data->refresh_status = 0;
     run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
+    return 0;
 }
 
 static void bilibili_process(AppController *sys,
@@ -168,6 +169,7 @@ static int bilibili_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void update_fans_num()
@@ -226,7 +228,7 @@ static void bilibili_message_handle(const char *from, const char *to,
         }
         else if (!strcmp(param_key, "updataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data.updataInterval);
+            snprintf((char *)ext_info, 32, "%lu", cfg_data.updataInterval);
         }
         else
         {

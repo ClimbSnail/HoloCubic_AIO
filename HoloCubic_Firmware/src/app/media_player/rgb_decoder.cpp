@@ -139,6 +139,7 @@ bool RgbPlayDocoder::video_play_screen(void)
 
         tft->endWrite();
     }
+    return true;
 }
 
 bool RgbPlayDocoder::video_end(void)

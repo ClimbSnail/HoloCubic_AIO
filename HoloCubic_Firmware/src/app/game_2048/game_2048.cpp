@@ -12,7 +12,7 @@ void taskOne(void *parameter)
     while (1)
     {
         //心跳任务
-        lv_tick_inc(5);
+        // lv_tick_inc(5); // todo
         delay(5);
     }
     Serial.println("Ending task 1");
@@ -24,7 +24,7 @@ void taskTwo(void *parameter)
     while (1)
     {
         // LVGL任务主函数
-        screen.routine();
+        lv_task_handler();
         delay(5);
     }
     Serial.println("Ending task 2");
@@ -39,9 +39,9 @@ struct Game2048AppRunData
     int BornLocation = 0; //记录新棋子的位置
     int *pBoard;
     int *moveRecord;
-    BaseType_t xReturned_task_one = NULL;
+    BaseType_t xReturned_task_one = pdFALSE;
     TaskHandle_t xHandle_task_one = NULL;
-    BaseType_t xReturned_task_two = NULL;
+    BaseType_t xReturned_task_two = pdFALSE;
     TaskHandle_t xHandle_task_two = NULL;
 };
 
@@ -59,13 +59,13 @@ static int game_2048_init(AppController *sys)
     run_data->pBoard = game.getBoard();
     run_data->moveRecord = game.getMoveRecord();
 
-    run_data->xReturned_task_one = xTaskCreate(
-        taskOne,                      /*任务函数*/
-        "TaskOne",                    /*带任务名称的字符串*/
-        10000,                        /*堆栈大小，单位为字节*/
-        NULL,                         /*作为任务输入传递的参数*/
-        1,                            /*任务的优先级*/
-        &run_data->xHandle_task_one); /*任务句柄*/
+    // run_data->xReturned_task_one = xTaskCreate(
+    //     taskOne,                      /*任务函数*/
+    //     "TaskOne",                    /*带任务名称的字符串*/
+    //     10000,                        /*堆栈大小，单位为字节*/
+    //     NULL,                         /*作为任务输入传递的参数*/
+    //     1,                            /*任务的优先级*/
+    //     &run_data->xHandle_task_one); /*任务句柄*/
 
     run_data->xReturned_task_two = xTaskCreate(
         taskTwo,                      /*任务函数*/
@@ -74,6 +74,7 @@ static int game_2048_init(AppController *sys)
         NULL,                         /*作为任务输入传递的参数*/
         1,                            /*任务的优先级*/
         &run_data->xHandle_task_two); /*任务句柄*/
+
     //刷新棋盘显示
     int new1 = game.addRandom();
     int new2 = game.addRandom();
@@ -83,6 +84,7 @@ static int game_2048_init(AppController *sys)
     born(new2);
     // 防止进入游戏时，误触发了向上
     delay(1000);
+    return 0;
 }
 
 static void game_2048_process(AppController *sys,
@@ -156,7 +158,7 @@ static void game_2048_background_task(AppController *sys,
 
 static int game_2048_exit_callback(void *param)
 {
-    // 查杀定时器
+    // 查杀任务
     if (run_data->xReturned_task_one == pdPASS)
     {
         vTaskDelete(run_data->xHandle_task_one);
@@ -174,6 +176,7 @@ static int game_2048_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void game_2048_message_handle(const char *from, const char *to,

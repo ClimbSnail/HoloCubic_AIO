@@ -145,6 +145,7 @@ int analysis_uart_data(int data_len, uint8_t *data)
         memcpy(data, data + rear_ind + 1, data_len - (rear_ind + 1));
         run_data->recv_len = data_len - (rear_ind + 1);
     }
+    return 0;
 }
 
 static int settings_init(AppController *sys)
@@ -152,12 +153,13 @@ static int settings_init(AppController *sys)
     // 初始化运行时的参数
     settings_gui_init();
 
-    display_settings(AIO_VERSION, "v 2.0.0", LV_SCR_LOAD_ANIM_NONE);
+    display_settings(AIO_VERSION, "v 2.3.0", LV_SCR_LOAD_ANIM_NONE);
 
     // 初始化运行时参数
     run_data = (SettingsAppRunData *)calloc(1, sizeof(SettingsAppRunData));
     run_data->recv_buf = (uint8_t *)malloc(RECV_BUF_LEN);
     run_data->recv_len = 0;
+    return 0;
 }
 
 static void settings_process(AppController *sys,
@@ -212,6 +214,7 @@ static int settings_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void settings_message_handle(const char *from, const char *to,

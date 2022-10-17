@@ -7,9 +7,9 @@ class PlayDocoderBase
 {
 public:
     virtual ~PlayDocoderBase(){};
-    virtual bool video_start(){};
-    virtual bool video_play_screen(){};
-    virtual bool video_end(){};
+    virtual bool video_start() { return true; };
+    virtual bool video_play_screen() { return true; };
+    virtual bool video_end() { return true; };
 };
 
 class RgbPlayDocoder : public PlayDocoderBase
