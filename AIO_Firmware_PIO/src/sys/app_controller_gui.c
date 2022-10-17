@@ -3,6 +3,7 @@
 
 // 必须定义为全局或者静态
 static lv_obj_t *app_scr = NULL;
+static lv_obj_t *app_scr_t = NULL;
 static lv_obj_t *pre_app_image = NULL;
 static lv_obj_t *pre_app_name = NULL;
 static lv_obj_t *now_app_image = NULL;
@@ -34,7 +35,20 @@ void app_control_gui_init(void)
     app_scr = lv_obj_create(NULL);
     lv_obj_add_style(app_scr, &default_style, LV_STATE_DEFAULT);
     // 设置不显示滚动条
-    lv_obj_set_style_bg_opa(app_scr, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(app_scr, LV_OPA_0,
+                            LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
+    // lv_obj_set_size(app_scr, 240 + 10, 240 + 10);
+    // lv_obj_set_pos(app_scr, 0, 0);
+    // lv_obj_set_align(app_scr, LV_ALIGN_CENTER);
+    // lv_scr_load(app_scr);
+
+    // 为消除开机的局部白屏问题 增加如下一层（可考虑删除改进）
+    app_scr_t = lv_obj_create(app_scr);
+    lv_obj_add_style(app_scr_t, &default_style, LV_STATE_DEFAULT);
+    lv_obj_set_size(app_scr_t, 240 + 10, 240 + 10);
+    lv_obj_set_pos(app_scr_t, 0, 0);
+    lv_obj_set_align(app_scr_t, LV_ALIGN_CENTER);
+    lv_scr_load(app_scr_t);
 }
 
 void app_control_gui_release(void)

@@ -170,10 +170,16 @@ void setup()
     // xTaskCreate(
     //     TaskLvglUpdate,
     //     "LvglThread",
-    //     16 * 1024,
+    //     4 * 1024,
     //     nullptr,
-    //     configMAX_PRIORITIES - 1,
+    //     3,
     //     &handleTaskLvgl);
+    
+    // xTaskCreatePinnedToCore(
+    //     TaskLvglUpdate, "LvglThread", 
+    //     4 * 1024, NULL, 
+    //     3, 
+    //     &handleTaskLvgl, 0);
 }
 
 void loop()
