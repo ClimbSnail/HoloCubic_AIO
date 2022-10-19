@@ -41,7 +41,16 @@ ImuAction *act_info; // 存放mpu6050返回的数据
 
 AppController *app_controller; // APP控制器
 
+static SemaphoreHandle_t lvgl_mutex = NULL;
 TaskHandle_t handleTaskLvgl;
+
+// static void lvgl_tick_task(void *arg)
+// {
+//     (void)arg;
+
+//     lv_tick_inc(portTICK_PERIOD_MS);
+// }
+
 void TaskLvglUpdate(void *parameter)
 {
     // ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
@@ -49,6 +58,13 @@ void TaskLvglUpdate(void *parameter)
     {
         lv_task_handler();
         vTaskDelay(5);
+
+        // esp_register_freertos_tick_hook((void *)lvgl_tick_task);
+        // if (pdTRUE == xSemaphoreTake(lvgl_mutex, portMAX_DELAY))
+        // {
+        //     lv_task_handler();
+        //     xSemaphoreGive(lvgl_mutex);
+        // }
     }
 }
 
@@ -174,12 +190,12 @@ void setup()
     //     nullptr,
     //     3,
     //     &handleTaskLvgl);
-    
+
     // xTaskCreatePinnedToCore(
-    //     TaskLvglUpdate, "LvglThread", 
-    //     4 * 1024, NULL, 
-    //     3, 
-    //     &handleTaskLvgl, 0);
+    //     TaskLvglUpdate, "LvglThread",
+    //     4 * 1024, NULL,
+    //     3,
+    //     &handleTaskLvgl, 1);
 }
 
 void loop()

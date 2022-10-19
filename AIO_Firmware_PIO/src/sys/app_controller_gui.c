@@ -25,6 +25,9 @@ void app_control_gui_init(void)
 
     lv_style_init(&default_style);
     lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
+    lv_style_set_radius(&default_style, 0); // 设置控件圆角半径
+    // 设置边框宽度
+    lv_style_set_border_width(&default_style, 0);
 
     lv_style_init(&app_name_style);
     lv_style_set_text_opa(&app_name_style, LV_OPA_COVER);
@@ -37,17 +40,15 @@ void app_control_gui_init(void)
     // 设置不显示滚动条
     lv_obj_set_style_bg_opa(app_scr, LV_OPA_0,
                             LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
-    // lv_obj_set_size(app_scr, 240 + 10, 240 + 10);
-    // lv_obj_set_pos(app_scr, 0, 0);
-    // lv_obj_set_align(app_scr, LV_ALIGN_CENTER);
+    // lv_obj_set_size(app_scr, 240, 240);
+    // lv_obj_align(app_scr, LV_ALIGN_CENTER, 0, 0);
     // lv_scr_load(app_scr);
 
     // 为消除开机的局部白屏问题 增加如下一层（可考虑删除改进）
     app_scr_t = lv_obj_create(app_scr);
     lv_obj_add_style(app_scr_t, &default_style, LV_STATE_DEFAULT);
-    lv_obj_set_size(app_scr_t, 240 + 10, 240 + 10);
-    lv_obj_set_pos(app_scr_t, 0, 0);
-    lv_obj_set_align(app_scr_t, LV_ALIGN_CENTER);
+    lv_obj_set_size(app_scr_t, 240, 240);
+    lv_obj_align(app_scr_t, LV_ALIGN_CENTER, 0, 0);
     lv_scr_load(app_scr_t);
 }
 
