@@ -1,0 +1,77 @@
+{
+    "ssid": {
+        "namespace": "sys",
+        "type": "String",
+        "info": "\u63d0\u793a\u4fe1\u606f"
+    },
+  "ssid_1": {
+    "namespace": "sys",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "password_1": {
+    "namespace": "sys",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "ssid_2": {
+    "namespace": "sys",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "password_2": {
+    "namespace": "sys",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "backLight": {
+    "namespace": "sys",
+    "type": "UChar",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "rotation": {
+    "namespace": "sys",
+    "type": "UChar",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "auto_mpu": {
+    "namespace": "sys",
+    "type": "UChar",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "cityname": {
+    "namespace": "zhixin",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "language": {
+    "namespace": "zhixin",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "weather_key": {
+    "namespace": "zhixin",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "tianqi_aid": {
+    "namespace": "tianqi",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "tianqi_as": {
+    "namespace": "tianqi",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "tianqi_addr": {
+    "namespace": "tianqi",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  },
+  "bili_uid": {
+    "namespace": "other",
+    "type": "String",
+    "info": "\u63d0\u793a\u4fe1\u606f"
+  }
+}

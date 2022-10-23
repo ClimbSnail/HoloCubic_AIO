@@ -1,4 +1,6 @@
 # HoloCubic_AIO (All in one for HoloCubic)
+### _You can also read a translated version of this file [in English 英文版](https://github.com/ClimbSnail/HoloCubic_AIO/blob/dev/README_English.md) or [in Korean 한국어](./README_English.md)._
+
 AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件中，并坚持开源。目前固件源码达`2w+`行，上位机源码`4k`行（均不含字库图片），诚邀大家共同开发AIO固件、上位机以及周边，让固件满足更多人的需求。
 
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
@@ -15,10 +17,10 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 
 _**欢迎加入AIO内测QQ讨论群**_
 
-一群群号755143193
-二群群号860112883
-三群群号676732387
-四群群号749207817
+一群群号 755143193
+二群群号 860112883
+三群群号 676732387
+四群群号 749207817
 
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
@@ -170,8 +172,8 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
 3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
 
-然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
-PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：
+~~然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
+PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：~~
 ```
     if(sck == -1 && miso == -1 && mosi == -1 && ss == -1) {
         _sck = (_spi_num == VSPI) ? SCK : 14;
@@ -179,7 +181,7 @@ PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度
         _mosi = (_spi_num == VSPI) ? MOSI : 13;
         _ss = (_spi_num == VSPI) ? SS : 15;
 ```
-这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。
+~~这是因为，硬件上连接屏幕和SD卡分别是用两个硬件SPI，其中HSPI的默认MISO引脚是12，而12在ESP32中是用于上电时设置flash电平的，上电之前上拉会导致芯片无法启动，因此我们将默认的引脚替换为26。~~
 
 ### 程序框架图
 

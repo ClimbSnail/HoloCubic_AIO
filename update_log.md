@@ -1,5 +1,14 @@
 ### 版本更新日志
-CurVersion:v2.0.0
+CurVersion:v2.2.0
+
+#### HoloCubic_AIO固件_v2.2.x.bin
+1. 将LVGL更新至v8.3.3，修改了所有涉及LVGL的APP。
+2. 走查所有有返回值却没有return的函数。
+
+#### HoloCubic_AIO固件_v2.1.x.bin
+1. 新增天气字库。
+2. 新增股票APP。
+3. 新增亮度调节的阈值，避免死机。
 
 #### HoloCubic_AIO固件_v2.0.x.bin
 1. 修复7日天气只读北京问题、修改api，新增湿度。
