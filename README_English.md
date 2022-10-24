@@ -1,5 +1,5 @@
 # HoloCubic_AIO (All in one for HoloCubic)
-### _You can also read a translated version of this file [中文版](https://github.com/ClimbSnail/HoloCubic_AIO/blob/dev/README.md) or [in Korean 한국어](./README.md)._
+### _You can also read a translated version of this file [中文版](https://github.com/ClimbSnail/HoloCubic_AIO/blob/main/README.md) or [in Korean 한국어](./README.md)._
 
 "AIO" means All in one, which aims to integrate as many functions as possible into Holocubic AIO firmware and insist on open source. At present, the firmware source code reaches ` 2W + ` line, and the upper computer source code reaches ` 4K ` line (all excluding font pictures). We sincerely invite you to jointly develop AIO firmware, upper computer and its periphery, so that the firmware can meet the needs of more people. 
 
