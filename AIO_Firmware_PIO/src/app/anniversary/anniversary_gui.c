@@ -1,7 +1,6 @@
 #include "anniversary_gui.h"
 #include "time.h"
 
-#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 LV_FONT_DECLARE(lv_font_ibmplex_115);

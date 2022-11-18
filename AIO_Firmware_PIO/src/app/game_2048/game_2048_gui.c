@@ -1,7 +1,6 @@
 #include "game_2048_gui.h"
 #include "element_images.h"
 
-#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 #define SCALE_SIZE 4

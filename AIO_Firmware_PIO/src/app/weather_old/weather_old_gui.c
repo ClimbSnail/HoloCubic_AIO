@@ -8,7 +8,6 @@
 #include "weather_old_image_2.h"
 #endif
 
-#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 static lv_obj_t *wc_scr[3];

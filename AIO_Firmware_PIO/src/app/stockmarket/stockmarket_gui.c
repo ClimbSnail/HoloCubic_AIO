@@ -1,6 +1,5 @@
 #include "stockmarket_gui.h"
 
-#include "driver/lv_port_indev.h"
 #include "lvgl.h"
 
 LV_FONT_DECLARE(lv_font_ibmplex_115);
