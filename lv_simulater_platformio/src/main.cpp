@@ -38,8 +38,8 @@ void weather_app_ico()
     lv_label_set_text(label, "weather");
     lv_obj_align_to(label, ico, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
-    lv_scr_load(default_scr);
-    ANIEND
+    // lv_scr_load(default_scr);
+    // ANIEND
 }
 
 void weather_app_simulation()
