@@ -47,6 +47,8 @@ static int example_init(AppController *sys)
     // 解析数据
     // 将配置数据保存在文件中（持久化）
     g_flashCfg.writeFile("/example.cfg", "value1=100\nvalue2=200");
+    
+    return 0;
 }
 
 static void example_process(AppController *sys,
@@ -90,6 +92,7 @@ static int example_exit_callback(void *param)
         free(run_data);
         run_data = NULL;
     }
+    return 0;
 }
 
 static void example_message_handle(const char *from, const char *to,
