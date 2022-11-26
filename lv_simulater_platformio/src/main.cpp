@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL_timer.h>
 
-
 void weather_app_ico()
 {
     static lv_obj_t *default_scr;
@@ -37,9 +36,6 @@ void weather_app_ico()
     lv_obj_t *label = lv_label_create(default_scr);
     lv_label_set_text(label, "weather");
     lv_obj_align_to(label, ico, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-
-    // lv_scr_load(default_scr);
-    // ANIEND
 }
 
 void weather_app_simulation()
@@ -72,18 +68,23 @@ void weather_app_simulation()
 
 int main(void)
 {
+    LV_LOG_USER("AIO_Simulater");
+
     lv_init();
 
     hal_setup();
-    
+
     // lv_example_anim_1();
     // lv_demo_widgets();
 
-    // weather_app_ico();
-    // SDL_Delay(1000);    // 延时
+    // 显示图标
+    weather_app_ico();
+    SDL_Delay(5);
+    lv_task_handler();
+
+    // 延时显示app内部界面
+    SDL_Delay(1000); // 延时
     weather_app_simulation();
 
     hal_loop();
-
-    LV_LOG_USER("AIO_Simulater");
 }
