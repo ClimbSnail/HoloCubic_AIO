@@ -7,7 +7,7 @@
 #define SCREEN_SHARE_APP_NAME "Screen share"
 
 #define JPEG_BUFFER_SIZE 1       // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
-#define RECV_BUFFER_SIZE 50000   // 理论上是JPEG_BUFFER_SIZE的两倍就够了
+#define RECV_BUFFER_SIZE 50000   // 理论上是 JPEG_BUFFER_SIZE 的两倍就够了
 #define DMA_BUFFER_SIZE 512      // (16*16*2)
 #define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
 

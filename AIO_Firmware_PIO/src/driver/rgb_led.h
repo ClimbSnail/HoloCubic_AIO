@@ -10,6 +10,13 @@
 #define LED_MODE_RGB 0
 #define LED_MODE_HSV 1
 
+enum LED_RUN_MODE : unsigned char
+{
+    RUN_MODE_TIMER = 0, // rtos timer
+    RUN_MODE_TASK,      // rtos task
+    RUN_MODE_NONE
+};
+
 class Pixel
 {
 private:
@@ -126,16 +133,21 @@ struct RgbRunStatus
     float current_brightness;
 };
 
-void rgb_thread_init(RgbParam *rgb_setting);
+void rgb_thread_run(RgbParam *rgb_setting,
+                     LED_RUN_MODE mode = RUN_MODE_TASK);
 
 void set_rgb(RgbParam *rgb_setting);
 
-void led_rgbOnTimer(TimerHandle_t xTimer);
-// void IRAM_ATTR led_rgbOnTimer();
+void led_rgbTimerHandler(TimerHandle_t xTimer);
+void led_rgbTaskHandler(void *parameter);
+void led_rgbHandler(void);
+// void IRAM_ATTR led_rgbTimerHandler();
 void led_hsvOnTimer(TimerHandle_t xTimer);
+void led_hsvTaskHandler(void *parameter);
+void led_hsvHandler(void);
 
 void count_cur_brightness(void);
 
-void rgb_thread_del(void);
+void led_thread_del(void);
 
 #endif

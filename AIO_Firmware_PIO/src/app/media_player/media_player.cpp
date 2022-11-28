@@ -143,7 +143,7 @@ static int media_player_init(AppController *sys)
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
-                            0.15, 0.25, 0.001, 30};
+                            0.15, 0.20, 0.001, 50};
     set_rgb(&rgb_setting);
 
     // 获取配置信息
@@ -287,13 +287,6 @@ static int media_player_exit_callback(void *param)
         run_data = NULL;
     }
 
-    // 恢复RGB灯  HSV色彩模式
-    RgbParam rgb_setting = {LED_MODE_HSV,
-                            1, 32, 255,
-                            255, 255, 255,
-                            1, 1, 1,
-                            0.15, 0.25, 0.001, 30};
-    set_rgb(&rgb_setting);
     return 0;
 }
 

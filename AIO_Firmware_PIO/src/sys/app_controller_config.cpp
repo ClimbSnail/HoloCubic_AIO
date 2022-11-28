@@ -284,7 +284,7 @@ void AppController::write_config(RgbConfig *cfg)
                             rgb_cfg.min_brightness, rgb_cfg.max_brightness,
                             rgb_cfg.brightness_step, rgb_cfg.time};
     // 初始化RGB任务
-    rgb_thread_init(&rgb_setting);
+    rgb_thread_run(&rgb_setting);
 }
 
 void AppController::deal_config(APP_MESSAGE_TYPE type,

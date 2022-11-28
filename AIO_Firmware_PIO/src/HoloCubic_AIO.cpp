@@ -171,8 +171,8 @@ void setup()
                             rgb_cfg->step_0, rgb_cfg->step_1, rgb_cfg->step_2,
                             rgb_cfg->min_brightness, rgb_cfg->max_brightness,
                             rgb_cfg->brightness_step, rgb_cfg->time};
-    // 初始化RGB任务
-    rgb_thread_init(&rgb_setting);
+    // 运行RGB任务
+    rgb_thread_run(&rgb_setting);
 
     // 先初始化一次动作数据 防空指针
     act_info = mpu.getAction();
