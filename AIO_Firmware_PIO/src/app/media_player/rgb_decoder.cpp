@@ -118,19 +118,18 @@ bool RgbPlayDocoder::video_play_screen(void)
     {
 
         tft->startWrite();
-        Millis_1 = millis();
+        Millis_1 = GET_SYS_MILLIS();
         l = m_pFile->read(m_displayBuf, MOVIE_BUFFER_SIZE);
-        Serial.println(millis() - Millis_1);
-        Millis_1 = millis();
+        Serial.println(GET_SYS_MILLIS() - Millis_1);
+        Millis_1 = GET_SYS_MILLIS();
         tft->pushColors(m_displayBuf, l);
-        Serial.println(millis() - Millis_1);
-        Millis_1 = millis();
+        Serial.println(GET_SYS_MILLIS() - Millis_1);
+        Millis_1 = GET_SYS_MILLIS();
         l = m_pFile->read(m_displayBuf, MOVIE_BUFFER_SIZE);
-        Serial.println(millis() - Millis_1);
-        Millis_1 = millis();
+        Serial.println(GET_SYS_MILLIS() - Millis_1);
+        Millis_1 = GET_SYS_MILLIS();
         tft->pushColors(m_displayBuf, l);
-        Serial.println(millis() - Millis_1);
-        Millis_1 = millis();
+        Serial.println(GET_SYS_MILLIS() - Millis_1);
 
         l = m_pFile->read(m_displayBuf, MOVIE_BUFFER_SIZE);
         tft->pushColors(m_displayBuf, l);

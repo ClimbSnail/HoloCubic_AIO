@@ -28,7 +28,7 @@ void IMU::init(uint8_t order, uint8_t auto_calibration,
     Wire.begin(IMU_I2C_SDA, IMU_I2C_SCL);
     Wire.setClock(400000);
     unsigned long timeout = 5000;
-    unsigned long preMillis = millis();
+    unsigned long preMillis = GET_SYS_MILLIS();
     // mpu = MPU6050(0x68, &Wire);
     mpu = MPU6050(0x68);
     while (!mpu.testConnection() && !doDelayMillisTime(timeout, &preMillis, false))
@@ -90,7 +90,7 @@ ImuAction *IMU::update(int interval)
 {
     getVirtureMotion6(&action_info);
     // 原先判断的只是加速度，现在要加上陀螺仪
-    if (millis() - last_update_time > interval)
+    if (GET_SYS_MILLIS() - last_update_time > interval)
     {
         if (!action_info.isValid)
         {
@@ -159,7 +159,7 @@ ImuAction *IMU::update(int interval)
             }
         }
 
-        last_update_time = millis();
+        last_update_time = GET_SYS_MILLIS();
     }
     return &action_info;
 }
@@ -218,7 +218,7 @@ ImuAction *IMU::getAction(void)
     // 本次流程的动作识别
     if (!action_info.isValid)
     {
-        bool isHoldDown = false;// 长按的标志位
+        bool isHoldDown = false; // 长按的标志位
         // 本次流程的动作识别
         int second = (index + ACTION_HISTORY_BUF_LEN - 1) % ACTION_HISTORY_BUF_LEN;
         int third = (index + ACTION_HISTORY_BUF_LEN - 2) % ACTION_HISTORY_BUF_LEN;
@@ -246,11 +246,11 @@ ImuAction *IMU::getAction(void)
             }
             // 如需左右的长按可在此处添加"else if"的逻辑
 
-            if(isHoldDown)
+            if (isHoldDown)
             {
-            // 本次识别为长按，则手动清除识别过的历史数据 避免对下次动作识别的影响
-            act_info_history[second] = ACTIVE_TYPE::UNKNOWN;
-            act_info_history[third] = ACTIVE_TYPE::UNKNOWN;
+                // 本次识别为长按，则手动清除识别过的历史数据 避免对下次动作识别的影响
+                act_info_history[second] = ACTIVE_TYPE::UNKNOWN;
+                act_info_history[third] = ACTIVE_TYPE::UNKNOWN;
             }
         }
     }

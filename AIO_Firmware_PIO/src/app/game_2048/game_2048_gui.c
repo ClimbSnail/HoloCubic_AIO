@@ -215,10 +215,8 @@ void showBoard(int *map)
  * showAnim————用动画来更新棋盘
  * animMap：动画的轨迹数组
  * direction：移动的方向，1.上 2.下 3.左 4.右
- * newborn：新棋子的位置
- * map：新棋盘的地址
  */
-void showAnim(int *animMap, int direction, int newborn, int *map)
+void showAnim(int *animMap, int direction)
 {
     lv_anim_exec_xcb_t Normal;
     switch (direction)
@@ -246,9 +244,15 @@ void showAnim(int *animMap, int direction, int newborn, int *map)
             move(i, Normal, animMap[i]);
         }
     }
+}
 
+/*
+ * newborn：新棋子的位置
+ * map：新棋盘的地址
+ */
+void showNewBorn(int newborn, int *map)
+{
     //展示新棋盘
-    delay(700);
     showBoard(map);
 
     //出现

@@ -10,12 +10,6 @@ static lv_disp_draw_buf_t disp_buf;
 static lv_disp_drv_t disp_drv;
 static lv_color_t buf[SCREEN_HOR_RES * LV_HOR_RES_MAX_LEN];
 
-void my_print(const char * buf)
-{
-    Serial.printf("%s", buf);
-    Serial.flush();
-}
-
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
     uint32_t w = (area->x2 - area->x1 + 1);
@@ -38,10 +32,6 @@ void Display::init(uint8_t rotation, uint8_t backLight)
     ledcAttachPin(LCD_BL_PIN, LCD_BL_PWM_CHANNEL);
 
     lv_init();
-
-#if LV_USE_LOG
-    lv_log_register_print_cb(my_print); /* register print function for debugging */
-#endif                                  /*LV_USE_LOG*/
 
     setBackLight(0.0); // 设置亮度 为了先不显示初始化时的"花屏"
 
@@ -75,7 +65,7 @@ void Display::init(uint8_t rotation, uint8_t backLight)
 
 void Display::routine()
 {
-    lv_task_handler();
+    AIO_LVGL_OPERATE_LOCK(lv_timer_handler();)
 }
 
 void Display::setBackLight(float duty)

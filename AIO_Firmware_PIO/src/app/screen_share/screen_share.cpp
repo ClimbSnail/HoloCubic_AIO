@@ -11,8 +11,8 @@
 #define DMA_BUFFER_SIZE 512      // (16*16*2)
 #define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
 
-#define HTTP_PORT 8081 //设置监听端口
-WiFiServer ss_server;  //服务端 ss = screen_share
+#define HTTP_PORT 8081 // 设置监听端口
+WiFiServer ss_server;  // 服务端 ss = screen_share
 WiFiClient ss_client;  // 客户端 ss = screen_share
 
 // 天气的持久化配置
@@ -166,7 +166,7 @@ static int screen_share_init(AppController *sys)
                             255, 255, 32,
                             1, 1, 1,
                             0.15, 0.25, 0.001, 30};
-    set_rgb(&rgb_setting);
+    set_rgb_and_run(&rgb_setting);
 
     screen_share_gui_init();
     // 初始化运行时参数
@@ -186,7 +186,7 @@ static int screen_share_init(AppController *sys)
     tft->initDMA();
 
     // The decoder must be given the exact name of the rendering function above
-    SketchCallback callback = (SketchCallback)&screen_share_tft_output; //强制转换func()的类型
+    SketchCallback callback = (SketchCallback)&screen_share_tft_output; // 强制转换func()的类型
     TJpgDec.setCallback(callback);
     // The jpeg image can be scaled down by a factor of 1, 2, 4, or 8
     TJpgDec.setJpgScale(1);
@@ -252,10 +252,10 @@ static void screen_share_process(AppController *sys,
             if (ss_client.available())
             {
                 ss_client.write("no");                                                                 // 向上位机发送当前帧未写入完指令
-                int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); //向缓冲区读取数据
+                int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); // 向缓冲区读取数据
                 run_data->bufSaveTail += read_count;
 
-                unsigned long deal_time = millis();
+                unsigned long deal_time = GET_SYS_MILLIS();
                 bool get_mjpeg_ret = readJpegFromBuffer(run_data->recvBuf + run_data->bufSaveTail);
 
                 if (true == get_mjpeg_ret)
@@ -271,7 +271,7 @@ static void screen_share_process(AppController *sys,
                     memcpy(run_data->recvBuf, run_data->mjpeg_end + 1, left_frame_size);
                     Serial.printf("帧大小：%d ", frame_size);
                     Serial.print("MCU处理速度：");
-                    Serial.print(1000.0 / (millis() - deal_time), 2);
+                    Serial.print(1000.0 / (GET_SYS_MILLIS() - deal_time), 2);
                     Serial.print("Fps\n");
 
                     run_data->last_find_pos = run_data->recvBuf;
@@ -309,10 +309,10 @@ static void screen_share_process(AppController *sys,
                 "Wait connect ....",
                 LV_SCR_LOAD_ANIM_NONE);
 
-            unsigned long timeout = millis();
+            unsigned long timeout = GET_SYS_MILLIS();
             while (ss_client.available() == 0)
             {
-                if (millis() - timeout > 2000)
+                if (GET_SYS_MILLIS() - timeout > 2000)
                 {
                     Serial.print(F("Controller was disconnect!"));
                     Serial.println(F(" >>> Client Timeout !"));
@@ -361,7 +361,7 @@ static int screen_exit_callback(void *param)
                             255, 255, 255,
                             1, 1, 1,
                             0.15, 0.25, 0.001, 30};
-    set_rgb(&rgb_setting);
+    set_rgb_and_run(&rgb_setting);
 
     // 释放运行数据
     if (NULL != run_data)
@@ -388,7 +388,7 @@ static void screen_message_handle(const char *from, const char *to,
             "Connect succ",
             LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
-        ss_server.begin(HTTP_PORT); //服务器启动监听端口号
+        ss_server.begin(HTTP_PORT); // 服务器启动监听端口号
         ss_server.setNoDelay(true);
     }
     break;

@@ -85,8 +85,6 @@ void display_app_scr_init(const void *src_img_path, const char *app_name)
     lv_obj_align_to(pre_app_name, pre_app_image, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
     lv_scr_load_anim(app_scr, LV_SCR_LOAD_ANIM_NONE, 300, 300, false);
-    // ANIEND
-    // lv_scr_load(app_scr);    // 加载屏幕
 }
 
 void app_control_display_scr(const void *src_img, const char *app_name, lv_scr_load_anim_t anim_type, bool force)
@@ -146,7 +144,7 @@ void app_control_display_scr(const void *src_img, const char *app_name, lv_scr_l
     lv_anim_set_values(&now_app, now_start_x, now_end_x);
     uint32_t duration = lv_anim_speed_to_time(400, now_start_x, now_end_x); // 计算时间
     lv_anim_set_time(&now_app, duration);
-    lv_anim_set_path_cb(&now_app, lv_anim_path_linear); //设置一个动画的路径
+    lv_anim_set_path_cb(&now_app, lv_anim_path_linear); // 设置一个动画的路径
 
     static lv_anim_t pre_app;
     lv_anim_init(&pre_app);
@@ -155,11 +153,12 @@ void app_control_display_scr(const void *src_img, const char *app_name, lv_scr_l
     lv_anim_set_values(&pre_app, old_start_x, old_end_x);
     duration = lv_anim_speed_to_time(400, old_start_x, old_end_x); // 计算时间
     lv_anim_set_time(&pre_app, duration);
-    lv_anim_set_path_cb(&pre_app, lv_anim_path_linear); //设置一个动画的路径
+    lv_anim_set_path_cb(&pre_app, lv_anim_path_linear); // 设置一个动画的路径
 
     lv_anim_start(&now_app);
     lv_anim_start(&pre_app);
-    ANIEND
+    ANIEND_WAIT
+    lv_task_handler(); // 消除 ANIEND_WAIT 执行完后依然"卡顿一下"的问题
 
     lv_obj_del(pre_app_image); // 删除原先的图像
     pre_app_image = now_app_image;

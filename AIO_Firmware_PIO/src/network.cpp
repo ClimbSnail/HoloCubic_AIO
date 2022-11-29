@@ -7,8 +7,8 @@ IPAddress gateway(192, 168, 4, 2);  // Set your network Gateway usually your Rou
 IPAddress subnet(255, 255, 255, 0); // Set your network sub-network mask here
 IPAddress dns(192, 168, 4, 1);      // Set your network DNS usually your Router base address
 
-const char *AP_SSID = "HoloCubic_AIO"; //热点名称
-const char *HOST_NAME = "HoloCubic";   //主机名
+const char *AP_SSID = "HoloCubic_AIO"; // 热点名称
+const char *HOST_NAME = "HoloCubic";   // 主机名
 
 uint16_t ap_timeout = 0; // ap无连接的超时时间
 
@@ -60,12 +60,12 @@ boolean Network::start_conn_wifi(const char *ssid, const char *password)
     Serial.print(F(" @ "));
     Serial.println(password);
 
-    //设置为STA模式并连接WIFI
+    // 设置为STA模式并连接WIFI
     WiFi.enableSTA(true);
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     WiFi.begin(ssid, password);
-    m_preDisWifiConnInfoMillis = millis();
+    m_preDisWifiConnInfoMillis = GET_SYS_MILLIS();
 
     // if (!WiFi.config(local_ip, gateway, subnet, dns))
     // { //WiFi.config(ip, gateway, subnet, dns1, dns2);
@@ -115,7 +115,7 @@ boolean Network::end_conn_wifi(void)
 
 boolean Network::close_wifi(void)
 {
-    if(!WiFi.disconnect())
+    if (!WiFi.disconnect())
     {
         return false;
     }
@@ -132,17 +132,17 @@ boolean Network::close_wifi(void)
 
 boolean Network::open_ap(const char *ap_ssid, const char *ap_password)
 {
-    WiFi.enableAP(true); //配置为AP模式
+    WiFi.enableAP(true); // 配置为AP模式
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     // WiFi.begin();
-    boolean result = WiFi.softAP(ap_ssid, ap_password); //开启WIFI热点
+    boolean result = WiFi.softAP(ap_ssid, ap_password); // 开启WIFI热点
     if (result)
     {
         WiFi.softAPConfig(local_ip, gateway, subnet);
         IPAddress myIP = WiFi.softAPIP();
 
-        //打印相关信息
+        // 打印相关信息
         Serial.print(F("\nSoft-AP IP address = "));
         Serial.println(myIP);
         Serial.println(String("MAC address = ") + WiFi.softAPmacAddress().c_str());
@@ -153,11 +153,11 @@ boolean Network::open_ap(const char *ap_ssid, const char *ap_password)
     }
     else
     {
-        //开启热点失败
+        // 开启热点失败
         Serial.println(F("WiFiAP Failed"));
         return false;
         delay(1000);
-        ESP.restart(); //复位esp32
+        ESP.restart(); // 复位esp32
     }
     // 设置域名
     if (MDNS.begin(HOST_NAME))
@@ -169,7 +169,7 @@ boolean Network::open_ap(const char *ap_ssid, const char *ap_password)
 
 void restCallback(TimerHandle_t xTimer)
 {
-    //长时间不访问WIFI Config 将复位设备
+    // 长时间不访问WIFI Config 将复位设备
     --ap_timeout;
     Serial.print(F("AP timeout: "));
     Serial.println(ap_timeout);

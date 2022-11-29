@@ -10,9 +10,12 @@ FlashFS g_flashCfg; // flash中的文件系统（替代原先的Preferences）
 Display screen;     // 屏幕对象
 Ambient ambLight;   // 光线传感器对象
 
+// lvgl handle的锁
+SemaphoreHandle_t lvgl_mutex = xSemaphoreCreateMutex();
+
 boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis, boolean state)
 {
-    unsigned long currentMillis = millis();
+    unsigned long currentMillis = GET_SYS_MILLIS();
     if (currentMillis - *previousMillis >= interval)
     {
         *previousMillis = currentMillis;

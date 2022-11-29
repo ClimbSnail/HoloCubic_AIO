@@ -218,15 +218,15 @@ static long long get_timestamp(String url)
             time = payload.substring(time_index, payload.length() - 3);
             // 以网络时间戳为准
             run_data->preNetTimestamp = atoll(time.c_str()) + run_data->errorNetTimestamp + TIMEZERO_OFFSIZE;
-            run_data->preLocalTimestamp = millis();
+            run_data->preLocalTimestamp = GET_SYS_MILLIS();
         }
     }
     else
     {
         Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
         // 得不到网络时间戳时
-        run_data->preNetTimestamp = run_data->preNetTimestamp + (millis() - run_data->preLocalTimestamp);
-        run_data->preLocalTimestamp = millis();
+        run_data->preNetTimestamp = run_data->preNetTimestamp + (GET_SYS_MILLIS() - run_data->preLocalTimestamp);
+        run_data->preLocalTimestamp = GET_SYS_MILLIS();
     }
     http.end();
 
@@ -243,7 +243,7 @@ static int anniversary_init(AppController *sys)
     run_data->cur_anniversary = 0;
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
     run_data->errorNetTimestamp = 2;
-    run_data->preLocalTimestamp = millis(); // 上一次的本地机器时间戳
+    run_data->preLocalTimestamp = GET_SYS_MILLIS(); // 上一次的本地机器时间戳
     run_data->preWeatherMillis = 0;
     run_data->preTimeMillis = 0;
     run_data->coactusUpdateFlag = 0x01;

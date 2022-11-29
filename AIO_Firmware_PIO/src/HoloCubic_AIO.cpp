@@ -38,33 +38,17 @@ static bool isCheckAction = false;
 
 /*** Component objects **7*/
 ImuAction *act_info; // 存放mpu6050返回的数据
-
 AppController *app_controller; // APP控制器
 
-static SemaphoreHandle_t lvgl_mutex = NULL;
 TaskHandle_t handleTaskLvgl;
-
-// static void lvgl_tick_task(void *arg)
-// {
-//     (void)arg;
-
-//     lv_tick_inc(portTICK_PERIOD_MS);
-// }
 
 void TaskLvglUpdate(void *parameter)
 {
     // ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     for (;;)
     {
-        lv_task_handler();
+        AIO_LVGL_OPERATE_LOCK(lv_timer_handler();)
         vTaskDelay(5);
-
-        // esp_register_freertos_tick_hook((void *)lvgl_tick_task);
-        // if (pdTRUE == xSemaphoreTake(lvgl_mutex, portMAX_DELAY))
-        // {
-        //     lv_task_handler();
-        //     xSemaphoreGive(lvgl_mutex);
-        // }
     }
 }
 
@@ -73,6 +57,12 @@ void actionCheckHandle(TimerHandle_t xTimer)
 {
     // 标志需要检测动作
     isCheckAction = true;
+}
+
+void my_print(const char *buf)
+{
+    Serial.printf("%s", buf);
+    Serial.flush();
 }
 
 void setup()
@@ -129,10 +119,31 @@ void setup()
     /*** Init micro SD-Card ***/
     tf.init();
 
-    // lv_port_fs_init();
     lv_fs_fatfs_init();
 
+    // Update display in parallel thread.
+    // BaseType_t taskLvglReturned = xTaskCreate(
+    //     TaskLvglUpdate,
+    //     "LvglThread",
+    //     8 * 1024,
+    //     nullptr,
+    //     TASK_LVGL_PRIORITY,
+    //     &handleTaskLvgl);
+    // if (taskLvglReturned != pdPASS)
+    // {
+    //     Serial.println("taskLvglReturned != pdPASS");
+    // }
+    // else
+    // {
+    //     Serial.println("taskLvglReturned == pdPASS");
+    // }
+
+#if LV_USE_LOG
+    lv_log_register_print_cb(my_print);
+#endif /*LV_USE_LOG*/
+
     app_controller->init();
+
     // 将APP"安装"到controller里
     app_controller->app_install(&weather_app);
     app_controller->app_install(&weather_old_app);
@@ -172,7 +183,7 @@ void setup()
                             rgb_cfg->min_brightness, rgb_cfg->max_brightness,
                             rgb_cfg->brightness_step, rgb_cfg->time};
     // 运行RGB任务
-    rgb_thread_run(&rgb_setting);
+    set_rgb_and_run(&rgb_setting, RUN_MODE_TASK);
 
     // 先初始化一次动作数据 防空指针
     act_info = mpu.getAction();
@@ -181,21 +192,6 @@ void setup()
                                 200 / portTICK_PERIOD_MS,
                                 pdTRUE, (void *)0, actionCheckHandle);
     xTimerStart(xTimerAction, 0);
-
-    // Update display in parallel thread.
-    // xTaskCreate(
-    //     TaskLvglUpdate,
-    //     "LvglThread",
-    //     4 * 1024,
-    //     nullptr,
-    //     3,
-    //     &handleTaskLvgl);
-
-    // xTaskCreatePinnedToCore(
-    //     TaskLvglUpdate, "LvglThread",
-    //     4 * 1024, NULL,
-    //     3,
-    //     &handleTaskLvgl, 1);
 }
 
 void loop()

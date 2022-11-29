@@ -107,7 +107,7 @@ static int stockmarket_init(AppController *sys)
     run_data->refresh_status = 0;
     run_data->stockdata.tradvolume = 0;
     run_data->stockdata.turnover = 0;
-    run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
+    run_data->refresh_time_millis = GET_SYS_MILLIS() - cfg_data.updataInterval;
 
     display_stockmarket(run_data->stockdata, LV_SCR_LOAD_ANIM_NONE);
     return 0;
@@ -180,16 +180,16 @@ static void update_stock_data()
             int endIndex_4 = payload.indexOf(',', startIndex_4);
             int startIndex_5 = payload.indexOf(',', endIndex_4) + 1;
             int endIndex_5 = payload.indexOf(',', startIndex_5);
-            String Stockname = payload.substring(payload.indexOf('"') + 1, payload.indexOf(',')); //股票名称
+            String Stockname = payload.substring(payload.indexOf('"') + 1, payload.indexOf(',')); // 股票名称
             memset(run_data->stockdata.name, '\0', 9);
             for (int i = 0; i < 8; i++)
                 run_data->stockdata.name[i] = Stockname.charAt(i);
             run_data->stockdata.name[8] = '\0';
-            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();  //今日开盘价
-            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat(); //昨日收盘价
-            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();   //当前价
-            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();   //今日最高价
-            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();   //今日最低价
+            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();  // 今日开盘价
+            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat(); // 昨日收盘价
+            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();   // 当前价
+            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();   // 今日最高价
+            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();   // 今日最低价
 
             run_data->stockdata.ChgValue = run_data->stockdata.NowQuo - run_data->stockdata.CloseQuo;
             run_data->stockdata.ChgPercent = run_data->stockdata.ChgValue / run_data->stockdata.CloseQuo * 100;
@@ -212,8 +212,8 @@ static void update_stock_data()
             int endIndex_8 = payload.indexOf(',', startIndex_8);
             int startIndex_9 = payload.indexOf(',', endIndex_8) + 1;
             int endIndex_9 = payload.indexOf(',', startIndex_9);
-            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat(); //成交量
-            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();   //成交额
+            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat(); // 成交量
+            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();   // 成交额
             // Serial.printf("chg= %.2f\r\n",run_data->stockdata.ChgValue);
             // Serial.printf("chgpercent= %.2f%%\r\n",run_data->stockdata.ChgPercent);
         }
@@ -232,7 +232,7 @@ static void stockmarket_message_handle(const char *from, const char *to,
     {
     case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(millis());
+        Serial.print(GET_SYS_MILLIS());
         Serial.println("[SYS] stockmarket_event_notification");
         update_stock_data();
         display_stockmarket(run_data->stockdata, LV_SCR_LOAD_ANIM_NONE);

@@ -22,7 +22,7 @@ static ServerAppRunData *run_data = NULL;
 
 void start_web_config()
 {
-    //首页
+    // 首页
     server.on("/", HTTP_GET, HomePage);
 
     init_page_header();
@@ -49,7 +49,7 @@ void start_web_config()
         { server.send(200); },
         handleFileUpload);
 
-    //连接
+    // 连接
     server.on("/saveSysConf", saveSysConf);
     server.on("/saveRgbConf", saveRgbConf);
     server.on("/saveWeatherConf", saveWeatherConf);

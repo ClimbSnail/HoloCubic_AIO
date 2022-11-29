@@ -144,13 +144,13 @@ static void picture_process(AppController *sys,
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_RIGHT;
         run_data->image_pos_increate = 1;
-        run_data->pic_perMillis = millis() - cfg_data.switchInterval; // 间接强制更新
+        run_data->pic_perMillis = GET_SYS_MILLIS() - cfg_data.switchInterval; // 间接强制更新
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_LEFT;
         run_data->image_pos_increate = -1;
-        run_data->pic_perMillis = millis() - cfg_data.switchInterval; // 间接强制更新
+        run_data->pic_perMillis = GET_SYS_MILLIS() - cfg_data.switchInterval; // 间接强制更新
     }
 
     if (NULL == run_data->image_file)

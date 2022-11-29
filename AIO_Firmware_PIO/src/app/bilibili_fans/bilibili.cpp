@@ -98,7 +98,7 @@ static int bilibili_init(AppController *sys)
     run_data->fans_num = 0;
     run_data->follow_num = 0;
     run_data->refresh_status = 0;
-    run_data->refresh_time_millis = millis() - cfg_data.updataInterval;
+    run_data->refresh_time_millis = GET_SYS_MILLIS() - cfg_data.updataInterval;
     return 0;
 }
 
@@ -211,7 +211,7 @@ static void bilibili_message_handle(const char *from, const char *to,
     {
     case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(millis());
+        Serial.print(GET_SYS_MILLIS());
         Serial.println("[SYS] bilibili_event_notification");
         if (0 == run_data->refresh_status)
         {

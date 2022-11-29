@@ -2,10 +2,17 @@
 #include "SD_MMC.h"
 #include <string.h>
 
+#define TF_VFS_IS_NULL(RET)                           \
+    if (NULL == tf_vfs)                               \
+    {                                                 \
+        Serial.println("[Sys SD Card] Mount Failed"); \
+        return RET;                                   \
+    }
+
 int photo_file_num = 0;
 char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
-static fs::FS *tf_vfs;
+static fs::FS *tf_vfs = NULL;
 
 void release_file_info(File_Info *info)
 {
@@ -122,6 +129,8 @@ void SdCard::init()
 
 void SdCard::listDir(const char *dirname, uint8_t levels)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Listing directory: %s\n", dirname);
     photo_file_num = 0;
 
@@ -172,6 +181,8 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
 
 File_Info *SdCard::listDir(const char *dirname)
 {
+    TF_VFS_IS_NULL(NULL)
+
     Serial.printf("Listing directory: %s\n", dirname);
 
     File root = tf_vfs->open(dirname);
@@ -265,6 +276,8 @@ File_Info *SdCard::listDir(const char *dirname)
 
 void SdCard::createDir(const char *path)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Creating Dir: %s\n", path);
     if (tf_vfs->mkdir(path))
     {
@@ -278,6 +291,8 @@ void SdCard::createDir(const char *path)
 
 void SdCard::removeDir(const char *path)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Removing Dir: %s\n", path);
     if (tf_vfs->rmdir(path))
     {
@@ -291,6 +306,8 @@ void SdCard::removeDir(const char *path)
 
 void SdCard::readFile(const char *path)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Reading file: %s\n", path);
 
     File file = tf_vfs->open(path);
@@ -310,6 +327,8 @@ void SdCard::readFile(const char *path)
 
 String SdCard::readFileLine(const char *path, int num)
 {
+    TF_VFS_IS_NULL("")
+
     Serial.printf("Reading file: %s line: %d\n", path, num);
 
     File file = tf_vfs->open(path);
@@ -345,6 +364,8 @@ String SdCard::readFileLine(const char *path, int num)
 
 void SdCard::writeFile(const char *path, const char *info)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Writing file: %s\n", path);
 
     File file = tf_vfs->open(path, FILE_WRITE);
@@ -366,11 +387,15 @@ void SdCard::writeFile(const char *path, const char *info)
 
 File SdCard::open(const String &path, const char *mode)
 {
+    // TF_VFS_IS_NULL(RET)
+
     return tf_vfs->open(path, mode);
 }
 
 void SdCard::appendFile(const char *path, const char *message)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Appending to file: %s\n", path);
 
     File file = tf_vfs->open(path, FILE_APPEND);
@@ -392,6 +417,8 @@ void SdCard::appendFile(const char *path, const char *message)
 
 void SdCard::renameFile(const char *path1, const char *path2)
 {
+    TF_VFS_IS_NULL()
+
     Serial.printf("Renaming file %s to %s\n", path1, path2);
     if (tf_vfs->rename(path1, path2))
     {
@@ -405,6 +432,8 @@ void SdCard::renameFile(const char *path1, const char *path2)
 
 boolean SdCard::deleteFile(const char *path)
 {
+    TF_VFS_IS_NULL(false)
+
     Serial.printf("Deleting file: %s\n", path);
     if (tf_vfs->remove(path))
     {
@@ -420,6 +449,8 @@ boolean SdCard::deleteFile(const char *path)
 
 boolean SdCard::deleteFile(const String &path)
 {
+    TF_VFS_IS_NULL(false)
+
     Serial.printf("Deleting file: %s\n", path);
     if (tf_vfs->remove(path))
     {
@@ -435,6 +466,8 @@ boolean SdCard::deleteFile(const String &path)
 
 void SdCard::readBinFromSd(const char *path, uint8_t *buf)
 {
+    TF_VFS_IS_NULL()
+
     File file = tf_vfs->open(path);
     size_t len = 0;
     if (file)
@@ -462,6 +495,8 @@ void SdCard::readBinFromSd(const char *path, uint8_t *buf)
 
 void SdCard::writeBinToSd(const char *path, uint8_t *buf)
 {
+    TF_VFS_IS_NULL()
+
     File file = tf_vfs->open(path, FILE_WRITE);
     if (!file)
     {
@@ -479,6 +514,8 @@ void SdCard::writeBinToSd(const char *path, uint8_t *buf)
 
 void SdCard::fileIO(const char *path)
 {
+    TF_VFS_IS_NULL()
+
     File file = tf_vfs->open(path);
     static uint8_t buf[512];
     size_t len = 0;

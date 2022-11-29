@@ -22,16 +22,16 @@ void Ambient::init(int mode)
     delay(50);
 
     Wire.beginTransmission(ADDRESS_BH1750FVI); //"notify" the matching device
-    Wire.write(mMode);                         //set operation mode
+    Wire.write(mMode);                         // set operation mode
     Wire.endTransmission();
 }
 
 unsigned int Ambient::getLux()
 {
-    if (millis() - last_time > sample_time)
+    if (GET_SYS_MILLIS() - last_time > sample_time)
     {
-        last_time = millis();
-        Wire.requestFrom(ADDRESS_BH1750FVI, 2); //ask Arduino to read back 2 bytes from the sensor
+        last_time = GET_SYS_MILLIS();
+        Wire.requestFrom(ADDRESS_BH1750FVI, 2); // ask Arduino to read back 2 bytes from the sensor
         highByte = Wire.read();                 // get the high byte
         lowByte = Wire.read();                  // get the low byte
 
@@ -43,7 +43,7 @@ unsigned int Ambient::getLux()
         lux[0] = illuminance;
 
         Wire.beginTransmission(ADDRESS_BH1750FVI); //"notify" the matching device
-        Wire.write(mMode);                         //set operation mode
+        Wire.write(mMode);                         // set operation mode
         Wire.endTransmission();
     }
 

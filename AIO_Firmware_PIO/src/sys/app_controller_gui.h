@@ -7,15 +7,21 @@ extern "C"
 #endif
 
 #include "lvgl.h"
-#define ANIEND                      \
+
+// #define ANIEND_WAIT
+
+#define ANIEND_WAIT                 \
     while (lv_anim_count_running()) \
-        lv_task_handler(); //等待动画完成
+        lv_task_handler(); // 等待动画完成
+
+// #define ANIEND_WAIT                      \
+//     while (lv_anim_count_running());
 
     void app_control_gui_init(void);
     void app_control_gui_release(void);
     void display_app_scr_release(void);
-    void display_app_scr_init(const void *src_img, const char * app_name);
-    void app_control_display_scr(const void *src_img, const char * app_name,
+    void display_app_scr_init(const void *src_img, const char *app_name);
+    void app_control_display_scr(const void *src_img, const char *app_name,
                                  lv_scr_load_anim_t anim_type, bool force);
 
 #ifdef __cplusplus

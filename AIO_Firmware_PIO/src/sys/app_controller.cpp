@@ -13,6 +13,11 @@ const char *app_event_type_info[] = {"APP_MESSAGE_WIFI_CONN", "APP_MESSAGE_WIFI_
 
 volatile static bool isRunEventDeal = false;
 
+// TickType_t mainFormRefreshLastTime;
+// const TickType_t xDelay500ms = pdMS_TO_TICKS(500);
+// mainFormRefreshLastTime = xTaskGetTickCount();
+// vTaskDelayUntil(&mainFormRefreshLastTime, xDelay500ms);
+
 void eventDealHandle(TimerHandle_t xTimer)
 {
     isRunEventDeal = true;
@@ -27,7 +32,7 @@ AppController::AppController(const char *name)
     pre_app_index = 0;
     // appList = new APP_OBJ[APP_MAX_NUM];
     m_wifi_status = false;
-    m_preWifiReqMillis = millis();
+    m_preWifiReqMillis = GET_SYS_MILLIS();
 
     // 定义一个事件处理定时器
     xTimerEventDeal = xTimerCreate("Event Deal",
@@ -73,7 +78,7 @@ void AppController::Display()
 
 AppController::~AppController()
 {
-    led_thread_del();
+    rgb_stop();
 }
 
 int AppController::app_is_legal(const APP_OBJ *app_obj)
@@ -185,7 +190,7 @@ int AppController::main_process(ImuAction *act_info)
             app_control_display_scr(appList[cur_app_index]->app_image,
                                     appList[cur_app_index]->app_name,
                                     anim_type, false);
-            delay(300);
+            vTaskDelay(200 / portTICK_PERIOD_MS);
         }
     }
     else
@@ -270,7 +275,7 @@ int AppController::req_event_deal(void)
     // 请求事件的处理
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
-        if ((*event).nextRunTime > millis())
+        if ((*event).nextRunTime > GET_SYS_MILLIS())
         {
             ++event;
             continue;
@@ -285,14 +290,14 @@ int AppController::req_event_deal(void)
             {
                 // 多次重试失败
                 Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
-                event = eventList.erase(event); //删除该响应事件
+                event = eventList.erase(event); // 删除该响应事件
                 Serial.print(F("\tEventList Size: "));
                 Serial.println(eventList.size());
             }
             else
             {
                 // 下次重试
-                (*event).nextRunTime = millis() + 4000;
+                (*event).nextRunTime = GET_SYS_MILLIS() + 4000;
                 ++event;
             }
             continue;
@@ -329,7 +334,7 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
             g_network.start_conn_wifi(sys_cfg.ssid_0.c_str(), sys_cfg.password_0.c_str());
             m_wifi_status = true;
         }
-        m_preWifiReqMillis = millis();
+        m_preWifiReqMillis = GET_SYS_MILLIS();
         if ((WiFi.getMode() & WIFI_MODE_STA) == WIFI_MODE_STA && CONN_SUCC != g_network.end_conn_wifi())
         {
             // 在STA模式下 并且还没连接上wifi
@@ -342,7 +347,7 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
         // 更新请求
         g_network.open_ap(AP_SSID);
         m_wifi_status = true;
-        m_preWifiReqMillis = millis();
+        m_preWifiReqMillis = GET_SYS_MILLIS();
     }
     break;
     case APP_MESSAGE_WIFI_ALIVE:
@@ -350,14 +355,14 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
         // wifi开关的心跳 持续收到心跳 wifi才不会被关闭
         m_wifi_status = true;
         // 更新请求
-        m_preWifiReqMillis = millis();
+        m_preWifiReqMillis = GET_SYS_MILLIS();
     }
     break;
     case APP_MESSAGE_WIFI_DISCONN:
     {
         g_network.close_wifi();
         m_wifi_status = false; // 标志位
-        // m_preWifiReqMillis = millis() - WIFI_LIFE_CYCLE;
+        // m_preWifiReqMillis = GET_SYS_MILLIS() - WIFI_LIFE_CYCLE;
     }
     break;
     case APP_MESSAGE_UPDATE_TIME:
@@ -412,7 +417,7 @@ void AppController::app_exit()
     app_control_display_scr(appList[cur_app_index]->app_image,
                             appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
-                            
+
     // 恢复RGB灯  HSV色彩模式
     RgbConfig *cfg = &rgb_cfg;
     RgbParam rgb_setting = {LED_MODE_HSV,
@@ -421,7 +426,7 @@ void AppController::app_exit()
                             cfg->step_0, cfg->step_1, cfg->step_2,
                             cfg->min_brightness, cfg->max_brightness,
                             cfg->brightness_step, cfg->time};
-    set_rgb(&rgb_setting);
+    set_rgb_and_run(&rgb_setting);
 
     // 设置CPU主频
     if (1 == this->sys_cfg.power_mode)
