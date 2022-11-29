@@ -212,6 +212,7 @@ static void media_player_process(AppController *sys,
 
         // 创建播放
         video_start(true);
+        vTaskDelay(400 / portTICK_PERIOD_MS); // 暂缓播放 避免手抖
     }
 
     if (NULL == run_data->pfile)
