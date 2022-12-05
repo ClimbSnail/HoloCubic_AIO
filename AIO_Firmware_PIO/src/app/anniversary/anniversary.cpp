@@ -4,6 +4,8 @@
 #include "common.h"
 #include "sys/time.h"
 
+#if APP_ANNIVERSARY_USE
+
 #define ANNIVERSARY_APP_NAME "Anniversary"
 #define MAX_ANNIVERSARY_CNT 2
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
@@ -409,3 +411,5 @@ static void anniversary_message_handle(const char *from, const char *to,
 APP_OBJ anniversary_app = {ANNIVERSARY_APP_NAME, &app_anniversary, "Author Hu Qianjiang\nVersion 0.0.1\n",
                            anniversary_init, anniversary_process, anniversary_background_task,
                            anniversary_exit_callback, anniversary_message_handle};
+
+#endif

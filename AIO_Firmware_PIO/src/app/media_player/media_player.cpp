@@ -6,6 +6,8 @@
 #include "docoder.h"
 #include "DMADrawer.h"
 
+#if APP_MEDIA_PLAYER_USE
+
 #define MEDIA_PLAYER_APP_NAME "Media"
 
 #define VIDEO_WIDTH 240L
@@ -346,3 +348,5 @@ static void media_player_message_handle(const char *from, const char *to,
 APP_OBJ media_app = {MEDIA_PLAYER_APP_NAME, &app_movie, "",
                      media_player_init, media_player_process, media_player_background_task,
                      media_player_exit_callback, media_player_message_handle};
+
+#endif

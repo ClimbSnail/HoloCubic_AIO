@@ -29,6 +29,7 @@
 #include "app/anniversary/anniversary.h"
 #include "app/heartbeat/heartbeat.h"
 #include "app/stockmarket/stockmarket.h"
+#include "app/remote_sensor/remote_sensor.h"
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
@@ -145,21 +146,51 @@ void setup()
     app_controller->init();
 
     // 将APP"安装"到controller里
+#if APP_WEATHER_USE    
     app_controller->app_install(&weather_app);
+#endif
+#if APP_WEATHER_OLD_USE    
     app_controller->app_install(&weather_old_app);
+#endif
+#if APP_PICTURE_USE    
     app_controller->app_install(&picture_app);
+#endif
+#if APP_MEDIA_PLAYER_USE
     app_controller->app_install(&media_app);
+#endif
+#if APP_SCREEN_SHARE_USE
     app_controller->app_install(&screen_share_app);
+#endif
+#if APP_FILE_MANAGER_USE
     app_controller->app_install(&file_manager_app);
-    app_controller->app_install(&server_app);
-    app_controller->app_install(&idea_app);
-    app_controller->app_install(&bilibili_app);
-    app_controller->app_install(&settings_app);
-    app_controller->app_install(&game_2048_app);
-    app_controller->app_install(&anniversary_app);
-    app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
-    app_controller->app_install(&stockmarket_app);
+#endif   
 
+    app_controller->app_install(&server_app);
+    
+#if APP_IDEA_ANIM_USE
+    app_controller->app_install(&idea_app);
+#endif
+#if APP_BILIBILI_FANS_USE   
+    app_controller->app_install(&bilibili_app);
+#endif    
+#if APP_SETTING_USE
+    app_controller->app_install(&settings_app);
+#endif
+#if APP_GAME_2048_USE
+    app_controller->app_install(&game_2048_app);
+#endif
+#if APP_ANNIVERSARY_USE    
+    app_controller->app_install(&anniversary_app);
+#endif   
+#if APP_HEARTBEAT_USE
+    app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
+#endif
+#if APP_STOCK_MARKET_USE   
+    app_controller->app_install(&stockmarket_app);
+#endif
+#if APP_REMOTE_SENSOR_USE    
+    app_controller->app_install(&remote_sensor_app);
+#endif
     // 自启动APP
     app_controller->app_auto_start();
 

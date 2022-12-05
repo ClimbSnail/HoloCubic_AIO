@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include "ui_animation.h"
 
+#if APP_IDEA_ANIM_USE
+
 #define IDEA_APP_NAME "Idea"
 
 // 由于tft屏幕刷新太慢，现在是先开辟一块屏幕分辨率大小的空间作为一张需要显示的图像，
@@ -129,3 +131,5 @@ static void idea_message_handle(const char *from, const char *to,
 APP_OBJ idea_app = {IDEA_APP_NAME, &app_idea, "", idea_init,
                     idea_process, idea_background_task, idea_exit_callback,
                     idea_message_handle};
+
+#endif

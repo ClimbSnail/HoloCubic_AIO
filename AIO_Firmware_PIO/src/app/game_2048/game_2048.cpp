@@ -5,6 +5,8 @@
 #include "common.h"
 #include "freertos/semphr.h"
 
+#if APP_GAME_2048_USE
+
 #define G2048_APP_NAME "2048"
 
 void taskOne(void *parameter)
@@ -215,3 +217,5 @@ static void game_2048_message_handle(const char *from, const char *to,
 APP_OBJ game_2048_app = {G2048_APP_NAME, &app_game_2048, "",
                          game_2048_init, game_2048_process, game_2048_background_task,
                          game_2048_exit_callback, game_2048_message_handle};
+
+#endif
