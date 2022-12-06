@@ -3,6 +3,8 @@
 #include "sys/app_controller.h"
 #include "../../common.h"
 
+#if APP_BILIBILI_FANS_USE
+
 #define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
 #define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
 
@@ -268,3 +270,5 @@ static void bilibili_message_handle(const char *from, const char *to,
 APP_OBJ bilibili_app = {BILI_APP_NAME, &app_bilibili, "", bilibili_init,
                         bilibili_process, bilibili_background_task,
                         bilibili_exit_callback, bilibili_message_handle};
+                        
+#endif

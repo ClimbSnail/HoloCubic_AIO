@@ -3,6 +3,8 @@
 #include "sys/app_controller.h"
 #include "common.h"
 
+#if APP_PICTURE_USE
+
 // Include the jpeg decoder library
 #include <TJpg_Decoder.h>
 
@@ -258,3 +260,5 @@ static void picture_message_handle(const char *from, const char *to,
 APP_OBJ picture_app = {PICTURE_APP_NAME, &app_picture, "",
                        picture_init, picture_process, picture_background_task,
                        picture_exit_callback, picture_message_handle};
+
+#endif

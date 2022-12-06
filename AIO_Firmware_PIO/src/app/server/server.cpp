@@ -5,6 +5,7 @@
 #include "network.h"
 #include "common.h"
 
+
 #define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
 #define DNS_PORT 53                    // DNS端口
 WebServer server(80);
@@ -32,17 +33,40 @@ void start_web_config()
     server.on("/delete", File_Delete);
     server.on("/delete_result", delete_result);
 
+
     server.on("/sys_setting", sys_setting);
     server.on("/rgb_setting", rgb_setting);
+#if APP_WEATHER_USE
     server.on("/weather_setting", weather_setting);
+#endif
+#if APP_WEATHER_OLD_USE
     server.on("/weather_old_setting", weather_old_setting);
+#endif
+#if APP_BILIBILI_FANS_USE
     server.on("/bili_setting", bili_setting);
+#endif
+#if APP_STOCK_MARKET_USE
     server.on("/stock_setting", stock_setting);
+#endif
+#if APP_PICTURE_USE
     server.on("/picture_setting", picture_setting);
+#endif
+#if APP_MEDIA_PLAYER_USE 
     server.on("/media_setting", media_setting);
+#endif
+#if APP_SCREEN_SHARE_USE
     server.on("/screen_setting", screen_setting);
+#endif
+#if APP_HEARTBEAT_USE
     server.on("/heartbeat_setting", heartbeat_setting);
+#endif
+#if APP_ANNIVERSARY_USE
     server.on("/anniversary_setting", anniversary_setting);
+#endif
+#if APP_REMOTE_SENSOR_USE
+    server.on("/remote_sensor_setting", remote_sensor_setting);
+#endif
+
     server.on(
         "/fupload", HTTP_POST,
         []()
@@ -52,15 +76,36 @@ void start_web_config()
     // 连接
     server.on("/saveSysConf", saveSysConf);
     server.on("/saveRgbConf", saveRgbConf);
+#if APP_WEATHER_USE    
     server.on("/saveWeatherConf", saveWeatherConf);
+#endif 
+#if APP_WEATHER_OLD_USE
     server.on("/saveWeatherOldConf", saveWeatherOldConf);
+#endif
+#if APP_BILIBILI_FANS_USE
     server.on("/saveBiliConf", saveBiliConf);
+#endif
+#if APP_STOCK_MARKET_USE
     server.on("/saveStockConf", saveStockConf);
+#endif
+#if APP_PICTURE_USE
     server.on("/savePictureConf", savePictureConf);
+#endif
+#if APP_MEDIA_PLAYER_USE 
     server.on("/saveMediaConf", saveMediaConf);
+#endif
+#if APP_SCREEN_SHARE_USE
     server.on("/saveScreenConf", saveScreenConf);
+#endif
+#if APP_HEARTBEAT_USE
     server.on("/saveHeartbeatConf", saveHeartbeatConf);
+#endif
+#if APP_ANNIVERSARY_USE
     server.on("/saveAnniversaryConf", saveAnniversaryConf);
+#endif
+#if APP_REMOTE_SENSOR_USE
+    server.on("/saveRemoteSensorConf", saveRemoteSensorConf);
+#endif
 
     server.begin();
     // MDNS.addService("http", "tcp", 80);

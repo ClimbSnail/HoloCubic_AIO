@@ -13,6 +13,7 @@
 #include "driver/ambient.h"
 #include "driver/imu.h"
 #include "network.h"
+#include "app/app_conf.h"
 
 // MUP6050
 #define IMU_I2C_SDA 32
