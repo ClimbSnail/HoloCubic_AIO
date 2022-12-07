@@ -5,6 +5,7 @@
 #include "common.h"
 #include "server.h"
 #include "web_setting.h"
+#include "app/app_conf.h"
 #include "FS.h"
 #include "HardwareSerial.h"
 #include <esp32-hal.h>
@@ -89,10 +90,10 @@ String file_size(int bytes)
                          "<label class=\"input\"><span>数据更新周期（毫秒）</span><input type=\"text\"name=\"updataInterval\"value=\"%s\"></label>" \
                          "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define STOCK_SETTING "<form method=\"GET\" action=\"saveStockConf\">"                                                                                      \
-                         "<label class=\"input\"><span>股票代码,例如：sz000001或sh601126</span><input type=\"text\"name=\"stock_id\"value=\"%s\"></label>"                             \
-                         "<label class=\"input\"><span>数据更新周期（毫秒）</span><input type=\"text\"name=\"updataInterval\"value=\"%s\"></label>" \
-                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+#define STOCK_SETTING "<form method=\"GET\" action=\"saveStockConf\">"                                                                                          \
+                      "<label class=\"input\"><span>股票代码,例如：sz000001或sh601126</span><input type=\"text\"name=\"stock_id\"value=\"%s\"></label>" \
+                      "<label class=\"input\"><span>数据更新周期（毫秒）</span><input type=\"text\"name=\"updataInterval\"value=\"%s\"></label>"      \
+                      "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define PICTURE_SETTING "<form method=\"GET\" action=\"savePictureConf\">"                                                                                         \
                         "<label class=\"input\"><span>自动切换时间间隔（毫秒）</span><input type=\"text\"name=\"switchInterval\"value=\"%s\"></label>" \
@@ -124,10 +125,10 @@ String file_size(int bytes)
                             "<label class=\"input\"><span>日期1</span><input type=\"text\"name=\"target_date1\"value=\"%s\"></label>" \
                             "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define REMOTR_SENSOR_SETTING "<form method=\"GET\" action=\"saveRemoteSensorConf\">"                                                      \
-                            "<label class=\"input\"><span>PC地址</span><input type=\"text\"name=\"pc_ipaddr\"value=\"%s\"></label>"  \
-                            "<label class=\"input\"><span>传感器数据更新间隔(ms)</span><input type=\"text\"name=\"sensorUpdataInterval\"value=\"%s\"></label>" \
-                            "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
+#define REMOTR_SENSOR_SETTING "<form method=\"GET\" action=\"savePCResourceConf\">"                                                                                       \
+                              "<label class=\"input\"><span>PC地址</span><input type=\"text\"name=\"pc_ipaddr\"value=\"%s\"></label>"                                   \
+                              "<label class=\"input\"><span>传感器数据更新间隔(ms)</span><input type=\"text\"name=\"sensorUpdataInterval\"value=\"%s\"></label>" \
+                              "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 void init_page_header()
 {
@@ -173,14 +174,14 @@ void init_page_header()
     webpage_header += F("<li><a href='/download'>Download</a></li>");
     webpage_header += F("<li><a href='/upload'>Upload</a></li>");
     webpage_header += F("<li><a href='/delete'>Delete</a></li>");
-    
+
     webpage_header += F("<li><a href='/sys_setting'>系统设置</a></li>");
-    
+
     webpage_header += F("<li><a href='/rgb_setting'>RGB设置</a></li>");
-#if APP_WEATHER_USE    
+#if APP_WEATHER_USE
     webpage_header += F("<li><a href='/weather_setting'>新版天气</a></li>");
 #endif
-#if APP_WEATHER_OLD_USE    
+#if APP_WEATHER_OLD_USE
     webpage_header += F("<li><a href='/weather_old_setting'>旧版天气</a></li>");
 #endif
 #if APP_BILIBILI_FANS_USE
@@ -189,10 +190,10 @@ void init_page_header()
 #if APP_PICTURE_USE
     webpage_header += F("<li><a href='/picture_setting'>相册</a></li>");
 #endif
-#if APP_MEDIA_PLAYER_USE    
+#if APP_MEDIA_PLAYER_USE
     webpage_header += F("<li><a href='/media_setting'>媒体播放器</a></li>");
 #endif
-#if APP_SCREEN_SHARE_USE    
+#if APP_SCREEN_SHARE_USE
     webpage_header += F("<li><a href='/screen_setting'>屏幕分享</a></li>");
 #endif
 #if APP_HEARTBEAT_USE
@@ -204,9 +205,9 @@ void init_page_header()
 #if APP_STOCK_MARKET_USE
     webpage_header += F("<li><a href='/stock_setting'>股票行情</a></li>");
 #endif
-#if APP_REMOTE_SENSOR_USE    
-    webpage_header += F("<li><a href='/remote_sensor_setting'>遥感器</a></li>");
-#endif   
+#if APP_PC_RESOURCE_USE
+    webpage_header += F("<li><a href='/pc_resource_setting'>PC资源监控</a></li>");
+#endif
     webpage_header += F("</ul>");
 }
 
@@ -384,7 +385,6 @@ void bili_setting()
     Send_HTML(webpage);
 }
 
-
 void stock_setting()
 {
     char buf[2048];
@@ -505,17 +505,17 @@ void anniversary_setting()
     Send_HTML(webpage);
 }
 
-void remote_sensor_setting()
+void pc_resource_setting()
 {
     char buf[2048];
     char pc_ipaddr[32];
     char sensorUpdataInterval[32];
     // 读取数据
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor", APP_MESSAGE_READ_CFG,
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor", APP_MESSAGE_GET_PARAM,
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource", APP_MESSAGE_GET_PARAM,
                             (void *)"pc_ipaddr", pc_ipaddr);
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor", APP_MESSAGE_GET_PARAM,
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource", APP_MESSAGE_GET_PARAM,
                             (void *)"sensorUpdataInterval", sensorUpdataInterval);
     sprintf(buf, REMOTR_SENSOR_SETTING, pc_ipaddr, sensorUpdataInterval);
     webpage = buf;
@@ -774,19 +774,19 @@ void saveAnniversaryConf(void)
                             NULL, NULL);
 }
 
-void saveRemoteSensorConf(void)
+void savePCResourceConf(void)
 {
     Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor",
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"pc_ipaddr",
                             (void *)server.arg("pc_ipaddr").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor",
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"sensorUpdataInterval",
                             (void *)server.arg("sensorUpdataInterval").c_str());
     // 持久化数据
-    app_controller->send_to(SERVER_APP_NAME, "Remote Sensor", APP_MESSAGE_WRITE_CFG,
+    app_controller->send_to(SERVER_APP_NAME, "PC Resource", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
 }
 

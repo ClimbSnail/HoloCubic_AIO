@@ -3,8 +3,6 @@
 #include "sys/app_controller.h"
 #include "../../common.h"
 
-#if APP_STOCK_MARKET_USE
-
 // STOCKmarket的持久化配置
 #define B_CONFIG_PATH "/stockmarket.cfg"
 struct B_Config
@@ -293,5 +291,3 @@ static void stockmarket_message_handle(const char *from, const char *to,
 APP_OBJ stockmarket_app = {STOCK_APP_NAME, &app_stockmarket, "", stockmarket_init,
                            stockmarket_process, stockmarket_background_task,
                            stockmarket_exit_callback, stockmarket_message_handle};
-
-#endif

@@ -6,8 +6,6 @@
 #include "common.h"
 #include "ESP32FtpServer.h"
 
-#if APP_FILE_MANAGER_USE
-
 #define FILE_MANAGER_APP_NAME "File Manager"
 
 #define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
@@ -156,7 +154,4 @@ static void file_maneger_message_handle(const char *from, const char *to,
 APP_OBJ file_manager_app = {FILE_MANAGER_APP_NAME, &app_file_manager, "",
                             file_maneger_init, file_maneger_process, file_maneger_background_task,
                             file_maneger_exit_callback, file_maneger_message_handle};
-
-
-#endif
                             

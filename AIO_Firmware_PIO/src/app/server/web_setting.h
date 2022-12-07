@@ -26,7 +26,7 @@ void media_setting(void);
 void screen_setting(void);
 void heartbeat_setting(void);
 void anniversary_setting(void);
-void remote_sensor_setting();
+void pc_resource_setting();
 
 void saveSysConf(void);
 void saveRgbConf(void);
@@ -39,7 +39,7 @@ void saveMediaConf(void);
 void saveScreenConf(void);
 void saveHeartbeatConf(void);
 void saveAnniversaryConf(void);
-void saveRemoteSensorConf(void);
+void savePCResourceConf(void);
 
 void sd_file_download(const String &filename);
 void SelectInput(String heading, String command, String arg_calling_name);

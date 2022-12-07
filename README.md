@@ -13,6 +13,7 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 * 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
 * BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
 * 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
+* 遥感器应用开发：[Jumping99](https://github.com/Jumping99)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群**_
@@ -167,10 +168,17 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 
 注：程序由`redwolf`编写
 
+##### PC资源监控(PC Resource)
+1.运行条件: 必须是已经正常配置wifi。PC端与HoloCubic处于同一网段，在`WebServer APP`中这只PC的服务IP地址（具体看教程）。
+2.下载[AIDA64](https://www.aida64.com/downloads)，安装AIDA64后的导入配置文件`aida64_setting.rslcd`（在`AIO_Firmware_PIO\src\app\pc_resource`目录下或者群文件中）
+
+注：具体操作步骤较长，见群文档。本应用由`Jumping99`开发。
+
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. 记得修改工程下`platformio.ini`文件中`upload_port`字段成对应自己COMM口。
-3. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
+3. 如果希望屏蔽掉内置的部分文件，请在`AIO_Firmware_PIO\src\app\app_conf.h`中对应的`APP宏`修改为`0`即可屏蔽。
+4. 目前最新版本已经不需要大家特意修改SPI库中的SPI引脚了，本工程的`lib`下单独放置了一个已经修改好了SPI引脚的SPI库。以下是此前版本的操作（可忽略）
 
 ~~然后这里需要修改一个官方库文件才能正常使用(不然会导致内存卡读取失败)：
 PlatformIO和ArduinoIDE用户都需安装ESP32的Arduino固件支持包（百度有海量教程）。不管哪种开发方式都需要修改`SPI`库中的`MISO`默认引脚为`26`，例如arduinoIDE的包路径为`esp32\hardware\esp32\1.0.4\libraries\SPI\src\SPI.cpp`文件中，**修改以下代码中的MISO为26**：~~

@@ -5,8 +5,6 @@
 #include "network.h"
 #include <PubSubClient.h>
 
-#if APP_HEARTBEAT_USE
-
 #define HEARTBEAT_APP_NAME "Heartbeat"
 
 #define DEFALUT_MQTT_IP "120.79.216.105"
@@ -496,5 +494,3 @@ static void heartbeat_message_handle(const char *from, const char *to,
 APP_OBJ heartbeat_app = {HEARTBEAT_APP_NAME, &app_heartbeat, "Author WoodwindHu\nVersion 2.0.0\n",
                          heartbeat_init, heartbeat_process, heartbeat_background_task,
                          heartbeat_exit_callback, heartbeat_message_handle};
-
-#endif

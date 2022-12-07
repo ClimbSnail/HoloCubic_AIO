@@ -4,8 +4,6 @@
 #include "sys/app_controller.h"
 #include "common.h"
 
-#if APP_SETTING_USE
-
 #define SETTINGS_APP_NAME "Settings"
 #define RECV_BUF_LEN 128
 
@@ -260,5 +258,3 @@ static void settings_message_handle(const char *from, const char *to,
 APP_OBJ settings_app = {SETTINGS_APP_NAME, &app_settings, "",
                         settings_init, settings_process, settings_background_task,
                         settings_exit_callback, settings_message_handle};
-
-#endif

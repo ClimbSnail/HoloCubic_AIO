@@ -15,21 +15,7 @@
 #include "common.h"
 #include "sys/app_controller.h"
 
-#include "app/weather/weather.h"
-#include "app/bilibili_fans/bilibili.h"
-#include "app/server/server.h"
-#include "app/idea_anim/idea.h"
-#include "app/settings/settings.h"
-#include "app/game_2048/game_2048.h"
-#include "app/picture/picture.h"
-#include "app/media_player/media_player.h"
-#include "app/screen_share/screen_share.h"
-#include "app/file_manager/file_manager.h"
-#include "app/weather_old/weather_old.h"
-#include "app/anniversary/anniversary.h"
-#include "app/heartbeat/heartbeat.h"
-#include "app/stockmarket/stockmarket.h"
-#include "app/remote_sensor/remote_sensor.h"
+#include "app/app_conf.h"
 
 #include <SPIFFS.h>
 #include <esp32-hal.h>
@@ -38,7 +24,7 @@
 static bool isCheckAction = false;
 
 /*** Component objects **7*/
-ImuAction *act_info; // 存放mpu6050返回的数据
+ImuAction *act_info;           // 存放mpu6050返回的数据
 AppController *app_controller; // APP控制器
 
 TaskHandle_t handleTaskLvgl;
@@ -146,13 +132,13 @@ void setup()
     app_controller->init();
 
     // 将APP"安装"到controller里
-#if APP_WEATHER_USE    
+#if APP_WEATHER_USE
     app_controller->app_install(&weather_app);
 #endif
-#if APP_WEATHER_OLD_USE    
+#if APP_WEATHER_OLD_USE
     app_controller->app_install(&weather_old_app);
 #endif
-#if APP_PICTURE_USE    
+#if APP_PICTURE_USE
     app_controller->app_install(&picture_app);
 #endif
 #if APP_MEDIA_PLAYER_USE
@@ -163,33 +149,33 @@ void setup()
 #endif
 #if APP_FILE_MANAGER_USE
     app_controller->app_install(&file_manager_app);
-#endif   
+#endif
 
     app_controller->app_install(&server_app);
-    
+
 #if APP_IDEA_ANIM_USE
     app_controller->app_install(&idea_app);
 #endif
-#if APP_BILIBILI_FANS_USE   
+#if APP_BILIBILI_FANS_USE
     app_controller->app_install(&bilibili_app);
-#endif    
+#endif
 #if APP_SETTING_USE
     app_controller->app_install(&settings_app);
 #endif
 #if APP_GAME_2048_USE
     app_controller->app_install(&game_2048_app);
 #endif
-#if APP_ANNIVERSARY_USE    
+#if APP_ANNIVERSARY_USE
     app_controller->app_install(&anniversary_app);
-#endif   
+#endif
 #if APP_HEARTBEAT_USE
     app_controller->app_install(&heartbeat_app, APP_TYPE_BACKGROUND);
 #endif
-#if APP_STOCK_MARKET_USE   
+#if APP_STOCK_MARKET_USE
     app_controller->app_install(&stockmarket_app);
 #endif
-#if APP_REMOTE_SENSOR_USE    
-    app_controller->app_install(&remote_sensor_app);
+#if APP_PC_RESOURCE_USE
+    app_controller->app_install(&pc_resource_app);
 #endif
     // 自启动APP
     app_controller->app_auto_start();

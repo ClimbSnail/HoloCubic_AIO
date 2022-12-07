@@ -8,8 +8,6 @@
 #include <esp32-hal-timer.h>
 #include <map>
 
-#if APP_WEATHER_USE
-
 #define WEATHER_APP_NAME "Weather"
 #define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
 #define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
@@ -557,5 +555,3 @@ static void weather_message_handle(const char *from, const char *to,
 APP_OBJ weather_app = {WEATHER_APP_NAME, &app_weather, "",
                        weather_init, weather_process, weather_background_task,
                        weather_exit_callback, weather_message_handle};
-
-#endif

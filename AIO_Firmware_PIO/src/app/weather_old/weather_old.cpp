@@ -5,8 +5,6 @@
 #include "network.h"
 #include "common.h"
 
-#if APP_WEATHER_OLD_USE
-
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp"
 #define ZHIXIN_WEATHER_API "https://api.seniverse.com/v3/weather/now.json?key=%s&location=%s&language=%s&unit=c"
 #define WEATHER_PAGE_SIZE 2
@@ -407,5 +405,3 @@ static void weather_message_handle(const char *from, const char *to,
 APP_OBJ weather_old_app = {WEATHER_OLD_APP_NAME, &app_weather_old, "",
                            weather_init, weather_process, weather_background_task,
                            weather_exit_callback, weather_message_handle};
-
-#endif

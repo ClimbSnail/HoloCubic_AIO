@@ -4,8 +4,6 @@
 #include <TJpg_Decoder.h>
 #include "sys/app_controller.h"
 
-#if APP_SCREEN_SHARE_USE
-
 #define SCREEN_SHARE_APP_NAME "Screen share"
 
 #define JPEG_BUFFER_SIZE 1       // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
@@ -454,5 +452,3 @@ static void screen_message_handle(const char *from, const char *to,
 APP_OBJ screen_share_app = {SCREEN_SHARE_APP_NAME, &app_screen, "",
                             screen_share_init, screen_share_process, screen_background_task,
                             screen_exit_callback, screen_message_handle};
-
-#endif

@@ -2,9 +2,9 @@
 #include "server_gui.h"
 #include "web_setting.h"
 #include "sys/app_controller.h"
+#include "app/app_conf.h"
 #include "network.h"
 #include "common.h"
-
 
 #define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
 #define DNS_PORT 53                    // DNS端口
@@ -33,7 +33,6 @@ void start_web_config()
     server.on("/delete", File_Delete);
     server.on("/delete_result", delete_result);
 
-
     server.on("/sys_setting", sys_setting);
     server.on("/rgb_setting", rgb_setting);
 #if APP_WEATHER_USE
@@ -51,7 +50,7 @@ void start_web_config()
 #if APP_PICTURE_USE
     server.on("/picture_setting", picture_setting);
 #endif
-#if APP_MEDIA_PLAYER_USE 
+#if APP_MEDIA_PLAYER_USE
     server.on("/media_setting", media_setting);
 #endif
 #if APP_SCREEN_SHARE_USE
@@ -63,8 +62,8 @@ void start_web_config()
 #if APP_ANNIVERSARY_USE
     server.on("/anniversary_setting", anniversary_setting);
 #endif
-#if APP_REMOTE_SENSOR_USE
-    server.on("/remote_sensor_setting", remote_sensor_setting);
+#if APP_PC_RESOURCE_USE
+    server.on("/pc_resource_setting", pc_resource_setting);
 #endif
 
     server.on(
@@ -76,9 +75,9 @@ void start_web_config()
     // 连接
     server.on("/saveSysConf", saveSysConf);
     server.on("/saveRgbConf", saveRgbConf);
-#if APP_WEATHER_USE    
+#if APP_WEATHER_USE
     server.on("/saveWeatherConf", saveWeatherConf);
-#endif 
+#endif
 #if APP_WEATHER_OLD_USE
     server.on("/saveWeatherOldConf", saveWeatherOldConf);
 #endif
@@ -91,7 +90,7 @@ void start_web_config()
 #if APP_PICTURE_USE
     server.on("/savePictureConf", savePictureConf);
 #endif
-#if APP_MEDIA_PLAYER_USE 
+#if APP_MEDIA_PLAYER_USE
     server.on("/saveMediaConf", saveMediaConf);
 #endif
 #if APP_SCREEN_SHARE_USE
@@ -103,8 +102,8 @@ void start_web_config()
 #if APP_ANNIVERSARY_USE
     server.on("/saveAnniversaryConf", saveAnniversaryConf);
 #endif
-#if APP_REMOTE_SENSOR_USE
-    server.on("/saveRemoteSensorConf", saveRemoteSensorConf);
+#if APP_PC_RESOURCE_USE
+    server.on("/savePCResourceConf", savePCResourceConf);
 #endif
 
     server.begin();
