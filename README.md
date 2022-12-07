@@ -13,7 +13,7 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 * 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
 * BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
 * 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
-* 遥感器应用开发：[Jumping99](https://github.com/Jumping99)
+* PC资源监控应用开发：[Jumping99](https://github.com/Jumping99)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群**_
