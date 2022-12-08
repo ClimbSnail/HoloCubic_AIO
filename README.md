@@ -27,7 +27,7 @@ _**欢迎加入AIO内测QQ讨论群**_
 
 ### 主要特点
 1. 聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、电脑投屏、web设置等等。（各APP具体使用参考说明书）
-2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动。
+2. 开机无论是否插接tf卡、mpu6050是否焊接正常、是否连接wifi（一定要2.4G的wifi），都不影响系统启动和屏幕显示。
 3. 程序相对模块化，低耦合。
 4. 提供web界面进行配网以及其他设置选项。注：具体操作参考`APP介绍`
 5. 提供web端连入除了支持ip访问，也支持域名直接访问 http://holocubic （部分浏览器可能支持不好）
@@ -169,8 +169,8 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 注：程序由`redwolf`编写
 
 ##### PC资源监控(PC Resource)
-1.运行条件: 必须是已经正常配置wifi。PC端与HoloCubic处于同一网段，在`WebServer APP`中这只PC的服务IP地址（具体看教程）。
-2.下载[AIDA64](https://www.aida64.com/downloads)，安装AIDA64后的导入配置文件`aida64_setting.rslcd`（在`AIO_Firmware_PIO\src\app\pc_resource`目录下或者群文件中）
+1. 运行条件: 必须是已经正常配置wifi。PC端与HoloCubic处于同一网段，在`WebServer APP`中这只PC的服务IP地址（具体看教程）。
+2. 下载[AIDA64](https://www.aida64.com/downloads)，PC安装AIDA64后的导入配置文件`aida64_setting.rslcd`（在`AIO_Firmware_PIO\src\app\pc_resource`目录下或者群文件中）
 
 注：具体操作步骤较长，见群文档。本应用由`Jumping99`开发。
 
