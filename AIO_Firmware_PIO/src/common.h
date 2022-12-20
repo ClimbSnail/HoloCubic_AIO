@@ -14,6 +14,12 @@
 #include "driver/imu.h"
 #include "network.h"
 
+// SD_Card
+#define SD_SCK 14
+#define SD_MISO 26
+#define SD_MOSI 13
+#define SD_SS 15
+
 // MUP6050
 #define IMU_I2C_SDA 32
 #define IMU_I2C_SCL 33
