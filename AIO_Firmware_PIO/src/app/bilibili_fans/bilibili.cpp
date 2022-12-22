@@ -105,7 +105,7 @@ static int bilibili_init(AppController *sys)
 static void bilibili_process(AppController *sys,
                              const ImuAction *act_info)
 {
-    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_FADE_ON;
+    lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
     {
         sys->app_exit(); // 退出APP
@@ -136,7 +136,6 @@ static void bilibili_process(AppController *sys,
 
     if (0 == run_data->refresh_status)
     {
-        display_bilibili("bilibili", anim_type, fans_num, follow_num);
         // 以下减少网络请求的压力
         if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
         {
@@ -144,10 +143,8 @@ static void bilibili_process(AppController *sys,
                          APP_MESSAGE_WIFI_CONN, NULL, NULL);
         }
     }
-    else
-    {
-        display_bilibili("bilibili", anim_type, fans_num, follow_num);
-    }
+
+    display_bilibili("bilibili", anim_type, fans_num, follow_num);
 
     delay(300);
 }
