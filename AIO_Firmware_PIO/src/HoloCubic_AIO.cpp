@@ -1,12 +1,13 @@
 /***************************************************
   HoloCubic多功能固件源码
+  （项目中若参考本工程源码，请注明参考来源）
 
   聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、视频投影、
   浏览器文件修改。（各APP具体使用参考说明书）
 
   Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
 
-  Last review/edit by ClimbSnail: 2021/08/21
+  Last review/edit by ClimbSnail: 2023/01/14
  ****************************************************/
 
 #include "driver/lv_port_indev.h"

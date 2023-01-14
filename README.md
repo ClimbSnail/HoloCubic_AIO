@@ -1,7 +1,11 @@
 # HoloCubic_AIO (All in one for HoloCubic)
 ### _You can also read a translated version of this file [in English 英文版](https://github.com/ClimbSnail/HoloCubic_AIO/blob/main/README_English.md) or [in Korean 한국어](./README_English.md)._
 
+`Holocubic`原为`稚晖君`大佬的开源项目，本项目则是运行在`HoloCubic硬件`之上的第三方独立固件项目。
+
 AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件中，并坚持开源。目前固件源码达`2w+`行，上位机源码`4k`行（均不含字库图片），诚邀大家共同开发AIO固件、上位机以及周边，让固件满足更多人的需求。
+
+此外，本固件代码完全开源，共大家学习、把玩，若使用本项目二次开源或部分参考，请适当注明参考来源。
 
 * 原作者的项目链接 https://github.com/peng-zhihui/HoloCubic
 * 本项目的地址 https://github.com/ClimbSnail/HoloCubic_AIO （最新版本）

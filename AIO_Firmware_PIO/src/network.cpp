@@ -115,12 +115,17 @@ boolean Network::end_conn_wifi(void)
 
 boolean Network::close_wifi(void)
 {
+    if(WiFi.getMode() & WIFI_MODE_AP)
+    {
+        WiFi.enableAP(false);
+        Serial.println(F("AP shutdowm"));
+    }
+
     if (!WiFi.disconnect())
     {
         return false;
     }
     WiFi.enableSTA(false);
-    WiFi.enableAP(false);
     WiFi.mode(WIFI_MODE_NULL);
     // esp_wifi_set_inactive_time(ESP_IF_ETH, 10); //设置暂时休眠时间
     // esp_wifi_get_ant(wifi_ant_config_t * config);                   //获取暂时休眠时间

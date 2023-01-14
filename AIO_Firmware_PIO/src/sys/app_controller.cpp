@@ -196,8 +196,8 @@ int AppController::main_process(ImuAction *act_info)
     else
     {
         app_control_display_scr(appList[cur_app_index]->app_image,
-                                    appList[cur_app_index]->app_name,
-                                    LV_SCR_LOAD_ANIM_NONE, false);
+                                appList[cur_app_index]->app_name,
+                                LV_SCR_LOAD_ANIM_NONE, false);
         // 运行APP进程 等效于把控制权交给当前APP
         (*(appList[cur_app_index]->main_process))(this, act_info);
     }
