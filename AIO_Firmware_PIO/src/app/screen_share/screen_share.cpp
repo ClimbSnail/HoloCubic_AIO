@@ -449,6 +449,20 @@ static void screen_message_handle(const char *from, const char *to,
     }
 }
 
+static int screen_suspend(AppController *sys){
+
+    screen_share_gui_del();
+    return 0;
+}
+
+static int screen_activate(AppController *sys){
+
+    screen_share_gui_init();
+
+    return 0;
+}
+
 APP_OBJ screen_share_app = {SCREEN_SHARE_APP_NAME, &app_screen, "",
                             screen_share_init, screen_share_process, screen_background_task,
-                            screen_exit_callback, screen_message_handle};
+                            screen_exit_callback, screen_message_handle,
+                            screen_suspend,screen_activate};

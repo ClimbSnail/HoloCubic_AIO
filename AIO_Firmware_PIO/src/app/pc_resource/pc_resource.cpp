@@ -326,6 +326,23 @@ static void pc_resource_message_handle(const char *from, const char *to,
     }
 }
 
+
+static int resource_suspend(AppController *sys){
+
+
+    pc_resource_gui_release();
+
+    return 0;
+}
+
+
+static int resource_activate(AppController *sys){
+    display_pc_resource_gui_init();
+
+    return 0;
+}
+
 APP_OBJ pc_resource_app = {PC_RESOURCE_APP_NAME, &app_pc_resource, "",
                            pc_resource_init, pc_resource_process, pc_resource_background_task,
-                           pc_resource_exit_callback, pc_resource_message_handle};
+                           pc_resource_exit_callback, pc_resource_message_handle,
+                           resource_suspend,resource_activate};

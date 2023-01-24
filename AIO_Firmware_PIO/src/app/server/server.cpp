@@ -153,6 +153,10 @@ static void server_process(AppController *sys,
             "Wait...", "Wait...",
             // "", "",
             LV_SCR_LOAD_ANIM_NONE);
+
+//
+//        sys->send_to(SERVER_APP_NAME,CTRL_NAME,
+//                    APP_MESSAGE_WIFI_CONN,NULL,NULL);
         // 如果web服务没有开启 且 ap开启的请求没有发送 message这边没有作用（填0）
         sys->send_to(SERVER_APP_NAME, CTRL_NAME,
                      APP_MESSAGE_WIFI_AP, NULL, NULL);
@@ -227,6 +231,23 @@ static void server_message_handle(const char *from, const char *to,
     }
 }
 
+static int server_suspend(AppController *sys){
+
+    setting_gui_del();
+
+    return 0;
+}
+
+static int server_activate(AppController *sys){
+
+
+    server_gui_init();
+
+    return 0;
+}
+
+
 APP_OBJ server_app = {SERVER_APP_NAME, &app_server, "",
                       server_init, server_process, server_background_task,
-                      server_exit_callback, server_message_handle};
+                      server_exit_callback, server_message_handle,
+                      server_suspend,server_activate};

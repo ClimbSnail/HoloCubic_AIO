@@ -273,6 +273,8 @@ static void UpdateTime_RTC(long long timestamp)
 
 static int weather_init(AppController *sys)
 {
+
+
     tft->setSwapBytes(true);
     weather_gui_init();
     // 获取配置信息
@@ -552,6 +554,17 @@ static void weather_message_handle(const char *from, const char *to,
     }
 }
 
+//挂起app时要先将gui释放，否则会影响下一个应用gui的绘制
+static int weather_suspend(AppController *sys){
+    weather_gui_del();
+    return 1;
+}
+//重新开始绘制gui，以正常展示页面
+static int weather_activate(AppController *sys){
+    weather_gui_init();
+    return 1;
+}
+
 APP_OBJ weather_app = {WEATHER_APP_NAME, &app_weather, "",
                        weather_init, weather_process, weather_background_task,
-                       weather_exit_callback, weather_message_handle};
+                       weather_exit_callback, weather_message_handle,weather_suspend,weather_activate};

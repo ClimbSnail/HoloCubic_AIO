@@ -406,6 +406,23 @@ static void anniversary_message_handle(const char *from, const char *to,
     }
 }
 
+
+
+static int anniversary_suspend(AppController *sys){
+
+    anniversary_gui_del();
+
+    return 0;
+}
+
+static int anniversary_activate(AppController *sys){
+
+    anniversary_gui_init();
+
+    return 0;
+}
+
 APP_OBJ anniversary_app = {ANNIVERSARY_APP_NAME, &app_anniversary, "Author Hu Qianjiang\nVersion 0.0.1\n",
                            anniversary_init, anniversary_process, anniversary_background_task,
-                           anniversary_exit_callback, anniversary_message_handle};
+                           anniversary_exit_callback, anniversary_message_handle,
+                           anniversary_suspend,anniversary_activate};

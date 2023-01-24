@@ -10,6 +10,8 @@ static lv_obj_t *now_app_image = NULL;
 static lv_obj_t *now_app_name = NULL;
 const void *pre_img_path = NULL;
 
+
+
 static lv_style_t default_style;
 static lv_style_t app_name_style;
 

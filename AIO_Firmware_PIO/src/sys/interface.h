@@ -57,6 +57,11 @@ struct APP_OBJ
     void (*message_handle)(const char *from, const char *to,
                            APP_MESSAGE_TYPE type, void *message,
                            void *ext_info);
+
+    // 当另一进程进入时，挂起当前进程前要执行的操作
+    int (*suspend)(AppController *sys);
+    // 当前台进程退出时，重新调度当前进程
+    int (*activate)(AppController *sys);
 };
 
 #endif

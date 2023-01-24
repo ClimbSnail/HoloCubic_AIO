@@ -1,3 +1,27 @@
+# HeloCubic_AIO 小王同学版
+1. 增加了全局MQTT消息进程，并以多线程的形式运行在后台
+2. 强制开启AP和STA模式，并且无法关闭（MQTT相关全局功能的强制要求）
+3. 增加了番茄钟（非本人制作，但有部分优化）
+4. 增加了进程栈，外部程序唤醒的程序可以在当前程序之上直接运行，并且保存原来进程的状态
+5. 自我修改，关闭了部分自己用不到的功能
+6. 增加了Mood应用，即可以远程唤醒HoloCubic来展示自己的心情，并且不会销毁当前运行的程序
+
+---
+
+## MQTT使用教程
+> 请自己申请华为云或其他平台的物联网通信，本程序使用华为云物联网平台进行MQTT通讯
+
+1. 申请华为云物联网平台，并在模型定义中添加命令：send_mood
+2. 命令中请添加int型下发参数now_mood
+3. 在华为云平台中手动添加新设备
+4. 在MyMQTT.h中修改参数，包括：mqtt服务接口,设备id，mqtt用户名密码,属性上报topic
+5. 将mood文件夹复制到sd卡中
+
+
+分割线，以下内容为原版介绍
+
+---
+
 # HoloCubic_AIO (All in one for HoloCubic)
 ### _You can also read a translated version of this file [in English 英文版](https://github.com/ClimbSnail/HoloCubic_AIO/blob/main/README_English.md) or [in Korean 한국어](./README_English.md)._
 

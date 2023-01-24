@@ -404,4 +404,4 @@ static void weather_message_handle(const char *from, const char *to,
 
 APP_OBJ weather_old_app = {WEATHER_OLD_APP_NAME, &app_weather_old, "",
                            weather_init, weather_process, weather_background_task,
-                           weather_exit_callback, weather_message_handle};
+                           weather_exit_callback, weather_message_handle,NULL,NULL};
