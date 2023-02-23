@@ -26,7 +26,8 @@ import re
 
 STRGLO = ""  # 读取的数据
 BOOL = True  # 读取标志位
-VERSION_INFO_URL = "https://gitee.com/ClimbSnailQ/HoloCubic_AIO/blob/main/HoloCubic_Firmware/src/common.h"
+VERSION_INFO_URL = "https://gitee.com/ClimbSnailQ/HoloCubic_AIO/blob/main/AIO_Firmware_PIO/src/common.h"
+# VERSION_INFO_URL = "https://github.com/ClimbSnail/HoloCubic_AIO/blob/main/AIO_Firmware_PIO/src/common.h"
 
 class DownloadDebug(object):
     """
@@ -114,7 +115,7 @@ class DownloadDebug(object):
     def display_version(self):
         self.m_version_info["state"] = tk.DISABLED
         try:
-            response = requests.get(VERSION_INFO_URL, timeout=3)
+            response = requests.get(VERSION_INFO_URL, timeout=3) # , verify=False
             version_info = re.findall(r'AIO_VERSION \"\d{1,2}\.\d{1,2}\.\d{1,2}\"', response.text)
             self.m_version_var.set("v" + version_info[0].split("\"")[1])
         except Exception as err:

@@ -41,7 +41,11 @@ class Helper(object):
         info = '''
         本上位机专门针对HoloCubic AIO固件开发，其中固件烧录功能兼容其他第三方固件。
 
-        加入AIO内测QQ群：755143193 获取最新版本及相关技术支持。
+        加入AIO的QQ群获取相关学习资料。
+        ①群号755143193 ②群号860112883 ③群号676732387 ④群号749207817
+        注：目前4个2000人群均已满，为减少"群费"主推加入"AIO的QQ频道"，最新
+        固件优先更新在QQ频道内部。（频道号 f7nut5r3p4）
+
         功能持续补充完善中，本上位机的所有源码均开源，欢迎大家学习，
         也欢迎加入到AIO固件的开发队列。
 
@@ -54,6 +58,8 @@ class Helper(object):
 
         了解Holocubic硬件开源方案
             请访问 https://github.com/peng-zhihui/HoloCubic
+
+        统一资料入口 https://share.weiyun.com/alCGrwxQ
         '''
 
         self.m_project_info = tk.Text(father, height=45, width=140)
