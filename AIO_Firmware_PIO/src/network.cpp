@@ -1,5 +1,6 @@
 #include "network.h"
 #include "common.h"
+#include <esp_wifi.h>
 #include "HardwareSerial.h"
 
 IPAddress local_ip(192, 168, 4, 2); // Set your server's fixed IP address here
@@ -62,6 +63,9 @@ boolean Network::start_conn_wifi(const char *ssid, const char *password)
 
     // 设置为STA模式并连接WIFI
     WiFi.enableSTA(true);
+    // 关闭省电模式 提升wifi功率（两个API都可以）
+    // WiFi.setSleep(false);
+    // esp_wifi_set_ps(WIFI_PS_NONE);
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     WiFi.begin(ssid, password);
