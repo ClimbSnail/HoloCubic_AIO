@@ -1,3 +1,16 @@
+
+#define NEW_FLASH_FS
+#ifndef NEW_FLASH_FS
+
+/***************************************************
+  由于使用了新的文件系统，config.cpp/config.h中实现的功能
+已被摒弃，为留作参考故未删除代码。
+
+  Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
+
+  Last review/edit by ClimbSnail: 2023/03/14
+ ****************************************************/
+
 #ifndef CONFIG_H
 #define CONFIG_H
 #include <WString.h>
@@ -41,5 +54,7 @@ void config_save(const char *file_path, Config *cfg);
 void mpu_config_read(const char *file_path, Config *cfg);
 
 void mpu_config_save(const char *file_path, Config *cfg);
+
+#endif
 
 #endif
