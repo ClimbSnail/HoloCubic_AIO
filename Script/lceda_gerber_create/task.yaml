@@ -1,0 +1,113 @@
+Header: |-
+  G04 EasyEDA Pro v1.9.28, %s*
+  G04 Gerber Generator version 0.3*
+
+
+TextFileName: PCB下单必读.txt
+TextFileContent: |-
+  如何进行PCB下单
+
+  请查看：
+  https://docs.lceda.cn/cn/PCB/Order-PCB
+
+NewFileName:
+  Outline: Gerber_BoardOutlineLayer.GKO
+  MechanicalLayer13: Gerber_MechanicalLayer13.GM13
+  MechanicalLayer15: Gerber_MechanicalLayer15.GM15
+  Top_Cu: Gerber_TopLayer.GTL
+  Bottom_Cu: Gerber_BottomLayer.GBL
+  InnerLayer1_Cu: Gerber_InnerLayer1.G1
+  InnerLayer2_Cu: Gerber_InnerLayer2.G2
+  InnerLayer3_Cu: Gerber_InnerLayer3.G3
+  InnerLayer4_Cu: Gerber_InnerLayer4.G4
+  Top_SilkScreen: Gerber_TopSilkscreenLayer.GTO
+  Bottom_SilkScreen: Gerber_BottomSilkscreenLayer.GBO
+  Top_SolderMask: Gerber_TopSolderMaskLayer.GTS
+  Bottom_SolderMask: Gerber_BottomSolderMaskLayer.GBS
+  Top_SolderPaste: Gerber_TopPasteMaskLayer.GTP
+  Bottom_SolderPaste: Gerber_BottomPasteMaskLayer.GBP
+  Drill_Through: Drill_Through.GD1
+  Drill_Pth: Drill_PTH_Through.DRL
+  Drill_Npth: Drill_NPTH_Through.DRL
+
+GerberList:
+  - Gerber:
+    # 待处理的Gerber目录
+    SrcDir: C:\Users\climb\Desktop\Metal简版PCB及外壳资料\主板\主板v2.0（换卡槽版）\主板v2.0（换卡槽版）gerber
+    # 输出的目录
+    OutDir:
+    # 定义后缀
+    SUFFIX:
+      # -------边框层规则-------
+      # Altium Designer根据你画板时边框所在层选择
+      # KiCad一般是-Edge_Cuts或者Keep Out层
+
+      # KiCad
+      # Outline: -Edge_Cuts
+
+      # 禁止布线层 Keep Out，Protel格式文件扩展名
+      # 机械1层 Mechanical Layer 1，Protel格式文件扩展名
+      # 适用于KiCad Altium Designer
+      Outline: .gm1|.GM1|.gko|.GKO
+
+      # 机械13层 Mechanical Layer 13，Protel格式文件扩展名
+      # 适用于Altium Designer
+      # Outline: .gm13|.GM13
+
+      # -------其他层规则-------
+      # 根据自身情况选择，务必核对清楚
+
+      # KiCad
+      # Top_Cu: -F_Cu
+      # Bottom_Cu: -B_Cu
+      # # InnerLayer1_Cu: -In1_Cu
+      # # InnerLayer2_Cu: -In2_Cu
+      # # InnerLayer3_Cu: -In3_Cu
+      # # InnerLayer4_Cu: -In4_Cu
+      # Top_SilkScreen: -F_Silkscreen
+      # Bottom_SilkScreen: -B_Silkscreen
+      # Top_SolderMask: -F_Mask
+      # Bottom_SolderMask: -B_Mask
+      # Top_SolderPaste: -F_Paste
+      # Bottom_SolderPaste: -B_Paste
+
+      # Protel格式文件扩展名
+      # 适用于 KiCad Altium Designer
+      Top_Cu: .gtl|.GTL
+      Bottom_Cu: .gbl|.GBL
+      # InnerLayer1_Cu: .g1|.G1  
+      # InnerLayer2_Cu: .g2|.G2
+      # InnerLayer3_Cu: .g3|.G3
+      # InnerLayer4_Cu: .g4|.G4
+      Top_SilkScreen: .gto|.GTO
+      Bottom_SilkScreen: .gbo|.GBO
+      Top_SolderMask: .gts|.GTS
+      Bottom_SolderMask: .gbs|.GBS
+      Top_SolderPaste: .gtp|.GTP
+      Bottom_SolderPaste: .gbp|.GBP
+      Drill_Through: .gd1|.GD1
+
+      
+  - Gerber:
+    # 待处理的Gerber目录
+    SrcDir: C:\Users\climb\Desktop\Metal简版PCB及外壳资料\屏幕拓展板\Metal_Naive通用屏幕板v2.1\Metal_Naive通用屏幕板v2.1gerber
+    # 输出的目录
+    OutDir:
+    SUFFIX:
+      Outline: .gm1|.GM1|.gko|.GKO
+
+      # Protel格式文件扩展名
+      # 适用于 KiCad Altium Designer
+      Top_Cu: .gtl|.GTL
+      Bottom_Cu: .gbl|.GBL
+      # InnerLayer1_Cu: .g1|.G1  
+      # InnerLayer2_Cu: .g2|.G2
+      # InnerLayer3_Cu: .g3|.G3
+      # InnerLayer4_Cu: .g4|.G4
+      Top_SilkScreen: .gto|.GTO
+      Bottom_SilkScreen: .gbo|.GBO
+      Top_SolderMask: .gts|.GTS
+      Bottom_SolderMask: .gbs|.GBS
+      Top_SolderPaste: .gtp|.GTP
+      Bottom_SolderPaste: .gbp|.GBP
+      Drill_Through: .gd1|.GD1

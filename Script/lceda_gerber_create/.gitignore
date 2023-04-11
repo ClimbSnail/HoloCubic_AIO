@@ -1,0 +1,8 @@
+*__pycache__*
+OutFile
+build/
+dist/
+.idea/
+__pycache__/
+lceda_gerber.spec
+*SnailHeater_Gerber_*
