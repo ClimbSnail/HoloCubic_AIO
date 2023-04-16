@@ -5,7 +5,6 @@
 #include <esp32-hal-timer.h>
 
 #define RGB_LED_NUM 2
-#define RGB_LED_PIN 27
 
 #define LED_MODE_RGB 0
 #define LED_MODE_HSV 1

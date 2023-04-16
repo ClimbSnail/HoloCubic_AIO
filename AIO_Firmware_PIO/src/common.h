@@ -14,6 +14,9 @@
 #include "driver/imu.h"
 #include "network.h"
 
+// RGB
+#define RGB_LED_PIN 27
+
 // SD_Card
 #define SD_SCK 14
 #define SD_MISO 26
