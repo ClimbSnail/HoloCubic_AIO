@@ -9,9 +9,10 @@
 #include <map>
 
 #define WEATHER_APP_NAME "Weather"
-#define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
-#define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
-#define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
+#define WEATHER_NOW_API "https://v0.yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
+#define WEATHER_NOW_API_UPDATE "https://v0.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
+
+#define WEATHER_DALIY_API "https://v0.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 #define WEATHER_PAGE_SIZE 2
 #define UPDATE_WEATHER 0x01       // 更新天气

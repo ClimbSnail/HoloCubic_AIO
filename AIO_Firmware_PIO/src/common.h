@@ -1,7 +1,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.1.6"
+#define AIO_VERSION "2.1.6.1"
+//修改by：神秘藏宝室
+//修复Weather的API，原来的API已废弃
+//修复Weater的第二页y轴坐标显示
+
 #define GET_SYS_MILLIS xTaskGetTickCount // 获取系统毫秒数
 // #define GET_SYS_MILLIS millis            // 获取系统毫秒数
 
@@ -14,8 +18,7 @@
 #include "driver/imu.h"
 #include "network.h"
 
-// RGB
-#define RGB_LED_PIN 27
+#include "esp_log.h"
 
 // SD_Card
 #define SD_SCK 14

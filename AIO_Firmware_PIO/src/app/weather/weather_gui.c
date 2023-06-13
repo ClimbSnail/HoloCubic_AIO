@@ -87,24 +87,34 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     lv_label_set_text(titleLabel, "查看更多天气");
 
     chart = lv_chart_create(scr_2);
-    lv_obj_set_size(chart, 220, 180);
+    lv_obj_set_size(chart, 200, 180);
+    lv_obj_align(chart, LV_ALIGN_CENTER, 15, 10);
     lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, -50, 50); // 设置进度条表示的温度为-50~50
     lv_chart_set_point_count(chart, 7);
     lv_chart_set_div_line_count(chart, 5, 7);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
 
+    lv_obj_set_style_text_color(chart, lv_palette_lighten(LV_PALETTE_YELLOW, 2), LV_PART_TICKS);
+    lv_obj_set_style_line_color(chart, lv_palette_lighten(LV_PALETTE_YELLOW, 2), LV_PART_TICKS);
+
+    // 设置Y轴上刻度线的数量
+    lv_chart_set_axis_tick(chart, LV_CHART_AXIS_PRIMARY_Y,
+                           10, 5, 10, 2, true, 100);
+
     ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_SECONDARY_Y);
     ser2 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_SECONDARY_Y);
     // lv_obj_set_style_pad_left(chart, 40, LV_STATE_DEFAULT);
 
-    // 设置Y轴上刻度线的数量
-    // lv_chart_set_axis_tick(chart, LV_CHART_AXIS_PRIMARY_Y,
-    //                        10, 5, 10, 2, true, 20);
     // lv_chart_set_zoom_y();
+
+    
 
     // 绘制
     lv_obj_align(titleLabel, LV_ALIGN_TOP_MID, 0, 10);
-    lv_obj_align(chart, LV_ALIGN_CENTER, 0, 10);
+
+
+    lv_chart_refresh(chart);
+    
 
     if (LV_SCR_LOAD_ANIM_NONE != anim_type)
     {

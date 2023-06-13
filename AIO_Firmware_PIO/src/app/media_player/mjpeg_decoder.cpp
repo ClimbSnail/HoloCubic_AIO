@@ -150,6 +150,7 @@ bool MjpegPlayDocoder::video_start()
     else
     {
         m_displayBuf = (uint8_t *)malloc(MOVIE_BUFFER_SIZE);
+        m_jpegBuf = (uint8_t *)malloc(JPEG_BUFFER_SIZE);
         tft->setAddrWindow((tft->width() - VIDEO_WIDTH) / 2,
                            (tft->height() - VIDEO_HEIGHT) / 2,
                            VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -185,6 +186,7 @@ bool MjpegPlayDocoder::video_play_screen(void)
 
     if (m_isUseDMA)
     {
+        LV_LOG_USER("video_play_screen() m_isUseDMA ");
         // 一帧数据大概3000B 240M主频时花费50ms  80M时需要150ms
         // unsigned long Millis_1 = GET_SYS_MILLIS(); // 更新的时间
         uint32_t jpg_size = readJpegFromFile(m_pFile);
@@ -198,6 +200,19 @@ bool MjpegPlayDocoder::video_play_screen(void)
     }
     else
     {
+        
+        LV_LOG_USER("video_play_screen() notUseDMA ");
+        // 一帧数据大概3000B 240M主频时花费50ms  80M时需要150ms
+        // unsigned long Millis_1 = GET_SYS_MILLIS(); // 更新的时间
+        uint32_t jpg_size = readJpegFromFile(m_pFile);
+        // Serial.println(jpg_size);
+        // Serial.print(GET_SYS_MILLIS() - Millis_1);
+        // Serial.print(" ");
+        // Millis_1 = GET_SYS_MILLIS();
+        // Draw the image, top left at 0,0 - DMA request is handled in the call-back tft_output() in this sketch
+        TJpgDec.drawJpg(0, 0, m_jpegBuf, jpg_size);
+        // Serial.println(GET_SYS_MILLIS() - Millis_1);
+       
     }
     return true;
 }
