@@ -5,6 +5,7 @@
 //修改by：神秘藏宝室
 //修复Weather的API，原来的API已废弃
 //修复Weater的第二页y轴坐标显示
+//默认开启性能模式【第一次烧录，或者清空重新刷固件有效】
 
 #define GET_SYS_MILLIS xTaskGetTickCount // 获取系统毫秒数
 // #define GET_SYS_MILLIS millis            // 获取系统毫秒数
