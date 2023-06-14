@@ -1,8 +1,13 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.1.6.1"
+#define AIO_VERSION "2.1.6.2"
 //修改by：神秘藏宝室
+
+//v2.1.6.2
+//修正Weather最高和最低温度显示
+
+//v2.1.6.1
 //修复Weather的API，原来的API已废弃
 //修复Weater的第二页y轴坐标显示
 //默认开启性能模式【第一次烧录，或者清空重新刷固件有效】
