@@ -1,9 +1,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.1.6.2"
+#define AIO_VERSION "2.1.6.3"
 //修改by：神秘藏宝室
 
+
+//v2.1.6.3
+//修复API接口
 //v2.1.6.2
 //修正Weather最高和最低温度显示
 
