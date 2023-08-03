@@ -273,7 +273,11 @@ class DownloadDebug(object):
             self.print_log("清空芯片中.....")
             self.__father.update()
 
-            cmd = ['erase_flash']
+            # esptool.py erase_region 0x20000 0x4000
+            # esptool.py erase_flash
+            select_com = self.m_com_select.get().strip()
+            cmd = ['--port', select_com, 'erase_flash']
+            # cmd = ['erase_flash']
             esptool.main(cmd)
             self.print_log("清空芯片成功！")
             # 更新按钮状态
@@ -654,13 +658,16 @@ class DownloadDebug(object):
         self.print_log("Receive_thread start")
         while BOOL:
             if ser.in_waiting:
-                STRGLO = ser.read(ser.in_waiting).decode("utf8")
-                self.m_msg.config(state=tk.NORMAL)
-                self.m_msg.insert(tk.END, STRGLO)
-                self.m_msg.config(state=tk.DISABLED)
-                self.m_msg.yview_moveto(1)
-                time.sleep(0.1)
-
+                try:
+                    STRGLO = ser.read(ser.in_waiting).decode("utf8")
+                    self.m_msg.config(state=tk.NORMAL)
+                    self.m_msg.insert(tk.END, STRGLO)
+                    self.m_msg.config(state=tk.DISABLED)
+                    self.m_msg.yview_moveto(1)
+                    time.sleep(0.1)
+                except Exception as err:
+                    pass
+                
     def get_download_param(self):
         """
         获取下载参数
