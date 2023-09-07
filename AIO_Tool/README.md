@@ -26,7 +26,7 @@ Holocubic_AIO开源地址 https://github.com/ClimbSnail/HoloCubic_AIO
 4. `firmware.bin`的位置为代码工程目录下的`.pioenvs\[board]`目录下面，这个就是代码编译出来的固件，它对应的烧录地址为0x10000，如果分区文件未做修改的话（人为修改，或者更换编译平台），更新固件或者重新烧录只在对应地址开始需要烧录这一个文件即可。此文件手动命名为`HoloCubic_AIO固件_vX.X.X.bin`，由于经常随着源码的更新而更新。,它的对应的烧录地址为0x10000。
 
 #### 烧录参考脚本
-1. python tool-esptoolpy\esptool.py --port COM7 --baud 921600 write_flash -fm dio -fs 4MB 0x1000 bootloader_dio_80m.bin 0x00008000 partitions.bin 0x0000e000 boot_app0.bin 0x00010000 HoloCubic_AIO固件_v1.3.bin
+1. python tool-esptoolpy\esptool.py --port COM7 --baud 921600 write_flash -fm dio -fs 4MB 0x1000 bootloader_qio_80m.bin 0x00008000 partitions.bin 0x0000e000 boot_app0.bin 0x00010000 HoloCubic_AIO固件_v1.3.bin
 2. 清空flash命令 python tool-esptoolpy\esptool.py erase_flash
 
 可用波特率为：
