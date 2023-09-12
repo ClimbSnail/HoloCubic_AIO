@@ -123,6 +123,9 @@ int AppController::app_auto_start()
 {
     // APP自启动
     int index = this->getAppIdxByName(sys_cfg.auto_start_app.c_str());
+    //int index = this->getAppIdxByName("Weather");
+    // int index = this->getAppIdxByName("WebServer");
+    // int index = this->getAppIdxByName("Media");
     if (index < 0)
     {
         // 没找到相关的APP

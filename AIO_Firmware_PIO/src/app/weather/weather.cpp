@@ -9,8 +9,11 @@
 #include <map>
 
 #define WEATHER_APP_NAME "Weather"
-#define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
-#define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
+#define WEATHER_NOW_API "https://v0.yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
+// #define WEATHER_NOW_API_UPDATE "https://v0.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
+#define WEATHER_NOW_API_UPDATE "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
+
+// #define WEATHER_DALIY_API "https://v0.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 #define WEATHER_PAGE_SIZE 2
@@ -142,6 +145,26 @@ static void get_weather(void)
         // file found at server
         if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY)
         {
+            // {
+            //     "nums": 10,
+            //     "cityid": "101180901",
+            //     "city": "洛阳",
+            //     "date": "2023-06-14",
+            //     "week": "星期三",
+            //     "update_time": "20:38",
+            //     "wea": "晴",
+            //     "wea_img": "qing",
+            //     "tem": "30",
+            //     "tem_day": "35",
+            //     "tem_night": "22",
+            //     "win": "南风",
+            //     "win_speed": "1级",
+            //     "win_meter": "3km\/h",
+            //     "air": "119",
+            //     "pressure": "966",
+            //     "humidity": "25%"
+            // }
+
             String payload = http.getString();
             Serial.println(payload);
             DynamicJsonDocument doc(1024);
@@ -158,8 +181,8 @@ static void get_weather(void)
             humidity[strlen(humidity) - 1] = 0; // 去除尾部的 % 号
             run_data->wea.humidity = atoi(humidity);
 
-            run_data->wea.maxTemp = sk["tem1"].as<int>();
-            run_data->wea.minTemp = sk["tem2"].as<int>();
+            run_data->wea.maxTemp = sk["tem_day"].as<int>();
+            run_data->wea.minTemp = sk["tem_night"].as<int>();
             strcpy(run_data->wea.windDir, sk["win"].as<String>().c_str());
             run_data->wea.windLevel = windLevelAnalyse(sk["win_speed"].as<String>());
             run_data->wea.airQulity = airQulityLevel(sk["air"].as<int>());

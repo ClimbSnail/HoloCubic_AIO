@@ -113,13 +113,13 @@ static bool video_start(bool create_new)
     if (NULL != strstr(run_data->pfile->file_name, ".mjpeg") || NULL != strstr(run_data->pfile->file_name, ".MJPEG"))
     {
         // 直接解码mjpeg格式的视频
-        run_data->player_docoder = new MjpegPlayDocoder(&run_data->file, true);
+        run_data->player_docoder = new MjpegPlayDocoder(&run_data->file, false);
         Serial.print(F("MJPEG video start --------> "));
     }
     else if (NULL != strstr(run_data->pfile->file_name, ".rgb") || NULL != strstr(run_data->pfile->file_name, ".RGB"))
     {
         // 使用RGB格式的视频
-        run_data->player_docoder = new RgbPlayDocoder(&run_data->file, true);
+        run_data->player_docoder = new RgbPlayDocoder(&run_data->file, false);
         Serial.print(F("RGB565 video start --------> "));
     }
 
