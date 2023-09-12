@@ -24,19 +24,19 @@
 #endif
 
 // bilibili粉丝APP
-#define APP_BILIBILI_FANS_USE 1
+#define APP_BILIBILI_FANS_USE 0
 #if APP_BILIBILI_FANS_USE
 #include "app/bilibili_fans/bilibili.h"
 #endif
 
 // 文件管理器APP
-#define APP_FILE_MANAGER_USE 1
+#define APP_FILE_MANAGER_USE 0
 #if APP_FILE_MANAGER_USE
 #include "app/file_manager/file_manager.h"
 #endif
 
 // 2048游戏APP
-#define APP_GAME_2048_USE 1
+#define APP_GAME_2048_USE 0
 #if APP_GAME_2048_USE
 #include "app/game_2048/game_2048.h"
 #endif
@@ -91,7 +91,7 @@
 #endif
 
 // 股票行情查看APP
-#define APP_STOCK_MARKET_USE 1
+#define APP_STOCK_MARKET_USE 0
 #if APP_STOCK_MARKET_USE
 #include "app/stockmarket/stockmarket.h"
 #endif
@@ -105,9 +105,22 @@
 
 // 天气(旧)APP
 // 如flash空间不够，首选配置天气app二选一，腾出大量flash空间
-#define APP_WEATHER_OLD_USE 1
+#define APP_WEATHER_OLD_USE 0
 #if APP_WEATHER_OLD_USE
 #include "app/weather_old/weather_old.h"
 #endif
+
+// 番茄钟 APP
+#define APP_TOMATO_USE 1
+#if APP_TOMATO_USE
+#include "app/tomato/tomato.h"
+#endif
+
+// 心情APP
+#define APP_MOOD_USE 1
+#if APP_MOOD_USE
+#include "app/mood/mood.h"
+#endif
+
 
 #endif

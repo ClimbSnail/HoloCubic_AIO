@@ -29,8 +29,9 @@ AppController::AppController(const char *name)
     app_num = 0;
     app_exit_flag = 0;
     cur_app_index = 0;
-    pre_app_index = 0;
+//    pre_app_index = 0;
     // appList = new APP_OBJ[APP_MAX_NUM];
+    app_stack_top = -1;
     m_wifi_status = false;
     m_preWifiReqMillis = GET_SYS_MILLIS();
 
@@ -119,6 +120,8 @@ int AppController::app_uninstall(const APP_OBJ *app)
     return 0;
 }
 
+
+
 int AppController::app_auto_start()
 {
     // APP自启动
@@ -163,14 +166,14 @@ int AppController::main_process(ImuAction *act_info)
         if (ACTIVE_TYPE::TURN_LEFT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-            pre_app_index = cur_app_index;
+//            pre_app_index = cur_app_index;
             cur_app_index = (cur_app_index + 1) % app_num;
             Serial.println(String("Current App: ") + appList[cur_app_index]->app_name);
         }
         else if (ACTIVE_TYPE::TURN_RIGHT == act_info->active)
         {
             anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
-            pre_app_index = cur_app_index;
+//            pre_app_index = cur_app_index;
             // 以下等效与 processId = (processId - 1 + APP_NUM) % 4;
             // +3为了不让数据溢出成负数，而导致取模逻辑错误
             cur_app_index = (cur_app_index - 1 + app_num) % app_num; // 此处的3与p_processList的长度一致
@@ -178,11 +181,12 @@ int AppController::main_process(ImuAction *act_info)
         }
         else if (ACTIVE_TYPE::GO_FORWORD == act_info->active)
         {
-            app_exit_flag = 1; // 进入app
-            if (NULL != appList[cur_app_index]->app_init)
-            {
-                (*(appList[cur_app_index]->app_init))(this); // 执行APP初始化
-            }
+            app_start(cur_app_index);
+//            app_exit_flag = 1; // 进入app
+//            if (NULL != appList[cur_app_index]->app_init)
+//            {
+//                (*(appList[cur_app_index]->app_init))(this); // 执行APP初始化
+//            }
         }
 
         if (ACTIVE_TYPE::GO_FORWORD != act_info->active) // && UNKNOWN != act_info->active
@@ -195,11 +199,17 @@ int AppController::main_process(ImuAction *act_info)
     }
     else
     {
-        app_control_display_scr(appList[cur_app_index]->app_image,
-                                appList[cur_app_index]->app_name,
-                                LV_SCR_LOAD_ANIM_NONE, false);
+        //不用加载图标了，浪费CPU时间，会很卡顿
+//        app_control_display_scr(appList[cur_app_index]->app_image,
+//                                    appList[cur_app_index]->app_name,
+//                                    LV_SCR_LOAD_ANIM_NONE, false);
         // 运行APP进程 等效于把控制权交给当前APP
-        (*(appList[cur_app_index]->main_process))(this, act_info);
+//        (*(appList[cur_app_index]->main_process))(this, act_info);
+
+
+
+        //只运行栈顶进程
+        (*(app_stack[app_stack_top]->main_process))(this, act_info);
     }
     act_info->active = ACTIVE_TYPE::UNKNOWN;
     act_info->isValid = 0;
@@ -278,6 +288,8 @@ int AppController::req_event_deal(void)
     // 请求事件的处理
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
+
+
         if ((*event).nextRunTime > GET_SYS_MILLIS())
         {
             ++event;
@@ -291,6 +303,10 @@ int AppController::req_event_deal(void)
             (*event).retryCount += 1;
             if ((*event).retryCount >= (*event).retryMaxNum)
             {
+
+
+                Serial.println("尝试事件");
+
                 // 多次重试失败
                 Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
                 event = eventList.erase(event); // 删除该响应事件
@@ -306,16 +322,27 @@ int AppController::req_event_deal(void)
             continue;
         }
 
+
+
         // 事件回调
         if (NULL != (*event).from && NULL != (*event).from->message_handle)
         {
+
+
+            Serial.println("事件回调");
             (*((*event).from->message_handle))(CTRL_NAME, (*event).from->app_name,
                                                (*event).type, (*event).info, NULL);
         }
+
+        Serial.println("完成事件1");
+
         Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
         event = eventList.erase(event); // 删除该响应完成的事件
         Serial.print(F("\tEventList Size: "));
         Serial.println(eventList.size());
+
+
+
     }
     return 0;
 }
@@ -347,8 +374,14 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
     break;
     case APP_MESSAGE_WIFI_AP:
     {
+
+
+
         // 更新请求
         g_network.open_ap(AP_SSID);
+
+        Serial.println("kai成功");
+
         m_wifi_status = true;
         m_preWifiReqMillis = GET_SYS_MILLIS();
     }
@@ -397,12 +430,36 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
 
 void AppController::app_exit()
 {
-    app_exit_flag = 0; // 退出APP
+
+    if (app_stack_top < 0)
+    {
+        // APP栈为空
+        return;
+    }
+
+    //最后一个APP退出，就标志退出位
+    if (app_stack_top == 0)
+    {
+        app_exit_flag = 0;
+    }
+//    app_exit_flag = 0; // 退出APP
 
     // 清空该对象的所有请求
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
-        if (appList[cur_app_index] == (*event).from)
+
+
+//        if (appList[cur_app_index] == (*event).from)
+//        {
+//            event = eventList.erase(event); // 删除该响应事件
+//        }
+//        else
+//        {
+//            ++event;
+//        }
+
+
+        if (app_stack[app_stack_top] == (*event).from)
         {
             event = eventList.erase(event); // 删除该响应事件
         }
@@ -412,14 +469,39 @@ void AppController::app_exit()
         }
     }
 
-    if (NULL != appList[cur_app_index]->exit_callback)
+    if (NULL != app_stack[app_stack_top]->exit_callback)
     {
         // 执行APP退出回调
-        (*(appList[cur_app_index]->exit_callback))(NULL);
+        (*(app_stack[app_stack_top]->exit_callback))(NULL);
     }
+
+    //如果不是最后一个app，就不执行下面的操作
+
+    //将控制权交给前一个APP
+    app_stack_top--;
+
+    if(app_stack_top != -1){
+
+        Serial.println("开始唤起activate事件");
+
+        if((app_stack[app_stack_top]->activate)!=NULL){
+
+            //重新激活当前应用程序所需要执行的操作
+            (*(app_stack[app_stack_top]->activate))(this);
+        }
+        Serial.println("结束唤起activate事件");
+
+        return;
+    }
+
+
+
+
     app_control_display_scr(appList[cur_app_index]->app_image,
                             appList[cur_app_index]->app_name,
                             LV_SCR_LOAD_ANIM_NONE, true);
+
+
 
     // 恢复RGB灯  HSV色彩模式
     RgbConfig *cfg = &rgb_cfg;
@@ -442,4 +524,96 @@ void AppController::app_exit()
     }
     Serial.print(F("CpuFrequencyMhz: "));
     Serial.println(getCpuFrequencyMhz());
+}
+
+
+
+
+int AppController::app_start(const char *app_name) {
+
+    // APP自启动
+    int index = this->getAppIdxByName(app_name);
+    if (index < 0)
+    {
+        // 没找到相关的APP
+        return -1;
+    }
+
+    app_start(index);
+    return 0;
+}
+
+int AppController::app_start(int index) {
+
+    //如果是第一个APP，就标志启动位
+
+    if (app_stack_top == -1){
+        app_exit_flag = 1;
+    }
+
+
+    //如果启动的是同一个app，那就不执行任何操作
+    if(app_stack[app_stack_top] == appList[index]){
+        //是同一个应用
+        return -1;
+    }
+
+//    app_exit_flag = 1; // 进入app, 如果已经在
+
+
+    if (app_stack_top >= APP_STACK_SIZE)
+    {
+        // APP栈溢出
+        return -1;
+    }
+
+
+    //首次启动需谨慎
+    if ( app_stack_top != -1 && (app_stack[app_stack_top]->suspend) != NULL){
+
+
+        Serial.println("开始唤起suspend事件");
+        //挂起当前应用要执行的操作
+        (*(app_stack[app_stack_top]->suspend))(this);
+        Serial.println("结束唤起suspend事件");
+    }
+
+
+
+    //将当前app的对象指针存进app栈中
+    app_stack[++app_stack_top] = appList[index];
+
+//    //因为是后台程序，这就不用退出了
+//    cur_app_index = index;
+
+    (*(app_stack[app_stack_top]->app_init))(this); // 执行APP初始化
+
+    return 0;
+}
+
+
+
+int AppController::top_app_exit() {
+
+    if (app_stack_top < 0)
+    {
+        // APP栈为空
+        return -1;
+    }
+
+    //最后一个APP退出，就标志退出位
+    if (app_stack_top == 0)
+    {
+        app_exit_flag = 0;
+    }
+
+
+    //退出当前app
+    (*(app_stack[app_stack_top--]->exit_callback))(NULL);
+
+    return 0;
+}
+
+void AppController::set_wifi_status(boolean status) {
+    m_wifi_status = status;
 }

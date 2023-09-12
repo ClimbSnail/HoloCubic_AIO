@@ -14,7 +14,7 @@
 #define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
 #define NO_TRIGGER_ENTER_FREQ_80M 120000UL // 无操作规定时间后进入设置160M主频（120s）
 
-// 天气的持久化配置
+// 持久化配置
 #define MEDIA_CONFIG_PATH "/media.cfg"
 struct MP_Config
 {

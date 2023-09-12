@@ -119,12 +119,12 @@ boolean Network::end_conn_wifi(void)
 
 boolean Network::close_wifi(void)
 {
+
     if(WiFi.getMode() & WIFI_MODE_AP)
     {
         WiFi.enableAP(false);
         Serial.println(F("AP shutdowm"));
     }
-
     if (!WiFi.disconnect())
     {
         return false;
@@ -141,14 +141,18 @@ boolean Network::close_wifi(void)
 
 boolean Network::open_ap(const char *ap_ssid, const char *ap_password)
 {
+
     WiFi.enableAP(true); // 配置为AP模式
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     // WiFi.begin();
+
     boolean result = WiFi.softAP(ap_ssid, ap_password); // 开启WIFI热点
     if (result)
     {
         WiFi.softAPConfig(local_ip, gateway, subnet);
+
+        Serial.println("获取本机IP");
         IPAddress myIP = WiFi.softAPIP();
 
         // 打印相关信息

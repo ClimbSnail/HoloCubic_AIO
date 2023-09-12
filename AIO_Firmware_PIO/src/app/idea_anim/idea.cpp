@@ -126,6 +126,38 @@ static void idea_message_handle(const char *from, const char *to,
 {
 }
 
+
+//该应用的数组占用太多存储空间，需要释放，否则会卡死重启
+static int idea_suspend(AppController *sys){
+
+
+    if (NULL != screen_buf)
+    {
+        free(screen_buf);
+        screen_buf = NULL;
+    }
+
+    return 0;
+}
+
+//重新初始化数组
+static int idea_activate(AppController *sys){
+
+    if(NULL == screen_buf){
+        screen_buf = (uint8_t *)malloc(SCREEN_HEIGHT * SCREEN_WIDTH); //动态分配一块屏幕分辨率大小的空间
+        if (screen_buf == NULL)
+            Serial.println("screen_buf: error");
+        else
+        {
+            Serial.println("screen_buf: OK");
+        }
+
+        screen_clear(0x0000);
+    }
+    return 0;
+}
+
 APP_OBJ idea_app = {IDEA_APP_NAME, &app_idea, "", idea_init,
                     idea_process, idea_background_task, idea_exit_callback,
-                    idea_message_handle};
+                    idea_message_handle,idea_suspend,
+                    idea_activate};

@@ -50,12 +50,12 @@ static void read_config(PIC_Config *cfg)
 
 struct PictureAppRunData
 {
-    unsigned long pic_perMillis; // 图片上一回更新的时间
+    unsigned long pic_perMillis;      // 图片上一回更新的时间
+    unsigned long picRefreshInterval; // 图片播放的时间间隔(10s)
 
     File_Info *image_file;      // movie文件夹下的文件指针头
     File_Info *pfile;           // 指向当前播放的文件节点
     int image_pos_increate = 1; // 文件的遍历方向
-    bool refreshFlag = false;   // 是否更新
     bool tftSwapStatus;
 };
 
@@ -144,13 +144,13 @@ static void picture_process(AppController *sys,
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_RIGHT;
         run_data->image_pos_increate = 1;
-        run_data->refreshFlag = true;
+        run_data->pic_perMillis = GET_SYS_MILLIS() - cfg_data.switchInterval; // 间接强制更新
     }
     else if (TURN_LEFT == act_info->active)
     {
         anim_type = LV_SCR_LOAD_ANIM_OVER_LEFT;
         run_data->image_pos_increate = -1;
-        run_data->refreshFlag = true;
+        run_data->pic_perMillis = GET_SYS_MILLIS() - cfg_data.switchInterval; // 间接强制更新
     }
 
     if (NULL == run_data->image_file)
@@ -159,15 +159,7 @@ static void picture_process(AppController *sys,
         return;
     }
 
-    // 自动切换的时间检测
-    if (0 != run_data->image_pos_increate &&
-        0 != cfg_data.switchInterval &&
-        GET_SYS_MILLIS() - run_data->pic_perMillis >= cfg_data.switchInterval)
-    {
-        run_data->refreshFlag = true;
-    }
-
-    if (true == run_data->refreshFlag)
+    if (doDelayMillisTime(cfg_data.switchInterval, &run_data->pic_perMillis, false) == true)
     {
         if (NULL != run_data->image_file)
         {
@@ -191,9 +183,6 @@ static void picture_process(AppController *sys,
             // 使用LVGL的bin格式的图片
             display_photo(file_name, anim_type);
         }
-        run_data->refreshFlag = false;
-        // 重置更新的时间标记
-        run_data->pic_perMillis = GET_SYS_MILLIS();
     }
     delay(300);
 }
@@ -265,6 +254,18 @@ static void picture_message_handle(const char *from, const char *to,
         break;
     }
 }
+
+int picture_suspend(AppController *sys){
+
+    photo_gui_del();
+    return 0;
+}
+
+int picture_activate(AppController *sys){
+    photo_gui_init();
+    return 0;
+}
+
 
 APP_OBJ picture_app = {PICTURE_APP_NAME, &app_picture, "",
                        picture_init, picture_process, picture_background_task,
