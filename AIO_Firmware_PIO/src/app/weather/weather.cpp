@@ -127,7 +127,10 @@ static void get_weather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    // snprintf(api, 128, WEATHER_NOW_API, cfg_data.tianqi_appid, cfg_data.tianqi_appsecret, cfg_data.tianqi_addr);
+    // snprintf(api, 128, WEATHER_NOW_API,
+    //          cfg_data.tianqi_appid,
+    //          cfg_data.tianqi_appsecret,
+    //          cfg_data.tianqi_addr);
     snprintf(api, 128, WEATHER_NOW_API_UPDATE,
              cfg_data.tianqi_appid.c_str(),
              cfg_data.tianqi_appsecret.c_str(),
