@@ -70,6 +70,7 @@ String file_size(int bytes)
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                          \
+                        "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                \
                         "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqi_appid\"value=\"%s\"></label>"                            \
                         "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqi_appsecret\"value=\"%s\"></label>"                    \
                         "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqi_addr\"value=\"%s\"></label>"             \
@@ -311,6 +312,7 @@ void rgb_setting()
 void weather_setting()
 {
     char buf[2048];
+    char tianqi_url[128];
     char tianqi_appid[32];
     char tianqi_appsecret[32];
     char tianqi_addr[32];
@@ -319,6 +321,8 @@ void weather_setting()
     // 读取数据
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"tianqi_url", tianqi_url);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"tianqi_appid", tianqi_appid);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
@@ -329,7 +333,7 @@ void weather_setting()
                             (void *)"weatherUpdataInterval", weatherUpdataInterval);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"timeUpdataInterval", timeUpdataInterval);
-    sprintf(buf, WEATHER_SETTING, tianqi_appid,
+    sprintf(buf, WEATHER_SETTING, tianqi_url, tianqi_appid,
             tianqi_appsecret, tianqi_addr,
             weatherUpdataInterval,
             timeUpdataInterval);
@@ -588,6 +592,10 @@ void saveWeatherConf(void)
 {
     Send_HTML(F("<h1>设置成功! 退出APP或者继续其他设置.</h1>"));
 
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"tianqi_url",
+                            (void *)server.arg("tianqi_url").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"tianqi_appid",

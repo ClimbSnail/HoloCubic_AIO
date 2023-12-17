@@ -10,7 +10,8 @@
 
 #define WEATHER_APP_NAME "Weather"
 #define WEATHER_NOW_API "https://www.yiketianqi.com/free/day?appid=%s&appsecret=%s&unescape=1&city=%s"
-#define WEATHER_NOW_API_UPDATE "https://yiketianqi.com/api?unescape=1&version=v6&appid=%s&appsecret=%s&city=%s"
+// v1.yiketianqi.com/api?unescape=1&version=v61
+#define WEATHER_NOW_API_UPDATE "https://%s&appid=%s&appsecret=%s&city=%s"
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 #define WEATHER_PAGE_SIZE 2
@@ -19,12 +20,13 @@
 #define UPDATE_TIME 0x04          // 更新时间
 
 // 天气的持久化配置
-#define WEATHER_CONFIG_PATH "/weather.cfg"
+#define WEATHER_CONFIG_PATH "/weather_218.cfg"
 struct WT_Config
 {
-    String tianqi_appid;                 // tianqiapid 的 appid
-    String tianqi_appsecret;             // tianqiapid 的 appsecret
-    String tianqi_addr;                  // tianqiapid 的地址（填中文）
+    String tianqi_url;                   // tianqiapi 的url
+    String tianqi_appid;                 // tianqiapi 的 appid
+    String tianqi_appsecret;             // tianqiapi 的 appsecret
+    String tianqi_addr;                  // tianqiapi 的地址（填中文）
     unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
     unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
 };
@@ -34,6 +36,7 @@ static void write_config(WT_Config *cfg)
     char tmp[16];
     // 将配置数据保存在文件中（持久化）
     String w_data;
+    w_data = w_data + cfg->tianqi_url + "\n";
     w_data = w_data + cfg->tianqi_appid + "\n";
     w_data = w_data + cfg->tianqi_appsecret + "\n";
     w_data = w_data + cfg->tianqi_addr + "\n";
@@ -56,6 +59,7 @@ static void read_config(WT_Config *cfg)
     if (size == 0)
     {
         // 默认值
+        cfg->tianqi_url = "v1.yiketianqi.com/api?unescape=1&version=v61";
         cfg->tianqi_addr = "北京";
         cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
         cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
@@ -64,13 +68,14 @@ static void read_config(WT_Config *cfg)
     else
     {
         // 解析数据
-        char *param[5] = {0};
-        analyseParam(info, 5, param);
-        cfg->tianqi_appid = param[0];
-        cfg->tianqi_appsecret = param[1];
-        cfg->tianqi_addr = param[2];
-        cfg->weatherUpdataInterval = atol(param[3]);
-        cfg->timeUpdataInterval = atol(param[4]);
+        char *param[6] = {0};
+        analyseParam(info, 6, param);
+        cfg->tianqi_url = param[0];
+        cfg->tianqi_appid = param[1];
+        cfg->tianqi_appsecret = param[2];
+        cfg->tianqi_addr = param[3];
+        cfg->weatherUpdataInterval = atol(param[4]);
+        cfg->timeUpdataInterval = atol(param[5]);
     }
 }
 
@@ -127,11 +132,8 @@ static void get_weather(void)
     HTTPClient http;
     http.setTimeout(1000);
     char api[128] = {0};
-    // snprintf(api, 128, WEATHER_NOW_API,
-    //          cfg_data.tianqi_appid,
-    //          cfg_data.tianqi_appsecret,
-    //          cfg_data.tianqi_addr);
     snprintf(api, 128, WEATHER_NOW_API_UPDATE,
+             cfg_data.tianqi_url.c_str(),
              cfg_data.tianqi_appid.c_str(),
              cfg_data.tianqi_appsecret.c_str(),
              cfg_data.tianqi_addr.c_str());
@@ -488,7 +490,11 @@ static void weather_message_handle(const char *from, const char *to,
     case APP_MESSAGE_GET_PARAM:
     {
         char *param_key = (char *)message;
-        if (!strcmp(param_key, "tianqi_appid"))
+        if (!strcmp(param_key, "tianqi_url"))
+        {
+            snprintf((char *)ext_info, 128, "%s", cfg_data.tianqi_url.c_str());
+        }
+        else if (!strcmp(param_key, "tianqi_appid"))
         {
             snprintf((char *)ext_info, 32, "%s", cfg_data.tianqi_appid.c_str());
         }
@@ -518,7 +524,11 @@ static void weather_message_handle(const char *from, const char *to,
     {
         char *param_key = (char *)message;
         char *param_val = (char *)ext_info;
-        if (!strcmp(param_key, "tianqi_appid"))
+        if (!strcmp(param_key, "tianqi_url"))
+        {
+            cfg_data.tianqi_url = param_val;
+        }
+        else if (!strcmp(param_key, "tianqi_appid"))
         {
             cfg_data.tianqi_appid = param_val;
         }
