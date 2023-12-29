@@ -110,4 +110,10 @@
 #include "app/weather_old/weather_old.h"
 #endif
 
+// 贪吃蛇游戏APP
+#define APP_GAME_SNAKE_USE 1
+#if APP_GAME_SNAKE_USE
+#include "app/game_snake/game_snake.h"
+#endif
+
 #endif

@@ -166,6 +166,9 @@ void setup()
 #if APP_GAME_2048_USE
     app_controller->app_install(&game_2048_app);
 #endif
+#if APP_GAME_SNAKE_USE
+    app_controller->app_install(&game_snake_app);
+#endif
 #if APP_ANNIVERSARY_USE
     app_controller->app_install(&anniversary_app);
 #endif
