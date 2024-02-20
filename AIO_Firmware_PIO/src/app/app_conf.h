@@ -110,6 +110,12 @@
 #include "app/weather_old/weather_old.h"
 #endif
 
+// 番茄时钟2.0 APP
+#define APP_TOMATO_USE 1
+#if APP_TOMATO_USE
+#include "app/tomato/tomato.h"
+#endif
+
 // 贪吃蛇游戏APP
 #define APP_GAME_SNAKE_USE 1
 #if APP_GAME_SNAKE_USE
