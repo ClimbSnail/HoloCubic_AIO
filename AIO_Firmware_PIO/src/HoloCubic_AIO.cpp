@@ -139,6 +139,9 @@ void setup()
 #if APP_WEATHER_OLD_USE
     app_controller->app_install(&weather_old_app);
 #endif
+#if APP_TOMATO_USE
+    app_controller->app_install(&tomato_app);
+#endif
 #if APP_PICTURE_USE
     app_controller->app_install(&picture_app);
 #endif
