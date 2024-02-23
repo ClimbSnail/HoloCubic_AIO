@@ -87,13 +87,13 @@ void UIInit()
     lv_obj_set_pos(btn3, 164, 87);
     lv_obj_set_style_bg_color(btn3, lv_color_make(0xff, 0xff, 0xff), LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(btn3, LV_OPA_20, LV_STATE_DEFAULT);
-    
+ #endif   
     txtLabel = lv_label_create(tomato_scr);
     lv_obj_add_style(txtLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_recolor(txtLabel, true);
     lv_label_set_text(txtLabel, "专注中");
     lv_obj_set_pos(txtLabel, 31, 165);
-#endif
+
     clockLabel_1 = lv_label_create(tomato_scr); // 分钟
     lv_obj_add_style(clockLabel_1, &numberBig_style, LV_STATE_DEFAULT);
     lv_label_set_recolor(clockLabel_1, true);
