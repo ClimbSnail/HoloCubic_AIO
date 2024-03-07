@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2014-2022 Fredrik Ahlberg, Angus Gratton, Espressif Systems (Shanghai) CO LTD, other contributors as noted.
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import io
@@ -36,33 +40,18 @@ long_description = """
 ==========
 esptool.py
 ==========
-A command line utility to communicate with the ROM bootloader in Espressif ESP8266 & ESP32 microcontrollers.
+A Python-based, open-source, platform-independent utility to communicate with the ROM bootloader in Espressif chips.
 
-Allows flashing firmware, reading back firmware, querying chip parameters, etc.
+The esptool.py project is `hosted on github <https://github.com/espressif/esptool>`_.
 
-The esptool.py project is hosted on github: https://github.com/espressif/esptool
+Documentation
+-------------
 
-Installation
-------------
-
-esptool can be installed via pip:
-
-  $ pip install --upgrade esptool
-
-Since version 1.3, esptool supports both Python 2.7 and Python 3.4 or newer.
-
-Since version 2.0, esptool supports both ESP8266 & ESP32.
-
-Usage
------
-
-Please see the `Usage section of the README.md file <https://github.com/espressif/esptool#usage>`_.
-
-You can also get help information by running `esptool.py --help`.
+Visit online `esptool documentation <https://docs.espressif.com/projects/esptool/>`_ or run ``esptool.py -h``.
 
 Contributing
 ------------
-Please see the `CONTRIBUTING.md file on github <https://github.com/espressif/esptool/blob/master/CONTRIBUTING.md>`_.
+Please see the `contributions guide <https://docs.espressif.com/projects/esptool/en/latest/contributing.html>`_.
 """
 
 # For Windows, we want to install esptool.py.exe, etc. so that normal Windows command line can run them
@@ -86,11 +75,16 @@ setup(
     name='esptool',
     py_modules=['esptool', 'espsecure', 'espefuse'],
     version=find_version('esptool.py'),
-    description='A serial utility to communicate & flash code to Espressif ESP8266 & ESP32 chips.',
+    description='A serial utility to communicate & flash code to Espressif chips.',
     long_description=long_description,
-    url='https://github.com/espressif/esptool',
-    author='Fredrik Ahlberg (themadinventor) & Angus Gratton (projectgus)',
-    author_email='angus@espressif.com',
+    url='https://github.com/espressif/esptool/',
+    project_urls={
+        'Documentation': 'https://docs.espressif.com/projects/esptool/',
+        'Source': 'https://github.com/espressif/esptool/',
+        'Tracker': 'https://github.com/espressif/esptool/issues/',
+    },
+    author='Fredrik Ahlberg (themadinventor) & Angus Gratton (projectgus) & Espressif Systems',
+    author_email='',
     license='GPLv2+',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -110,7 +104,11 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-    setup_requires=['wheel'] if sys.version_info[0:2] not in [(3, 4), (3, 5)] else [],
+    setup_requires=(
+        ['wheel']
+        if 'bdist_wheel' in sys.argv and sys.version_info[0:2] not in [(3, 4), (3, 5)] else
+        []
+    ),
     extras_require={
         "dev": [
             'flake8>=3.2.0',

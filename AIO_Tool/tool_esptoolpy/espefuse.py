@@ -1,76 +1,106 @@
 #!/usr/bin/env python
-# efuse get/set utility
-# https://github.com/themadinventor/esptool
 #
-# Copyright (C) 2016 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2016-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import argparse
 import os
 import sys
+from collections import namedtuple
 from io import StringIO
 
 import espressif.efuse.esp32 as esp32_efuse
+import espressif.efuse.esp32c2 as esp32c2_efuse
 import espressif.efuse.esp32c3 as esp32c3_efuse
+import espressif.efuse.esp32h2beta1 as esp32h2beta1_efuse
 import espressif.efuse.esp32s2 as esp32s2_efuse
+import espressif.efuse.esp32s3 as esp32s3_efuse
 import espressif.efuse.esp32s3beta2 as esp32s3beta2_efuse
-import espressif.efuse.esp32s3beta3 as esp32s3beta3_efuse
 
 import esptool
 
+DefChip = namedtuple('DefChip', ['chip_name', 'efuse_lib', 'chip_class'])
+
+SUPPORTED_BURN_COMMANDS = [
+    'read_protect_efuse', 'write_protect_efuse',
+    'burn_efuse', 'burn_block_data', 'burn_bit', 'burn_key', 'burn_key_digest',
+    'burn_custom_mac',
+    'set_flash_voltage',
+    'execute_scripts',
+]
+
+SUPPORTED_COMMANDS = [
+    'summary', 'dump',
+    'get_custom_mac',
+    'adc_info',
+    'check_error',
+] + SUPPORTED_BURN_COMMANDS
+
+SUPPORTED_CHIPS = {
+    'esp32': DefChip('ESP32', esp32_efuse, esptool.ESP32ROM),
+    'esp32c2': DefChip('ESP32-C2', esp32c2_efuse, esptool.ESP32C2ROM),
+    'esp32c3': DefChip('ESP32-C3', esp32c3_efuse, esptool.ESP32C3ROM),
+    'esp32h2beta1': DefChip('ESP32-H2(beta1)', esp32h2beta1_efuse, esptool.ESP32H2BETA1ROM),
+    'esp32s2': DefChip('ESP32-S2', esp32s2_efuse, esptool.ESP32S2ROM),
+    'esp32s3': DefChip('ESP32-S3', esp32s3_efuse, esptool.ESP32S3ROM),
+    'esp32s3beta2': DefChip('ESP32-S3(beta2)', esp32s3beta2_efuse, esptool.ESP32S3BETA2ROM),
+}
+
 
 def get_esp(port, baud, connect_mode, chip='auto', skip_connect=False, virt=False, debug=False, virt_efuse_file=None):
-    if chip not in ['auto', 'esp32', 'esp32s2', 'esp32s3beta2', 'esp32s3beta3', 'esp32c3']:
+    if chip not in ['auto'] + list(SUPPORTED_CHIPS.keys()):
         raise esptool.FatalError("get_esp: Unsupported chip (%s)" % chip)
     if virt:
-        esp = {
-            'esp32': esp32_efuse,
-            'esp32s2': esp32s2_efuse,
-            'esp32s3beta2': esp32s3beta2_efuse,
-            'esp32s3beta3': esp32s3beta3_efuse,
-            'esp32c3': esp32c3_efuse,
-        }.get(chip, esp32_efuse).EmulateEfuseController(virt_efuse_file, debug)
+        efuse = SUPPORTED_CHIPS.get(chip, SUPPORTED_CHIPS['esp32']).efuse_lib
+        esp = efuse.EmulateEfuseController(virt_efuse_file, debug)
     else:
         if chip == 'auto' and not skip_connect:
             esp = esptool.ESPLoader.detect_chip(port, baud, connect_mode)
         else:
-            esp = {
-                'esp32': esptool.ESP32ROM,
-                'esp32s2': esptool.ESP32S2ROM,
-                'esp32s3beta2': esptool.ESP32S3BETA2ROM,
-                'esp32s3beta3': esptool.ESP32S3BETA3ROM,
-                'esp32c3': esptool.ESP32C3ROM,
-            }.get(chip, esptool.ESP32ROM)(port if not skip_connect else StringIO(), baud)
+            esp = SUPPORTED_CHIPS.get(chip, SUPPORTED_CHIPS['esp32']).chip_class(port if not skip_connect else StringIO(), baud)
             if not skip_connect:
                 esp.connect(connect_mode)
     return esp
 
 
 def get_efuses(esp, skip_connect=False, debug_mode=False, do_not_confirm=False):
-    try:
-        efuse = {
-            'ESP32': esp32_efuse,
-            'ESP32-S2': esp32s2_efuse,
-            'ESP32-S3(beta2)': esp32s3beta2_efuse,
-            'ESP32-S3(beta3)': esp32s3beta3_efuse,
-            'ESP32-C3': esp32c3_efuse,
-        }[esp.CHIP_NAME]
-    except KeyError:
+    for name in SUPPORTED_CHIPS:
+        if SUPPORTED_CHIPS[name].chip_name == esp.CHIP_NAME:
+            efuse = SUPPORTED_CHIPS[name].efuse_lib
+            return (efuse.EspEfuses(esp, skip_connect, debug_mode, do_not_confirm), efuse.operations)
+    else:
         raise esptool.FatalError("get_efuses: Unsupported chip (%s)" % esp.CHIP_NAME)
-    # dict mapping register name to its efuse object
-    return (efuse.EspEfuses(esp, skip_connect, debug_mode, do_not_confirm), efuse.operations)
+
+
+def split_on_groups(all_args):
+    """
+    This function splits the all_args list into groups, where each item is a cmd with all its args.
+
+    Example:
+    all_args: ['burn_key_digest', 'secure_images/ecdsa256_secure_boot_signing_key_v2.pem',
+               'burn_key', 'BLOCK_KEY0', 'images/efuse/128bit_key', 'XTS_AES_128_KEY_DERIVED_FROM_128_EFUSE_BITS']
+
+    used_cmds: ['burn_key_digest', 'burn_key']
+    groups: [['burn_key_digest', 'secure_images/ecdsa256_secure_boot_signing_key_v2.pem'],
+             ['burn_key', 'BLOCK_KEY0', 'images/efuse/128bit_key', 'XTS_AES_128_KEY_DERIVED_FROM_128_EFUSE_BITS']]
+    """
+
+    groups = []
+    cmd = []
+    used_cmds = []
+    for item in all_args:
+        if item in SUPPORTED_COMMANDS:
+            used_cmds.append(item)
+            if cmd != []:
+                groups.append(cmd)
+            cmd = []
+        cmd.append(item)
+    if cmd:
+        groups.append(cmd)
+    return groups, used_cmds
 
 
 def main(custom_commandline=None):
@@ -81,12 +111,12 @@ def main(custom_commandline=None):
     as strings. Arguments and their values need to be added as individual items to the list e.g. "--port /dev/ttyUSB1" thus
     becomes ['--port', '/dev/ttyUSB1'].
     """
-    init_parser = argparse.ArgumentParser(description='espefuse.py v%s - [ESP32/S2/S3BETA2/S3BETA3/C3] efuse get/set tool' % esptool.__version__,
+    init_parser = argparse.ArgumentParser(description='espefuse.py v%s - [ESP32xx] efuse get/set tool' % esptool.__version__,
                                           prog='espefuse', add_help=False)
 
     init_parser.add_argument('--chip', '-c',
                              help='Target chip type',
-                             choices=['auto', 'esp32', 'esp32s2', 'esp32s3beta2', 'esp32s3beta3', 'esp32c3'],
+                             choices=['auto'] + list(SUPPORTED_CHIPS.keys()),
                              default=os.environ.get('ESPTOOL_CHIP', 'auto'))
 
     init_parser.add_argument('--baud', '-b',
@@ -108,26 +138,52 @@ def main(custom_commandline=None):
     init_parser.add_argument('--path-efuse-file', help='For host tests, saves efuse memory to file.', type=str, default=None)
     init_parser.add_argument('--do-not-confirm', help='Do not pause for confirmation before permanently writing efuses. Use with caution.', action='store_true')
 
-    args1, remaining_args = init_parser.parse_known_args(custom_commandline)
-    debug_mode = args1.debug or ("dump" in remaining_args)
+    common_args, remaining_args = init_parser.parse_known_args(custom_commandline)
+    debug_mode = common_args.debug or ("dump" in remaining_args)
     just_print_help = [True for arg in remaining_args if arg in ["--help", "-h"]] or remaining_args == []
-    esp = get_esp(args1.port, args1.baud, args1.before, args1.chip, just_print_help, args1.virt, args1.debug, args1.path_efuse_file)
-    efuses, efuse_operations = get_efuses(esp, just_print_help, debug_mode, args1.do_not_confirm)
+    esp = get_esp(common_args.port,
+                  common_args.baud,
+                  common_args.before,
+                  common_args.chip,
+                  just_print_help,
+                  common_args.virt,
+                  common_args.debug,
+                  common_args.path_efuse_file)
+    efuses, efuse_operations = get_efuses(esp, just_print_help, debug_mode, common_args.do_not_confirm)
 
     parser = argparse.ArgumentParser(parents=[init_parser])
     subparsers = parser.add_subparsers(dest='operation', help='Run espefuse.py {command} -h for additional help')
 
     efuse_operations.add_commands(subparsers, efuses)
 
-    args = parser.parse_args(remaining_args)
+    grouped_remaining_args, used_cmds = split_on_groups(remaining_args)
     print('espefuse.py v%s' % esptool.__version__)
-    if args.operation is None:
+    if len(grouped_remaining_args) == 0:
         parser.print_help()
         parser.exit(1)
-    operation_func = vars(efuse_operations)[args.operation]
+    there_are_multiple_burn_commands_in_args = sum(cmd in SUPPORTED_BURN_COMMANDS for cmd in used_cmds) > 1
+    if there_are_multiple_burn_commands_in_args:
+        efuses.batch_mode_cnt += 1
 
-    # each 'operation' is a module-level function of the same name
-    operation_func(esp, efuses, args)
+    for rem_args in grouped_remaining_args:
+        args, unused_args = parser.parse_known_args(rem_args, namespace=common_args)
+        if args.operation is None:
+            parser.print_help()
+            parser.exit(1)
+        assert len(unused_args) == 0, 'Not all commands were recognized "{}"'.format(unused_args)
+
+        operation_func = vars(efuse_operations)[args.operation]
+        # each 'operation' is a module-level function of the same name
+        print('\n=== Run "{}" command ==='.format(args.operation))
+        operation_func(esp, efuses, args)
+
+    if there_are_multiple_burn_commands_in_args:
+        efuses.batch_mode_cnt -= 1
+        if not efuses.burn_all(check_batch_mode=True):
+            raise esptool.FatalError('BURN was not done')
+
+    if common_args.virt is False:
+        esp._port.close()
 
 
 def _main():

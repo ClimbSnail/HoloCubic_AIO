@@ -1,22 +1,15 @@
 #!/usr/bin/env python
 # This file includes the operations with eFuses for ESP32 chip
 #
-# Copyright (C) 2020 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2020-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import argparse
+import os  # noqa: F401. It is used in IDF scripts
+import traceback
 
 import espsecure
 
@@ -24,8 +17,8 @@ import esptool
 
 from . import fields
 from .. import util
-from ..base_operations import (add_common_commands, add_force_write_always, burn_bit, burn_block_data, burn_efuse, dump,  # noqa: F401
-                               read_protect_efuse, summary, write_protect_efuse)  # noqa: F401
+from ..base_operations import (add_common_commands, add_force_write_always, burn_bit, burn_block_data,  # noqa: F401
+                               burn_efuse, check_error, dump, read_protect_efuse, summary, write_protect_efuse)  # noqa: F401
 
 
 def add_commands(subparsers, efuses):
@@ -68,8 +61,10 @@ def burn_custom_mac(esp, efuses, args):
     #  - CUSTOM_MAC = AA:CD:EF:01:02:03
     #  - CUSTOM_MAC_CRC = crc8(CUSTOM_MAC)
     efuses["CUSTOM_MAC"].save(args.mac)
-    efuses.burn_all()
+    if not efuses.burn_all(check_batch_mode=True):
+        return
     get_custom_mac(esp, efuses, args)
+    print("Successful")
 
 
 def get_custom_mac(esp, efuses, args):
@@ -116,7 +111,9 @@ The following efuses are burned: XPD_SDIO_FORCE, XPD_SDIO_REG, XPD_SDIO_TIEH.
     if args.voltage == '3.3V':
         sdio_tieh.save(1)
     print("VDD_SDIO setting complete.")
-    efuses.burn_all()
+    if not efuses.burn_all(check_batch_mode=True):
+        return
+    print("Successful")
 
 
 def adc_info(esp, efuses, args):
@@ -183,13 +180,14 @@ def burn_key(esp, efuses, args):
     if args.no_protect_key:
         print("Key is left unprotected as per --no-protect-key argument.")
 
-    msg = "Burn keys in efuse blocks"
+    msg = "Burn keys in efuse blocks.\n"
     if no_protect_key:
         msg += "The key block will left readable and writeable (due to --no-protect-key)"
     else:
         msg += "The key block will be read and write protected (no further changes or readback)"
-    print(msg)
-    efuses.burn_all()
+    print(msg, '\n')
+    if not efuses.burn_all(check_batch_mode=True):
+        return
     print("Successful")
 
 
@@ -201,7 +199,7 @@ def burn_key_digest(esp, efuses, args):
     if "revision 3" not in chip_revision:
         raise esptool.FatalError("Incorrect chip revision for Secure boot v2. Detected: %s. Expected: (revision 3)" % chip_revision)
 
-    digest = espsecure._digest_rsa_public_key(args.keyfile)
+    digest = espsecure._digest_sbv2_public_key(args.keyfile)
     efuse = efuses["BLOCK2"]
     num_bytes = efuse.bit_len // 8
     if len(digest) != num_bytes:
@@ -214,4 +212,52 @@ def burn_key_digest(esp, efuses, args):
         print("Disabling write to efuse %s..." % (efuse.name))
         efuse.disable_write()
 
-    efuses.burn_all()
+    if not efuses.burn_all(check_batch_mode=True):
+        return
+    print("Successful")
+
+
+def espefuse(esp, efuses, args, command):
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest='operation')
+    add_commands(subparsers, efuses)
+    try:
+        cmd_line_args = parser.parse_args(command.split())
+    except SystemExit:
+        traceback.print_stack()
+        raise esptool.FatalError('"{}" - incorrect command'.format(command))
+    if cmd_line_args.operation == 'execute_scripts':
+        configfiles = cmd_line_args.configfiles
+        index = cmd_line_args.index
+    # copy arguments from args to cmd_line_args
+    vars(cmd_line_args).update(vars(args))
+    if cmd_line_args.operation == 'execute_scripts':
+        cmd_line_args.configfiles = configfiles
+        cmd_line_args.index = index
+    if cmd_line_args.operation is None:
+        parser.print_help()
+        parser.exit(1)
+    operation_func = globals()[cmd_line_args.operation]
+    # each 'operation' is a module-level function of the same name
+    operation_func(esp, efuses, cmd_line_args)
+
+
+def execute_scripts(esp, efuses, args):
+    efuses.batch_mode_cnt += 1
+    del args.operation
+    scripts = args.scripts
+    del args.scripts
+
+    for file in scripts:
+        with open(file.name, 'r') as file:
+            exec(compile(file.read(), file.name, 'exec'))
+
+    if args.debug:
+        for block in efuses.blocks:
+            data = block.get_bitstring(from_read=False)
+            block.print_block(data, "regs_for_burn", args.debug)
+
+    efuses.batch_mode_cnt -= 1
+    if not efuses.burn_all(check_batch_mode=True):
+        return
+    print("Successful")

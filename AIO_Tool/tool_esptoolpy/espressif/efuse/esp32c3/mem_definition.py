@@ -1,19 +1,10 @@
 #!/usr/bin/env python
 # This file describes eFuses fields and registers for ESP32-C3 chip
 #
-# Copyright (C) 2020 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2020-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 from ..mem_definition_base import EfuseBlocksBase, EfuseFieldsBase, EfuseRegistersBase
@@ -33,6 +24,16 @@ class EfuseDefineRegisters(EfuseRegistersBase):
     EFUSE_CMD_REG           = DR_REG_EFUSE_BASE + 0x1D4
     EFUSE_RD_RS_ERR0_REG    = DR_REG_EFUSE_BASE + 0x1C0
     EFUSE_RD_RS_ERR1_REG    = DR_REG_EFUSE_BASE + 0x1C4
+    EFUSE_RD_REPEAT_ERR0_REG = DR_REG_EFUSE_BASE + 0x17C
+    EFUSE_RD_REPEAT_ERR1_REG = DR_REG_EFUSE_BASE + 0x180
+    EFUSE_RD_REPEAT_ERR2_REG = DR_REG_EFUSE_BASE + 0x184
+    EFUSE_RD_REPEAT_ERR3_REG = DR_REG_EFUSE_BASE + 0x188
+    EFUSE_RD_REPEAT_ERR4_REG = DR_REG_EFUSE_BASE + 0x18C
+    EFUSE_DAC_CONF_REG = DR_REG_EFUSE_BASE + 0x1E8
+    EFUSE_RD_TIM_CONF_REG = DR_REG_EFUSE_BASE + 0x1EC
+    EFUSE_WR_TIM_CONF1_REG = DR_REG_EFUSE_BASE + 0x1F0
+    EFUSE_WR_TIM_CONF2_REG = DR_REG_EFUSE_BASE + 0x1F4
+    EFUSE_DATE_REG = DR_REG_EFUSE_BASE + 0x1FC
     EFUSE_WRITE_OP_CODE     = 0x5A5A
     EFUSE_READ_OP_CODE      = 0x5AA5
     EFUSE_PGM_CMD_MASK      = 0x3
@@ -40,21 +41,21 @@ class EfuseDefineRegisters(EfuseRegistersBase):
     EFUSE_READ_CMD          = 0x1
 
     BLOCK_ERRORS = [
-        # error reg,            err_num,    fail_bit
-        (None,                  None,       None),  # BLOCK0
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 0,     3),     # MAC_SPI_8M_0
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 4,     7),     # BLOCK_SYS_DATA
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 8,     11),    # BLOCK_USR_DATA
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 12,    15),    # BLOCK_KEY0
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 16,    19),    # BLOCK_KEY1
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 20,    23),    # BLOCK_KEY2
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 24,    27),    # BLOCK_KEY3
-        (EFUSE_RD_RS_ERR0_REG,  0x7 << 28,    31),    # BLOCK_KEY4
-        (EFUSE_RD_RS_ERR1_REG,  0x7 << 0,     3),     # BLOCK_KEY5
-        (EFUSE_RD_RS_ERR1_REG,  0x7 << 4,     7),     # BLOCK_SYS_DATA2
+        # error_reg,               err_num_mask, err_num_offs,     fail_bit
+        (EFUSE_RD_REPEAT_ERR0_REG, None,         None,             None),  # BLOCK0
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          4,                7),     # MAC_SPI_8M_0
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          8,                11),    # BLOCK_SYS_DATA
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          12,               15),    # BLOCK_USR_DATA
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          16,               19),    # BLOCK_KEY0
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          20,               23),    # BLOCK_KEY1
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          24,               27),    # BLOCK_KEY2
+        (EFUSE_RD_RS_ERR0_REG,     0x7,          28,               31),    # BLOCK_KEY3
+        (EFUSE_RD_RS_ERR1_REG,     0x7,          0,                3),     # BLOCK_KEY4
+        (EFUSE_RD_RS_ERR1_REG,     0x7,          4,                7),     # BLOCK_KEY5
+        (EFUSE_RD_RS_ERR1_REG,     None,         None,             None),  # BLOCK_SYS_DATA2
     ]
 
-    EFUSE_WR_TIM_CONF2_REG = DR_REG_EFUSE_BASE + 0x1F4
+    # EFUSE_WR_TIM_CONF2_REG
     EFUSE_PWR_OFF_NUM_S = 0
     EFUSE_PWR_OFF_NUM_M = 0xFFFF << EFUSE_PWR_OFF_NUM_S
 
@@ -100,20 +101,14 @@ class EfuseDefineFields(EfuseFieldsBase):
         # Name                           Category Block Word Pos Type:len   WR_DIS RD_DIS Class        Description                Dictionary
         ("WR_DIS",                       "efuse",    0,  0,  0,  "uint:32",  None, None, None,         "Disables programming of individual eFuses", None),
         ("RD_DIS",                       "efuse",    0,  1,  0,  "uint:7",   0,    None, None,         "Disables software reading from BLOCK4-10", None),
-        ("DIS_RTC_RAM_BOOT",             "config",   0,  1,  7,  "bool",     1,    None, None,         "Disables boot from RTC RAM", None),
         ("DIS_ICACHE",                   "config",   0,  1,  8,  "bool",     2,    None, None,         "Disables ICache", None),
         ("DIS_USB_JTAG",             "usb config",   0,  1,  9,  "bool",     2,    None, None,         "Disables USB JTAG. "
                                                                                                        "JTAG access via pads is controlled separately", None),
         ("DIS_DOWNLOAD_ICACHE",          "config",   0,  1,  10, "bool",     2,    None, None,         "Disables Icache when SoC is in Download mode", None),
         ("DIS_USB_DEVICE",           "usb config",   0,  1,  11, "bool",     2,    None, None,         "Disables USB DEVICE", None),
         ("DIS_FORCE_DOWNLOAD",           "config",   0,  1,  12, "bool",     2,    None, None,         "Disables forcing chip into Download mode", None),
-        ("DIS_USB",                  "usb config",   0,  1,  13, "bool",     2,    None, None,         "Disables the USB OTG hardware", None),
         ("DIS_CAN",                      "config",   0,  1,  14, "bool",     2,    None, None,         "Disables the TWAI Controller hardware", None),
-        ("JTAG_SEL_ENABLE",         "jtag config",   0,  1,  15, "bool",     2,    None, None,         "Set this bit to enable selection between "
-                                                                                                       "usb_to_jtag and pad_to_jtag through strapping "
-                                                                                                       "gpio10 when both reg_dis_usb_jtag and "
-                                                                                                       "reg_dis_pad_jtag are equal to 0.", None),
-        ("SOFT_DIS_JTAG",           "jtag config",   0,  1,  16, "uint:2",   2,    None, None,         "Software disables JTAG. When software disabled, "
+        ("SOFT_DIS_JTAG",           "jtag config",   0,  1,  16, "uint:3",   2,    None, None,         "Software disables JTAG. When software disabled, "
                                                                                                        "JTAG can be activated temporarily by HMAC peripheral",
                                                                                                        None),
         ("DIS_PAD_JTAG",            "jtag config",   0,  1,  19, "bool",     2,    None, None,         "Permanently disable JTAG access via pads. "
@@ -153,9 +148,6 @@ class EfuseDefineFields(EfuseFieldsBase):
         ("UART_PRINT_CHANNEL",           "config",   0,  4, 2,   "bool",     18,   None, None,         "Selects the default UART for printing boot msg",
          {0: "UART0",
           1: "UART1"}),
-        ("FLASH_ECC_MODE",         "flash config",   0,  4, 3,   "bool",     18,   None, None,         "Set this bit to set flsah ecc mode.",
-         {0: "flash ecc 16to18 byte mode",
-          1: "flash ecc 16to17 byte mode"}),
         ("DIS_USB_DOWNLOAD_MODE",    "usb config",   0,  4, 4,   "bool",     18,   None, None,         "Disables use of USB in UART download boot mode", None),
         ("ENABLE_SECURITY_DOWNLOAD",   "security",   0,  4, 5,   "bool",     18,   None, None,         "Enables secure UART download mode "
                                                                                                        "(read/write flash only)", None),
@@ -164,14 +156,6 @@ class EfuseDefineFields(EfuseFieldsBase):
           1: "Enable when GPIO8 is low at reset",
           2: "Enable when GPIO8 is high at reset",
           3: "Disabled"}),
-        ("PIN_POWER_SELECTION",  "VDD_SPI config",   0,  4, 8,   "bool",     18,   None, None,         "GPIO33-GPIO37 power supply selection in ROM code",
-         {0: "VDD3P3_CPU",
-          1: "VDD_SPI"}),
-        ("FLASH_TYPE",             "flash config",   0,  4, 9,   "bool",     18,   None, None,         "Selects SPI flash type",
-         {0: "4 data lines",
-          1: "8 data lines"}),
-        ("FLASH_PAGE_SIZE",        "flash config",   0,  4, 10,  "uint:2",   18,   None, None,         "Flash page size", None),
-        ("FLASH_ECC_EN",           "flash config",   0,  4, 12,  "bool",     18,   None, None,         "Enable ECC for flash boot", None),
         ("FORCE_SEND_RESUME",            "config",   0,  4, 13,  "bool",     18,   None, None,         "Force ROM code to send a resume command during SPI boot"
                                                                                                        "during SPI boot", None),
         ("SECURE_VERSION",             "identity",   0,  4, 14,  "uint:16",  18,   None, "bitcount",   "Secure version (used by ESP-IDF anti-rollback feature)",
@@ -193,13 +177,14 @@ class EfuseDefineFields(EfuseFieldsBase):
         ("SPI_PAD_CONFIG_D7",    "spi_pad_config",   1,  3, 12,  "uint:6",   20,   None, None,         "SPI D7 pad", None),
         ("WAFER_VERSION",              "identity",   1,  3, 18,  "uint:3",   20,   None, None,         "WAFER version",
          {0: "(revision 0)", 1: "(revision 1)"}),
-        ("PKG_VERSION",                "identity",   1,  3, 21,  "uint:4",   20,   None, None,         "Package version",
+        ("PKG_VERSION",                "identity",   1,  3, 21,  "uint:3",   20,   None, None,         "Package version",
          {0: "ESP32-C3"}),
         ("BLOCK1_VERSION",             "identity",   1,  3, 25,  "uint:3",   20,   None, None,         "BLOCK1 efuse version", None),
         ("OPTIONAL_UNIQUE_ID",         "identity",   2,  0, 0,   "bytes:16", 21,   None, "keyblock",   "Optional unique 128-bit ID", None),
         ("BLOCK2_VERSION",             "identity",   2,  4, 4,   "uint:3",   21,   None, None,         "Version of BLOCK2",
          {0: "No calibration",
           1: "With calibration"}),
+        ("CUSTOM_MAC",                 "identity",   3,  6, 8,   "bytes:6",  22,   None, "mac",        "Custom MAC Address", None),
     ]
 
     KEYBLOCKS = [

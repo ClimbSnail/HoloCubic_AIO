@@ -1,19 +1,10 @@
 #!/usr/bin/env python
 # This file describes eFuses controller for ESP32-S2 chip
 #
-# Copyright (C) 2020 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2020-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import reedsolo
@@ -23,7 +14,7 @@ from ..emulate_efuse_controller_base import EmulateEfuseControllerBase, FatalErr
 
 
 class EmulateEfuseController(EmulateEfuseControllerBase):
-    """ The class for virtual ESP32 operation. Using for HOST_TEST.
+    """ The class for virtual efuse operation. Using for HOST_TEST.
     """
     CHIP_NAME = "ESP32-S2"
     mem = None
@@ -43,6 +34,15 @@ class EmulateEfuseController(EmulateEfuseControllerBase):
 
     def get_crystal_freq(self):
         return 40  # MHz (common for all chips)
+
+    def get_security_info(self):
+        return {
+            "flags": 0,
+            "flash_crypt_cnt": 0,
+            "key_purposes": 0,
+            "chip_id": None,
+            "api_version": None,
+        }
 
     """ << esptool method end """
 

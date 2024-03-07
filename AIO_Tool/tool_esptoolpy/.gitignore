@@ -1,5 +1,4 @@
 .pypirc
-__pycache__
 *.pyc
 *~
 GPATH
@@ -13,3 +12,5 @@ local.mk
 
 .envrc
 report.xml
+
+docs/_build/

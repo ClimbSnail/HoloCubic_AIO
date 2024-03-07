@@ -1,19 +1,9 @@
 /*
- * Copyright (c) 2016-2019 Espressif Systems (Shanghai) PTE LTD
- * All rights reserved
+ * SPDX-FileCopyrightText: 2019-2022 Espressif Systems (Shanghai) CO LTD
  *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
- * Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-License-Identifier: GPL-2.0-or-later
  */
+
 #include <stdlib.h>
 #include "stub_commands.h"
 #include "stub_flasher.h"
@@ -262,3 +252,16 @@ esp_command_error handle_write_reg(const write_reg_args_t *cmds, uint32_t num_co
     }
     return ESP_OK;
 }
+
+#if ESP32S2_OR_LATER && !ESP32H2BETA2 // TODO: ESPTOOL-350
+esp_command_error handle_get_security_info()
+{
+  uint8_t buf[SECURITY_INFO_BYTES];
+  esp_command_error ret;
+
+  ret = GetSecurityInfoProc(NULL, NULL, buf);
+  if (ret == ESP_OK)
+    SLIP_send_frame_data_buf(buf, sizeof(buf));
+  return ret;
+}
+#endif // ESP32S2_OR_LATER

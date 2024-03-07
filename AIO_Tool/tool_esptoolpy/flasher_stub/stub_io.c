@@ -1,19 +1,9 @@
 /*
- * Copyright (c) 2016 Cesanta Software Limited and 2016-2020 Espressif Systems (Shanghai) PTE LTD
+ * SPDX-FileCopyrightText: 2016 Cesanta Software Limited
  *
- * All rights reserved
+ * SPDX-License-Identifier: GPL-2.0-or-later
  *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
- * Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-FileContributor: 2016-2022 Espressif Systems (Shanghai) CO LTD
  */
 
 #include <stdlib.h>
@@ -74,8 +64,12 @@ static void stub_configure_rx_uart(void)
   /* All UART reads come via uart_isr or jtag_serial_isr */
 #if WITH_USB_JTAG_SERIAL
   if (stub_uses_usb_jtag_serial()) {
-    WRITE_REG(INTERRUPT_CORE0_USB_INTR_MAP_REG, ETS_USB_INUM);
-    esprv_intc_int_set_priority(ETS_USB_INUM, 1);
+    #if ESP32C3
+      WRITE_REG(INTERRUPT_CORE0_USB_INTR_MAP_REG, ETS_USB_INUM);
+      esprv_intc_int_set_priority(ETS_USB_INUM, 1);
+    #else
+      WRITE_REG(INTERRUPT_CORE0_USB_DEVICE_INT_MAP_REG, ETS_USB_INUM);
+    #endif
     ets_isr_attach(ETS_USB_INUM, jtag_serial_isr, NULL);
     REG_SET_MASK(USB_DEVICE_INT_ENA_REG, USB_DEVICE_SERIAL_OUT_RECV_PKT_INT_ENA);
     ets_isr_unmask(1 << ETS_USB_INUM);
@@ -124,13 +118,20 @@ static void stub_cdcacm_write_char(char ch)
 
 static bool stub_uses_usb_otg(void)
 {
-  return UartDev_buff_uart_no == UART_USB_OTG;
+  UartDevice *uart = GetUartDevice();
+
+  /* buff_uart_no indicates which UART is used for SLIP communication) */
+  return uart->buff_uart_no == UART_USB_OTG;
 }
 
 static void stub_configure_rx_usb(void)
 {
   cdc_acm_line_ctrl_get(uart_acm_dev, LINE_CTRL_RTS, &s_cdcacm_old_rts);
-  intr_matrix_set(0, ETS_USB_INTR_SOURCE, ETS_USB_INUM);
+  #if ESP32S2
+    intr_matrix_set(0, ETS_USB_INTR_SOURCE, ETS_USB_INUM);
+  #elif ESP32S3
+    WRITE_REG(INTERRUPT_CORE0_USB_INTR_MAP_REG, ETS_USB_INUM);
+  #endif
   ets_isr_attach(ETS_USB_INUM, usb_dw_isr_handler, NULL);
   ets_isr_unmask(1 << ETS_USB_INUM);
   cdc_acm_irq_callback_set(uart_acm_dev, &stub_cdcacm_cb);

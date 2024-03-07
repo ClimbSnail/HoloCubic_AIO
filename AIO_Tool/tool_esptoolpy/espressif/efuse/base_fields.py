@@ -1,19 +1,10 @@
 #!/usr/bin/env python
 # This file describes the common eFuses structures for chips
 #
-# Copyright (C) 2020 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2020-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import argparse
@@ -75,12 +66,22 @@ class CheckArgValue(object):
 
 class EfuseProtectBase(object):
     # This class is used by EfuseBlockBase and EfuseFieldBase
+
+    def get_read_disable_mask(self):
+        mask = 0
+        if isinstance(self.read_disable_bit, list):
+            for i in self.read_disable_bit:
+                mask |= (1 << i)
+        else:
+            mask = (1 << self.read_disable_bit)
+        return mask
+
     def is_readable(self):
         """ Return true if the efuse is readable by software """
         num_bit = self.read_disable_bit
         if num_bit is None:
             return True  # read cannot be disabled
-        return (self.parent["RD_DIS"].get() & (1 << num_bit)) == 0
+        return (self.parent["RD_DIS"].get() & (self.get_read_disable_mask())) == 0
 
     def disable_read(self):
         num_bit = self.read_disable_bit
@@ -88,7 +89,7 @@ class EfuseProtectBase(object):
             raise esptool.FatalError("This efuse cannot be read-disabled")
         if not self.parent["RD_DIS"].is_writeable():
             raise esptool.FatalError("This efuse cannot be read-disabled due the to RD_DIS field is already write-disabled")
-        self.parent["RD_DIS"].save(1 << num_bit)
+        self.parent["RD_DIS"].save(self.get_read_disable_mask())
 
     def is_writeable(self):
         num_bit = self.write_disable_bit
@@ -129,6 +130,14 @@ class EfuseBlockBase(EfuseProtectBase):
         self.bitarray.set(0)
         self.wr_bitarray = BitString(bit_block_len)
         self.wr_bitarray.set(0)
+        self.fail = False
+        self.num_errors = 0
+        if self.id == 0:
+            self.err_bitarray = BitString(bit_block_len)
+            self.err_bitarray.set(0)
+        else:
+            self.err_bitarray = None
+
         if not skip_read:
             self.read()
 
@@ -258,27 +267,34 @@ class EfuseBlockBase(EfuseProtectBase):
         data = BitString(bytes=new_data[::-1], length=len(new_data) * 8)
         if self.parent.debug:
             print("\twritten : {} ->\n\tto write: {}".format(self.get_bitstring(), data))
-        self.wr_bitarray.overwrite(data, pos=0)
+        self.wr_bitarray.overwrite(self.wr_bitarray | data, pos=0)
 
     def burn_words(self, words):
-        self.parent.efuse_controller_setup()
-        if self.parent.debug:
-            print("Write data to BLOCK%d" % (self.id))
-        write_reg_addr = self.wr_addr
-        for word in words:
-            # for ep32s2: using EFUSE_PGM_DATA[0..7]_REG for writing data
-            #   32 bytes to EFUSE_PGM_DATA[0..7]_REG
-            #   12 bytes to EFUSE_CHECK_VALUE[0..2]_REG. These regs are next after EFUSE_PGM_DATA_REG
-            # for esp32:
-            #   each block has the special regs EFUSE_BLK[0..3]_WDATA[0..7]_REG for writing data
+        for burns in range(3):
+            self.parent.efuse_controller_setup()
             if self.parent.debug:
-                print("Addr 0x%08x, data=0x%08x" % (write_reg_addr, word))
-            self.parent.write_reg(write_reg_addr, word)
-            write_reg_addr += 4
-        warnings_before = self.parent.get_coding_scheme_warnings()
-        warnings_after = self.parent.write_efuses(self.id)
-        if warnings_after & ~warnings_before != 0:
-            print("WARNING: Burning efuse block added coding scheme warnings 0x%x -> 0x%x. Encoding bug?" % (warnings_before, warnings_after))
+                print("Write data to BLOCK%d" % (self.id))
+            write_reg_addr = self.wr_addr
+            for word in words:
+                # for ep32s2: using EFUSE_PGM_DATA[0..7]_REG for writing data
+                #   32 bytes to EFUSE_PGM_DATA[0..7]_REG
+                #   12 bytes to EFUSE_CHECK_VALUE[0..2]_REG. These regs are next after EFUSE_PGM_DATA_REG
+                # for esp32:
+                #   each block has the special regs EFUSE_BLK[0..3]_WDATA[0..7]_REG for writing data
+                if self.parent.debug:
+                    print("Addr 0x%08x, data=0x%08x" % (write_reg_addr, word))
+                self.parent.write_reg(write_reg_addr, word)
+                write_reg_addr += 4
+
+            self.parent.write_efuses(self.id)
+            for _ in range(5):
+                self.parent.efuse_read()
+                self.parent.get_coding_scheme_warnings(silent=True)
+                if self.fail or self.num_errors:
+                    print("Error in BLOCK%d, re-burn it again (#%d), to fix it. fail_bit=%d, num_errors=%d" % (self.id, burns, self.fail, self.num_errors))
+                    break
+            if not self.fail and self.num_errors == 0:
+                break
 
     def burn(self):
         if self.wr_bitarray.all(False):
@@ -322,12 +338,10 @@ class EspEfusesBase(object):
     efuses  = []
     coding_scheme = None
     force_write_always = None
+    batch_mode_cnt = 0
 
     def __iter__(self):
         return self.efuses.__iter__()
-
-    def print_status_regs(self):
-        pass
 
     def get_crystal_freq(self):
         return self._esp.get_crystal_freq()
@@ -357,13 +371,16 @@ class EspEfusesBase(object):
     def read_blocks(self):
         for block in self.blocks:
             block.read()
-        self.get_coding_scheme_warnings()
 
     def update_efuses(self):
         for efuse in self.efuses:
             efuse.update(self.blocks[efuse.block].bitarray)
 
-    def burn_all(self):
+    def burn_all(self, check_batch_mode=False):
+        if check_batch_mode:
+            if self.batch_mode_cnt != 0:
+                print("\nBatch mode is enabled, the burn will be done at the end of the command.")
+                return False
         print("\nCheck all blocks for burn...")
         print("idx, BLOCK_NAME,          Conclusion")
         have_wr_data_for_burn = False
@@ -378,11 +395,16 @@ class EspEfusesBase(object):
 
         # Burn from BLKn -> BLK0. Because BLK0 can set rd or/and wr protection bits.
         for block in reversed(self.blocks):
+            old_fail = block.fail
+            old_num_errors = block.num_errors
             block.burn()
+            if (block.fail and old_fail != block.fail) or (block.num_errors and block.num_errors > old_num_errors):
+                raise esptool.FatalError("Error(s) were detected in eFuses")
         print("Reading updated efuses...")
         self.read_coding_scheme()
         self.read_blocks()
         self.update_efuses()
+        return True
 
     @staticmethod
     def confirm(action, do_not_confirm):
@@ -422,6 +444,8 @@ class EfuseFieldBase(EfuseProtectBase):
         self.efuse_type = param.type
         self.description = param.description
         self.dict_value = param.dictionary
+        self.fail = False
+        self.num_errors = 0
         if self.efuse_type.startswith("bool"):
             field_len = 1
         else:
@@ -467,12 +491,16 @@ class EfuseFieldBase(EfuseProtectBase):
                 return BitArray(self.efuse_type + "={}".format(new_value))
 
     def check_new_value(self, bitarray_new_value):
-        bitarray_old_value = self.get_bitstring()
+        bitarray_old_value = self.get_bitstring() | self.get_bitstring(from_read=False)
         if bitarray_new_value.len != bitarray_old_value.len:
             raise esptool.FatalError("For {} efuse, the length of the new value is wrong, expected {} bits, was {} bits."
                                      .format(self.name, bitarray_old_value.len, bitarray_new_value.len))
         if bitarray_new_value == bitarray_old_value:
             error_msg = "\tThe same value for {} is already burned. Do not change the efuse.".format(self.name)
+            print(error_msg)
+            bitarray_new_value.set(0)
+        elif bitarray_new_value == self.get_bitstring(from_read=False):
+            error_msg = "\tThe same value for {} is already prepared for the burn operation.".format(self.name)
             print(error_msg)
             bitarray_new_value.set(0)
         else:
@@ -500,6 +528,13 @@ class EfuseFieldBase(EfuseProtectBase):
         field_len = self.bitarray.len
         bit_array_block.pos = bit_array_block.length - (self.word * 32 + self.pos + field_len)
         self.bitarray.overwrite(bit_array_block.read(field_len), pos=0)
+        err_bitarray = self.parent.blocks[self.block].err_bitarray
+        if err_bitarray is not None:
+            err_bitarray.pos = err_bitarray.length - (self.word * 32 + self.pos + field_len)
+            self.fail = not err_bitarray.read(field_len).all(False)
+        else:
+            self.fail = self.parent.blocks[self.block].fail
+            self.num_errors = self.parent.blocks[self.block].num_errors
 
     def get_raw(self, from_read=True):
         """ Return the raw (unformatted) numeric value of the efuse bits

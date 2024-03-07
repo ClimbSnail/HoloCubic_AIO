@@ -1,19 +1,10 @@
 #!/usr/bin/env python
 # This file describes eFuses for ESP32 chip
 #
-# Copyright (C) 2020 Espressif Systems (Shanghai) PTE LTD
+# SPDX-FileCopyrightText: 2020-2022 Espressif Systems (Shanghai) CO LTD
 #
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
-# Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from __future__ import division, print_function
 
 import binascii
@@ -93,6 +84,8 @@ class EspEfuses(base_fields.EspEfusesBase):
         if esp.CHIP_NAME != "ESP32":
             raise esptool.FatalError("Expected the 'esp' param for ESP32 chip but got for '%s'." % (esp.CHIP_NAME))
         self.blocks = [EfuseBlock(self, self.Blocks.get(block), skip_read=skip_connect) for block in self.Blocks.BLOCKS]
+        if not skip_connect:
+            self.get_coding_scheme_warnings()
         self.efuses = [EfuseField.from_tuple(self, self.Fields.get(efuse), self.Fields.get(efuse).class_type) for efuse in self.Fields.EFUSES]
         if skip_connect:
             self.efuses += [EfuseField.from_tuple(self, self.Fields.get(efuse), self.Fields.get(efuse).class_type) for efuse in self.Fields.KEYBLOCKS_256]
@@ -135,6 +128,10 @@ class EspEfuses(base_fields.EspEfusesBase):
     def read_coding_scheme(self):
         self.coding_scheme = self.read_efuse(self.REGS.EFUSE_CODING_SCHEME_WORD) & self.REGS.EFUSE_CODING_SCHEME_MASK
 
+    def print_status_regs(self):
+        print("")
+        print('{:27} 0x{:08x}'.format('EFUSE_REG_DEC_STATUS', self.read_reg(self.REGS.EFUSE_REG_DEC_STATUS)))
+
     def write_efuses(self, block):
         """ Write the values in the efuse write registers to
         the efuse hardware, then refresh the efuse read registers.
@@ -151,23 +148,36 @@ class EspEfuses(base_fields.EspEfusesBase):
         self.write_reg(self.REGS.EFUSE_REG_CONF, self.REGS.EFUSE_CONF_WRITE)
         self.write_reg(self.REGS.EFUSE_REG_CMD, self.REGS.EFUSE_CMD_WRITE)
 
-        def wait_idle():
-            deadline = time.time() + self.REGS.EFUSE_BURN_TIMEOUT
-            while time.time() < deadline:
-                if self.read_reg(self.REGS.EFUSE_REG_CMD) == 0:
-                    return
-            raise esptool.FatalError("Timed out waiting for Efuse controller command to complete")
-        wait_idle()
+        self.efuse_read()
+        return self.get_coding_scheme_warnings(silent=True)
+
+    def wait_efuse_idle(self):
+        deadline = time.time() + self.REGS.EFUSE_BURN_TIMEOUT
+        while time.time() < deadline:
+            if self.read_reg(self.REGS.EFUSE_REG_CMD) == 0:
+                return
+        raise esptool.FatalError("Timed out waiting for Efuse controller command to complete")
+
+    def efuse_read(self):
+        self.wait_efuse_idle()
         self.write_reg(self.REGS.EFUSE_REG_CONF, self.REGS.EFUSE_CONF_READ)
         self.write_reg(self.REGS.EFUSE_REG_CMD, self.REGS.EFUSE_CMD_READ)
-        wait_idle()
-        return self.get_coding_scheme_warnings()
+        self.wait_efuse_idle()
 
-    def get_coding_scheme_warnings(self):
+    def get_coding_scheme_warnings(self, silent=False):
         """ Check if the coding scheme has detected any errors.
         Meaningless for default coding scheme (0)
         """
-        return self.read_reg(self.REGS.EFUSE_REG_DEC_STATUS) & self.REGS.EFUSE_REG_DEC_STATUS_MASK
+        err = self.read_reg(self.REGS.EFUSE_REG_DEC_STATUS) & self.REGS.EFUSE_REG_DEC_STATUS_MASK
+        for block in self.blocks:
+            if block.id != 0:
+                block.num_errors = 0
+                block.fail = err != 0
+            if not silent and block.fail:
+                print("Error(s) in BLOCK%d [ERRORS:%d FAIL:%d]" % (block.id, block.num_errors, block.fail))
+        if (self.debug or err) and not silent:
+            self.print_status_regs()
+        return err != 0
 
     def summary(self):
         if self["XPD_SDIO_FORCE"].get() == 0:
@@ -203,7 +213,7 @@ class EfuseMacField(EfuseField):
 
     def check_format(self, new_value_str):
         if new_value_str is None:
-            raise esptool.FatalError("Required MAC Address in AB:CD:EF:01:02:03 format!")
+            raise esptool.FatalError("Required MAC Address in AA:CD:EF:01:02:03 format!")
         if new_value_str.count(":") != 5:
             raise esptool.FatalError("MAC Address needs to be a 6-byte hexadecimal format separated by colons (:)!")
         hexad = new_value_str.replace(":", "")
