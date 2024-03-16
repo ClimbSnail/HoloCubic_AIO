@@ -116,4 +116,9 @@
 #include "app/game_snake/game_snake.h"
 #endif
 
+#define APP_LHLXW_USE 1
+#if APP_LHLXW_USE
+#include "app/LHLXW/LHLXW.h"
+#endif
+
 #endif
