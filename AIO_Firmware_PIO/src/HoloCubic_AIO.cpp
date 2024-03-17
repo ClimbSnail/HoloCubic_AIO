@@ -22,7 +22,7 @@
 #include <esp32-hal.h>
 #include <esp32-hal-timer.h>
 
-static bool isCheckAction = false;
+bool isCheckAction = false;
 
 /*** Component objects **7*/
 ImuAction *act_info;           // 存放mpu6050返回的数据
@@ -180,6 +180,9 @@ void setup()
 #endif
 #if APP_PC_RESOURCE_USE
     app_controller->app_install(&pc_resource_app);
+#endif
+#if APP_LHLXW_USE
+    app_controller->app_install(&LHLXW_app);
 #endif
     // 自启动APP
     app_controller->app_auto_start();
