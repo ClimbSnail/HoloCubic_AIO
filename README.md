@@ -18,6 +18,7 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 * BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
 * 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
 * PC资源监控应用开发：[Jumping99](https://github.com/Jumping99)
+* 多功能动画应用开发：[LHYHHD](https://github.com/LHYHHD)
 * 开发人员持续加入中。。。。
 
 _**欢迎加入AIO内测QQ讨论群**_
@@ -178,6 +179,84 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 2. 下载[AIDA64](https://www.aida64.com/downloads)，PC安装AIDA64后的导入配置文件`aida64_setting.rslcd`（在`AIO_Firmware_PIO\src\app\pc_resource`目录下或者群文件中）
 
 注：具体操作步骤较长，见群文档。本应用由`Jumping99`开发。
+
+##### 多功能动画(LH&LXW)
+注意：LH&LXW APP源码中有些功能的说明注释有问题，搞反了前倾和后仰的功能；此APP使用说明以此文档为准
+
+给透明小电视下载带有LH&LXW APP的固件，进入系统，选中LH&LXW APP，后仰进入
+APP，前倾退出APP，左/右倾 选择不同功能，后仰进入选中的功能。
+
+功能说明：
+
+功能1：代码雨；进入此功能后——左/右倾 可切换代码雨大小、前倾退出此功能。
+
+功能2：赛博相册；进入此功能后——左倾停止自动切换、右倾恢复自动切换、后倾在静态和动态间切换、前倾退出此功能。
+
+进入此功能前，得确保你的内存卡中有以下文件
+./LH&LXW/cyber/imgx.cyber存放需要显示的图片文件(x为0~99)
+./LH&LXW/cyber/cyber_num.txt存放需要显示的图片文件数(00~99) 例如7个图片，写07
+注意：./LH&LXW/cyber/imgx.cyber中的图片数必须等于./LH&LXW/cyber/cyber_num.txt中用户输入的图片文件数
+
+.cyber格式的图片文件由以下python代码生成：
+import cv2
+img_path = './123.jpg'#输入图片路径(图片大小必须48x40)
+out_path = './123.cyber'#输出文件路径
+img = cv2.imread(img_path)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+with open(out_path, 'wb') as f:
+    for a in img:
+        for b in a:
+            f.write(b)
+
+功能3：QQ超级表情；进入此功能后——左/右倾 选择不同表情、后仰播放当前表情、在播放时前倾会退出播放、在选择表情时前倾会退出此功能。播放表情时自动循环播放33.3秒，然后播放下一个，播放过程中可以左/右倾 手动切换。
+
+进入此功能前，得确保你的内存卡中有以下文件
+./LH&LXW/emoji/videos/videox.mjpeg 存放要播放的视频（大小240x240）(x为0~99)
+./LH&LXW/emoji/images/imagex.bin   存放要播放的视频的封面（大小60x60）(x为0~99)
+./LH&LXW/emoji/emoji_num.txt        存放要播放的视频数(00~99) 例如7个视频，写07
+注意：./LH&LXW/emoji/videos/中的视频数必须等于./LH&LXW/emoji/images/中的封面数
+同时必须等于./LH&LXW/emoji/emoji_num.txt中用户输入的视频个数。
+
+此功能可以当作是一个有目录的视频播放器（它的实现就是依赖原来的视频播放器APP），用户可以自定义往里面添加要播放的视频，步骤如下：
+1.获取视频，用多功能上位机转为240x240的mjpeg格式（参数推荐用默认的）
+2.将此视频名字更改为videox.mjpeg (x为0~99)
+3.从此原视频中截取一张图片，作为选项封面，长宽比尽量1:1
+4.将此图片重命名为imagex.jpg  (x为0~99)
+5.通过win自带的画图将其尺寸修改为60x60（修改时不用保持原比例）
+6.用lvgl官网的image工具将其转换为imagex.bin (选择CF_INDEXED_4_BIT，保存为Binary)
+7.将imagex.bin和videox.mjpeg放到SD卡对应文件夹
+8.修改emoji_num.txt中的视频总数
+9.打开APP,在emoji功能里面就能看到对应的视频选项
+(如果想实现视频黑色背景，可以用剪辑软件处理，也可以用openCV处理。QQ超级表情) 
+
+若后续QQ出了新的超级表情后，可以用上述方法添加到QQ超级表情中去（最多可以添加99个），获取QQ超级表情的方法：【透明小电视&QQ超级表情】 https://www.bilibili.com/video/BV1dC4y1q7R7/?share_source=copy_web&vd_source=68337adbea96c8cef50403a4b2809df6
+
+功能4：眼珠子；进入此功能后——左/右倾 切换眼睛样式、前倾退出此功能。
+在LH&LXW APP源码中的eye.h中有一个EYE_MIN宏，当EYE_MIN为0，以下模式全部使能，有四种虹膜效果；为1时，只有一种虹膜效果，只生效0，1，2 能大大减小内存占用。( EYE_MIN = 0 时可能会由于ROM不够超出导致编译报错 )
+00：小 default
+01：大 default
+02：双 default
+03：小 dragon
+04：大 dragon
+05：双 dragon
+06：小 goat
+07：大 goat
+08：双 goat
+09：小 noSclera
+10：大 noSclera
+11：双 noSclera
+
+功能5：动态心；进入此功能后——晃动小电视，组成♥的粒子也会晃动，停止晃动后，粒子又会聚集成♥的样子、、前倾退出此功能。
+
+LH&LXW APP参考说明：
+1.代码雨参考爆改车间主任推荐的https://github.com/0015/TP_Arduino_DigitalRain_Anim
+2.眼珠子功能参考https://learn.adafruit.com/animated-electronic-eyes/software 基于TFT_eSPI库中/examples/Generic/Animated_Eyes_1工程改的 
+3.心跳APP参考了fzjpxlay up主的代码和和他分享的粒子动画网页https://openprocessing.org/sketch/1906399
+在此感谢上述大佬！
+
+作者建议：LH&LXW APP里面的功能选择框架非常垃圾，因为后续添加功能相当于重新写整个框架，这部分没有学习意义，请勿参考！
+APP演示视频：【LVGL菜单#透明小电视#LVGL开发】 https://www.bilibili.com/video/BV1wK421173C/?share_source=copy_web&vd_source=68337adbea96c8cef50403a4b2809df6
+
 
 ### 关于编译工程代码
 1. 本工程代码是基于vscode上的PlatformIO插件中的ESP32-Pico的Arduino平台开发。具体教程可以上`B站`找。推荐教程[https://b23.tv/kibhGD](https://b23.tv/kibhGD)
