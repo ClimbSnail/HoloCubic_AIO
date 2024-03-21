@@ -185,17 +185,18 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 给透明小电视下载带有LH&LXW APP的固件，进入系统，选中LH&LXW APP，后仰进入
 APP，前倾退出APP，左/右倾 选择不同功能，后仰进入选中的功能。
 
-功能说明：
+【功能说明】
 
-功能1：代码雨；进入此功能后——左/右倾 可切换代码雨大小、前倾退出此功能。
+功能1： 代码雨；进入此功能后——左/右倾 可切换代码雨大小、前倾退出此功能。
 
 功能2：赛博相册；进入此功能后——左倾停止自动切换、右倾恢复自动切换、后倾在静态和动态间切换、前倾退出此功能。
 
 进入此功能前，得确保你的内存卡中有以下文件
-> `./LH&LXW/cyber/imgx.cyber`存放需要显示的图片文件(x为0~99)
-> `./LH&LXW/cyber/cyber_num.txt`存放需要显示的图片文件数(00~99) 例如7个图片，写07
-> 注意：`./LH&LXW/cyber/imgx.cyber`中的图片数必须等于./LH&LXW/cyber/cyber_num.txt中用户输入的图片文件数
-
+```
+1. ./LH&LXW/cyber/imgx.cyber 存放需要显示的图片文件(x为0~99)
+2. ./LH&LXW/cyber/cyber_num.txt 存放需要显示的图片文件数(00~99) 例如7个图片，写07
+注意：./LH&LXW/cyber/imgx.cyber 中的图片数必须等于./LH&LXW/cyber/cyber_num.txt 中用户输入的图片文件数
+```
 .cyber格式的图片文件由以下python代码生成：
 ```python
 import cv2
@@ -212,12 +213,14 @@ with open(out_path, 'wb') as f:
 功能3：QQ超级表情；进入此功能后——左/右倾 选择不同表情、后仰播放当前表情、在播放时前倾会退出播放、在选择表情时前倾会退出此功能。播放表情时自动循环播放33.3秒，然后播放下一个，播放过程中可以左/右倾 手动切换。
 
 进入此功能前，得确保你的内存卡中有以下文件
-> `./LH&LXW/emoji/videos/videox.mjpeg` 存放要播放的视频（大小240x240）(x为0~99)
-> `./LH&LXW/emoji/images/imagex.bin`   存放要播放的视频的封面（大小60x60）(x为0~99)
-> `./LH&LXW/emoji/emoji_num.txt`        存放要播放的视频数(00~99) 例如7个视频，写07
-注意：`./LH&LXW/emoji/videos/`中的视频数必须等于`./LH&LXW/emoji/images/`中的封面数
-同时必须等于`./LH&LXW/emoji/emoji_num.txt`中用户输入的视频个数。
+```
+1. ./LH&LXW/emoji/videos/videox.mjpeg   存放要播放的视频（大小240x240）(x为0~99)
+2. ./LH&LXW/emoji/images/imagex.bin 存放要播放的视频的封面（大小60x60）(x为0~99)
+3. ./LH&LXW/emoji/emoji_num.txt 存放要播放的视频数(00~99) 例如7个视频，写07
 
+注意：./LH&LXW/emoji/videos/ 中的视频数必须等于 ./LH&LXW/emoji/images/ 中的封面数
+同时必须等于 ./LH&LXW/emoji/emoji_num.txt 中用户输入的视频个数。
+```
 功能4：眼珠子；进入此功能后——左/右倾 切换眼睛样式、前倾退出此功能。
 
 功能5：动态心；进入此功能后——晃动小电视，组成♥的粒子也会晃动，停止晃动后，粒子又会聚集成♥的样子、、前倾退出此功能。
