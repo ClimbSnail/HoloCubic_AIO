@@ -22,6 +22,8 @@ import tkinter as tk
 import util.tkutils as tku
 from tkinter import ttk
 from tkinter import messagebox
+import requests
+import re
 
 
 class Engine(object):
@@ -36,7 +38,7 @@ class Engine(object):
         """
         self.root = root
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.root.iconbitmap("./holo_256.ico")  # 窗体图标
+        self.root.iconbitmap("./image/holo_256.ico")  # 窗体图标
         # 文件转化的创建输出目录
         try:
             dir_path = os.path.join("OutFile", "Cache")
@@ -150,14 +152,29 @@ class Engine(object):
             del self.m_file_tab_windows
             self.m_file_tab_windows = None
 
+def get_version():
+    TOOL_VERSION_INFO_URL = "http://climbsnail.cn:5001/holocubicAIO/sn/v1/version/tool"
+    try:
+        response = requests.get(TOOL_VERSION_INFO_URL, timeout=3) # , verify=False
+        new_version_info = re.findall(r'AIO_TOOL_VERSION v\d{1,2}\.\d{1,2}\.\d{1,2}', response.text)
+        new_version = new_version_info[0].split(" ")[1]
+        if TOOL_VERSION == new_version:
+            return "[已是最新版本]"
+        else:
+            return "[推荐升级最新版本 "+ new_version +"]"
+    except Exception as err:
+        print(err)
+        return "[无法获取到最新版本]"
+
 
 if __name__ == '__main__':
     tool_windows = tk.Tk()  # 创建窗口对象的背景色
-    tool_windows.title("HoloCubic_AIO Tools" + "\t  " + VERSION)  # 窗口名
+    tool_windows.title("HoloCubic_AIO Tools\t  " + TOOL_VERSION)  # 窗口名
     tool_windows.geometry('1000x655+10+10')
     tool_windows.resizable(False, False)  # 设置窗体不可改变大小
     engine = Engine(tool_windows)
     tku.center_window(tool_windows)  # 将窗体移动到屏幕中央
+    tool_windows.title("HoloCubic_AIO Tools\t  " + TOOL_VERSION + " " + get_version())  # 窗口名
 
     # 进入消息循环 父窗口进入事件循环，可以理解为保持窗口运行，否则界面不展示
     tool_windows.mainloop()

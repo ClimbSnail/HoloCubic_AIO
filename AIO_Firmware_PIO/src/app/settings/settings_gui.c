@@ -66,16 +66,16 @@ void display_settings_init(void)
     title_label = lv_label_create(settings_scr);
     lv_obj_add_style(title_label, &title_style, LV_STATE_DEFAULT);
     lv_obj_align(title_label, LV_ALIGN_TOP_MID, 0, 20);
-    lv_label_set_recolor(title_label, true); //先得使能文本重绘色功能
+    lv_label_set_recolor(title_label, true); // 先得使能文本重绘色功能
 
     cur_ver_label = lv_label_create(settings_scr);
     lv_obj_add_style(cur_ver_label, &label_style, LV_STATE_DEFAULT);
-    lv_label_set_recolor(cur_ver_label, true); //先得使能文本重绘色功能
+    lv_label_set_recolor(cur_ver_label, true); // 先得使能文本重绘色功能
     lv_obj_align(cur_ver_label, LV_ALIGN_BOTTOM_LEFT, 5, -130);
 
     qq_label = lv_label_create(settings_scr);
     lv_obj_add_style(qq_label, &label_style, LV_STATE_DEFAULT);
-    lv_label_set_recolor(qq_label, true); //先得使能文本重绘色功能
+    lv_label_set_recolor(qq_label, true); // 先得使能文本重绘色功能
     lv_obj_align(qq_label, LV_ALIGN_BOTTOM_MID, 0, -90);
 
     new_ver_label = lv_label_create(settings_scr);
@@ -85,7 +85,7 @@ void display_settings_init(void)
     // lvgl8之前版本，模式一旦设置 LV_LABEL_LONG_SCROLL_CIRCULAR
     // 宽度恒定等于当前文本的长度，所以下面先设置以下长度
     // lv_label_set_text(new_ver_label, "Please update your A");
-    lv_label_set_recolor(new_ver_label, true); //先得使能文本重绘色功能
+    lv_label_set_recolor(new_ver_label, true); // 先得使能文本重绘色功能
     lv_label_set_long_mode(new_ver_label, LV_LABEL_LONG_SCROLL_CIRCULAR);
     lv_obj_align(new_ver_label, LV_ALIGN_CENTER, 0, 60);
     lv_label_set_text_fmt(new_ver_label, "#ff0000 Is the latest version!");
@@ -93,7 +93,7 @@ void display_settings_init(void)
     author_label = lv_label_create(settings_scr);
     lv_obj_add_style(author_label, &info_style, LV_STATE_DEFAULT);
     lv_obj_align(author_label, LV_ALIGN_BOTTOM_MID, 0, -10);
-    lv_label_set_recolor(author_label, true); //先得使能文本重绘色功能
+    lv_label_set_recolor(author_label, true); // 先得使能文本重绘色功能
 
     lv_scr_load(settings_scr);
 }
@@ -108,12 +108,17 @@ void display_settings(const char *cur_ver, const char *new_ver, lv_scr_load_anim
 
     lv_label_set_text(qq_label, "AIO QQ: 755143193");
 
-    if (strcmp(cur_ver, &new_ver[2]) < 0)
+    // if (strcmp(cur_ver, new_ver) < 0)
+    if (strcmp(cur_ver, new_ver) != 0)
     {
-        lv_label_set_text_fmt(new_ver_label, "Please update your AIO to #ff0000 %s#", new_ver);
+        lv_label_set_text_fmt(new_ver_label, "Please update your AIO to #ff0000 v %s#", new_ver);
         lv_obj_align(new_ver_label, LV_ALIGN_CENTER, 0, 60);
     }
-
+    else
+    {
+        lv_label_set_text_fmt(new_ver_label, "AIO #ff0000 v %s# is the latest version.", new_ver);
+        lv_obj_align(new_ver_label, LV_ALIGN_CENTER, 0, 60);
+    }
     lv_label_set_text(author_label, "@ClimbSnail");
 }
 

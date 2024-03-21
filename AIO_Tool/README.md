@@ -11,7 +11,7 @@ Holocubic_AIO开源地址 https://github.com/ClimbSnail/HoloCubic_AIO
 
 
 ### 打包成可执行程序
-使用pyinstaller打包程序`pyinstaller --icon ./holo_256.ico -w -F CubicAIO_Tool.py`
+使用pyinstaller打包程序`pyinstaller --icon ./image/holo_256.ico -w -F CubicAIO_Tool.py`
 
 ## 开发笔记
 

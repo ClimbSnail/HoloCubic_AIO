@@ -17,17 +17,25 @@ import tkinter as tk
 import util.tkutils as tku
 from tkinter import ttk
 from tkinter import filedialog
-from tool_esptoolpy import esptool
 import util.massagehead as mh
 import threading
 import util.common as common
 import requests
 import re
+import sys
+
+# esptool v3.3可以刷入bootloader.bin时动态修改"--flash_size"
+# if os.path.exists("./esptool_v41"):
+#     sys.path.append("./esptool_v41")
+# else:
+#     sys.path.append("./")
+# import esptool # sys.path.append("./esptool_v41") or pip install esptool==4.1 
+from esptool_v41 import esptool
 
 STRGLO = ""  # 读取的数据
 BOOL = True  # 读取标志位
-VERSION_INFO_URL = "https://gitee.com/ClimbSnailQ/HoloCubic_AIO/blob/main/AIO_Firmware_PIO/src/common.h"
-# VERSION_INFO_URL = "https://github.com/ClimbSnail/HoloCubic_AIO/blob/main/AIO_Firmware_PIO/src/common.h"
+# VERSION_INFO_URL = "https://gitee.com/ClimbSnailQ/HoloCubic_AIO/blob/main/AIO_Firmware_PIO/src/common.h"
+VERSION_INFO_URL = "http://climbsnail.cn:5001/holocubicAIO/sn/v1/version/firmware"
 
 class DownloadDebug(object):
     """
@@ -64,13 +72,13 @@ class DownloadDebug(object):
         cur_dir = os.getcwd()
         # 固件下载框默认值
         self.__pre_down_param_list = [
-            {"bin_addr": "0x1000", "bin_path": os.path.join(cur_dir, 'bootloader_qio_80m.bin'),
+            {"bin_addr": "0x1000", "bin_path": os.path.join(cur_dir, 'base_bin\\bootloader_qio_80m.bin'),
              "placeholder": "选择Bootloader的bin文件"},
 
-            {"bin_addr": "0x8000", "bin_path": os.path.join(cur_dir, 'partitions.bin'),
+            {"bin_addr": "0x8000", "bin_path": os.path.join(cur_dir, 'base_bin\\partitions.bin'),
              "placeholder": "选择partitions的bin文件"},
 
-            {"bin_addr": "0xe000", "bin_path": os.path.join(cur_dir, 'boot_app0.bin'),
+            {"bin_addr": "0xe000", "bin_path": os.path.join(cur_dir, 'base_bin\\boot_app0.bin'),
              "placeholder": "选择boot_app0的bin文件"},
 
             {"bin_addr": "0x10000", "bin_path": "",
@@ -116,8 +124,8 @@ class DownloadDebug(object):
         self.m_version_info["state"] = tk.DISABLED
         try:
             response = requests.get(VERSION_INFO_URL, timeout=3) # , verify=False
-            version_info = re.findall(r'AIO_VERSION \"\d{1,2}\.\d{1,2}\.\d{1,2}\"', response.text)
-            self.m_version_var.set("v" + version_info[0].split("\"")[1])
+            version_info = re.findall(r'AIO_VERSION v\d{1,2}\.\d{1,2}\.\d{1,2}', response.text)
+            self.m_version_var.set(version_info[0].split(" ")[1])
         except Exception as err:
             print(err)
             self.m_version_var.set("未知")
@@ -356,12 +364,9 @@ class DownloadDebug(object):
             self.canle_download_firmware()
             return None
 
-        # cmd = ['--port', param["port"],
-        #        '--baud', param["baud"],
-        #        'write_flash', '-fm', 'dio', '-fs', '4MB'
-        #        ]
         cmd = ['--port', param["port"],
                '--baud', param["baud"],
+               '--after', 'hard_reset',
                'write_flash', '-fs', '4MB'
                ]
 
@@ -579,7 +584,7 @@ class DownloadDebug(object):
         self.m_connect_button.pack(side=tk.LEFT, fill=tk.X, padx=5)
         # 重启按钮
         self.m_reboot_button = tk.Button(botton_frame, text="重启", fg='black',
-                                         command=self.esp_reboot, width=8, height=1)
+                                         command=self.esp_reset, width=8, height=1)
         self.m_reboot_button.pack(side=tk.RIGHT, fill=tk.X, padx=5)
         self.m_reboot_button["state"] = tk.NORMAL
 
@@ -693,7 +698,7 @@ class DownloadDebug(object):
 
         return down_flag, data_map
 
-    def esp_reboot(self):
+    def esp_reset(self):
         """
         重启芯片
         """
@@ -704,17 +709,17 @@ class DownloadDebug(object):
         down_flag, param = self.get_download_param()
         self.print_log("已发送重启指令！")
         self.__father.update()
-        # cmd = ['--port', param["port"], '--baud', param["baud"],
-        #        '--after', 'hard_reset', "read_mac"]
-        # esptool.main(cmd)
         
         port = serial.Serial(param["port"], param["baud"], timeout=10)
-        port.setRTS(True)  # EN->LOW
-        port.setDTR(port.dtr)
+
+        port.setDTR(False)  # IO0=HIGH
+        port.setRTS(True)  # EN=LOW, chip in reset
         time.sleep(0.05)
-        port.setRTS(False)
-        port.setDTR(port.dtr)
-        port.close()  # 关闭串口
+        port.setRTS(False)  # EN=HIGH, chip out of reset
+        # 0.5 needed for ESP32 rev0 and rev1
+        time.sleep(0.05)  # 0.5 / 0.05
+
+        port.close()
         del port
         self.m_connect_button["state"] = tk.NORMAL
         self.m_reboot_button["state"] = tk.NORMAL

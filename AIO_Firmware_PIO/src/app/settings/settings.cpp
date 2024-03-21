@@ -4,6 +4,7 @@
 #include "sys/app_controller.h"
 #include "common.h"
 
+#define NEW_VERSION "http://climbsnail.cn:5001/holocubicAIO/sn/v1/version/firmware"
 #define SETTINGS_APP_NAME "Settings"
 #define RECV_BUF_LEN 128
 
@@ -153,12 +154,14 @@ static int settings_init(AppController *sys)
     // 初始化运行时的参数
     settings_gui_init();
 
-    display_settings(AIO_VERSION, "v 2.3.0", LV_SCR_LOAD_ANIM_NONE);
+    display_settings(AIO_VERSION, AIO_VERSION, LV_SCR_LOAD_ANIM_NONE);
 
     // 初始化运行时参数
     run_data = (SettingsAppRunData *)calloc(1, sizeof(SettingsAppRunData));
     run_data->recv_buf = (uint8_t *)malloc(RECV_BUF_LEN);
     run_data->recv_len = 0;
+    sys->send_to(SETTINGS_APP_NAME, CTRL_NAME,
+                 APP_MESSAGE_WIFI_CONN, NULL, NULL);
     return 0;
 }
 
@@ -169,6 +172,13 @@ static void settings_process(AppController *sys,
     {
         sys->app_exit(); // 退出APP
         return;
+    }
+
+    if (GO_FORWORD == act_info->active)
+    {
+        sys->send_to(SETTINGS_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
+        delay(500);
     }
 
     if (Serial.available())
@@ -195,6 +205,22 @@ static void settings_process(AppController *sys,
     // sys->req_event(&settings_app, APP_MESSAGE_WIFI_CONN, run_data->val1);
     // 程序需要时可以适当加延时
     // delay(200);
+}
+
+static void get_new_version(char *version)
+{
+    HTTPClient httpClient;
+    httpClient.setTimeout(1000);
+    bool status = httpClient.begin(NEW_VERSION);
+    if (status == false)
+    {
+        snprintf(version, 16, "v UNKNOWN");
+    }
+    int httpCode = httpClient.GET();
+    String httpResponse = httpClient.getString();
+    httpClient.end();
+    snprintf(version, 16, "%s", httpResponse.c_str() + 13);
+    Serial.printf("latest version = %s\n", version);
 }
 
 static void settings_background_task(AppController *sys,
@@ -227,6 +253,9 @@ static void settings_message_handle(const char *from, const char *to,
     case APP_MESSAGE_WIFI_CONN:
     {
         // todo
+        char ver[16];
+        get_new_version(ver);
+        display_settings(AIO_VERSION, ver, LV_SCR_LOAD_ANIM_NONE);
     }
     break;
     case APP_MESSAGE_WIFI_AP:
