@@ -15,7 +15,7 @@ import inspect
 import traceback
 import re
 
-TOOL_VERSION = "1.4.9"
+TOOL_VERSION = "v1.4.9"
 ROOT_PATH = "OutFile"
 CACHE_PATH = "Cache"
 
