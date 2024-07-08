@@ -39,15 +39,13 @@ extern "C"
         lv_task_handler(); //等待动画完成
 
     void weather_gui_init(void);
-    void display_curve_init(lv_scr_load_anim_t anim_type);
+    void display_curve_init(lv_scr_load_anim_t anim_type, short temp_max, short temp_min);
     void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type);
-    void display_weather_init(lv_scr_load_anim_t anim_type);
-    void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type);
-    void display_time(struct TimeStr timeInfo, lv_scr_load_anim_t anim_type);
+    void display_weather_init(lv_scr_load_anim_t anim_type, int temperature, int humidity);
+    void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type);
     void weather_gui_release(void);
     void weather_gui_del(void);
     void display_space(void);
-    int airQulityLevel(int q);
 
 #ifdef __cplusplus
 } /* extern "C" */

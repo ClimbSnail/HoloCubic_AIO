@@ -70,12 +70,14 @@ String file_size(int bytes)
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                          \
-                        "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                \
-                        "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqi_appid\"value=\"%s\"></label>"                            \
-                        "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqi_appsecret\"value=\"%s\"></label>"                    \
-                        "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqi_addr\"value=\"%s\"></label>"             \
-                        "<label class=\"input\"><span>天气更新周期（毫秒）</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
-                        "<label class=\"input\"><span>日期更新周期（毫秒）</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
+                        "<label class=\"input\"><span>和风天气KEY</span><input type=\"text\"name=\"key\"value=\"%s\"></label>"                                \
+                        "<label class=\"input\"><span>天气更新周期(毫秒)</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
+                        "<label class=\"input\"><span>日期更新周期(毫秒)</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
+                        "<label class=\"input\"><span>自动获取位置信息</span><input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_get_location\" %s>开启(以下设置无效)<input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_get_location\" %s>关闭</label>" \
+                        "<label class=\"input\"><span>国家(缩写)</span><input type=\"text\"name=\"country\"value=\"%s\"></label>"                            \
+                        "<label class=\"input\"><span>省、直辖市</span><input type=\"text\"name=\"province\"value=\"%s\"></label>"                    \
+                        "<label class=\"input\"><span>地级市</span><input type=\"text\"name=\"city\"value=\"%s\"></label>"             \
+                        "<label class=\"input\"><span>区、县、县级市</span><input type=\"text\"name=\"area\"value=\"%s\"></label>"             \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_OLD_SETTING "<form method=\"GET\" action=\"saveWeatherOldConf\">"                                                                                       \
@@ -312,31 +314,45 @@ void rgb_setting()
 void weather_setting()
 {
     char buf[2048];
-    char tianqi_url[128];
-    char tianqi_appid[32];
-    char tianqi_appsecret[32];
-    char tianqi_addr[32];
-    char weatherUpdataInterval[32];
+    char key[64];
     char timeUpdataInterval[32];
+    char weatherUpdataInterval[32];
+    char auto_get_location[32];
+    char country[32];
+    char province[32];
+    char city[32];
+    char area[32];
+
+    char auto_get_location_key0[32] = {0};
+    char auto_get_location_key1[32] = {0};
     // 读取数据
+
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_url", tianqi_url);
-    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_appid", tianqi_appid);
-    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_appsecret", tianqi_appsecret);
-    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_addr", tianqi_addr);
+                            (void *)"key", key);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"weatherUpdataInterval", weatherUpdataInterval);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"timeUpdataInterval", timeUpdataInterval);
-    sprintf(buf, WEATHER_SETTING, tianqi_url, tianqi_appid,
-            tianqi_appsecret, tianqi_addr,
-            weatherUpdataInterval,
-            timeUpdataInterval);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"auto_get_location", auto_get_location);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"country", country);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"province", province);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"city", city);
+    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
+                            (void *)"area", area);
+
+    if (1 == atoi(auto_get_location)) sprintf(auto_get_location_key0, "checked=\"checked\"");
+    else sprintf(auto_get_location_key1, "checked=\"checked\"");
+
+    sprintf(buf, WEATHER_SETTING, key,
+            weatherUpdataInterval, timeUpdataInterval,
+            auto_get_location_key0, auto_get_location_key1,
+            country, province, city, area);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -594,20 +610,8 @@ void saveWeatherConf(void)
 
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_url",
-                            (void *)server.arg("tianqi_url").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Weather",
-                            APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_appid",
-                            (void *)server.arg("tianqi_appid").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Weather",
-                            APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_appsecret",
-                            (void *)server.arg("tianqi_appsecret").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Weather",
-                            APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_addr",
-                            (void *)server.arg("tianqi_addr").c_str());
+                            (void *)"key",
+                            (void *)server.arg("key").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weatherUpdataInterval",
@@ -616,6 +620,26 @@ void saveWeatherConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"timeUpdataInterval",
                             (void *)server.arg("timeUpdataInterval").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"auto_get_location",
+                            (void *)server.arg("auto_get_location").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"country",
+                            (void *)server.arg("country").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"province",
+                            (void *)server.arg("province").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"city",
+                            (void *)server.arg("city").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "Weather",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"area",
+                            (void *)server.arg("area").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
