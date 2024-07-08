@@ -27,6 +27,8 @@ struct TimeStr
     int weekday;
 };
 
+extern unsigned char weather_gui_first_run;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -40,10 +42,10 @@ extern "C"
 
     void weather_gui_init(void);
     void display_curve_init(lv_scr_load_anim_t anim_type, short temp_max, short temp_min);
-    void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type);
+    void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type, bool is_finish);
     void display_weather_init(lv_scr_load_anim_t anim_type, int temperature, int humidity);
-    void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type);
-    void weather_gui_release(void);
+    void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type, bool is_finish);
+    void weather_gui_release(short page);
     void weather_gui_del(void);
     void display_space(void);
 

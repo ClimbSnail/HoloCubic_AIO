@@ -31,6 +31,8 @@ static lv_obj_t *spaceImg = NULL;
 
 static lv_chart_series_t *ser1, *ser2;
 
+unsigned char weather_gui_first_run = 1;
+
 // 天气图标路径的映射关系
 const void *weaImage_map[] = {&qweather_100, &qweather_101, &qweather_102, &qweather_103, &qweather_104,
                                 &qweather_150, &qweather_151, &qweather_152, &qweather_153, &qweather_300,
@@ -87,13 +89,12 @@ void display_curve_init(lv_scr_load_anim_t anim_type, short temp_max, short temp
 {
     static short temp_max_old = 0, temp_min_old = 0;
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
-    if(temp_max_old == temp_max && temp_min_old == temp_min && act_obj == scr_2) return;
+
+    if(temp_max_old == temp_max && temp_min_old == temp_min && act_obj == scr_2)
+        return;
 
     temp_max_old = temp_max;
     temp_min_old = temp_min;
-
-    weather_gui_release();
-    lv_obj_clean(act_obj); // 清空此前页面
 
     scr_2 = lv_obj_create(NULL);
     lv_obj_add_style(scr_2, &default_style, LV_STATE_DEFAULT);
@@ -139,8 +140,15 @@ void display_curve_init(lv_scr_load_anim_t anim_type, short temp_max, short temp
     }
 }
 
-void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type)
+void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type, bool is_finish)
 {
+    
+    if (is_finish && scr_1 != NULL)
+    {
+        lv_obj_clean(scr_1);
+        weather_gui_release(1);
+    }
+
     short temp_max = maxT[0], temp_min = minT[0];
     for (short Ti = 1; Ti < 7; ++Ti)
     {
@@ -174,11 +182,16 @@ void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type)
 void display_weather_init(lv_scr_load_anim_t anim_type, int temperature, int humidity)
 {
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
+
+    if (weather_gui_first_run)
+    {
+        lv_obj_t *act_obj = lv_scr_act();
+        lv_obj_clean(act_obj); // 清空此前页面
+        weather_gui_first_run = 0;
+    }
+
     if (act_obj == scr_1)
         return;
-
-    weather_gui_release();
-    lv_obj_clean(act_obj); // 清空此前页面
 
     scr_1 = lv_obj_create(NULL);
     lv_obj_add_style(scr_1, &default_style, LV_STATE_DEFAULT);
@@ -281,8 +294,14 @@ void display_weather_init(lv_scr_load_anim_t anim_type, int temperature, int hum
     }
 }
 
-void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type)
+void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type, bool is_finish)
 {
+    if (is_finish && scr_2 != NULL)
+    {
+        lv_obj_clean(scr_2);
+        weather_gui_release(2);
+    }
+
     display_weather_init(anim_type, weaInfo.temperature, weaInfo.humidity);
 
     lv_label_set_text(cityLabel, weaInfo.cityname);
@@ -323,9 +342,9 @@ void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_loa
     // lv_obj_align(spaceImg, NULL, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
 }
 
-void weather_gui_release(void)
+void weather_gui_release(short page)
 {
-    if (scr_1 != NULL)
+    if (page == 1 && scr_1 != NULL)
     {
         lv_obj_clean(scr_1);
         scr_1 = NULL;
@@ -345,8 +364,7 @@ void weather_gui_release(void)
         humiLabel = NULL;
         spaceImg = NULL;
     }
-
-    if (scr_2 != NULL)
+    if (page == 2 && scr_2 != NULL)
     {
         lv_obj_clean(scr_2);
         scr_2 = NULL;
@@ -359,7 +377,9 @@ void weather_gui_release(void)
 
 void weather_gui_del(void)
 {
-    weather_gui_release();
+    // 释放内存
+    weather_gui_release(1);
+    weather_gui_release(2);
 
     // 手动清除样式，防止内存泄漏
     // lv_style_reset(&default_style);
@@ -373,9 +393,12 @@ void weather_gui_del(void)
 void display_space(void)
 {
     static int _spaceIndex = 0;
+    lv_img_t *img = (lv_img_t *)spaceImg;
     if (NULL != scr_1 && lv_scr_act() == scr_1)
     {
-        lv_img_set_src(spaceImg, manImage_map[_spaceIndex]);
         _spaceIndex = (_spaceIndex + 1) % 10;
+        if(img->src == manImage_map[0] && _spaceIndex != 1)
+            _spaceIndex = 1;
+        lv_img_set_src(spaceImg, manImage_map[_spaceIndex]);
     }
 }

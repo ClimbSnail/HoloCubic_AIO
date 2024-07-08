@@ -159,8 +159,8 @@ static bool getRestfulAPI(const char *url, JsonDocument &doc)
 {
     while (WL_CONNECTED != WiFi.status())
     {
-        Serial.println(F("WiFi not connected, wait for 100ms"));
-        delay(100);
+        Serial.println(F("WiFi not connected, wait for 1s"));
+        delay(1000);
     }
 
     WiFiClientSecure client;
@@ -471,6 +471,7 @@ static void rtc_to_date(long long timestamp, TimeStr &t)
 
 static int weather_init(AppController *sys)
 {
+    weather_gui_first_run = 1;
     tft->setSwapBytes(true);
     weather_gui_init();
 
@@ -512,6 +513,31 @@ static void weather_process(AppController *sys,
     static int last_clock_page = 0;
     static bool is_change = false;
     static TickType_t tmp_time = 0;
+
+    if (!is_change)
+    {
+        if (RETURN == act_info->active)
+        {
+            sys->app_exit();
+            return;
+        }
+        else if (GO_FORWORD == act_info->active)
+        {
+            if(run_data->update_type == 0)
+            {
+                // 间接强制更新
+                run_data->coactusUpdateFlag = 0x01;
+            }
+        }
+        else if (TURN_RIGHT == act_info->active)
+        {
+            run_data->clock_page = 1;
+        }
+        else if (TURN_LEFT == act_info->active)
+        {
+            run_data->clock_page = 0;
+        }
+    }
     if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
     {
         sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
@@ -526,25 +552,6 @@ static void weather_process(AppController *sys,
                     APP_MESSAGE_WIFI_CONN, (void *)UPDATE_NTP, NULL);
     }
     run_data->coactusUpdateFlag = 0x00; // 取消强制更新标志
-    if (RETURN == act_info->active)
-    {
-        sys->app_exit();
-        return;
-    }
-    else if (GO_FORWORD == act_info->active)
-    {
-        // 间接强制更新
-        run_data->coactusUpdateFlag = 0x01;
-        delay(500); // 以防间接强制更新后，生产很多请求 使显示卡顿
-    }
-    else if (TURN_RIGHT == act_info->active)
-    {
-        run_data->clock_page = 1;
-    }
-    else if (TURN_LEFT == act_info->active)
-    {
-        run_data->clock_page = 0;
-    }
     if (run_data->clock_page == 0)
     {
         TimeStr t;
@@ -553,13 +560,13 @@ static void weather_process(AppController *sys,
         {
             is_change = true;
             tmp_time = GET_SYS_MILLIS();
-            display_weather(run_data->wea, t, LV_SCR_LOAD_ANIM_MOVE_LEFT);
+            display_weather(run_data->wea, t, LV_SCR_LOAD_ANIM_MOVE_LEFT, false);
         }
         else if (is_change && (GET_SYS_MILLIS() - tmp_time > 800 || GET_SYS_MILLIS() - tmp_time < 0))
             is_change = false;
         if (!is_change)
         {
-            display_weather(run_data->wea, t, LV_SCR_LOAD_ANIM_NONE);
+            display_weather(run_data->wea, t, LV_SCR_LOAD_ANIM_NONE, true);
             display_space();
             delay(30);
         }
@@ -570,13 +577,13 @@ static void weather_process(AppController *sys,
         {
             is_change = true;
             tmp_time = GET_SYS_MILLIS();
-            display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
+            display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_MOVE_RIGHT ,false);
         }
         else if (is_change && (GET_SYS_MILLIS() - tmp_time > 800 || GET_SYS_MILLIS() - tmp_time < 0))
             is_change = false;
         if (!is_change)
         {
-            display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
+            display_curve(run_data->wea.daily_max, run_data->wea.daily_min, LV_SCR_LOAD_ANIM_NONE, true);
             delay(30);
         }
     }
@@ -615,18 +622,14 @@ static void task_update(void *parameter)
     WT_Config *cfg_data_in_task = param_in_task->task_cfg_data;
 
     // 数据更新任务
-    while (1)
+    for (;;)
     {
         if (run_data_in_task->update_type & UPDATE_TIME)
         {
             Serial.println(F("time update."));
             get_timestamp(TIME_API);
-            if (run_data_in_task->clock_page == 0)
-            {
-                TimeStr t;
-                rtc_to_date(get_timestamp(), t);
-                display_weather(run_data_in_task->wea, t, LV_SCR_LOAD_ANIM_NONE);
-            }
+            TimeStr t;
+            rtc_to_date(get_timestamp(), t);
             run_data_in_task->update_type &= (~UPDATE_TIME);
         }
         if(run_data_in_task->update_type & UPDATE_IP_LOCATION)
@@ -639,34 +642,22 @@ static void task_update(void *parameter)
             //                 cfg_data_in_task->location_info.city.c_str(), cfg_data_in_task->location_info.area.c_str(),
             //                 cfg_data_in_task->location_info.LocationId.c_str());
             write_config(cfg_data_in_task);
-            if (run_data_in_task->clock_page == 0)
-            {
-                TimeStr t;
-                rtc_to_date(get_timestamp(), t);
-                display_weather(run_data_in_task->wea, t, LV_SCR_LOAD_ANIM_NONE);
-            }
+            TimeStr t;
+            rtc_to_date(get_timestamp(), t);
             run_data_in_task->update_type &= (~UPDATE_IP_LOCATION);
         }
         if (run_data_in_task->update_type & UPDATE_WEATHER)
         {
             Serial.println(F("weather update."));
             get_weather();
-            if (run_data_in_task->clock_page == 0)
-            {
-                TimeStr t;
-                rtc_to_date(get_timestamp(), t);
-                display_weather(run_data_in_task->wea, t, LV_SCR_LOAD_ANIM_NONE);
-            }
+            TimeStr t;
+            rtc_to_date(get_timestamp(), t);
             run_data_in_task->update_type &= (~UPDATE_WEATHER);
         }
         if (run_data_in_task->update_type & UPDATE_DALIY_WEATHER)
         {
             Serial.println(F("daliy update."));
             get_daliyWeather(run_data_in_task->wea.daily_max, run_data_in_task->wea.daily_min);
-            if (run_data_in_task->clock_page == 1)
-            {
-                display_curve(run_data_in_task->wea.daily_max, run_data_in_task->wea.daily_min, LV_SCR_LOAD_ANIM_NONE);
-            }
             run_data_in_task->update_type &= (~UPDATE_DALIY_WEATHER);
         }
         vTaskDelay(100);
@@ -679,8 +670,8 @@ static void weather_message_handle(const char *from, const char *to,
 {
     while (WL_CONNECTED != WiFi.status())
     {
-        Serial.println(F("WiFi not connected, wait for 100ms"));
-        delay(100);
+        Serial.println(F("WiFi not connected, wait for 1s"));
+        delay(1000);
     }
     static bool first_get = true;
     switch (type)
