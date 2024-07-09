@@ -14,8 +14,8 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 ### 开发人员
 * AIO框架开发和部分APP编写：[ClimbSnail](https://github.com/ClimbSnail)
 * 2048游戏应用开发：[AndyXFuture](https://github.com/AndyXFuture)
-* 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu)
-* BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo/)
+* 新版天气时钟应用开发：[PuYuuu](https://github.com/PuYuuu) & [chase535](https://github.com/chase535)
+* BiliBili粉丝应用开发：[cnzxo](https://github.com/cnzxo)
 * 纪念日、心跳应用开发：[WoodwindHu](https://github.com/WoodwindHu)
 * PC资源监控应用开发：[Jumping99](https://github.com/Jumping99)
 * 多功能动画应用开发：[LHYHHD](https://github.com/LHYHHD)
@@ -125,9 +125,10 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ##### 天气、时钟（Weather）
 一共有两款天气时钟APP
 ###### 新版 weather
-1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
-2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`、`tianqi 城市名（中文）`。
-2. 使用新版天气时钟，需要再"Web Server"网页服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.yiketianqi.com/user/login ）
+1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。由`chase535`进行二次修改，使用和风天气API。
+2. 运行APP必要条件：必须是已经联网状态，且通过`Web Server`网页服务设置好了`和风天气KEY`。[点击这里申请和风天气KEY](https://console.qweather.com/#/apps)。
+3. 可设置通过IP地址自动获取地理位置，默认开启。如需手动设置地理位置，`国家`一栏请填写[ISO 3166](https://www.iso.org/iso-3166-country-codes.html)所定义的二位字母代码，其余三栏可写中文。
+4. 可设置自动更新周期，不可禁用自动更新，设置为0时会强制更正为默认值。***注意：和风天气免费订阅的KEY每日最多可请求1000次，而程序每次更新天气时需要请求5次，请在设置更新周期前提前计算理论的每日最少请数，否则当请求超过1000次后将会请求失败。以默认每10分钟更新一次为例，每日最少请求数=24×60÷10×5=720次。***
 ###### 旧版 weather old
 1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
 2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
