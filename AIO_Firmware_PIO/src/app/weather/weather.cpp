@@ -24,10 +24,10 @@
 #define UPDATE_WEATHER 0x01       // 更新天气
 #define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
 #define UPDATE_TIME 0x04          // 更新时间
-#define UPDATE_IP_LOCATION 0x08      // 更新位置
+#define UPDATE_IP_LOCATION 0x08   // 更新位置
 
 // 天气的持久化配置
-#define WEATHER_CONFIG_PATH "/weather_218.cfg"
+#define WEATHER_CONFIG_PATH "/qweather.cfg"
 
 struct Location_Info
 {
@@ -41,9 +41,9 @@ struct Location_Info
 struct WT_Config
 {
     String key;                          // 和风天气KEY
-    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
-    uint8_t auto_get_location;           // 0: 手动设置位置，1: 自动获取位置
+    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(min)
+    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(min)
+    unsigned char auto_get_location;     // 0为手动设置位置，1为自动获取位置
     Location_Info location_info;         // 地理位置
 };
 
@@ -78,24 +78,22 @@ enum wea_event_Id
     UPDATE_DAILY
 };
 
-static WT_Config *cfg_data = NULL;
+static WT_Config cfg_data;
 static WeatherAppRunData *run_data = NULL;
 static Task_Param *task_param_data = NULL;
 
+static uint8_t *get_response = NULL;
+static uint8_t *json_buffer = NULL;
+
 static void write_config(WT_Config *cfg)
 {
-    char tmp[16];
     // 将配置数据保存在文件中（持久化）
     String w_data;
     cfg->location_info.country.toLowerCase();
     w_data = w_data + cfg->key + "\n";
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%lu\n", cfg->weatherUpdataInterval);
-    w_data += tmp;
-    memset(tmp, 0, 16);
-    snprintf(tmp, 16, "%lu\n", cfg->timeUpdataInterval);
-    w_data += tmp;
-    w_data = w_data + cfg->auto_get_location + "\n";
+    w_data = w_data + String(cfg->weatherUpdataInterval) + "\n";
+    w_data = w_data + String(cfg->timeUpdataInterval) + "\n";
+    w_data = w_data + String(cfg->auto_get_location) + "\n";
     w_data = w_data + cfg->location_info.country + "\n";
     w_data = w_data + cfg->location_info.province + "\n";
     w_data = w_data + cfg->location_info.city + "\n";
@@ -108,7 +106,7 @@ static void read_config(WT_Config *cfg)
 {
     // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
     // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
-    char info[128] = {0};
+    char info[512] = {0};
     uint16_t size = g_flashCfg.readFile(WEATHER_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
@@ -116,8 +114,8 @@ static void read_config(WT_Config *cfg)
         // 默认值
         cfg->key = "";
         cfg->auto_get_location = 1;
-        cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
-        cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
+        cfg->weatherUpdataInterval = 10; // 天气更新的时间间隔10min
+        cfg->timeUpdataInterval = 10;    // 日期时钟更新的时间间隔10min
         cfg->location_info={"cn", "北京市", "北京", "朝阳", "101010300"};
         write_config(cfg);
     }
@@ -127,9 +125,27 @@ static void read_config(WT_Config *cfg)
         char *param[10] = {0};
         analyseParam(info, 9, param);
         cfg->key = param[0];
-        cfg->weatherUpdataInterval = atol(param[1]);
-        cfg->timeUpdataInterval = atol(param[2]);
-        cfg->auto_get_location = atoi(param[3]);
+        if (atol(param[1]) <= 0)
+        {
+            Serial.println(F("timeUpdataInterval value must be greater than or equal to 0, use default value."));
+            cfg->weatherUpdataInterval = 10;
+        }
+        else
+            cfg->weatherUpdataInterval = atol(param[1]);
+        if (atol(param[2]) <= 0)
+        {
+            Serial.println(F("timeUpdataInterval value must be greater than or equal to 0, use default value."));
+            cfg->timeUpdataInterval = 10;
+        }
+        else
+            cfg->timeUpdataInterval = atol(param[2]);
+        if (atol(param[3]) != 0 && atol(param[3]) != 1)
+        {
+            Serial.println(F("timeUpdataInterval value must be 0 or 1, use default value."));
+            cfg->auto_get_location = 1;
+        }
+        else
+            cfg->auto_get_location = atol(param[3]);
         cfg->location_info.country = param[4];
         cfg->location_info.country.toLowerCase();
         cfg->location_info.province = param[5];
@@ -157,15 +173,16 @@ static void task_update(void *parameter); // 异步更新任务
 
 static bool getRestfulAPI(const char *url, JsonDocument &doc)
 {
-    while (WL_CONNECTED != WiFi.status())
+    if (WL_CONNECTED != WiFi.status())
     {
-        Serial.println(F("WiFi not connected, wait for 1s"));
-        delay(1000);
+        Serial.println(F("WiFi not connected, skip GET"));
+        return false;
     }
 
     WiFiClientSecure client;
     HTTPClient http;
 
+    http.setTimeout(2000);
     client.setInsecure();
     static const char *headers[] = {"Content-Encoding"};
     Serial.print(F("Request "));
@@ -182,17 +199,17 @@ static bool getRestfulAPI(const char *url, JsonDocument &doc)
                 DeserializationError error;
                 if (http.header(headers[0]).indexOf("gzip") > -1)
                 {
-                    uint8_t *response = (uint8_t *)calloc(1, http.getSize());
-                    http.getStream().readBytes(response, http.getSize());
-                    uint8_t *buffer = NULL;
+                    get_response = (uint8_t *)calloc(1, http.getSize());
+                    http.getStream().readBytes(get_response, http.getSize());
                     uint32_t size = 0;
-                    ArduinoUZlib::decompress(response, http.getSize(), buffer, size);
-                    free(response);
-                    error = deserializeJson(doc, buffer, size);
-                    if (buffer != NULL)
+                    ArduinoUZlib::decompress(get_response, http.getSize(), json_buffer, size);
+                    free(get_response);
+                    get_response = NULL;
+                    error = deserializeJson(doc, json_buffer, size);
+                    if (json_buffer != NULL)
                     {
-                        free(buffer);
-                        buffer = NULL;
+                        free(json_buffer);
+                        json_buffer = NULL;
                     }
                     if (!error)
                     {
@@ -269,7 +286,7 @@ static void get_LocationId(WT_Config *cfg)
         urlobject.urlencode();
         location = urlobject.urlcode;
     }
-    snprintf(api, 512, QWEATHER_LOCATION_ID_API,
+    snprintf(api, 511, QWEATHER_LOCATION_ID_API,
             cfg->location_info.country.c_str(),
             adm.c_str(),
             location.c_str(),
@@ -312,12 +329,12 @@ static void get_ip_location(WT_Config *cfg)
     cfg->location_info = IP_Localtion_Info;
 }
 
-static void get_max_min_temp(void)
+static void get_max_min_temp(WT_Config *cfg)
 {
     char api[128] = {0};
-    snprintf(api, 128, QWEATHER_3_DAY_API,
-             cfg_data->location_info.LocationId.c_str(),
-             cfg_data->key.c_str());
+    snprintf(api, 127, QWEATHER_3_DAY_API,
+             cfg->location_info.LocationId.c_str(),
+             cfg->key.c_str());
 
     JsonDocument doc;
     if (getRestfulAPI(api, doc))
@@ -333,12 +350,12 @@ static void get_max_min_temp(void)
     }
 }
 
-static void get_air_quality(void)
+static void get_air_quality(WT_Config *cfg)
 {
     char api[128] = {0};
-    snprintf(api, 128, QWEATHER_AIR_QUALITY_NOW_API,
-             cfg_data->location_info.LocationId.c_str(),
-             cfg_data->key.c_str());
+    snprintf(api, 127, QWEATHER_AIR_QUALITY_NOW_API,
+             cfg->location_info.LocationId.c_str(),
+             cfg->key.c_str());
 
     JsonDocument doc;
     if (getRestfulAPI(api, doc))
@@ -359,15 +376,15 @@ static void get_air_quality(void)
     }
 }
 
-static void get_weather(void)
+static void get_weather(WT_Config *cfg)
 {
     char api[128] = {0};
     String weather_icon;
     std::map<String, int>::iterator it;
 
-    snprintf(api, 128, QWEATHER_NOW_API,
-             cfg_data->location_info.LocationId.c_str(),
-             cfg_data->key.c_str());
+    snprintf(api, 127, QWEATHER_NOW_API,
+             cfg->location_info.LocationId.c_str(),
+             cfg->key.c_str());
 
     JsonDocument doc;
     if(getRestfulAPI(api, doc))
@@ -378,10 +395,10 @@ static void get_weather(void)
             Serial.printf("Get weather failed, code: %s\n", sk["code"].as<String>().c_str());
             return;
         }
-        if (cfg_data->location_info.area.isEmpty())
-            strcpy(run_data->wea.cityname, cfg_data->location_info.city.c_str());
+        if (cfg->location_info.area.isEmpty())
+            strcpy(run_data->wea.cityname, cfg->location_info.city.c_str());
         else
-            strcpy(run_data->wea.cityname, cfg_data->location_info.area.c_str());
+            strcpy(run_data->wea.cityname, cfg->location_info.area.c_str());
 
         weather_icon = sk["now"]["icon"].as<String>();
         it = weatherMap.find(weather_icon);
@@ -397,17 +414,17 @@ static void get_weather(void)
         strcpy(run_data->wea.windDir, sk["now"]["windDir"].as<String>().c_str());
         run_data->wea.windLevel = sk["now"]["windScale"].as<int>();
 
-        get_max_min_temp();
-        get_air_quality();
+        get_max_min_temp(&cfg_data);
+        get_air_quality(&cfg_data);
     }
 }
 
-static void get_daliyWeather(short maxT[], short minT[])
+static void get_daliyWeather(WT_Config *cfg, short maxT[], short minT[])
 {
     char api[128] = {0};
-    snprintf(api, 128, QWEATHER_DALIY_API,
-             cfg_data->location_info.LocationId.c_str(),
-             cfg_data->key.c_str());
+    snprintf(api, 127, QWEATHER_DALIY_API,
+             cfg->location_info.LocationId.c_str(),
+             cfg->key.c_str());
 
     JsonDocument doc;
     if(getRestfulAPI(api, doc))
@@ -426,7 +443,7 @@ static void get_daliyWeather(short maxT[], short minT[])
     }
 }
 
-static long long get_timestamp()
+static long long get_timestamp(void)
 {
     // 使用本地的机器时钟
     run_data->preNetTimestamp = run_data->preNetTimestamp + (GET_SYS_MILLIS() - run_data->preLocalTimestamp);
@@ -476,14 +493,13 @@ static int weather_init(AppController *sys)
     weather_gui_init();
 
     // 初始化运行时参数
-    cfg_data = new WT_Config;
     run_data = new WeatherAppRunData;
     task_param_data = new Task_Param;
     task_param_data->task_run_data = run_data;
-    task_param_data->task_cfg_data = cfg_data;
+    task_param_data->task_cfg_data = &cfg_data;
 
     // 获取配置信息
-    read_config(cfg_data);
+    read_config(&cfg_data);
 
     memset((char *)&(run_data->wea), 0, sizeof(Weather));
     run_data->preNetTimestamp = 1577808000000; // 上一次的网络时间戳 初始化为2020-01-01 00:00:00
@@ -538,14 +554,14 @@ static void weather_process(AppController *sys,
             run_data->clock_page = 0;
         }
     }
-    if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->weatherUpdataInterval, &run_data->preWeatherMillis, false))
+    if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data.weatherUpdataInterval * 60000, &run_data->preWeatherMillis, false))
     {
         sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
                     APP_MESSAGE_WIFI_CONN, (void *)UPDATE_NOW, NULL);
         sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
                     APP_MESSAGE_WIFI_CONN, (void *)UPDATE_DAILY, NULL);
     }
-    if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data->timeUpdataInterval, &run_data->preTimeMillis, false))
+    if (0x01 == run_data->coactusUpdateFlag || doDelayMillisTime(cfg_data.timeUpdataInterval * 60000, &run_data->preTimeMillis, false))
     {
         // 尝试同步网络上的时钟
         sys->send_to(WEATHER_APP_NAME, CTRL_NAME,
@@ -608,9 +624,18 @@ static int weather_exit_callback(void *param)
     }
 
     // 释放运行数据
-    delete cfg_data;
     delete run_data;
     delete task_param_data;
+    if (get_response != NULL)
+    {
+        free(get_response);
+        get_response = NULL;
+    }
+    if (json_buffer != NULL)
+    {
+        free(json_buffer);
+        json_buffer = NULL;
+    }
 
     return 0;
 }
@@ -649,7 +674,7 @@ static void task_update(void *parameter)
         if (run_data_in_task->update_type & UPDATE_WEATHER)
         {
             Serial.println(F("weather update."));
-            get_weather();
+            get_weather(cfg_data_in_task);
             TimeStr t;
             rtc_to_date(get_timestamp(), t);
             run_data_in_task->update_type &= (~UPDATE_WEATHER);
@@ -657,7 +682,7 @@ static void task_update(void *parameter)
         if (run_data_in_task->update_type & UPDATE_DALIY_WEATHER)
         {
             Serial.println(F("daliy update."));
-            get_daliyWeather(run_data_in_task->wea.daily_max, run_data_in_task->wea.daily_min);
+            get_daliyWeather(cfg_data_in_task, run_data_in_task->wea.daily_max, run_data_in_task->wea.daily_min);
             run_data_in_task->update_type &= (~UPDATE_DALIY_WEATHER);
         }
         vTaskDelay(100);
@@ -668,18 +693,13 @@ static void weather_message_handle(const char *from, const char *to,
                                    APP_MESSAGE_TYPE type, void *message,
                                    void *ext_info)
 {
-    while (WL_CONNECTED != WiFi.status())
-    {
-        Serial.println(F("WiFi not connected, wait for 1s"));
-        delay(1000);
-    }
     static bool first_get = true;
     switch (type)
     {
     case APP_MESSAGE_WIFI_CONN:
     {
         // Serial.println(F("----->weather_event_notification"));
-        if (first_get && cfg_data->auto_get_location)
+        if (first_get && cfg_data.auto_get_location)
         {
             run_data->update_type |= UPDATE_IP_LOCATION;
         }
@@ -712,39 +732,39 @@ static void weather_message_handle(const char *from, const char *to,
         char *param_key = (char *)message;
         if (!strcmp(param_key, "key"))
         {
-            snprintf((char *)ext_info, 64, "%s", cfg_data->key.c_str());
+            snprintf((char *)ext_info, 63, "%s", cfg_data.key.c_str());
         }
         else if (!strcmp(param_key, "weatherUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%lu", cfg_data->weatherUpdataInterval);
+            snprintf((char *)ext_info, 31, "%lu", cfg_data.weatherUpdataInterval);
         }
         else if (!strcmp(param_key, "timeUpdataInterval"))
         {
-            snprintf((char *)ext_info, 32, "%lu", cfg_data->timeUpdataInterval);
+            snprintf((char *)ext_info, 31, "%lu", cfg_data.timeUpdataInterval);
         }
         else if (!strcmp(param_key, "auto_get_location"))
         {
-            snprintf((char *)ext_info, 32, "%u", cfg_data->auto_get_location);
+            snprintf((char *)ext_info, 31, "%u", cfg_data.auto_get_location);
         }
         else if (!strcmp(param_key, "country"))
         {
-            snprintf((char *)ext_info, 32, "%s", cfg_data->location_info.country.c_str());
+            snprintf((char *)ext_info, 31, "%s", cfg_data.location_info.country.c_str());
         }
         else if (!strcmp(param_key, "province"))
         {
-            snprintf((char *)ext_info, 32, "%s", cfg_data->location_info.province.c_str());
+            snprintf((char *)ext_info, 31, "%s", cfg_data.location_info.province.c_str());
         }
         else if (!strcmp(param_key, "city"))
         {
-            snprintf((char *)ext_info, 32, "%s", cfg_data->location_info.city.c_str());
+            snprintf((char *)ext_info, 31, "%s", cfg_data.location_info.city.c_str());
         }
         else if (!strcmp(param_key, "area"))
         {
-            snprintf((char *)ext_info, 32, "%s", cfg_data->location_info.area.c_str());
+            snprintf((char *)ext_info, 31, "%s", cfg_data.location_info.area.c_str());
         }
         else
         {
-            snprintf((char *)ext_info, 32, "%s", "NULL");
+            snprintf((char *)ext_info, 31, "%s", "NULL");
         }
     }
     break;
@@ -754,47 +774,62 @@ static void weather_message_handle(const char *from, const char *to,
         char *param_val = (char *)ext_info;
         if (!strcmp(param_key, "key"))
         {
-            cfg_data->key = param_val;
+            cfg_data.key = param_val;
         }
         else if (!strcmp(param_key, "weatherUpdataInterval"))
         {
-            cfg_data->weatherUpdataInterval = atol(param_val);
+            if (atol(param_val) <= 0)
+            {
+                Serial.println(F("timeUpdataInterval value must be greater than or equal to 0, use default value."));
+                cfg_data.weatherUpdataInterval = 10;
+            }
+            else cfg_data.weatherUpdataInterval = atol(param_val);
         }
         else if (!strcmp(param_key, "timeUpdataInterval"))
         {
-            cfg_data->timeUpdataInterval = atol(param_val);
+            if (atol(param_val) <= 0)
+            {
+                Serial.println(F("timeUpdataInterval value must be greater than or equal to 0, use default value."));
+                cfg_data.timeUpdataInterval = 10;
+            }
+            else cfg_data.timeUpdataInterval = atol(param_val);
         }
         else if (!strcmp(param_key, "auto_get_location"))
         {
-            cfg_data->auto_get_location = atoi(param_val);
+            if (atol(param_val) != 0 && atol(param_val) != 1)
+            {
+                Serial.println(F("timeUpdataInterval value must be 0 or 1, use default value."));
+                cfg_data.auto_get_location = 1;
+            }
+            else cfg_data.auto_get_location = atol(param_val);
         }
         else if (!strcmp(param_key, "country"))
         {
-            cfg_data->location_info.country = param_val;
-            cfg_data->location_info.country.toLowerCase();
+            cfg_data.location_info.country = param_val;
+            cfg_data.location_info.country.toLowerCase();
         }
         else if (!strcmp(param_key, "province"))
         {
-            cfg_data->location_info.province = param_val;
+            cfg_data.location_info.province = param_val;
         }
         else if (!strcmp(param_key, "city"))
         {
-            cfg_data->location_info.city = param_val;
+            cfg_data.location_info.city = param_val;
         }
         else if (!strcmp(param_key, "area"))
         {
-            cfg_data->location_info.area = param_val;
+            cfg_data.location_info.area = param_val;
         }
     }
     break;
     case APP_MESSAGE_READ_CFG:
     {
-        read_config(cfg_data);
+        read_config(&cfg_data);
     }
     break;
     case APP_MESSAGE_WRITE_CFG:
     {
-        write_config(cfg_data);
+        write_config(&cfg_data);
     }
     break;
     default:

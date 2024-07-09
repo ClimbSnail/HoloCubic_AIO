@@ -71,13 +71,18 @@ String file_size(int bytes)
 
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                          \
                         "<label class=\"input\"><span>和风天气KEY</span><input type=\"text\"name=\"key\"value=\"%s\"></label>"                                \
-                        "<label class=\"input\"><span>天气更新周期(毫秒)</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
-                        "<label class=\"input\"><span>日期更新周期(毫秒)</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
+                        "<label class=\"input\"><span>天气更新周期(分钟)</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
+                        "<label class=\"input\"><span>日期更新周期(分钟)</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
                         "<label class=\"input\"><span>自动获取位置信息</span><input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_get_location\" %s>开启(以下设置无效)<input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_get_location\" %s>关闭</label>" \
                         "<label class=\"input\"><span>国家(缩写)</span><input type=\"text\"name=\"country\"value=\"%s\"></label>"                            \
                         "<label class=\"input\"><span>省、直辖市</span><input type=\"text\"name=\"province\"value=\"%s\"></label>"                    \
                         "<label class=\"input\"><span>地级市</span><input type=\"text\"name=\"city\"value=\"%s\"></label>"             \
                         "<label class=\"input\"><span>区、县、县级市</span><input type=\"text\"name=\"area\"value=\"%s\"></label>"             \
+                        "<br>"              \
+                        "<h3>和风天气免费订阅的KEY每日最多可请求1000次，而程序每次更新天气时需要请求5次</h3>"    \
+                        "<h3>请在设置更新周期前提前计算理论的每日最少请数，否则当请求超过1000次后将会请求失败</h3>"    \
+                        "<h3>以默认每10分钟更新一次为例，每日最少请求数=24×60÷10×5=720次</h3>"    \
+                        "<br>"              \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_OLD_SETTING "<form method=\"GET\" action=\"saveWeatherOldConf\">"                                                                                       \
@@ -310,7 +315,7 @@ void rgb_setting()
 
 void weather_setting()
 {
-    char buf[2048];
+    char buf[4096];
     char key[64];
     char timeUpdataInterval[32];
     char weatherUpdataInterval[32];
