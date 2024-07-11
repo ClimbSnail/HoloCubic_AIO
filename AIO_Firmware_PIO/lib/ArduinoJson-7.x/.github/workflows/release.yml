@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  release:
+    name: Create release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set variables
+        id: init
+        run: |
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Write release body
+        id: body
+        run: |
+          FILENAME=RELEASE.md
+          extras/scripts/get-release-body.sh ${{ steps.init.outputs.tag }} CHANGELOG.md | tee $FILENAME
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+      - name: Amalgamate ArduinoJson.h
+        id: amalgamate_h
+        run: |
+          FILENAME=ArduinoJson-${{ steps.init.outputs.tag }}.h
+          extras/scripts/build-single-header.sh src/ArduinoJson.h "$FILENAME"
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+      - name: Amalgamate ArduinoJson.hpp
+        id: amalgamate_hpp
+        run: |
+          FILENAME=ArduinoJson-${{ steps.init.outputs.tag }}.hpp
+          extras/scripts/build-single-header.sh src/ArduinoJson.hpp "$FILENAME"
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: ${{ steps.body.outputs.filename }}
+          name: ArduinoJson ${{ steps.init.outputs.version }}
+          artifacts: ${{ steps.amalgamate_h.outputs.filename }},${{ steps.amalgamate_hpp.outputs.filename }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  idf:
+    name: IDF Component Registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Upload component to the component registry
+        uses: espressif/upload-components-ci-action@v1
+        with:
+          name: ArduinoJson
+          namespace: bblanchon
+          api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
+
+  particle:
+    name: Particle
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install
+        run: npm install -g particle-cli particle-usb
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login
+        run: particle login --token ${{ secrets.PARTICLE_TOKEN }}
+      - name: Publish
+        run: bash -eux extras/scripts/publish-particle-library.sh
+
+  platformio:
+    name: PlatformIO
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Publish
+        run: pio pkg publish --no-interactive --no-notify
+        env:
+          PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}

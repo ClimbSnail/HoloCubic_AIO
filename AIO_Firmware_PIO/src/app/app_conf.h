@@ -105,7 +105,7 @@
 
 // 天气(旧)APP
 // 如flash空间不够，首选配置天气app二选一，腾出大量flash空间
-#define APP_WEATHER_OLD_USE 1
+#define APP_WEATHER_OLD_USE 0
 #if APP_WEATHER_OLD_USE
 #include "app/weather_old/weather_old.h"
 #endif

@@ -8,11 +8,11 @@
 * Or https://gitee.com/ClimbSnailQ/HoloCubic_AIO 
 
 ### Developer
-* AIO Framework Development and Some APP Writing: [ClimbSnail] (https://github.com/ClimbSnail)
-* 2048 Game Application Development: [AndyXFuture] (https://github.com/AndyXFuture)
-* New Weather Clock Application Development: [PuYuuu] (https://github.com/PuYuuu)
-* BiliBili fan application development: [cnzxo] (https://github.com/cnzxo/)
-* Memorial Day, Heartbeat App Development: [WoodwindHu] (https://github.com/WoodwindHu)
+* AIO Framework Development and Some APP Writing: [ClimbSnail](https://github.com/ClimbSnail)
+* 2048 Game Application Development: [AndyXFuture](https://github.com/AndyXFuture)
+* New Weather Clock Application Development: [PuYuuu](https://github.com/PuYuuu) & [chase535](https://github.com/chase535)
+* BiliBili fan application development: [cnzxo](https://github.com/cnzxo/)
+* Memorial Day, Heartbeat App Development: [WoodwindHu](https://github.com/WoodwindHu)
 * Developers continue to join. . . . 
 
 _**Welcome to AIO internal test QQ discussion group**_
@@ -111,17 +111,18 @@ About picture conversion: Use the attached upper computer conversion (resolution
 ##### Screen share, screen share
 1. Conditions for running the app: No memory card is required, but you need to use the ` Web Server Service ` app to set your wifi password (make sure you can connect to the router). To avoid restarting due to insufficient power during WiFi connection, please ensure that the USB port is fully powered.
 2. At present, the upper computer uses third-party software, and will independently write the projection upper computer in the later stage to improve the performance.
-3. The upper computer of this screen projection is the upper computer of [Daguai] (https://gitee.com/superddg123/esp32-TFT/tree/master).
+3. The upper computer of this screen projection is the upper computer of [Daguai](https://gitee.com/superddg123/esp32-TFT/tree/master).
 4. The web page side of ` WebServer ` can set additional functions. 
 
 ##### Weather (Weather)
 There are two weather clock apps 
 ###### New version of weather
-1. PuYuuu ` mimics Misaka ` s clock interface in the new edition. Use the https://www.tianqiapi.com Weather API.
-2. Conditions for running APP: It must be networked and set ` tianqi_appid `, ` tianqi_appsecret `, ` tianqi city name (Chinese) `.
-2. To use the new weather clock, you need to modify ` tianqi_appid `, ` tianqi_appsecret ` in the "Web Server" web service. (Application address https://www.yiketianqi.com/user/login) 
+1. The new version by `PuYuuu` imitates the `misaka` clock interface. Secondary modification by `chase535`, using qweather API.
+2. Required condition for running APP: It must be networked and set `QWEATHER KEY` through the `Web Server`. [CLICK HERE TO APPLICATION QWEATHER KEY](https://console.qweather.com/#/apps).
+3. Can be set to automatically obtain geographical location through IP address, which is turned on by default. If you need to manually set the geographical location, please fill in the two-digit letter code defined in [ISO 3166](https://www.iso.org/iso-3166-country-codes.html) in the `country` column, and the rest of the 3 columns can be written in Chinese.
+4. Automatic update cycle can be set, automatic update can not be disabled, set to 0 will be forced to correct to the default value. ***Note: KEY subscribed for free in wind weather can request up to 1000 times a day, while the program needs to request 5 times each time it updates the weather. Please calculate the theoretical minimum number of daily requests in advance before setting the update cycle, otherwise the request will fail when the request exceeds 1000 times. Take the default update every 10 minutes as an example, the minimum number of requests per day=24×60÷10×5=720times.***
 ###### Old version of weather old
-1. The old UI design mimics [CWEIB] (https://github.com/CWEIB)
+1. The old UI design mimics [CWEIB](https://github.com/CWEIB)
 2. Conditions for running APP: It must be networked and set the location, weather_key. It works normally in most cases without inserting a memory card.
 3. Generally, it can work without inserting a memory card, but some weather icons are stored in the memory card (because the internal flash is not enough), so it is necessary to copy the ` weather/` folder attached to the firmware to the root directory of the tf card.
 4. To use the old weather clock, you need to modify the "intimate weather city name" and "key" of intimate weather in the "Web Server" web service. (The application address is https://seniverse.com. The program uses the v3 version of api by default.)
@@ -150,7 +151,7 @@ Note: The program is written by ` cnzxo `.
 1. Run APP condition: Networking status
 2. Before using it for the first time, you should fill in the name and date of the anniversary on the webpage of ` WebServer App `. At present, you can set up two anniversaries. The words supported by anniversaries are ` birthday and graduation, raising small dinosaurs, planting potatoes, wife, girlfriend, parents, milk, siblings, brothers and sisters, wedding anniversary '. If the words contained in the anniversaries name are not within this range, please generate your own font file and replace the ` src\ app\ anniversaries\ msyhbd_24. c ` file. Date format such as ` 2022.5.8 ', if the year is set to 0, it is considered to be a repetitive anniversary (such as birthday) every year.
 
-Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic] (https://github.com/qingehao/LizCubic) project. The program is written by ` WoodwindHu ` 
+Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic](https://github.com/qingehao/LizCubic) project. The program is written by ` WoodwindHu ` 
 
 ##### Heartbeat (Heartbeat)
 1. Conditions for running APP: networked status (performance mode needs to be turned on), an mqtt server with open port 1883, and two HoloCubic.
@@ -158,7 +159,7 @@ Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic] (https://
 3. After setting up the heartbeat APP, turn on the automatic networking and open the mqtt client. Automatically enter the APP after receiving another HoloCubic message. Entering the APP in the normal way automatically sends a message to another HoloCubic.
 4. Update free services from time to time in the group. You can ask the management or group friends for specific configuration parameters.
 
-Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic] (https://github.com/qingehao/LizCubic) project. The program is written by ` WoodwindHu ` 
+Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic](https://github.com/qingehao/LizCubic) project. The program is written by ` WoodwindHu ` 
 
 ##### Stock quotes in real time (Stock)
 1. Run APP condition: WiFi must be configured normally. To avoid restarting due to insufficient power during WiFi connection, please ensure that the USB port is fully powered.
@@ -167,7 +168,7 @@ Note: Remembrance Day and Heartbeat are reproduced from the [LizCubic] (https://
 Note: The program is written by ` redwolf ` 
 
 ### About compiling engineering code
-1. This project code is based on the ESP32-Pico Arduino platform of PlatformIO plug-in on vcode. Specific tutorials can be found in Bilibili. Recommended Tutorial [https://b23.tv/kibhGD] (https://b23.tv/kibhGD)
+1. This project code is based on the ESP32-Pico Arduino platform of PlatformIO plug-in on vcode. Specific tutorials can be found in Bilibili. Recommended Tutorial [https://b23.tv/kibhGD](https://b23.tv/kibhGD)
 2. Remember to modify the ` upload_port 'field in the ` platformio.ini' file under the project to correspond to its own COMM port.
 3. At present, the latest version does not need to modify the SPI pins in the SPI library. A SPI library with modified SPI pins is placed separately under the ` lib ` of this project. The following are the actions of previous versions (negligible) 
 

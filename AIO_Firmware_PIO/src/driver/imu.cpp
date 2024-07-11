@@ -106,13 +106,13 @@ ImuAction *IMU::update(int interval)
                 action_info.isValid = 1;
                 action_info.active = ACTIVE_TYPE::TURN_RIGHT;
             }
-            else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
-            {
-                // 震动检测
-                encoder_diff--;
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::SHAKE;
-            }
+            //else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
+            //{
+            //    // 震动检测
+            //    encoder_diff--;
+            //    action_info.isValid = 1;
+            //    action_info.active = ACTIVE_TYPE::SHAKE;
+            //}
             else
             {
                 action_info.isValid = 0;
@@ -147,12 +147,12 @@ ImuAction *IMU::update(int interval)
                     encoder_state = LV_INDEV_STATE_REL;
                 }
             }
-            else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
-            {
-                // 震动检测
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::SHAKE;
-            }
+            //else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
+            //{
+            //    // 震动检测
+            //    action_info.isValid = 1;
+            //    action_info.active = ACTIVE_TYPE::SHAKE;
+            //}
             else
             {
                 action_info.isValid = 0;
@@ -186,11 +186,11 @@ ImuAction *IMU::getAction(void)
         {
             tmp_info.active = ACTIVE_TYPE::TURN_RIGHT;
         }
-        else if (tmp_info.v_ay > 1000 || tmp_info.v_ay < -1000)
-        {
-            // 震动检测
-            tmp_info.active = ACTIVE_TYPE::SHAKE;
-        }
+        //else if (tmp_info.v_ay > 1000 || tmp_info.v_ay < -1000)
+        //{
+        //    // 震动检测
+        //    tmp_info.active = ACTIVE_TYPE::SHAKE;
+        //}
     }
 
     if (ACTIVE_TYPE::UNKNOWN == tmp_info.active)
@@ -203,11 +203,11 @@ ImuAction *IMU::getAction(void)
         {
             tmp_info.active = ACTIVE_TYPE::DOWN;
         }
-        else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
-        {
-            // 震动检测
-            tmp_info.active = ACTIVE_TYPE::SHAKE;
-        }
+        //else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
+        //{
+        //    // 震动检测
+        //    tmp_info.active = ACTIVE_TYPE::SHAKE;
+        //}
     }
 
     // 储存当前检测的动作数据到动作缓冲区中

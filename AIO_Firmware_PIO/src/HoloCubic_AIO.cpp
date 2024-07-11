@@ -15,6 +15,9 @@
 
 #include "common.h"
 #include "sys/app_controller.h"
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+#include "soc/rtc_wdt.h"
 
 #include "app/app_conf.h"
 
@@ -55,6 +58,13 @@ void my_print(const char *buf)
 
 void setup()
 {
+    // 禁用看门狗
+    rtc_wdt_protect_off();
+    rtc_wdt_disable();
+
+    // 禁用断电探测器
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
     Serial.begin(115200);
 
     Serial.println(F("\nAIO (All in one) version " AIO_VERSION "\n"));

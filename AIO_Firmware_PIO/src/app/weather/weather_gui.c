@@ -1,3 +1,5 @@
+#include "stdlib.h"
+
 #include "weather_gui.h"
 #include "weather_image.h"
 
@@ -29,9 +31,23 @@ static lv_obj_t *spaceImg = NULL;
 
 static lv_chart_series_t *ser1, *ser2;
 
+unsigned char weather_gui_first_run = 1;
+
 // 天气图标路径的映射关系
-const void *weaImage_map[] = {&weather_0, &weather_9, &weather_14, &weather_5, &weather_25,
-                              &weather_30, &weather_26, &weather_11, &weather_23};
+const void *weaImage_map[] = {&qweather_100, &qweather_101, &qweather_102, &qweather_103, &qweather_104,
+                                &qweather_150, &qweather_151, &qweather_152, &qweather_153, &qweather_300,
+                                &qweather_301, &qweather_302, &qweather_303, &qweather_304, &qweather_305,
+                                &qweather_306, &qweather_307, &qweather_308, &qweather_309, &qweather_310,
+                                &qweather_311, &qweather_312, &qweather_313, &qweather_314, &qweather_315,
+                                &qweather_316, &qweather_317, &qweather_318, &qweather_350, &qweather_351,
+                                &qweather_399, &qweather_400, &qweather_401, &qweather_402, &qweather_403,
+                                &qweather_404, &qweather_405, &qweather_406, &qweather_407, &qweather_408,
+                                &qweather_409, &qweather_410, &qweather_456, &qweather_457, &qweather_499,
+                                &qweather_500, &qweather_501, &qweather_502, &qweather_503, &qweather_504,
+                                &qweather_507, &qweather_508, &qweather_509, &qweather_510, &qweather_511,
+                                &qweather_512, &qweather_513, &qweather_514, &qweather_515, &qweather_900,
+                                &qweather_901, &qweather_999};
+
 // 太空人图标路径的映射关系
 const void *manImage_map[] = {&man_0, &man_1, &man_2, &man_3, &man_4, &man_5, &man_6, &man_7, &man_8, &man_9};
 static const char weekDayCh[7][4] = {"日", "一", "二", "三", "四", "五", "六"};
@@ -69,14 +85,16 @@ void weather_gui_init(void)
     lv_style_set_pad_right(&bar_style, 1);
 }
 
-void display_curve_init(lv_scr_load_anim_t anim_type)
+void display_curve_init(lv_scr_load_anim_t anim_type, short temp_max, short temp_min)
 {
+    static short temp_max_old = 0, temp_min_old = 0;
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
-    if (act_obj == scr_2)
+
+    if(temp_max_old == temp_max && temp_min_old == temp_min && act_obj == scr_2)
         return;
 
-    weather_gui_release();
-    lv_obj_clean(act_obj); // 清空此前页面
+    temp_max_old = temp_max;
+    temp_min_old = temp_min;
 
     scr_2 = lv_obj_create(NULL);
     lv_obj_add_style(scr_2, &default_style, LV_STATE_DEFAULT);
@@ -84,27 +102,33 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     titleLabel = lv_label_create(scr_2);
     lv_obj_add_style(titleLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_recolor(titleLabel, true);
-    lv_label_set_text(titleLabel, "查看更多天气");
+    lv_label_set_text(titleLabel, "七日气温");
 
     chart = lv_chart_create(scr_2);
-    lv_obj_set_size(chart, 220, 180);
-    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, -50, 50); // 设置进度条表示的温度为-50~50
+    lv_obj_set_size(chart, 200, 180);
+    lv_obj_align(chart, LV_ALIGN_CENTER, 15, 10);
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, temp_min, temp_max);
     lv_chart_set_point_count(chart, 7);
     lv_chart_set_div_line_count(chart, 5, 7);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
+
+    lv_obj_set_style_text_color(chart, lv_palette_lighten(LV_PALETTE_YELLOW, 2), LV_PART_TICKS);
+    lv_obj_set_style_line_color(chart, lv_palette_lighten(LV_PALETTE_YELLOW, 2), LV_PART_TICKS);
+
+    // 设置Y轴上刻度线的数量
+    lv_chart_set_axis_tick(chart, LV_CHART_AXIS_PRIMARY_Y,
+                            10, 5, 10, 2, true, 100);
 
     ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_SECONDARY_Y);
     ser2 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_SECONDARY_Y);
     // lv_obj_set_style_pad_left(chart, 40, LV_STATE_DEFAULT);
 
-    // 设置Y轴上刻度线的数量
-    // lv_chart_set_axis_tick(chart, LV_CHART_AXIS_PRIMARY_Y,
-    //                        10, 5, 10, 2, true, 20);
     // lv_chart_set_zoom_y();
 
     // 绘制
     lv_obj_align(titleLabel, LV_ALIGN_TOP_MID, 0, 10);
-    lv_obj_align(chart, LV_ALIGN_CENTER, 0, 10);
+
+    lv_chart_refresh(chart);
 
     if (LV_SCR_LOAD_ANIM_NONE != anim_type)
     {
@@ -116,28 +140,58 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     }
 }
 
-void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type)
+void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type, bool is_finish)
 {
-    display_curve_init(anim_type);
-    for (int Ti = 0; Ti < 7; ++Ti)
+    
+    if (is_finish && scr_1 != NULL)
     {
-        ser1->y_points[Ti] = maxT[Ti] + 50; // 补偿50度
+        lv_obj_clean(scr_1);
+        weather_gui_release(1);
     }
-    for (int Ti = 0; Ti < 7; ++Ti)
+
+    short temp_max = maxT[0], temp_min = minT[0];
+    for (short Ti = 1; Ti < 7; ++Ti)
     {
-        ser2->y_points[Ti] = minT[Ti] + 50; // 补偿50度
+        if ( maxT[Ti] > temp_max) temp_max = maxT[Ti];
+        if ( minT[Ti] < temp_min) temp_min = minT[Ti];
+    }
+    short temp_diff = temp_max - temp_min;
+    while (temp_diff%10 != 0)
+    {
+        if(temp_diff%2 == 0) temp_min--;
+        else temp_max++;
+        temp_diff++;
+    }
+    display_curve_init(anim_type, temp_max, temp_min);
+    short temp_mid = temp_min + temp_diff/2;
+    for (short Ti = 0; Ti < 7; ++Ti)
+    {
+        char tmp[5] = {0};
+
+        double point = ((maxT[Ti] - temp_mid + (temp_diff/2.0))/temp_diff)*100;
+        sprintf(tmp, "%.0f", point);
+        ser1->y_points[Ti] = atoi(tmp);
+
+        point = ((minT[Ti] - temp_mid + (temp_diff/2.0))/temp_diff)*100;
+        sprintf(tmp, "%.0f", point);
+        ser2->y_points[Ti] = atoi(tmp);
     }
     lv_chart_refresh(chart);
 }
 
-void display_weather_init(lv_scr_load_anim_t anim_type)
+void display_weather_init(lv_scr_load_anim_t anim_type, int temperature, int humidity)
 {
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
+
+    if (weather_gui_first_run)
+    {
+        lv_obj_t *act_obj = lv_scr_act();
+        lv_obj_clean(act_obj); // 清空此前页面
+        weather_gui_first_run = 0;
+    }
+
     if (act_obj == scr_1)
         return;
-
-    weather_gui_release();
-    lv_obj_clean(act_obj); // 清空此前页面
 
     scr_1 = lv_obj_create(NULL);
     lv_obj_add_style(scr_1, &default_style, LV_STATE_DEFAULT);
@@ -192,7 +246,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_bar_set_range(tempBar, -50, 50); // 设置进度条表示的温度为-50~50
     lv_obj_set_size(tempBar, 60, 12);
     lv_obj_set_style_bg_color(tempBar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
-    lv_bar_set_value(tempBar, 10, LV_ANIM_ON);
+    lv_bar_set_value(tempBar, temperature, LV_ANIM_ON);
     tempLabel = lv_label_create(scr_1);
     lv_obj_add_style(tempLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_text_fmt(tempLabel, "%2d°C", 18);
@@ -205,7 +259,7 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_bar_set_range(humiBar, 0, 100);
     lv_obj_set_size(humiBar, 60, 12);
     lv_obj_set_style_bg_color(humiBar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
-    lv_bar_set_value(humiBar, 49, LV_ANIM_ON);
+    lv_bar_set_value(humiBar, humidity, LV_ANIM_ON);
     humiLabel = lv_label_create(scr_1);
     lv_obj_add_style(humiLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_text(humiLabel, "50%");
@@ -230,19 +284,25 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_obj_align(clockLabel_2, LV_ALIGN_LEFT_MID, 165, 9);
     lv_obj_align(dateLabel, LV_ALIGN_LEFT_MID, 10, 32);
 
-    // if (LV_SCR_LOAD_ANIM_NONE != anim_type)
-    // {
-    //     lv_scr_load_anim(scr_1, anim_type, 300, 300, false);
-    // }
-    // else
-    // {
-    // lv_scr_load(scr_1);
-    // }
+    if (LV_SCR_LOAD_ANIM_NONE != anim_type)
+    {
+        lv_scr_load_anim(scr_1, anim_type, 300, 300, false);
+    }
+    else
+    {
+        lv_scr_load(scr_1);
+    }
 }
 
-void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
+void display_weather(struct Weather weaInfo, struct TimeStr timeInfo, lv_scr_load_anim_t anim_type, bool is_finish)
 {
-    display_weather_init(anim_type);
+    if (is_finish && scr_2 != NULL)
+    {
+        lv_obj_clean(scr_2);
+        weather_gui_release(2);
+    }
+
+    display_weather_init(anim_type, weaInfo.temperature, weaInfo.humidity);
 
     lv_label_set_text(cityLabel, weaInfo.cityname);
     if (strlen(weaInfo.cityname) > 6)
@@ -259,10 +319,15 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
                           weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
 
-    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_ON);
+    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_OFF);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);
-    lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_ON);
+    lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_OFF);
     lv_label_set_text_fmt(humiLabel, "%d%%", weaInfo.humidity);
+
+    lv_label_set_text_fmt(clockLabel_1, "%02d#ffa500 %02d#", timeInfo.hour, timeInfo.minute);
+    lv_label_set_text_fmt(clockLabel_2, "%02d", timeInfo.second);
+    lv_label_set_text_fmt(dateLabel, "%2d月%2d日   周%s", timeInfo.month, timeInfo.day,
+                          weekDayCh[timeInfo.weekday]);
 
     // // 绘制图形
     // lv_obj_align(weatherImg, NULL, LV_ALIGN_TOP_RIGHT, -10, 10);
@@ -275,42 +340,11 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     // lv_obj_align(humiBar, NULL, LV_ALIGN_LEFT_MID, 35, 100);
     // lv_obj_align(humiLabel, NULL, LV_ALIGN_LEFT_MID, 100, 100);
     // lv_obj_align(spaceImg, NULL, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
-
-    if (LV_SCR_LOAD_ANIM_NONE != anim_type)
-    {
-        lv_scr_load_anim(scr_1, anim_type, 300, 300, false);
-    }
-    else
-    {
-        lv_scr_load(scr_1);
-    }
 }
 
-void display_time(struct TimeStr timeInfo, lv_scr_load_anim_t anim_type)
+void weather_gui_release(short page)
 {
-    display_weather_init(anim_type);
-    lv_label_set_text_fmt(clockLabel_1, "%02d#ffa500 %02d#", timeInfo.hour, timeInfo.minute);
-    lv_label_set_text_fmt(clockLabel_2, "%02d", timeInfo.second);
-    lv_label_set_text_fmt(dateLabel, "%2d月%2d日   周%s", timeInfo.month, timeInfo.day,
-                          weekDayCh[timeInfo.weekday]);
-
-    // lv_obj_align(clockLabel_1, NULL, LV_ALIGN_LEFT_MID, 0, 10);
-    // lv_obj_align(clockLabel_2, NULL, LV_ALIGN_LEFT_MID, 165, 9);
-    // lv_obj_align(dateLabel, NULL, LV_ALIGN_LEFT_MID, 10, 32);
-
-    // if (LV_SCR_LOAD_ANIM_NONE != anim_type)
-    // {
-    //     lv_scr_load_anim(scr_1, anim_type, 300, 300, false);
-    // }
-    // else
-    // {
-    //     lv_scr_load(scr_1);
-    // }
-}
-
-void weather_gui_release(void)
-{
-    if (scr_1 != NULL)
+    if (page == 1 && scr_1 != NULL)
     {
         lv_obj_clean(scr_1);
         scr_1 = NULL;
@@ -330,8 +364,7 @@ void weather_gui_release(void)
         humiLabel = NULL;
         spaceImg = NULL;
     }
-
-    if (scr_2 != NULL)
+    if (page == 2 && scr_2 != NULL)
     {
         lv_obj_clean(scr_2);
         scr_2 = NULL;
@@ -344,7 +377,9 @@ void weather_gui_release(void)
 
 void weather_gui_del(void)
 {
-    weather_gui_release();
+    // 释放内存
+    weather_gui_release(1);
+    weather_gui_release(2);
 
     // 手动清除样式，防止内存泄漏
     // lv_style_reset(&default_style);
@@ -358,34 +393,12 @@ void weather_gui_del(void)
 void display_space(void)
 {
     static int _spaceIndex = 0;
+    lv_img_t *img = (lv_img_t *)spaceImg;
     if (NULL != scr_1 && lv_scr_act() == scr_1)
     {
-        lv_img_set_src(spaceImg, manImage_map[_spaceIndex]);
         _spaceIndex = (_spaceIndex + 1) % 10;
+        if(img->src == manImage_map[0] && _spaceIndex != 1)
+            _spaceIndex = 1;
+        lv_img_set_src(spaceImg, manImage_map[_spaceIndex]);
     }
-}
-
-int airQulityLevel(int q)
-{
-    if (q < 50)
-    {
-        return 0;
-    }
-    else if (q < 100)
-    {
-        return 1;
-    }
-    else if (q < 150)
-    {
-        return 2;
-    }
-    else if (q < 200)
-    {
-        return 3;
-    }
-    else if (q < 300)
-    {
-        return 4;
-    }
-    return 5;
 }
