@@ -13,7 +13,7 @@
 // v1.yiketianqi.com/api?unescape=1&version=v61
 #define WEATHER_NOW_API_UPDATE "https://%s&appid=%s&appsecret=%s&city=%s"
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
-#define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
+#define TIME_API "https://acs.m.taobao.com/gw/mtop.common.getTimestamp/"
 #define WEATHER_PAGE_SIZE 2
 #define UPDATE_WEATHER 0x01       // 更新天气
 #define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
@@ -202,8 +202,10 @@ static long long get_timestamp(String url)
         {
             String payload = http.getString();
             Serial.println(payload);
-            int time_index = (payload.indexOf("data")) + 12;
-            time = payload.substring(time_index, payload.length() - 3);
+            int time_index = payload.indexOf("\"t\":\"") + 5;  // 找到 "t":" 后的索引，+5 跳过 "t":" 的长度
+            int time_end_index = payload.indexOf("\"", time_index);  // 查找结束引号的位置
+            time = payload.substring(time_index, time_end_index);  // 提取时间戳
+
             // 以网络时间戳为准
             run_data->preNetTimestamp = atoll(time.c_str()) + run_data->errorNetTimestamp + TIMEZERO_OFFSIZE;
             run_data->preLocalTimestamp = GET_SYS_MILLIS();
