@@ -65,21 +65,21 @@ static PictureAppRunData *run_data = NULL;
 // This next function will be called during decoding of the jpeg file to
 // render each block to the TFT.  If you use a different TFT library
 // you will need to adapt this function to suit.
-// static bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
-// {
-//     // Stop further decoding as image is running off bottom of screen
-//     if (y >= tft->height())
-//         return 0;
+bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
+{
+    // Stop further decoding as image is running off bottom of screen
+    if (y >= tft->height())
+        return 0;
 
-//     // This function will clip the image block rendering automatically at the TFT boundaries
-//     tft->pushImage(x, y, w, h, bitmap);
+    // This function will clip the image block rendering automatically at the TFT boundaries
+    tft->pushImage(x, y, w, h, bitmap);
 
-//     // This might work instead if you adapt the sketch to use the Adafruit_GFX library
-//     // tft.drawRGBBitmap(x, y, bitmap, w, h);
+    // This might work instead if you adapt the sketch to use the Adafruit_GFX library
+    // tft.drawRGBBitmap(x, y, bitmap, w, h);
 
-//     // Return 1 to decode next block
-//     return 1;
-// }
+    // Return 1 to decode next block
+    return 1;
+}
 
 static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 {
@@ -125,7 +125,7 @@ static int picture_init(AppController *sys)
     // The jpeg image can be scaled by a factor of 1, 2, 4, or 8
     TJpgDec.setJpgScale(1);
     // The decoder must be given the exact name of the rendering function above
-    // TJpgDec.setCallback(tft_output);
+    TJpgDec.setCallback(tft_output);
     return 0;
 }
 

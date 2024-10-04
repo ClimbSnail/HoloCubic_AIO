@@ -262,7 +262,7 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     // 下面这行代码可能会出错
     // lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
     //                       weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
-    lv_label_set_text_fmt(txtLabel, "   今日天气:%s,%s风%s 级.              ",
+    lv_label_set_text_fmt(txtLabel, "   今日天气:%s, %s风%s级.              ",
                           weaInfo.weather, weaInfo.windDir, weaInfo.windpower);
 
     lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_ON);

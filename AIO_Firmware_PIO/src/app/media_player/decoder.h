@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#define MJPEG_APP_OLD
+// #define MJPEG_APP_NEW
 
 #include <SD.h>
 
