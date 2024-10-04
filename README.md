@@ -23,11 +23,11 @@ AIO意为All in one，目的将尽可能多的功能集成进Holocubic AIO固件
 
 _**欢迎加入AIO内测QQ讨论群**_
 
-一群群号 755143193
-二群群号 860112883
-三群群号 676732387
-四群群号 749207817
-五群群号 866784418
+* 一群群号 `755143193`
+* 二群群号 `860112883`
+* 三群群号 `676732387`
+* 四群群号 `749207817`
+* 五群群号 `866784418`
 
 ![QQ_Group](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/OtherProject/holocubic_qq_group.jpg)
 
@@ -125,9 +125,9 @@ B站功能操作演示视频链接 https://www.bilibili.com/video/BV1wS4y1R7YF/
 ##### 天气、时钟（Weather）
 一共有两款天气时钟APP
 ###### 新版 weather
-1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用https://www.tianqiapi.com 天气API。
-2. 运行APP条件：必须是已经联网状态，且设置好`tianqi_appid`、`tianqi_appsecret`、`tianqi 城市名（中文）`。
-2. 使用新版天气时钟，需要再"Web Server"网页服务中修改`tianqi_appid`、`tianqi_appsecret`。（申请地址 https://www.yiketianqi.com/user/login ）
+1. 新版由`PuYuuu`模仿了`misaka`的时钟界面。使用高德天气API。
+2. 运行APP条件：必须是已经联网状态。
+3. 使用新版天气时钟，需要再"Web Server"网页服务中修改`城市名（精准的城市代码）`、`API的个人Key`。（城市代码的参考编码表 https://lbs.amap.com/api/webservice/download ，key的获取方法 https://lbs.amap.com/api/webservice/create-project-and-key ）
 ###### 旧版 weather old
 1. 旧版UI设计模仿了[CWEIB](https://github.com/CWEIB)
 2. 运行APP条件：必须是已经联网状态，且设置好地点、weather_key。不插内存卡大多数情况能正常工作。
