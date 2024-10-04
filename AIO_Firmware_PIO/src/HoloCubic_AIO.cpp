@@ -226,6 +226,7 @@ void loop()
     screen.routine();
 
 #ifdef PEAK
+    // 适配稚晖君的PEAK
     if (!mpu.Encoder_GetIsPush())
     {
         Serial.println("mpu.Encoder_GetIsPush()1");

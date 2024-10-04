@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#define AIO_VERSION "2.1.10"
+#define AIO_VERSION "2.1.11"
 #define GET_SYS_MILLIS xTaskGetTickCount // 获取系统毫秒数
 // #define GET_SYS_MILLIS millis            // 获取系统毫秒数
 
@@ -47,6 +47,9 @@ boolean doDelayMillisTime(unsigned long interval,
 // 屏幕尺寸
 #define SCREEN_HOR_RES 240 // 水平
 #define SCREEN_VER_RES 240 // 竖直
+
+#define SCREEN_HEIGHT SCREEN_VER_RES
+#define SCREEN_WIDTH SCREEN_HOR_RES
 
 // TFT屏幕接口
 // #define PEAK

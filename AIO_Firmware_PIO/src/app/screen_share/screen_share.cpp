@@ -165,7 +165,7 @@ static int screen_share_init(AppController *sys)
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
-                            0.15, 0.25, 0.001, 30};
+                            150, 250, 1, 30};
     set_rgb_and_run(&rgb_setting);
 
     screen_share_gui_init();
@@ -360,7 +360,7 @@ static int screen_exit_callback(void *param)
                             1, 32, 255,
                             255, 255, 255,
                             1, 1, 1,
-                            0.15, 0.25, 0.001, 30};
+                            150, 250, 1, 30};
     set_rgb_and_run(&rgb_setting);
 
     // 释放运行数据

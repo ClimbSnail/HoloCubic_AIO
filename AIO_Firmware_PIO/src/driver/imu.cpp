@@ -86,83 +86,83 @@ bool IMU::Encoder_GetIsPush(void)
 #endif
 }
 
-ImuAction *IMU::update(int interval)
-{
-    getVirtureMotion6(&action_info);
-    // 原先判断的只是加速度，现在要加上陀螺仪
-    if (GET_SYS_MILLIS() - last_update_time > interval)
-    {
-        if (!action_info.isValid)
-        {
-            if (action_info.v_ay > 4000)
-            {
-                encoder_diff--;
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::TURN_LEFT;
-            }
-            else if (action_info.v_ay < -4000)
-            {
-                encoder_diff++;
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::TURN_RIGHT;
-            }
-            else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
-            {
-                // 震动检测
-                encoder_diff--;
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::SHAKE;
-            }
-            else
-            {
-                action_info.isValid = 0;
-            }
-        }
+// ImuAction *IMU::update(int interval)
+// {
+//     getVirtureMotion6(&action_info);
+//     // 原先判断的只是加速度，现在要加上陀螺仪
+//     if (GET_SYS_MILLIS() - last_update_time > interval)
+//     {
+//         if (!action_info.isValid)
+//         {
+//             if (action_info.v_ay > 4000)
+//             {
+//                 encoder_diff--;
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::TURN_LEFT;
+//             }
+//             else if (action_info.v_ay < -4000)
+//             {
+//                 encoder_diff++;
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::TURN_RIGHT;
+//             }
+//             else if (action_info.v_ay > 1000 || action_info.v_ay < -1000)
+//             {
+//                 // 震动检测
+//                 encoder_diff--;
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::SHAKE;
+//             }
+//             else
+//             {
+//                 action_info.isValid = 0;
+//             }
+//         }
 
-        if (!action_info.isValid)
-        {
-            if (action_info.v_ax > 5000)
-            {
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::UP;
-                delay(500);
-                getVirtureMotion6(&action_info);
-                if (action_info.v_ax > 5000)
-                {
-                    action_info.isValid = 1;
-                    action_info.active = ACTIVE_TYPE::GO_FORWORD;
-                    encoder_state = LV_INDEV_STATE_PR;
-                }
-            }
-            else if (action_info.v_ax < -5000)
-            {
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::DOWN;
-                delay(500);
-                getVirtureMotion6(&action_info);
-                if (action_info.v_ax < -5000)
-                {
-                    action_info.isValid = 1;
-                    action_info.active = ACTIVE_TYPE::RETURN;
-                    encoder_state = LV_INDEV_STATE_REL;
-                }
-            }
-            else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
-            {
-                // 震动检测
-                action_info.isValid = 1;
-                action_info.active = ACTIVE_TYPE::SHAKE;
-            }
-            else
-            {
-                action_info.isValid = 0;
-            }
-        }
+//         if (!action_info.isValid)
+//         {
+//             if (action_info.v_ax > 5000)
+//             {
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::UP;
+//                 delay(500);
+//                 getVirtureMotion6(&action_info);
+//                 if (action_info.v_ax > 5000)
+//                 {
+//                     action_info.isValid = 1;
+//                     action_info.active = ACTIVE_TYPE::GO_FORWORD;
+//                     encoder_state = LV_INDEV_STATE_PR;
+//                 }
+//             }
+//             else if (action_info.v_ax < -5000)
+//             {
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::DOWN;
+//                 delay(500);
+//                 getVirtureMotion6(&action_info);
+//                 if (action_info.v_ax < -5000)
+//                 {
+//                     action_info.isValid = 1;
+//                     action_info.active = ACTIVE_TYPE::RETURN;
+//                     encoder_state = LV_INDEV_STATE_REL;
+//                 }
+//             }
+//             else if (action_info.v_ax > 1000 || action_info.v_ax < -1000)
+//             {
+//                 // 震动检测
+//                 action_info.isValid = 1;
+//                 action_info.active = ACTIVE_TYPE::SHAKE;
+//             }
+//             else
+//             {
+//                 action_info.isValid = 0;
+//             }
+//         }
 
-        last_update_time = GET_SYS_MILLIS();
-    }
-    return &action_info;
-}
+//         last_update_time = GET_SYS_MILLIS();
+//     }
+//     return &action_info;
+// }
 
 ImuAction *IMU::getAction(void)
 {

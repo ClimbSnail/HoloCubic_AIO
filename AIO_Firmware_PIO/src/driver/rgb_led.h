@@ -47,10 +47,10 @@ struct RgbConfig
     int8_t step_0;
     int8_t step_1;
     int8_t step_2;
-    float min_brightness;
-    float max_brightness;
-    float brightness_step;
-    int time; // 定时器的时间
+    uint16_t min_brightness; // 亮度值 0~1000
+    uint16_t max_brightness; // 亮度值 0~1000
+    uint8_t brightness_step; // 亮度值 0~100
+    int time;                // 定时器的时间 10~1000
 };
 
 struct RgbParam
@@ -104,9 +104,9 @@ struct RgbParam
         int8_t step_v;
     };
 
-    float min_brightness; // 背光的最小亮度
-    float max_brightness; // 背光的最大亮度
-    float brightness_step;
+    uint16_t min_brightness; // 亮度值 0~1000
+    uint16_t max_brightness; // 亮度值 0~1000
+    uint8_t brightness_step; // 亮度值 0~100
 
     int time; // 定时器的时间
 };
@@ -129,12 +129,11 @@ struct RgbRunStatus
         uint8_t current_v;
     };
     uint8_t pos;
-    float current_brightness;
+    uint16_t current_brightness; // 亮度值 0~1000
 };
 
 bool set_rgb_and_run(RgbParam *rgb_setting,
                      LED_RUN_MODE mode = RUN_MODE_TASK);
 void rgb_stop(void);
-
 
 #endif

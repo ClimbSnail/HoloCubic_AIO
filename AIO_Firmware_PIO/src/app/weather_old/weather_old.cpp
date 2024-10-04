@@ -5,7 +5,7 @@
 #include "network.h"
 #include "common.h"
 
-#define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp"
+#define TIME_API "https://acs.m.taobao.com/gw/mtop.common.getTimestamp/"
 #define ZHIXIN_WEATHER_API "https://api.seniverse.com/v3/weather/now.json?key=%s&location=%s&language=%s&unit=c"
 #define WEATHER_PAGE_SIZE 2
 

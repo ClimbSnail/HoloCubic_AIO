@@ -79,7 +79,7 @@ public:
               SysMpuConfig *mpu_cfg);
     void setOrder(uint8_t order); // 设置方向
     bool Encoder_GetIsPush(void); // 适配Peak的编码器中键 开关机使用
-    ImuAction *update(int interval);
+    // ImuAction *update(int interval);
     ImuAction *getAction(void); // 获取动作
     void getVirtureMotion6(ImuAction *action_info);
 };

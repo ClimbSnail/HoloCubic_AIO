@@ -65,7 +65,7 @@ static void emoji_init(void){
 
 /* 关闭播放 */
 static void close_player(void){
-    delete emj_run->emoji_docoder;
+    delete emj_run->emoji_decoder;
     emj_run->emoji_file.close();
 }
 /* 开启播放 */
@@ -73,7 +73,7 @@ static void start_player(void){
     char *path = (char*)malloc(38);//必须用char*类型，不能用uint8_t*
     sprintf(path,"/LH&LXW/emoji/videos/video%d.mjpeg",emj_run->emoji_var);//图标路径
     emj_run->emoji_file = tf.open(path);
-    emj_run->emoji_docoder = new MjpegPlayDocoder(&emj_run->emoji_file, true);
+    emj_run->emoji_decoder = new MjpegPlayDecoder(&emj_run->emoji_file, true);
     free(path);  
 }
 void emoji_process(lv_obj_t *ym)
@@ -87,7 +87,7 @@ void emoji_process(lv_obj_t *ym)
         if(emj_run->emoji_mode)lv_timer_handler();
         else{
             if(emj_run->emoji_file.available()){
-                emj_run->emoji_docoder->video_play_screen();// 播放一帧数据
+                emj_run->emoji_decoder->video_play_screen();// 播放一帧数据
             }else{
                 /* 判断有没有超过3333ms */
                 if(millis()-(*timCont) > emoji_play_time){
@@ -98,7 +98,7 @@ void emoji_process(lv_obj_t *ym)
                 }
                 close_player();
                 start_player();
-                emj_run->emoji_docoder->video_play_screen();//立即播放一帧数据
+                emj_run->emoji_decoder->video_play_screen();//立即播放一帧数据
             }
         }
         /* MPU6050数据获取 */

@@ -5,7 +5,7 @@
 
 #define APP_CTRL_CONFIG_PATH "/sys.cfg"
 #define MPU_CONFIG_PATH "/mpu.cfg"
-#define RGB_CONFIG_PATH "/rgb.cfg"
+#define RGB_CONFIG_PATH "/rgb01.cfg"
 
 void AppController::read_config(SysUtilConfig *cfg)
 {
@@ -170,9 +170,9 @@ void AppController::read_config(RgbConfig *cfg)
         cfg->step_0 = 1;
         cfg->step_1 = 1;
         cfg->step_2 = 1;
-        cfg->min_brightness = 0.15;
-        cfg->max_brightness = 0.25;
-        cfg->brightness_step = 0.001;
+        cfg->min_brightness = 150;
+        cfg->max_brightness = 250;
+        cfg->brightness_step = 1;
         cfg->time = 30;
 
         this->write_config(cfg);
@@ -192,9 +192,9 @@ void AppController::read_config(RgbConfig *cfg)
         cfg->step_0 = atol(param[7]);
         cfg->step_1 = atol(param[8]);
         cfg->step_2 = atol(param[9]);
-        cfg->min_brightness = atof(param[10]);
-        cfg->max_brightness = atof(param[11]);
-        cfg->brightness_step = atof(param[12]);
+        cfg->min_brightness = atol(param[10]);
+        cfg->max_brightness = atol(param[11]);
+        cfg->brightness_step = atol(param[12]);
         cfg->time = atol(param[13]);
     }
 }
@@ -244,32 +244,18 @@ void AppController::write_config(RgbConfig *cfg)
     snprintf(tmp, 25, "%d\n", cfg->step_2);
     w_data += tmp;
 
-    if (cfg->min_brightness < 0.01)
-    {
-        // 限制
-        cfg->min_brightness = 0.01;
-    }
     memset(tmp, 0, 25);
-    snprintf(tmp, 25, "%f\n", cfg->min_brightness);
-    w_data += tmp;
-
-    if (cfg->max_brightness < 0.01)
-    {
-        // 限制
-        cfg->max_brightness = 0.01;
-    }
-    memset(tmp, 0, 25);
-    snprintf(tmp, 25, "%f\n", cfg->max_brightness);
+    snprintf(tmp, 25, "%u\n", cfg->min_brightness);
     w_data += tmp;
 
     memset(tmp, 0, 25);
-    snprintf(tmp, 25, "%f\n", cfg->brightness_step);
+    snprintf(tmp, 25, "%u\n", cfg->max_brightness);
     w_data += tmp;
 
-    if (cfg->time < 10)
-    {
-        cfg->time = 10;
-    }
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%d\n", cfg->brightness_step);
+    w_data += tmp;
+
     memset(tmp, 0, 25);
     snprintf(tmp, 25, "%d\n", cfg->time);
     w_data += tmp;
@@ -341,14 +327,17 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         }
         else if (!strcmp(key, "min_brightness"))
         {
-            snprintf(value, 32, "%f", rgb_cfg.min_brightness);
+            rgb_cfg.min_brightness = constrain(rgb_cfg.min_brightness, 0, 1000);
+            snprintf(value, 32, "%u", rgb_cfg.min_brightness);
         }
         else if (!strcmp(key, "max_brightness"))
         {
-            snprintf(value, 32, "%f", rgb_cfg.max_brightness);
+            rgb_cfg.max_brightness = constrain(rgb_cfg.max_brightness, rgb_cfg.min_brightness, 1000);
+            snprintf(value, 32, "%u", rgb_cfg.max_brightness);
         }
         else if (!strcmp(key, "time"))
         {
+            rgb_cfg.time = constrain(rgb_cfg.time, 10, 1000);
             snprintf(value, 32, "%u", rgb_cfg.time);
         }
         else if (!strcmp(key, "auto_start_app"))
@@ -409,11 +398,11 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         }
         else if (!strcmp(key, "min_brightness"))
         {
-            rgb_cfg.min_brightness = atof(value);
+            rgb_cfg.min_brightness = atol(value);
         }
         else if (!strcmp(key, "max_brightness"))
         {
-            rgb_cfg.max_brightness = atof(value);
+            rgb_cfg.max_brightness = atol(value);
         }
         else if (!strcmp(key, "time"))
         {

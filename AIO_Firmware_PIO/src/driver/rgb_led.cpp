@@ -210,7 +210,7 @@ static void hsvModeChange(void)
     rgb.setHVS(rgb_status.current_h,
                rgb_status.current_s,
                rgb_status.current_v)
-        .setBrightness(rgb_status.current_brightness);
+        .setBrightness(rgb_status.current_brightness / 1000.0f);
 }
 
 static void rgbModeChange(void)
@@ -266,12 +266,18 @@ static void rgbModeChange(void)
     rgb.setRGB(rgb_status.current_r,
                rgb_status.current_g,
                rgb_status.current_b)
-        .setBrightness(rgb_status.current_brightness);
+        .setBrightness(rgb_status.current_brightness / 1000.0f);
 }
 
 static void count_cur_brightness(void)
 {
     // 背光的控制
+    if (g_rgb.max_brightness == g_rgb.min_brightness)
+    {
+        rgb_status.current_brightness = g_rgb.max_brightness;
+        return;
+    }
+
     rgb_status.current_brightness += g_rgb.brightness_step;
     if (rgb_status.current_brightness >= g_rgb.max_brightness)
     {

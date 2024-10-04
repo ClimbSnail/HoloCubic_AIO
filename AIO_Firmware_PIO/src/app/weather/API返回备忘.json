@@ -1,0 +1,95 @@
+{
+    "status": "1",
+    "count": "1",
+    "info": "OK",
+    "infocode": "10000",
+    "lives": [
+        {
+            "province": "河南",
+            "city": "涧西区",
+            "adcode": "410305",
+            "weather": "晴",
+            "temperature": "19",
+            "winddirection": "东北",
+            "windpower": "≤3",
+            "humidity": "38",
+            "reporttime": "2024-03-21 18:30:05",
+            "temperature_float": "19.0",
+            "humidity_float": "38.0"
+        }
+    ]
+}
+
+
+{
+    "status": "1",
+    "count": "1",
+    "info": "OK",
+    "infocode": "10000",
+    "forecasts": [
+        {
+            "city": "涧西区",
+            "adcode": "410305",
+            "province": "河南",
+            "reporttime": "2024-03-21 19:30:05",
+            "casts": [
+                {
+                    "date": "2024-03-21",
+                    "week": "4",
+                    "dayweather": "晴",
+                    "nightweather": "多云",
+                    "daytemp": "25",
+                    "nighttemp": "10",
+                    "daywind": "南",
+                    "nightwind": "南",
+                    "daypower": "1-3",
+                    "nightpower": "1-3",
+                    "daytemp_float": "25.0",
+                    "nighttemp_float": "10.0"
+                },
+                {
+                    "date": "2024-03-22",
+                    "week": "5",
+                    "dayweather": "多云",
+                    "nightweather": "小雨",
+                    "daytemp": "25",
+                    "nighttemp": "11",
+                    "daywind": "东北",
+                    "nightwind": "东北",
+                    "daypower": "1-3",
+                    "nightpower": "1-3",
+                    "daytemp_float": "25.0",
+                    "nighttemp_float": "11.0"
+                },
+                {
+                    "date": "2024-03-23",
+                    "week": "6",
+                    "dayweather": "中雨",
+                    "nightweather": "小雨",
+                    "daytemp": "14",
+                    "nighttemp": "10",
+                    "daywind": "东北",
+                    "nightwind": "东北",
+                    "daypower": "1-3",
+                    "nightpower": "1-3",
+                    "daytemp_float": "14.0",
+                    "nighttemp_float": "10.0"
+                },
+                {
+                    "date": "2024-03-24",
+                    "week": "7",
+                    "dayweather": "小雨",
+                    "nightweather": "小雨",
+                    "daytemp": "14",
+                    "nighttemp": "7",
+                    "daywind": "东",
+                    "nightwind": "东",
+                    "daypower": "1-3",
+                    "nightpower": "1-3",
+                    "daytemp_float": "14.0",
+                    "nighttemp_float": "7.0"
+                }
+            ]
+        }
+    ]
+}

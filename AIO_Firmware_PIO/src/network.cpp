@@ -50,16 +50,21 @@ void Network::search_wifi(void)
 
 boolean Network::start_conn_wifi(const char *ssid, const char *password)
 {
+    // search_wifi();
     if (WiFi.status() == WL_CONNECTED)
     {
         Serial.println(F("\nWiFi is OK.\n"));
         return false;
     }
+// #define MY_WIFI_SSID "HQ"
+// #define MY_WIFI_PASSWD "A773181861a"
     Serial.println("");
     Serial.print(F("Connecting: "));
     Serial.print(ssid);
+    // Serial.print(MY_WIFI_SSID);
     Serial.print(F(" @ "));
     Serial.println(password);
+    // Serial.println(MY_WIFI_PASSWD);
 
     // 设置为STA模式并连接WIFI
     WiFi.enableSTA(true);
@@ -69,6 +74,7 @@ boolean Network::start_conn_wifi(const char *ssid, const char *password)
     // 修改主机名
     WiFi.setHostname(HOST_NAME);
     WiFi.begin(ssid, password);
+    // WiFi.begin(MY_WIFI_SSID, MY_WIFI_PASSWD);
     m_preDisWifiConnInfoMillis = GET_SYS_MILLIS();
 
     // if (!WiFi.config(local_ip, gateway, subnet, dns))
@@ -119,7 +125,7 @@ boolean Network::end_conn_wifi(void)
 
 boolean Network::close_wifi(void)
 {
-    if(WiFi.getMode() & WIFI_MODE_AP)
+    if (WiFi.getMode() & WIFI_MODE_AP)
     {
         WiFi.enableAP(false);
         Serial.println(F("AP shutdowm"));

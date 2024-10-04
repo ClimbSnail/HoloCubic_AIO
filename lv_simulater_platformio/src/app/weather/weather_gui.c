@@ -19,7 +19,7 @@ static lv_obj_t *chart, *titleLabel;
 
 static lv_obj_t *weatherImg = NULL;
 static lv_obj_t *cityLabel = NULL;
-static lv_obj_t *btn = NULL, *btnLabel = NULL;
+static lv_obj_t *airQualityBtn = NULL, *airQualityLabel = NULL;
 static lv_obj_t *txtLabel = NULL;
 static lv_obj_t *clockLabel_1 = NULL, *clockLabel_2 = NULL;
 static lv_obj_t *dateLabel = NULL;
@@ -63,7 +63,7 @@ void weather_gui_init(void)
     lv_style_set_bg_color(&bar_style, lv_color_hex(0x000000));
     lv_style_set_border_width(&bar_style, 2);
     lv_style_set_border_color(&bar_style, lv_color_hex(0xFFFFFF));
-    lv_style_set_pad_top(&bar_style, 1); //指示器到背景四周的距离
+    lv_style_set_pad_top(&bar_style, 1); // 指示器到背景四周的距离
     lv_style_set_pad_bottom(&bar_style, 1);
     lv_style_set_pad_left(&bar_style, 1);
     lv_style_set_pad_right(&bar_style, 1);
@@ -88,15 +88,20 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
 
     chart = lv_chart_create(scr_2);
     lv_obj_set_size(chart, 220, 180);
-    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 40); // todo
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, -50, 50); // 设置进度条表示的温度为-50~50
     lv_chart_set_point_count(chart, 7);
+    lv_chart_set_div_line_count(chart, 5, 7);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
-    // todo
+
     ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_SECONDARY_Y);
     ser2 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_SECONDARY_Y);
-    // lv_obj_set_style_pad_left(chart, LV_CHART_PART_BG, LV_STATE_DEFAULT, 40);
-    // lv_chart_set_y_tick_texts(chart, "40\n30\n20\n10\n0", 0, LV_CHART_AXIS_DRAW_LAST_TICK);
+    // lv_obj_set_style_pad_left(chart, 40, LV_STATE_DEFAULT);
+
+    // 设置Y轴上刻度线的数量
+    // lv_chart_set_axis_tick(chart, LV_CHART_AXIS_PRIMARY_Y,
+    //                        10, 5, 10, 2, true, 20);
     // lv_chart_set_zoom_y();
+
     // 绘制
     lv_obj_align(titleLabel, LV_ALIGN_TOP_MID, 0, 10);
     lv_obj_align(chart, LV_ALIGN_CENTER, 0, 10);
@@ -116,13 +121,11 @@ void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type)
     display_curve_init(anim_type);
     for (int Ti = 0; Ti < 7; ++Ti)
     {
-        // ser1->points[Ti] = maxT[Ti]; // todo
-        ser1->y_points[Ti] = maxT[Ti];
+        ser1->y_points[Ti] = maxT[Ti] + 50; // 补偿50度
     }
     for (int Ti = 0; Ti < 7; ++Ti)
     {
-        // ser2->points[Ti] = minT[Ti]; // todo
-        ser2->y_points[Ti] = minT[Ti];
+        ser2->y_points[Ti] = minT[Ti] + 50; // 补偿50度
     }
     lv_chart_refresh(chart);
 }
@@ -147,16 +150,16 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_label_set_recolor(cityLabel, true);
     lv_label_set_text(cityLabel, "上海");
 
-    btn = lv_btn_create(scr_1);
-    lv_obj_add_style(btn, &btn_style, LV_STATE_DEFAULT);
-    lv_obj_set_pos(btn, 75, 15);
-    lv_obj_set_size(btn, 50, 25);
-    lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_ORANGE), LV_PART_MAIN);
+    airQualityBtn = lv_btn_create(scr_1);
+    lv_obj_add_style(airQualityBtn, &btn_style, LV_STATE_DEFAULT);
+    lv_obj_set_pos(airQualityBtn, 90, 15);
+    lv_obj_set_size(airQualityBtn, 50, 25);
+    lv_obj_set_style_bg_color(airQualityBtn, lv_palette_main(LV_PALETTE_ORANGE), LV_STATE_DEFAULT);
 
-    btnLabel = lv_label_create(btn);
-    lv_obj_add_style(btnLabel, &chFont_style, LV_STATE_DEFAULT);
-    lv_obj_align(btnLabel, LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(btnLabel, airQualityCh[0]);
+    airQualityLabel = lv_label_create(airQualityBtn);
+    lv_obj_add_style(airQualityLabel, &chFont_style, LV_STATE_DEFAULT);
+    lv_obj_align(airQualityLabel, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(airQualityLabel, airQualityCh[0]);
 
     txtLabel = lv_label_create(scr_1);
     lv_obj_add_style(txtLabel, &chFont_style, LV_STATE_DEFAULT);
@@ -186,10 +189,10 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_img_set_zoom(tempImg, 180);
     tempBar = lv_bar_create(scr_1);
     lv_obj_add_style(tempBar, &bar_style, LV_STATE_DEFAULT);
-    lv_bar_set_range(tempBar, -50, 50); // 设置进度条表示的温度为-20~50
+    lv_bar_set_range(tempBar, -50, 50); // 设置进度条表示的温度为-50~50
     lv_obj_set_size(tempBar, 60, 12);
-    lv_obj_set_style_bg_color(tempBar, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN);
-    lv_bar_set_value(tempBar, 10, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(tempBar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+    lv_bar_set_value(tempBar, 10, LV_ANIM_ON);
     tempLabel = lv_label_create(scr_1);
     lv_obj_add_style(tempLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_text_fmt(tempLabel, "%2d°C", 18);
@@ -201,8 +204,8 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_obj_add_style(humiBar, &bar_style, LV_STATE_DEFAULT);
     lv_bar_set_range(humiBar, 0, 100);
     lv_obj_set_size(humiBar, 60, 12);
-    lv_obj_set_style_bg_color(humiBar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_MAIN);
-    lv_bar_set_value(humiBar, 49, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(humiBar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+    lv_bar_set_value(humiBar, 49, LV_ANIM_ON);
     humiLabel = lv_label_create(scr_1);
     lv_obj_add_style(humiLabel, &chFont_style, LV_STATE_DEFAULT);
     lv_label_set_text(humiLabel, "50%");
@@ -250,15 +253,15 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     {
         lv_obj_align(cityLabel, LV_ALIGN_TOP_LEFT, 20, 15);
     }
-    lv_label_set_text(btnLabel, airQualityCh[weaInfo.airQulity]);
+    lv_label_set_text(airQualityLabel, airQualityCh[weaInfo.airQulity]);
     lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
     // 下面这行代码可能会出错
     lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
                           weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
 
-    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_OFF);
+    lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_ON);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);
-    lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_OFF);
+    lv_bar_set_value(humiBar, weaInfo.humidity, LV_ANIM_ON);
     lv_label_set_text_fmt(humiLabel, "%d%%", weaInfo.humidity);
 
     // // 绘制图形
@@ -313,8 +316,8 @@ void weather_gui_release(void)
         scr_1 = NULL;
         weatherImg = NULL;
         cityLabel = NULL;
-        btn = NULL;
-        btnLabel = NULL;
+        airQualityBtn = NULL;
+        airQualityLabel = NULL;
         txtLabel = NULL;
         clockLabel_1 = NULL;
         clockLabel_2 = NULL;

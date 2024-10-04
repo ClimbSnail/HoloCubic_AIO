@@ -60,20 +60,19 @@ String file_size(int bytes)
                     "<label class=\"input\"><span>屏幕方向 (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%s\"></label>"                                                                                                                            \
                     "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%s\"></label>"                                                                                                                       \
                     "<label class=\"input\"><span>MPU6050自动校准</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
-                    "<label class=\"input\"><span>开机自启的APP名字</span><input type=\"text\"name=\"auto_start_app\"value=\"%s\"></label>"                                                                                                                      \
+                    "<label class=\"input\"><span>开机自启的APP名字（如 Weather ）</span><input type=\"text\"name=\"auto_start_app\"value=\"%s\"></label>"                                                                                                                      \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define RGB_SETTING "<form method=\"GET\" action=\"saveRgbConf\">"                                                                                             \
-                    "<label class=\"input\"><span>RGB最低亮度（0.00~0.99可选）</span><input type=\"text\"name=\"min_brightness\"value=\"%s\"></label>" \
-                    "<label class=\"input\"><span>RGB最高亮度（0.00~0.99可选）</span><input type=\"text\"name=\"max_brightness\"value=\"%s\"></label>" \
-                    "<label class=\"input\"><span>RGB渐变时间（整数毫秒值）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"           \
+#define RGB_SETTING "<form method=\"GET\" action=\"saveRgbConf\">"                                                                                          \
+                    "<label class=\"input\"><span>RGB最低亮度（0~1000可选）</span><input type=\"text\"name=\"min_brightness\"value=\"%s\"></label>" \
+                    "<label class=\"input\"><span>RGB最高亮度（0~1000可选）</span><input type=\"text\"name=\"max_brightness\"value=\"%s\"></label>" \
+                    "<label class=\"input\"><span>RGB渐变时间（10~1000可选）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"        \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                          \
                         "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                \
-                        "<label class=\"input\"><span>TianQi AppId</span><input type=\"text\"name=\"tianqi_appid\"value=\"%s\"></label>"                            \
-                        "<label class=\"input\"><span>TianQi AppSecret</span><input type=\"text\"name=\"tianqi_appsecret\"value=\"%s\"></label>"                    \
-                        "<label class=\"input\"><span>TianQi 城市名（中文）</span><input type=\"text\"name=\"tianqi_addr\"value=\"%s\"></label>"             \
+                        "<label class=\"input\"><span>城市名（或填6位城市代码）</span><input type=\"text\"name=\"tianqi_city_code\"value=\"%s\"></label>"   \
+                        "<label class=\"input\"><span>API的个人Key</span><input type=\"text\"name=\"tianqi_api_key\"value=\"%s\"></label>"                         \
                         "<label class=\"input\"><span>天气更新周期（毫秒）</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
                         "<label class=\"input\"><span>日期更新周期（毫秒）</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
@@ -313,9 +312,8 @@ void weather_setting()
 {
     char buf[2048];
     char tianqi_url[128];
-    char tianqi_appid[32];
-    char tianqi_appsecret[32];
-    char tianqi_addr[32];
+    char tianqi_city_code[32];
+    char tianqi_api_key[40];
     char weatherUpdataInterval[32];
     char timeUpdataInterval[32];
     // 读取数据
@@ -324,17 +322,16 @@ void weather_setting()
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"tianqi_url", tianqi_url);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_appid", tianqi_appid);
+                            (void *)"tianqi_city_code", tianqi_city_code);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_appsecret", tianqi_appsecret);
-    app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
-                            (void *)"tianqi_addr", tianqi_addr);
+                            (void *)"tianqi_api_key", tianqi_api_key);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"weatherUpdataInterval", weatherUpdataInterval);
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_GET_PARAM,
                             (void *)"timeUpdataInterval", timeUpdataInterval);
-    sprintf(buf, WEATHER_SETTING, tianqi_url, tianqi_appid,
-            tianqi_appsecret, tianqi_addr,
+    sprintf(buf, WEATHER_SETTING,
+            tianqi_url, tianqi_city_code,
+            tianqi_api_key,
             weatherUpdataInterval,
             timeUpdataInterval);
     webpage = buf;
@@ -598,16 +595,12 @@ void saveWeatherConf(void)
                             (void *)server.arg("tianqi_url").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_appid",
-                            (void *)server.arg("tianqi_appid").c_str());
+                            (void *)"tianqi_city_code",
+                            (void *)server.arg("tianqi_city_code").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_appsecret",
-                            (void *)server.arg("tianqi_appsecret").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Weather",
-                            APP_MESSAGE_SET_PARAM,
-                            (void *)"tianqi_addr",
-                            (void *)server.arg("tianqi_addr").c_str());
+                            (void *)"tianqi_api_key",
+                            (void *)server.arg("tianqi_api_key").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weatherUpdataInterval",

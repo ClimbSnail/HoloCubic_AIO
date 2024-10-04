@@ -3,13 +3,11 @@
 #include "sys/app_controller.h"
 #include "common.h"
 #include "driver/sd_card.h"
-#include "docoder.h"
+#include "decoder.h"
 #include "DMADrawer.h"
 
 #define MEDIA_PLAYER_APP_NAME "Media"
 
-#define VIDEO_WIDTH 240L
-#define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
 #define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
 #define NO_TRIGGER_ENTER_FREQ_80M 120000UL // 无操作规定时间后进入设置160M主频（120s）
@@ -62,7 +60,7 @@ static void read_config(MP_Config *cfg)
 
 struct MediaAppRunData
 {
-    PlayDocoderBase *player_docoder;
+    PlayDecoderBase *player_decoder;
     unsigned long preTriggerKeyMillis; // 最近一回按键触发的时间戳
     int movie_pos_increate;
     File_Info *movie_file; // movie文件夹下的文件指针头
@@ -113,13 +111,13 @@ static bool video_start(bool create_new)
     if (NULL != strstr(run_data->pfile->file_name, ".mjpeg") || NULL != strstr(run_data->pfile->file_name, ".MJPEG"))
     {
         // 直接解码mjpeg格式的视频
-        run_data->player_docoder = new MjpegPlayDocoder(&run_data->file, true);
+        run_data->player_decoder = new MjpegPlayDecoder(&run_data->file, true);
         Serial.print(F("MJPEG video start --------> "));
     }
     else if (NULL != strstr(run_data->pfile->file_name, ".rgb") || NULL != strstr(run_data->pfile->file_name, ".RGB"))
     {
         // 使用RGB格式的视频
-        run_data->player_docoder = new RgbPlayDocoder(&run_data->file, true);
+        run_data->player_decoder = new RgbPlayDecoder(&run_data->file, true);
         Serial.print(F("RGB565 video start --------> "));
     }
 
@@ -127,13 +125,13 @@ static bool video_start(bool create_new)
     return true;
 }
 
-static void release_player_docoder(void)
+static void release_player_decoder(void)
 {
     // 释放具体的播放对象
-    if (NULL != run_data->player_docoder)
+    if (NULL != run_data->player_decoder)
     {
-        delete run_data->player_docoder;
-        run_data->player_docoder = NULL;
+        delete run_data->player_decoder;
+        run_data->player_decoder = NULL;
     }
 }
 
@@ -143,7 +141,7 @@ static int media_player_init(AppController *sys)
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
-                            0.15, 0.20, 0.001, 50};
+                            150, 200, 1, 50};
     set_rgb_and_run(&rgb_setting);
 
     // 获取配置信息
@@ -152,7 +150,7 @@ static int media_player_init(AppController *sys)
     // run_data = (MediaAppRunData *)malloc(sizeof(MediaAppRunData));
     // memset(run_data, 0, sizeof(MediaAppRunData));
     run_data = (MediaAppRunData *)calloc(1, sizeof(MediaAppRunData));
-    run_data->player_docoder = NULL;
+    run_data->player_decoder = NULL;
     run_data->movie_pos_increate = 1;
     run_data->movie_file = NULL; // movie文件夹下的文件指针头
     run_data->pfile = NULL;      // 指向当前播放的文件节点
@@ -207,7 +205,7 @@ static void media_player_process(AppController *sys,
             run_data->movie_pos_increate = -1;
         }
         // 结束播放
-        release_player_docoder();
+        release_player_decoder();
         run_data->file.close(); // 尝试关闭文件
 
         // 创建播放
@@ -245,12 +243,12 @@ static void media_player_process(AppController *sys,
     if (run_data->file.available())
     {
         // 播放一帧数据
-        run_data->player_docoder->video_play_screen();
+        run_data->player_decoder->video_play_screen();
     }
     else
     {
         // 结束播放
-        release_player_docoder();
+        release_player_decoder();
         run_data->file.close();
         if (0 == cfg_data.switchFlag)
         {
@@ -275,7 +273,7 @@ static void media_player_background_task(AppController *sys,
 static int media_player_exit_callback(void *param)
 {
     // 结束播放
-    release_player_docoder();
+    release_player_decoder();
 
     run_data->file.close(); // 退出时关闭文件
     // 释放文件循环队列

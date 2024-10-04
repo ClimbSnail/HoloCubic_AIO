@@ -19,7 +19,7 @@ static lv_obj_t *chart, *titleLabel;
 
 static lv_obj_t *weatherImg = NULL;
 static lv_obj_t *cityLabel = NULL;
-static lv_obj_t *btn = NULL, *btnLabel = NULL;
+static lv_obj_t *airQualityBtn = NULL, *airQualityLabel = NULL;
 static lv_obj_t *txtLabel = NULL;
 static lv_obj_t *clockLabel_1 = NULL, *clockLabel_2 = NULL;
 static lv_obj_t *dateLabel = NULL;
@@ -89,12 +89,13 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
     chart = lv_chart_create(scr_2);
     lv_obj_set_size(chart, 220, 180);
     lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, -50, 50); // 设置进度条表示的温度为-50~50
-    lv_chart_set_point_count(chart, 7);
-    lv_chart_set_div_line_count(chart, 5, 7);
+    lv_chart_set_point_count(chart, FORECAST_DAYS);
+    lv_chart_set_div_line_count(chart, 5, FORECAST_DAYS);
     lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
 
     ser1 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_SECONDARY_Y);
     ser2 = lv_chart_add_series(chart, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_SECONDARY_Y);
+
     // lv_obj_set_style_pad_left(chart, 40, LV_STATE_DEFAULT);
 
     // 设置Y轴上刻度线的数量
@@ -119,11 +120,11 @@ void display_curve_init(lv_scr_load_anim_t anim_type)
 void display_curve(short maxT[], short minT[], lv_scr_load_anim_t anim_type)
 {
     display_curve_init(anim_type);
-    for (int Ti = 0; Ti < 7; ++Ti)
+    for (int Ti = 0; Ti < FORECAST_DAYS; ++Ti)
     {
         ser1->y_points[Ti] = maxT[Ti] + 50; // 补偿50度
     }
-    for (int Ti = 0; Ti < 7; ++Ti)
+    for (int Ti = 0; Ti < FORECAST_DAYS; ++Ti)
     {
         ser2->y_points[Ti] = minT[Ti] + 50; // 补偿50度
     }
@@ -150,16 +151,16 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_label_set_recolor(cityLabel, true);
     lv_label_set_text(cityLabel, "上海");
 
-    btn = lv_btn_create(scr_1);
-    lv_obj_add_style(btn, &btn_style, LV_STATE_DEFAULT);
-    lv_obj_set_pos(btn, 75, 15);
-    lv_obj_set_size(btn, 50, 25);
-    lv_obj_set_style_bg_color(btn, lv_palette_main(LV_PALETTE_ORANGE), LV_STATE_DEFAULT);
+    airQualityBtn = lv_btn_create(scr_1);
+    lv_obj_add_style(airQualityBtn, &btn_style, LV_STATE_DEFAULT);
+    lv_obj_set_pos(airQualityBtn, 90, 15);
+    lv_obj_set_size(airQualityBtn, 50, 25);
+    lv_obj_set_style_bg_color(airQualityBtn, lv_palette_main(LV_PALETTE_ORANGE), LV_STATE_DEFAULT);
 
-    btnLabel = lv_label_create(btn);
-    lv_obj_add_style(btnLabel, &chFont_style, LV_STATE_DEFAULT);
-    lv_obj_align(btnLabel, LV_ALIGN_CENTER, 0, 0);
-    lv_label_set_text(btnLabel, airQualityCh[0]);
+    airQualityLabel = lv_label_create(airQualityBtn);
+    lv_obj_add_style(airQualityLabel, &chFont_style, LV_STATE_DEFAULT);
+    lv_obj_align(airQualityLabel, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(airQualityLabel, airQualityCh[0]);
 
     txtLabel = lv_label_create(scr_1);
     lv_obj_add_style(txtLabel, &chFont_style, LV_STATE_DEFAULT);
@@ -168,7 +169,8 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
     lv_label_set_text(txtLabel, "最低气温12°C, ");
     lv_obj_set_size(txtLabel, 120, 30);
     lv_label_set_long_mode(txtLabel, LV_LABEL_LONG_SCROLL_CIRCULAR);
-    lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ", 15, 20, "西北风", 0);
+    lv_label_set_text_fmt(txtLabel, "晴天, %s 0 级.   ", "风力");
+    // lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ", 15, 20, "西北风", 0);
 
     clockLabel_1 = lv_label_create(scr_1);
     lv_obj_add_style(clockLabel_1, &numberBig_style, LV_STATE_DEFAULT);
@@ -216,7 +218,8 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
 
     // 绘制图形
     lv_obj_align(weatherImg, LV_ALIGN_TOP_RIGHT, -10, 10);
-    lv_obj_align(cityLabel, LV_ALIGN_TOP_LEFT, 20, 15);
+    // lv_obj_align(cityLabel, LV_ALIGN_TOP_LEFT, 20, 15);
+    lv_obj_align(cityLabel, LV_ALIGN_TOP_LEFT, 20, 25);
     lv_obj_align(txtLabel, LV_ALIGN_TOP_LEFT, 10, 50);
     lv_obj_align(tempImg, LV_ALIGN_LEFT_MID, 10, 70);
     lv_obj_align(tempBar, LV_ALIGN_LEFT_MID, 35, 70);
@@ -228,7 +231,8 @@ void display_weather_init(lv_scr_load_anim_t anim_type)
 
     lv_obj_align(clockLabel_1, LV_ALIGN_LEFT_MID, 0, 10);
     lv_obj_align(clockLabel_2, LV_ALIGN_LEFT_MID, 165, 9);
-    lv_obj_align(dateLabel, LV_ALIGN_LEFT_MID, 10, 32);
+    // lv_obj_align(dateLabel, LV_ALIGN_LEFT_MID, 10, 32);
+    lv_obj_align(dateLabel, LV_ALIGN_LEFT_MID, 10, 38);
 
     // if (LV_SCR_LOAD_ANIM_NONE != anim_type)
     // {
@@ -253,11 +257,13 @@ void display_weather(struct Weather weaInfo, lv_scr_load_anim_t anim_type)
     {
         lv_obj_align(cityLabel, LV_ALIGN_TOP_LEFT, 20, 15);
     }
-    lv_label_set_text(btnLabel, airQualityCh[weaInfo.airQulity]);
+    lv_label_set_text(airQualityLabel, airQualityCh[weaInfo.airQulity]);
     lv_img_set_src(weatherImg, weaImage_map[weaInfo.weather_code]);
     // 下面这行代码可能会出错
-    lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
-                          weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
+    // lv_label_set_text_fmt(txtLabel, "最低气温%d°C, 最高气温%d°C, %s%d 级.   ",
+    //                       weaInfo.minTemp, weaInfo.maxTemp, weaInfo.windDir, weaInfo.windLevel);
+    lv_label_set_text_fmt(txtLabel, "   今日天气:%s,%s风%s 级.              ",
+                          weaInfo.weather, weaInfo.windDir, weaInfo.windpower);
 
     lv_bar_set_value(tempBar, weaInfo.temperature, LV_ANIM_ON);
     lv_label_set_text_fmt(tempLabel, "%2d°C", weaInfo.temperature);
@@ -316,8 +322,8 @@ void weather_gui_release(void)
         scr_1 = NULL;
         weatherImg = NULL;
         cityLabel = NULL;
-        btn = NULL;
-        btnLabel = NULL;
+        airQualityBtn = NULL;
+        airQualityLabel = NULL;
         txtLabel = NULL;
         clockLabel_1 = NULL;
         clockLabel_2 = NULL;
@@ -365,25 +371,71 @@ void display_space(void)
     }
 }
 
-int airQulityLevel(int q)
+int my_isdigit(char c)
 {
-    if (q < 50)
+    return (c >= '0' && c <= '9');
+}
+
+int extractNumbers(const char *str)
+{
+    int result = 0;
+    int i;
+    int len = strlen(str);
+    for (i = 0; i < len; i++)
+    {
+        if (my_isdigit(str[i]))
+        {
+            result = result * 10 + (str[i] - '0');
+        }
+    }
+    return result;
+}
+
+// int airQulityLevel(int q)
+// {
+//     if (q < 50)
+//     {
+//         return 0;
+//     }
+//     else if (q < 100)
+//     {
+//         return 1;
+//     }
+//     else if (q < 150)
+//     {
+//         return 2;
+//     }
+//     else if (q < 200)
+//     {
+//         return 3;
+//     }
+//     else if (q < 300)
+//     {
+//         return 4;
+//     }
+//     return 5;
+// }
+
+int airQulityLevel(char *q)
+{
+    int number = extractNumbers(q);
+    if (number <= 3)
     {
         return 0;
     }
-    else if (q < 100)
+    else if (number <= 4)
     {
         return 1;
     }
-    else if (q < 150)
+    else if (number <= 6)
     {
         return 2;
     }
-    else if (q < 200)
+    else if (number <= 8)
     {
         return 3;
     }
-    else if (q < 300)
+    else if (number <= 9)
     {
         return 4;
     }

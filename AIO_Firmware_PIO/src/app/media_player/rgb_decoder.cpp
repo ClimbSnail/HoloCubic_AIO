@@ -1,8 +1,8 @@
-#include "docoder.h"
+#include "decoder.h"
 #include "common.h"
 
-#define VIDEO_WIDTH 240L
-#define VIDEO_HEIGHT 240L
+#define VIDEO_WIDTH SCREEN_WIDTH
+#define VIDEO_HEIGHT SCREEN_HEIGHT
 #define MOVIE_BUFFER_SIZE 28800 // (57600)
 
 #define TFT_MISO -1
@@ -12,7 +12,7 @@
 #define TFT_DC 2
 #define TFT_RST 4 // Connect reset to ensure display initialises
 
-RgbPlayDocoder::RgbPlayDocoder(File *file, bool isUseDMA)
+RgbPlayDecoder::RgbPlayDecoder(File *file, bool isUseDMA)
 {
     m_pFile = file;
     m_isUseDMA = isUseDMA;
@@ -22,14 +22,14 @@ RgbPlayDocoder::RgbPlayDocoder(File *file, bool isUseDMA)
     video_start();
 }
 
-RgbPlayDocoder::~RgbPlayDocoder(void)
+RgbPlayDecoder::~RgbPlayDecoder(void)
 {
-    Serial.println(F("~RgbPlayDocoder"));
+    Serial.println(F("~RgbPlayDecoder"));
     // 释放资源
     video_end();
 }
 
-bool RgbPlayDocoder::video_start()
+bool RgbPlayDecoder::video_start()
 {
     if (m_isUseDMA)
     {
@@ -70,7 +70,7 @@ bool RgbPlayDocoder::video_start()
     // Serial.println((unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
 }
 
-bool RgbPlayDocoder::video_play_screen(void)
+bool RgbPlayDecoder::video_play_screen(void)
 {
     // Read video
     uint32_t l = 0;
@@ -141,7 +141,7 @@ bool RgbPlayDocoder::video_play_screen(void)
     return true;
 }
 
-bool RgbPlayDocoder::video_end(void)
+bool RgbPlayDecoder::video_end(void)
 {
     m_pFile = NULL;
     // 结束播放 释放资源
