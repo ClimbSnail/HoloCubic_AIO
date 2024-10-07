@@ -272,7 +272,7 @@ static void get_weather(void)
                 run_data->wea.humidity = weather_live["humidity"].as<int>();
                 // 天气情况
                 run_data->wea.weather_code = weatherMap[weather_live["weather"].as<String>()];
-                // Serial.printf("wea.weather_code = %d", run_data->wea.weather_code);
+                
                 strcpy(run_data->wea.weather, weather_live["weather"].as<String>().c_str());
                 // 风速
                 strcpy(run_data->wea.windDir, weather_live["winddirection"].as<String>().c_str());
@@ -393,9 +393,6 @@ static void get_daliyWeather(short maxT[], short minT[])
                 JsonObject weather_forecast = doc2["forecasts"][0];
                 for (int i = 0; i < FORECAST_DAYS; i++)
                 {
-                    // String weather = weather_forecast["casts"][i]["dayweather"].as<String>();
-                    // weather_cast[i].weather = get_weather_icon(weather);
-                    // weather_cast[i].date = weather_forecast["casts"][i]["date"].as<String>().substring(5);
                     maxT[i] = weather_forecast["casts"][i]["daytemp"].as<int>();
                     minT[i] = weather_forecast["casts"][i]["nighttemp"].as<int>();
                 }
@@ -445,14 +442,15 @@ static int weather_init(AppController *sys)
     run_data->update_type = 0x00; // 表示什么也不需要更新
 
     // 目前更新数据的任务栈大小5000够用，4000不够用
-    // 为了后期迭代新功能 当前设置为8000
-    run_data->xReturned_task_update = xTaskCreate(
-        task_update,                     /*任务函数*/
-        "Task_update",                   /*带任务名称的字符串*/
-        8000,                            /*堆栈大小，单位为字节*/
-        NULL,                            /*作为任务输入传递的参数*/
-        1,                               /*任务的优先级*/
-        &run_data->xHandle_task_update); /*任务句柄*/
+    // 为了后期迭代新功能 当前设置为8000, 任务可能会导致卡死
+    run_data->xReturned_task_update = pdFAIL;
+    // run_data->xReturned_task_update = xTaskCreate(
+    //     task_update,                     /*任务函数*/
+    //     "Task_update",                   /*带任务名称的字符串*/
+    //     8000,                            /*堆栈大小，单位为字节*/
+    //     NULL,                            /*作为任务输入传递的参数*/
+    //     1,                               /*任务的优先级*/
+    //     &run_data->xHandle_task_update); /*任务句柄*/
 
     return 0;
 }
@@ -589,7 +587,7 @@ static void weather_message_handle(const char *from, const char *to,
             run_data->update_type |= UPDATE_WEATHER;
 
             // 更新过程，使用如下代码或者替换成异步任务
-            // get_weather();
+            get_weather();
         };
         break;
         case UPDATE_NTP:
@@ -598,7 +596,7 @@ static void weather_message_handle(const char *from, const char *to,
             run_data->update_type |= UPDATE_TIME;
 
             // 更新过程，使用如下代码或者替换成异步任务
-            // long long timestamp = get_timestamp(TIME_API); // nowapi时间API
+            long long timestamp = get_timestamp(TIME_API); // nowapi时间API
         };
         break;
         case UPDATE_DAILY:
@@ -607,7 +605,7 @@ static void weather_message_handle(const char *from, const char *to,
             run_data->update_type |= UPDATE_DALIY_WEATHER;
 
             // 更新过程，使用如下代码或者替换成异步任务
-            // get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
+            get_daliyWeather(run_data->wea.daily_max, run_data->wea.daily_min);
         };
         break;
         default:
