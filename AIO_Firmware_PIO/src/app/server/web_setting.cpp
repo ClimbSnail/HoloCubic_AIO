@@ -60,21 +60,21 @@ String file_size(int bytes)
                     "<label class=\"input\"><span>屏幕方向 (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%s\"></label>"                                                                                                                            \
                     "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%s\"></label>"                                                                                                                       \
                     "<label class=\"input\"><span>MPU6050自动校准</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
-                    "<label class=\"input\"><span>开机自启的APP名字（如 Weather ）</span><input type=\"text\"name=\"auto_start_app\"value=\"%s\"></label>"                                                                                                                      \
+                    "<label class=\"input\"><span>开机自启的APP名字（如 Weather ）</span><input type=\"text\"name=\"auto_start_app\"value=\"%s\"></label>"                                                                                                    \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define RGB_SETTING "<form method=\"GET\" action=\"saveRgbConf\">"                                                                                          \
                     "<label class=\"input\"><span>RGB最低亮度（0~1000可选）</span><input type=\"text\"name=\"min_brightness\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>RGB最高亮度（0~1000可选）</span><input type=\"text\"name=\"max_brightness\"value=\"%s\"></label>" \
-                    "<label class=\"input\"><span>RGB渐变时间（10~1000可选）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"        \
+                    "<label class=\"input\"><span>RGB渐变时间（10~1000可选）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"          \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
-#define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                          \
-                        "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                \
-                        "<label class=\"input\"><span>城市名（或填6位城市代码）</span><input type=\"text\"name=\"tianqi_city_code\"value=\"%s\"></label>"   \
+#define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                            \
+                        "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                  \
+                        "<label class=\"input\"><span>城市名（或填6位城市代码）</span><input type=\"text\"name=\"tianqi_city_code\"value=\"%s\"></label>" \
                         "<label class=\"input\"><span>API的个人Key</span><input type=\"text\"name=\"tianqi_api_key\"value=\"%s\"></label>"                         \
-                        "<label class=\"input\"><span>天气更新周期（毫秒）</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>" \
-                        "<label class=\"input\"><span>日期更新周期（毫秒）</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"    \
+                        "<label class=\"input\"><span>天气更新周期（毫秒）</span><input type=\"text\"name=\"weatherUpdataInterval\"value=\"%s\"></label>"   \
+                        "<label class=\"input\"><span>日期更新周期（毫秒）</span><input type=\"text\"name=\"timeUpdataInterval\"value=\"%s\"></label>"      \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_OLD_SETTING "<form method=\"GET\" action=\"saveWeatherOldConf\">"                                                                                       \
@@ -110,10 +110,9 @@ String file_size(int bytes)
 
 #define HEARTBEAT_SETTING "<form method=\"GET\" action=\"saveHeartbeatConf\">"                                                                            \
                           "<label class=\"input\"><span>Role(0:heart,1:beat)</span><input type=\"text\"name=\"role\"value=\"%s\"></label>"                \
-                          "<label class=\"input\"><span>MQTT ClientID(推荐QQ号)</span><input type=\"text\"name=\"mqtt_client_id\"value=\"%s\"></label>"                    \  
-                          "<label class=\"input\"><span>MQTT SubTopic(推荐对方QQ号)</span><input type=\"text\"name=\"mqtt_subtopic\"value=\"%s\"></label>"                    \  
-                        "<label class=\"input\"><span>MQTT ServerIp</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \  
-                        "<label class=\"input\"><span>MQTT 端口号(1883)</span><input type=\"text\"name=\"mqtt_port\"value=\"%s\"></label>"             \
+                          "<label class=\"input\"><span>QQ num(填写QQ号)</span><input type=\"text\"name=\"qq_num\"value=\"%s\"></label>"                    \  
+                        "<label class=\"input\"><span>MQTT Server</span><input type=\"text\"name=\"mqtt_server\"value=\"%s\"></label>"                    \  
+                        "<label class=\"input\"><span>MQTT 端口号</span><input type=\"text\"name=\"mqtt_port\"value=\"%s\"></label>"                   \
                         "<label class=\"input\"><span>MQTT 服务用户名(可不填)</span><input type=\"text\"name=\"mqtt_user\"value=\"%s\"></label>"  \
                         "<label class=\"input\"><span>MQTT 服务密码(可不填)</span><input type=\"text\"name=\"mqtt_password\"value=\"%s\"></label>" \
                         "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
@@ -452,12 +451,12 @@ void heartbeat_setting()
 {
     char buf[2048];
     char role[32];
-    char client_id[32];
+    char qq_num[32];
     char subtopic[32];
     char mqtt_server[32];
-    char port[32];
-    char server_user[32];
-    char server_password[32];
+    char mqtt_port[32];
+    char mqtt_user[32];
+    char mqtt_password[32];
     // 读取数据
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
@@ -465,20 +464,20 @@ void heartbeat_setting()
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"role", role);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
-                            (void *)"client_id", client_id);
+                            (void *)"qq_num", qq_num);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"subtopic", subtopic);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
                             (void *)"mqtt_server", mqtt_server);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
-                            (void *)"port", port);
+                            (void *)"mqtt_port", mqtt_port);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
-                            (void *)"server_user", server_user);
+                            (void *)"mqtt_user", mqtt_user);
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_GET_PARAM,
-                            (void *)"server_password", server_password);
+                            (void *)"mqtt_password", mqtt_password);
 
-    sprintf(buf, HEARTBEAT_SETTING, role, client_id, subtopic, mqtt_server,
-            port, server_user, server_password);
+    sprintf(buf, HEARTBEAT_SETTING, role, qq_num, mqtt_server,
+            mqtt_port, mqtt_user, mqtt_password);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -724,27 +723,23 @@ void saveHeartbeatConf(void)
                             (void *)server.arg("role").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"client_id",
-                            (void *)server.arg("mqtt_client_id").c_str());
-    app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
-                            APP_MESSAGE_SET_PARAM,
-                            (void *)"subtopic",
-                            (void *)server.arg("mqtt_subtopic").c_str());
+                            (void *)"qq_num",
+                            (void *)server.arg("qq_num").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_server",
                             (void *)server.arg("mqtt_server").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"port",
+                            (void *)"mqtt_port",
                             (void *)server.arg("mqtt_port").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"server_user",
+                            (void *)"mqtt_user",
                             (void *)server.arg("mqtt_user").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
-                            (void *)"server_password",
+                            (void *)"mqtt_password",
                             (void *)server.arg("mqtt_password").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_WRITE_CFG,
