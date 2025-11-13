@@ -6,26 +6,26 @@
 
 #define SCREEN_SHARE_APP_NAME "Screen share"
 
-#define JPEG_BUFFER_SIZE 1       // 10000 // 储存一张jpeg的图像(240*240 10000大概够了，正常一帧差不多3000)
-#define RECV_BUFFER_SIZE 50000   // 理论上是 JPEG_BUFFER_SIZE 的两倍就够了
+#define JPEG_BUFFER_SIZE 1       // 10000 // Storage for one JPEG image (240*240, 10000 is roughly enough, normally one frame is about 3000)
+#define RECV_BUFFER_SIZE 50000   // Theoretically twice the JPEG_BUFFER_SIZE is sufficient
 #define DMA_BUFFER_SIZE 512      // (16*16*2)
-#define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
+#define SHARE_WIFI_ALIVE 20000UL // Time to maintain WiFi heartbeat (20s)
 
-#define HTTP_PORT 8081 // 设置监听端口
-WiFiServer ss_server;  // 服务端 ss = screen_share
-WiFiClient ss_client;  // 客户端 ss = screen_share
+#define HTTP_PORT 8081 // Set listening port
+WiFiServer ss_server;  // Server ss = screen_share
+WiFiClient ss_client;  // Client ss = screen_share
 
-// 天气的持久化配置
+// Screen share persistent configuration
 #define SCREEN_SHARE_CONFIG_PATH "/screen_share.cfg"
 struct SS_Config
 {
-    uint8_t powerFlag; // 功耗控制（0低发热 1性能优先）
+    uint8_t powerFlag; // Power consumption control (0: low heat, 1: performance priority)
 };
 
 static void write_config(SS_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persist)
     String w_data;
     memset(tmp, 0, 16);
     snprintf(tmp, 16, "%u\n", cfg->powerFlag);
@@ -35,20 +35,20 @@ static void write_config(SS_Config *cfg)
 
 static void read_config(SS_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If there is a need to persist the configuration file, you can call this function to store data in flash
+    // It is recommended to name the configuration file with the APP name as the prefix and ".cfg" as the suffix to avoid confusion when multiple APPs read it
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(SCREEN_SHARE_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
-        cfg->powerFlag = 0; // 功耗控制（0低发热 1性能优先）
+        // Default value
+        cfg->powerFlag = 0; // Power consumption control (0: low heat, 1: performance priority)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[1] = {0};
         analyseParam(info, 1, param);
         cfg->powerFlag = atol(param[0]);
@@ -57,21 +57,21 @@ static void read_config(SS_Config *cfg)
 
 struct ScreenShareAppRunData
 {
-    // 数据量也不大，同时为了数据结构清晰 这里不对其进行内存对齐了
+    // The data size is not large, and to keep the data structure clear, memory alignment is not performed here
 
-    boolean tcp_start; // 标志是否开启web server服务，0为关闭 1为开启
-    boolean req_sent;  // 标志是否发送wifi请求服务，0为关闭 1为开启
+    boolean tcp_start; // Flag whether the web server service is enabled, 0 for off, 1 for on
+    boolean req_sent;  // Flag whether the WiFi request service has been sent, 0 for off, 1 for on
 
-    uint8_t *recvBuf;              // 接收缓冲区
-    uint8_t *mjpeg_start;          // 指向一帧mpjeg的图片的开头
-    uint8_t *mjpeg_end;            // 指向一帧mpjeg的图片的结束
-    uint8_t *last_find_pos;        // 上回查找到的位置
-    int32_t bufSaveTail;           // 指向 recvBuf 中所保存的最后一个数据所在下标
-    uint8_t *displayBufWithDma[2]; // 用于FDMA的两个缓冲区
-    bool dmaBufferSel;             // dma的缓冲区切换标志
+    uint8_t *recvBuf;              // Receive buffer
+    uint8_t *mjpeg_start;          // Pointer to the beginning of an MJPEG frame
+    uint8_t *mjpeg_end;            // Pointer to the end of an MJPEG frame
+    uint8_t *last_find_pos;        // Last search position
+    int32_t bufSaveTail;           // Index of the last data saved in recvBuf
+    uint8_t *displayBufWithDma[2]; // Two buffers for FDMA
+    bool dmaBufferSel;             // DMA buffer switch flag
     boolean tftSwapStatus;
 
-    unsigned long pre_wifi_alive_millis; // 上一次发送维持心跳的本地时间戳
+    unsigned long pre_wifi_alive_millis; // Local timestamp of the last heartbeat sent
 };
 
 static SS_Config cfg_data;
@@ -110,18 +110,18 @@ bool screen_share_tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint1
 
 static bool readJpegFromBuffer(uint8_t *const end)
 {
-    // 默认从 run_data->recvBuf 中读数据
-    // end标记的当前最后一个数据的地址
-    bool isFound = false;                     // 标志着是否找到一帧完整的mjpeg图像数据
-    uint8_t *pfind = run_data->last_find_pos; // 开始查找的指针
+    // Read data from run_data->recvBuf by default
+    // end marks the address of the current last data
+    bool isFound = false;                     // Flag indicating whether a complete MJPEG frame has been found
+    uint8_t *pfind = run_data->last_find_pos; // Pointer to start searching from
     if (NULL == run_data->mjpeg_start)
     {
-        // 没找到帧头的时候执行
+        // Execute when frame header is not found
         while (pfind < end)
         {
             if (*pfind == 0xFF && *(pfind + 1) == 0xD8)
             {
-                run_data->mjpeg_start = pfind; // 帧头
+                run_data->mjpeg_start = pfind; // Frame header
                 break;
             }
             ++pfind;
@@ -130,12 +130,12 @@ static bool readJpegFromBuffer(uint8_t *const end)
     }
     else if (NULL == run_data->mjpeg_end)
     {
-        // 找帧尾
+        // Find frame tail
         while (pfind < end)
         {
             if (*pfind == 0xFF && *(pfind + 1) == 0xD9)
             {
-                run_data->mjpeg_end = pfind + 1; // 帧头，标记的是最后一个0xD9
+                run_data->mjpeg_end = pfind + 1; // Frame tail, marking the last 0xD9
                 isFound = true;
                 break;
             }
@@ -148,12 +148,12 @@ static bool readJpegFromBuffer(uint8_t *const end)
 
 static int screen_share_init(AppController *sys)
 {
-    // 获取配置信息
+    // Get configuration information
     read_config(&cfg_data);
 
     if (0 == cfg_data.powerFlag)
     {
-        // 设置CPU主频
+        // Set CPU frequency
         setCpuFrequencyMhz(160);
     }
     else
@@ -161,7 +161,7 @@ static int screen_share_init(AppController *sys)
         setCpuFrequencyMhz(240);
     }
 
-    // 调整RGB模式  HSV色彩模式
+    // Adjust RGB mode to HSV color mode
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
@@ -169,7 +169,7 @@ static int screen_share_init(AppController *sys)
     set_rgb_and_run(&rgb_setting);
 
     screen_share_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (ScreenShareAppRunData *)calloc(1, sizeof(ScreenShareAppRunData));
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
@@ -186,17 +186,17 @@ static int screen_share_init(AppController *sys)
     tft->initDMA();
 
     // The decoder must be given the exact name of the rendering function above
-    SketchCallback callback = (SketchCallback)&screen_share_tft_output; // 强制转换func()的类型
+    SketchCallback callback = (SketchCallback)&screen_share_tft_output; // Force cast the type of func()
     TJpgDec.setCallback(callback);
     // The jpeg image can be scaled down by a factor of 1, 2, 4, or 8
     TJpgDec.setJpgScale(1);
 
     run_data->tftSwapStatus = tft->getSwapBytes();
     tft->setSwapBytes(true);
-    // 因为其他app里是对tft直接设置的，所以此处尽量了不要使用TJpgDec的setSwapBytes
+    // Because tft is directly set in other apps, try not to use TJpgDec's setSwapBytes here
     // TJpgDec.setSwapBytes(true);
 
-    Serial.print(F("防止过热，目前为限制为中速档!\n"));
+    Serial.print(F("To prevent overheating, currently limited to medium speed mode!\n"));
     return 0;
 }
 
@@ -204,7 +204,7 @@ static void stop_share_config()
 {
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
-    // 关闭服务端
+    // Close server
     ss_server.stop();
     ss_server.close();
 }
@@ -222,37 +222,37 @@ static void screen_share_process(AppController *sys,
 
     if (0 == run_data->tcp_start && 0 == run_data->req_sent)
     {
-        // 预显示
+        // Pre-display
         display_screen_share(
             "Screen Share",
             WiFi.softAPIP().toString().c_str(),
             "8081",
             "Wait connect ....",
             LV_SCR_LOAD_ANIM_NONE);
-        // 如果web服务没有开启 且 ap开启的请求没有发送 message这边没有作用（填NULL）
+        // If web service is not started and AP start request has not been sent, message has no effect (fill NULL)
         // sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
         //              APP_MESSAGE_WIFI_AP, NULL, NULL);
-        // 使用STA模式
+        // Use STA mode
         sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
                      APP_MESSAGE_WIFI_CONN, NULL, NULL);
-        run_data->req_sent = 1; // 标志为 ap开启请求已发送
+        run_data->req_sent = 1; // Flag as AP start request sent
     }
     else if (1 == run_data->tcp_start)
     {
         if (doDelayMillisTime(SHARE_WIFI_ALIVE, &run_data->pre_wifi_alive_millis, false))
         {
-            // 发送wifi维持的心跳
+            // Send WiFi heartbeat
             sys->send_to(SCREEN_SHARE_APP_NAME, CTRL_NAME,
                          APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
         }
 
         if (ss_client.connected())
         {
-            // 如果客户端处于连接状态client.connected()
+            // If the client is in connected state client.connected()
             if (ss_client.available())
             {
-                ss_client.write("no");                                                                 // 向上位机发送当前帧未写入完指令
-                int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); // 向缓冲区读取数据
+                ss_client.write("no");                                                                 // Send instruction to host computer that current frame is not fully written
+                int32_t read_count = ss_client.read(&run_data->recvBuf[run_data->bufSaveTail], 10000); // Read data to buffer
                 run_data->bufSaveTail += read_count;
 
                 unsigned long deal_time = GET_SYS_MILLIS();
@@ -260,23 +260,23 @@ static void screen_share_process(AppController *sys,
 
                 if (true == get_mjpeg_ret)
                 {
-                    ss_client.write("ok"); // 向上位机发送下一帧发送指令
-                    tft->startWrite();     // 必须先使用startWrite，以便TFT芯片选择保持低的DMA和SPI通道设置保持配置
+                    ss_client.write("ok"); // Send instruction to host computer for next frame
+                    tft->startWrite();     // Must use startWrite first so that TFT chip select stays low and DMA and SPI channel settings remain configured
                     uint32_t frame_size = run_data->mjpeg_end - run_data->mjpeg_start + 1;
-                    // 在左上角的0,0处绘制图像——在这个草图中，DMA请求在回调tft_output()中处理
+                    // Draw image at 0,0 in the upper left corner - in this sketch, DMA request is handled in the callback tft_output()
                     JRESULT jpg_ret = TJpgDec.drawJpg(0, 0, run_data->mjpeg_start, frame_size);
-                    tft->endWrite(); // 必须使用endWrite来释放TFT芯片选择和释放SPI通道吗
-                    // 剩余帧大小
+                    tft->endWrite(); // Must use endWrite to release TFT chip select and release SPI channel
+                    // Remaining frame size
                     uint32_t left_frame_size = &run_data->recvBuf[run_data->bufSaveTail] - run_data->mjpeg_end;
                     memcpy(run_data->recvBuf, run_data->mjpeg_end + 1, left_frame_size);
-                    Serial.printf("帧大小：%d ", frame_size);
-                    Serial.print("MCU处理速度：");
+                    Serial.printf("Frame size: %d ", frame_size);
+                    Serial.print("MCU processing speed: ");
                     Serial.print(1000.0 / (GET_SYS_MILLIS() - deal_time), 2);
                     Serial.print("Fps\n");
 
                     run_data->last_find_pos = run_data->recvBuf;
                     run_data->bufSaveTail = 0;
-                    // 数据清零
+                    // Clear data
                     run_data->mjpeg_start = NULL;
                     run_data->mjpeg_end = NULL;
                 }
@@ -284,24 +284,24 @@ static void screen_share_process(AppController *sys,
                 {
                     run_data->last_find_pos = run_data->recvBuf;
                     run_data->bufSaveTail = 0;
-                    // 数据清零
+                    // Clear data
                     run_data->mjpeg_start = NULL;
                     run_data->mjpeg_end = NULL;
-                    ss_client.write("ok"); // 向上位机发送下一帧发送指令
+                    ss_client.write("ok"); // Send instruction to host computer for next frame
                 }
             }
         }
         else
         {
-            // 建立客户
+            // Establish client
             ss_client = ss_server.available();
             if (ss_client.connected())
             {
                 Serial.println(F("Controller was connected!"));
-                ss_client.write("ok"); // 向上位机发送下一帧发送指令
+                ss_client.write("ok"); // Send instruction to host computer for next frame
             }
 
-            // 预显示
+            // Pre-display
             display_screen_share(
                 "Screen Share",
                 WiFi.localIP().toString().c_str(),
@@ -327,8 +327,8 @@ static void screen_share_process(AppController *sys,
 static void screen_background_task(AppController *sys,
                                    const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller will call this function every minute
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int screen_exit_callback(void *param)
@@ -352,10 +352,10 @@ static int screen_exit_callback(void *param)
         run_data->displayBufWithDma[1] = NULL;
     }
 
-    // 恢复此前的驱动参数
+    // Restore previous driver parameters
     tft->setSwapBytes(run_data->tftSwapStatus);
 
-    // 恢复RGB灯  HSV色彩模式
+    // Restore RGB light to HSV color mode
     RgbParam rgb_setting = {LED_MODE_HSV,
                             1, 32, 255,
                             255, 255, 255,
@@ -363,7 +363,7 @@ static int screen_exit_callback(void *param)
                             0.15, 0.25, 0.001, 30};
     set_rgb_and_run(&rgb_setting);
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);
@@ -408,7 +408,7 @@ static void screen_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // WiFi heartbeat maintenance response, can do nothing
     }
     break;
     case APP_MESSAGE_GET_PARAM:

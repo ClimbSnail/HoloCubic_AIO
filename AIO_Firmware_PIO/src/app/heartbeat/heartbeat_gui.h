@@ -14,7 +14,7 @@ enum S_R_TYPE{
 };
 #define ANIEND                      \
     while (lv_anim_count_running()) \
-        lv_task_handler(); //等待动画完成
+        lv_task_handler(); // Wait for animation to complete
 
     void heartbeat_gui_init(void);
     void display_heartbeat(const char *file_name, lv_scr_load_anim_t anim_type);

@@ -1,9 +1,9 @@
 /***************************************************
-  HoloCubic多功能固件源码
-  （项目中若参考本工程源码，请注明参考来源）
+  HoloCubic Multi-Functional Firmware Source Code
+  (If referencing the source code from this project, please cite the source)
 
-  聚合多种APP，内置天气、时钟、相册、特效动画、视频播放、视频投影、
-  浏览器文件修改。（各APP具体使用参考说明书）
+  Integrates multiple APPs, including built-in weather, clock, photo album, special effects animation, video playback, video projection,
+  and file modification through browser. (For specific usage of each APP, refer to the manual)
 
   Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
 

@@ -11,21 +11,21 @@
 #define VIDEO_WIDTH 240L
 #define VIDEO_HEIGHT 240L
 #define MOVIE_PATH "/movie"
-#define NO_TRIGGER_ENTER_FREQ_160M 90000UL // 无操作规定时间后进入设置160M主频（90s）
-#define NO_TRIGGER_ENTER_FREQ_80M 120000UL // 无操作规定时间后进入设置160M主频（120s）
+#define NO_TRIGGER_ENTER_FREQ_160M 90000UL // No operation timeout to enter 160MHz frequency mode (90s)
+#define NO_TRIGGER_ENTER_FREQ_80M 120000UL // No operation timeout to enter 80MHz frequency mode (120s)
 
-// 天气的持久化配置
+// Media player persistent configuration
 #define MEDIA_CONFIG_PATH "/media.cfg"
 struct MP_Config
 {
-    uint8_t switchFlag; // 是否自动播放下一个（0不切换 1自动切换）
-    uint8_t powerFlag;  // 功耗控制（0低发热 1性能优先）
+    uint8_t switchFlag; // Whether to automatically play the next video (0: no switch, 1: auto switch)
+    uint8_t powerFlag;  // Power consumption control (0: low heat, 1: performance priority)
 };
 
 static void write_config(MP_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persist)
     String w_data;
     memset(tmp, 0, 16);
     snprintf(tmp, 16, "%u\n", cfg->switchFlag);
@@ -38,21 +38,21 @@ static void write_config(MP_Config *cfg)
 
 static void read_config(MP_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If there is a need to persist the configuration file, you can call this function to store data in flash
+    // It is recommended to name the configuration file with the APP name as the prefix and ".cfg" as the suffix to avoid confusion when multiple APPs read it
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(MEDIA_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
-        cfg->switchFlag = 1; // 是否自动播放下一个（0不切换 1自动切换）
-        cfg->powerFlag = 0;  // 功耗控制（0低发热 1性能优先）
+        // Default values
+        cfg->switchFlag = 1; // Whether to automatically play the next video (0: no switch, 1: auto switch)
+        cfg->powerFlag = 0;  // Power consumption control (0: low heat, 1: performance priority)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[2] = {0};
         analyseParam(info, 2, param);
         cfg->switchFlag = atol(param[0]);
@@ -63,10 +63,10 @@ static void read_config(MP_Config *cfg)
 struct MediaAppRunData
 {
     PlayDocoderBase *player_docoder;
-    unsigned long preTriggerKeyMillis; // 最近一回按键触发的时间戳
+    unsigned long preTriggerKeyMillis; // Timestamp of the most recent key trigger
     int movie_pos_increate;
-    File_Info *movie_file; // movie文件夹下的文件指针头
-    File_Info *pfile;      // 指向当前播放的文件节点
+    File_Info *movie_file; // Pointer to the head of the file list in the movie folder
+    File_Info *pfile;      // Pointer to the currently playing file node
     File file;
 };
 
@@ -75,7 +75,7 @@ static MediaAppRunData *run_data = NULL;
 
 static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 {
-    // 得到 p_cur_file 的下一个 类型为FILE_TYPE_FILE 的文件（即下一个非文件夹文件）
+    // Get the next file of type FILE_TYPE_FILE from p_cur_file (i.e., the next non-folder file)
     if (NULL == p_cur_file)
     {
         return NULL;
@@ -97,7 +97,7 @@ static bool video_start(bool create_new)
 {
     if (NULL == run_data->pfile)
     {
-        // 视频文件夹空 就跳出去
+        // Video folder is empty, exit
         return false;
     }
 
@@ -112,13 +112,13 @@ static bool video_start(bool create_new)
     run_data->file = tf.open(file_name);
     if (NULL != strstr(run_data->pfile->file_name, ".mjpeg") || NULL != strstr(run_data->pfile->file_name, ".MJPEG"))
     {
-        // 直接解码mjpeg格式的视频
+        // Directly decode MJPEG format video
         run_data->player_docoder = new MjpegPlayDocoder(&run_data->file, true);
         Serial.print(F("MJPEG video start --------> "));
     }
     else if (NULL != strstr(run_data->pfile->file_name, ".rgb") || NULL != strstr(run_data->pfile->file_name, ".RGB"))
     {
-        // 使用RGB格式的视频
+        // Use RGB format video
         run_data->player_docoder = new RgbPlayDocoder(&run_data->file, true);
         Serial.print(F("RGB565 video start --------> "));
     }
@@ -129,7 +129,7 @@ static bool video_start(bool create_new)
 
 static void release_player_docoder(void)
 {
-    // 释放具体的播放对象
+    // Release the specific player object
     if (NULL != run_data->player_docoder)
     {
         delete run_data->player_docoder;
@@ -139,23 +139,23 @@ static void release_player_docoder(void)
 
 static int media_player_init(AppController *sys)
 {
-    // 调整RGB模式  HSV色彩模式
+    // Adjust RGB mode to HSV color mode
     RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
                             255, 255, 32,
                             1, 1, 1,
                             0.15, 0.20, 0.001, 50};
     set_rgb_and_run(&rgb_setting);
 
-    // 获取配置信息
+    // Get configuration information
     read_config(&cfg_data);
-    // 初始化运行时参数
+    // Initialize runtime parameters
     // run_data = (MediaAppRunData *)malloc(sizeof(MediaAppRunData));
     // memset(run_data, 0, sizeof(MediaAppRunData));
     run_data = (MediaAppRunData *)calloc(1, sizeof(MediaAppRunData));
     run_data->player_docoder = NULL;
     run_data->movie_pos_increate = 1;
-    run_data->movie_file = NULL; // movie文件夹下的文件指针头
-    run_data->pfile = NULL;      // 指向当前播放的文件节点
+    run_data->movie_file = NULL; // Pointer to the head of the file list in the movie folder
+    run_data->pfile = NULL;      // Pointer to the currently playing file node
     run_data->preTriggerKeyMillis = GET_SYS_MILLIS();
 
     run_data->movie_file = tf.listDir(MOVIE_PATH);
@@ -164,10 +164,10 @@ static int media_player_init(AppController *sys)
         run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
     }
 
-    // 设置CPU主频
+    // Set CPU frequency
     setCpuFrequencyMhz(240);
 
-    // 创建播放
+    // Create player
     video_start(false);
     return 0;
 }
@@ -177,27 +177,27 @@ static void media_player_process(AppController *sys,
 {
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
     else if (UNKNOWN != act_info->active)
     {
-        // 记录下操作的时间点
+        // Record the operation timestamp
         run_data->preTriggerKeyMillis = GET_SYS_MILLIS();
-        // 设置CPU主频
+        // Set CPU frequency
         setCpuFrequencyMhz(240);
     }
 
     if (NULL == run_data->pfile)
     {
         Serial.println(F("Not Found File."));
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
     if (TURN_RIGHT == act_info->active || TURN_LEFT == act_info->active)
     {
-        // 切换方向
+        // Switch direction
         if (TURN_RIGHT == act_info->active)
         {
             run_data->movie_pos_increate = 1;
@@ -206,28 +206,28 @@ static void media_player_process(AppController *sys,
         {
             run_data->movie_pos_increate = -1;
         }
-        // 结束播放
+        // End playback
         release_player_docoder();
-        run_data->file.close(); // 尝试关闭文件
+        run_data->file.close(); // Try to close the file
 
-        // 创建播放
+        // Create player
         video_start(true);
-        vTaskDelay(400 / portTICK_PERIOD_MS); // 暂缓播放 避免手抖
+        vTaskDelay(400 / portTICK_PERIOD_MS); // Delay playback to avoid hand shake
     }
 
     if (NULL == run_data->pfile)
     {
-        // 不存在可以播放的文件
-        sys->app_exit(); // 退出APP
+        // No playable files exist
+        sys->app_exit(); // Exit APP
         return;
     }
 
-    // 主频控制 为了降低发热量
+    // Frequency control to reduce heat generation
     if (getCpuFrequencyMhz() > 80 && 0 == cfg_data.powerFlag)
     {
         if (getCpuFrequencyMhz() > 160 && GET_SYS_MILLIS() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_160M)
         {
-            // 设置CPU主频
+            // Set CPU frequency
             setCpuFrequencyMhz(160);
         }
         else if (getCpuFrequencyMhz() > 80 && GET_SYS_MILLIS() - run_data->preTriggerKeyMillis >= NO_TRIGGER_ENTER_FREQ_80M)
@@ -244,22 +244,22 @@ static void media_player_process(AppController *sys,
 
     if (run_data->file.available())
     {
-        // 播放一帧数据
+        // Play one frame of data
         run_data->player_docoder->video_play_screen();
     }
     else
     {
-        // 结束播放
+        // End playback
         release_player_docoder();
         run_data->file.close();
         if (0 == cfg_data.switchFlag)
         {
-            // 创建播放(重复播放)
+            // Create player (repeat playback)
             video_start(false);
         }
         else
         {
-            // 创建播放(播放下一个)
+            // Create player (play next video)
             video_start(true);
         }
     }
@@ -268,20 +268,20 @@ static void media_player_process(AppController *sys,
 static void media_player_background_task(AppController *sys,
                                          const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller will call this function every minute
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int media_player_exit_callback(void *param)
 {
-    // 结束播放
+    // End playback
     release_player_docoder();
 
-    run_data->file.close(); // 退出时关闭文件
-    // 释放文件循环队列
+    run_data->file.close(); // Close file on exit
+    // Release the file circular queue
     release_file_info(run_data->movie_file);
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);

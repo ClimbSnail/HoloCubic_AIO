@@ -24,7 +24,7 @@ enum ACTIVE_TYPE
     UNKNOWN
 };
 
-// 方向类型
+// Direction type
 enum MPU_DIR_TYPE
 {
     NORMAL_DIR_TYPE = 0,
@@ -50,7 +50,7 @@ struct ImuAction
     volatile ACTIVE_TYPE active;
     boolean isValid;
     boolean long_time;
-    int16_t v_ax; // v表示虚拟参数（用于调整6050的初始方位）
+    int16_t v_ax; // v represents virtual parameters (used to adjust the initial orientation of the 6050)
     int16_t v_ay;
     int16_t v_az;
     int16_t v_gx;
@@ -64,23 +64,23 @@ private:
     MPU6050 mpu;
     int flag;
     long last_update_time;
-    uint8_t order; // 表示方位，x与y是否对换
+    uint8_t order; // Represents orientation, whether x and y are swapped
 
 public:
     ImuAction action_info;
-    // 用来储存历史动作
+    // Used to store historical actions
     // std::list<ACTIVE_TYPE> act_info_history;
     ACTIVE_TYPE act_info_history[ACTION_HISTORY_BUF_LEN];
-    int act_info_history_ind; // 标志储存的位置
+    int act_info_history_ind; // Flag indicating storage position
 
 public:
     IMU();
     void init(uint8_t order, uint8_t auto_calibration,
               SysMpuConfig *mpu_cfg);
-    void setOrder(uint8_t order); // 设置方向
-    bool Encoder_GetIsPush(void); // 适配Peak的编码器中键 开关机使用
+    void setOrder(uint8_t order); // Set direction
+    bool Encoder_GetIsPush(void); // Adapter for Peak's encoder middle button for power on/off
     ImuAction *update(int interval);
-    ImuAction *getAction(void); // 获取动作
+    ImuAction *getAction(void); // Get action
     void getVirtureMotion6(ImuAction *action_info);
 };
 

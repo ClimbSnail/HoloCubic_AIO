@@ -5,14 +5,14 @@
 
 
 /*
-功能：动态心
-参考了fzjpxlay up主的代码！
-以及他分享的粒子动画网页https://openprocessing.org/sketch/1906399
-上述网站可以称之为粒子动画神仙网站，上面有很多惊艳的粒子动画特效
+Function: Dynamic Heart
+Referenced fzjpxlay's code!
+And the particle animation webpage he shared https://openprocessing.org/sketch/1906399
+The above website can be called a particle animation masterpiece website, with many stunning particle animation effects
 */
 
 
-/* 系统变量 */
+/* System variables */
 extern bool isCheckAction;
 extern ImuAction *act_info;
 
@@ -43,7 +43,7 @@ static uint16_t randomColorHSV(int hmin,int hmax,int smin,int smax,int vmin,int 
     return (lv_color_to8(c));
 }
 
-/*********填充圆用到的工具函数********/
+/********* Utility functions used for filling circles *********/
 static void heartbeatBuf_draw_fastVLine(int16_t x, int16_t y, int16_t length, uint16_t color){
     int16_t y0 = y;
     do{
@@ -82,10 +82,10 @@ static void heartbeatBuf_fill_circle(int16_t x0, int16_t y0, int16_t r, uint16_t
     heartbeatBuf_fillCircle_helper(x0, y0, r, 3, 0, color);
 }
 
-#define CIRCLE_TOTAL 81         //粒子总数
-#define VISCOSITY 0.95       //粘性系数
-#define CIRCLE_SIZE 250         //粒子大小
-/* 在此文件中，在类中写函数会报错 */
+#define CIRCLE_TOTAL 81         // Total number of particles
+#define VISCOSITY 0.95          // Viscosity coefficient
+#define CIRCLE_SIZE 250         // Particle size
+/* In this file, writing functions in classes will cause errors */
 struct heartCircle {
     float xPos;
     float yPos;

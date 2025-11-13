@@ -13,7 +13,7 @@
 
 FlashFS::FlashFS()
 {
-    // SPIFFS初始化需要在setup启动后，如果在全局变量里初始化会报错
+    // SPIFFS initialization needs to be done after setup() starts; initializing in global variables will cause errors
     // if (!SPIFFS.begin(FORMAT_LITTLEFS_IF_FAILED))
     // {
     //     Serial.println("SPIFFS Mount Failed");
@@ -95,7 +95,7 @@ void FlashFS::listDir(const char *dirname, uint8_t levels)
 
 // void FlashFS::createDir(const char *path)
 // {
-//     // SPIFFS不支持目录
+//     // SPIFFS does not support directories
 //     Serial.printf("Creating Dir: %s\n", path);
 //     if (SPIFFS.mkdir(path))
 //     {
@@ -352,7 +352,7 @@ void FlashFS::testFileIO(const char *path)
 
 bool analyseParam(char *info, int argc, char **argv)
 {
-    int cnt; // 记录解析到第几个参数
+    int cnt; // Record which parameter is being parsed
     for (cnt = 0; cnt < argc; ++cnt)
     {
         argv[cnt] = info;

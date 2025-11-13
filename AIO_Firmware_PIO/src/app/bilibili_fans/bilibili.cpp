@@ -6,18 +6,18 @@
 #define FANS_API "https://api.bilibili.com/x/relation/stat?vmid="
 #define OTHER_API "https://api.bilibili.com/x/space/upstat?mid="
 
-// Bilibili的持久化配置
+// Bilibili persistent configuration
 #define B_CONFIG_PATH "/bilibili.cfg"
 struct B_Config
 {
-    String bili_uid;              // bilibili的uid
-    unsigned long updataInterval; // 更新的时间间隔(s)
+    String bili_uid;              // Bilibili UID
+    unsigned long updataInterval; // Update time interval (s)
 };
 
 static void write_config(const B_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persistence)
     String w_data;
     w_data = w_data + cfg->bili_uid + "\n";
     memset(tmp, 0, 16);
@@ -28,21 +28,21 @@ static void write_config(const B_Config *cfg)
 
 static void read_config(B_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If you need to persist configuration files, you can call this function to store the data in flash
+    // Configuration file names should preferably start with the APP name and end with ".cfg" to avoid confusion when multiple APPs read them
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(B_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
-        cfg->bili_uid = "344470052";  // B站的用户ID
-        cfg->updataInterval = 900000; // 更新的时间间隔900000(900s)
+        // Default values
+        cfg->bili_uid = "344470052";  // Bilibili user ID
+        cfg->updataInterval = 900000; // Update time interval 900000(900s)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[2] = {0};
         analyseParam(info, 2, param);
         cfg->bili_uid = param[0];
@@ -91,9 +91,9 @@ static MyHttpResult http_request(String uid = "344470052")
 static int bilibili_init(AppController *sys)
 {
     bilibili_gui_init();
-    // 获取配置信息
+    // Get configuration information
     read_config(&cfg_data);
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (BilibiliAppRunData *)malloc(sizeof(BilibiliAppRunData));
     run_data->fans_num = 0;
     run_data->follow_num = 0;
@@ -108,7 +108,7 @@ static void bilibili_process(AppController *sys,
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
@@ -116,7 +116,7 @@ static void bilibili_process(AppController *sys,
     char follow_num[20] = {0};
     if (run_data->fans_num >= 10000)
     {
-        // 粉丝过万的
+        // Fans over 10,000
         snprintf(fans_num, 20, "%3.1fw", run_data->fans_num * 1.0 / 10000);
     }
     else
@@ -126,7 +126,7 @@ static void bilibili_process(AppController *sys,
 
     if (run_data->follow_num >= 10000)
     {
-        // 关注过万的
+        // Following over 10,000
         snprintf(follow_num, 20, "%3.1fw", run_data->follow_num * 1.0 / 10000);
     }
     else
@@ -136,7 +136,7 @@ static void bilibili_process(AppController *sys,
 
     if (0 == run_data->refresh_status)
     {
-        // 以下减少网络请求的压力
+        // Reduce network request pressure
         if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
         {
             sys->send_to(BILI_APP_NAME, CTRL_NAME,

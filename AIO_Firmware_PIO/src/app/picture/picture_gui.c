@@ -22,10 +22,10 @@ void photo_gui_init()
 
 void display_photo_init()
 {
-    lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
+    lv_obj_t *act_obj = lv_scr_act(); // Get current active screen
     if (act_obj == image_scr)
         return;
-    lv_obj_clean(act_obj); // 清空此前页面
+    lv_obj_clean(act_obj); // Clear previous screen
     photo_image = lv_img_create(image_scr);
 }
 
@@ -43,16 +43,16 @@ void photo_gui_del(void)
 {
     if (NULL != photo_image)
     {
-        lv_obj_clean(photo_image); // 清空此前页面
+        lv_obj_clean(photo_image); // Clear previous screen
         photo_image = NULL;
     }
 
     if (NULL != image_scr)
     {
-        lv_obj_clean(image_scr); // 清空此前页面
+        lv_obj_clean(image_scr); // Clear previous screen
         image_scr = NULL;
     }
 
-    // 手动清除样式，防止内存泄漏
+    // Manually clear styles to prevent memory leaks
     // lv_style_reset(&default_style);
 }

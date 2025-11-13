@@ -67,20 +67,20 @@ bool set_rgb_and_run(RgbParam *rgb_setting, LED_RUN_MODE mode)
 {
     if (RUN_MODE_NONE <= mode)
     {
-        // 创建失败
+        // Creation failed
         return false;
     }
 
     if (run_mode != mode)
     {
-        // 运行模式发生变化
+        // Running mode changed
         rgb_stop();
         run_mode = mode;
     }
 
     g_rgb = *rgb_setting;
 
-    // 拷贝数据
+    // Copy data
     if (LED_MODE_RGB == g_rgb.mode)
     {
         rgb_status.current_r = g_rgb.min_value_r;
@@ -98,7 +98,7 @@ bool set_rgb_and_run(RgbParam *rgb_setting, LED_RUN_MODE mode)
         rgb_status.pos = 0;
     }
 
-    // 选择启动两种运行模式
+    // Select to start two running modes
     if (RUN_MODE_TIMER == run_mode)
     {
         if (NULL != xTimer_rgb)
@@ -109,7 +109,7 @@ bool set_rgb_and_run(RgbParam *rgb_setting, LED_RUN_MODE mode)
         xTimer_rgb = xTimerCreate("led_timerHandler",
                                   g_rgb.time / portTICK_PERIOD_MS,
                                   pdTRUE, (void *)0, led_timerHandler);
-        xTimerStart(xTimer_rgb, 0); // 开启定时器
+        xTimerStart(xTimer_rgb, 0); // Start timer
     }
     else if (RUN_MODE_TASK == run_mode)
     {
@@ -118,7 +118,7 @@ bool set_rgb_and_run(RgbParam *rgb_setting, LED_RUN_MODE mode)
             taskRgbReturned = xTaskCreate(
                 led_taskHandler,
                 "led_taskHandler",
-                8 * 128, // 实际上 7*128就够用
+                8 * 128, // Actually 7*128 is enough
                 (void *)&g_rgb.time,
                 TASK_RGB_PRIORITY,
                 &handleLed);
@@ -138,7 +138,7 @@ void led_timerHandler(TimerHandle_t xTimer)
 
 void led_taskHandler(void *parameter)
 {
-    int *ms = (int *)parameter; // 控制时间
+    int *ms = (int *)parameter; // Control time
     for (;;)
     {
         onceChange();
@@ -166,7 +166,7 @@ static void onceChange(void)
 
 static void hsvModeChange(void)
 {
-    // HSV色彩的控制
+    // HSV color control
     rgb_status.current_h += g_rgb.step_h;
     if (rgb_status.current_h >= g_rgb.max_value_h)
     {
@@ -203,10 +203,10 @@ static void hsvModeChange(void)
         rgb_status.current_v = g_rgb.min_value_v;
     }
 
-    // 计算当前背光值
+    // Calculate current brightness value
     count_cur_brightness();
 
-    // 设置HSV状态
+    // Set HSV state
     rgb.setHVS(rgb_status.current_h,
                rgb_status.current_s,
                rgb_status.current_v)
@@ -215,8 +215,8 @@ static void hsvModeChange(void)
 
 static void rgbModeChange(void)
 {
-    // RGB色彩的控制
-    if (0 == rgb_status.pos) // 控制到R
+    // RGB color control
+    if (0 == rgb_status.pos) // Control to R
     {
         rgb_status.current_r += g_rgb.step_r;
         if (rgb_status.current_r >= g_rgb.max_value_r && g_rgb.step_r > 0)
@@ -230,7 +230,7 @@ static void rgbModeChange(void)
             rgb_status.current_r = g_rgb.min_value_r;
         }
     }
-    else if (1 == rgb_status.pos) // 控制到G
+    else if (1 == rgb_status.pos) // Control to G
     {
         rgb_status.current_g += g_rgb.step_r;
         if (rgb_status.current_g >= g_rgb.max_value_g && g_rgb.step_r > 0)
@@ -244,7 +244,7 @@ static void rgbModeChange(void)
             rgb_status.current_g = g_rgb.min_value_g;
         }
     }
-    else if (2 == rgb_status.pos) // 控制到B
+    else if (2 == rgb_status.pos) // Control to B
     {
         rgb_status.current_b += g_rgb.step_r;
         if (rgb_status.current_b >= g_rgb.max_value_b && g_rgb.step_r > 0)
@@ -259,10 +259,10 @@ static void rgbModeChange(void)
         }
     }
 
-    // 计算当前背光值
+    // Calculate current brightness value
     count_cur_brightness();
 
-    // 设置RGB状态
+    // Set RGB state
     rgb.setRGB(rgb_status.current_r,
                rgb_status.current_g,
                rgb_status.current_b)
@@ -271,7 +271,7 @@ static void rgbModeChange(void)
 
 static void count_cur_brightness(void)
 {
-    // 背光的控制
+    // Brightness control
     rgb_status.current_brightness += g_rgb.brightness_step;
     if (rgb_status.current_brightness >= g_rgb.max_brightness)
     {

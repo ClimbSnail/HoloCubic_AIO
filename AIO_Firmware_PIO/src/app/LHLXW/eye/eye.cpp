@@ -3,31 +3,31 @@
 #include "eye.h"
 
 /*
-功能：眼珠子
-操作说明：左/右切换眼睛样式
-其他：
-参考了https://learn.adafruit.com/animated-electronic-eyes/software
-以及AIO_FIRMWARE_PIO/lib/TFT_eSPI/examples/Generic/Animated_Eyes_1
-没有用爆改车间主任，因为其没有开源。
+Function: Animated Eyes
+Operation Instructions: Left/Right to switch eye styles
+Other:
+Referenced https://learn.adafruit.com/animated-electronic-eyes/software
+and AIO_FIRMWARE_PIO/lib/TFT_eSPI/examples/Generic/Animated_Eyes_1
+Did not use modified workshop director's code because it's not open source.
 
-编译说明：eye.h中有一个mode_eye宏
-当EYE_MIN为0，以下模式全部使能，有四种虹膜效果
-为1时，只有一种虹膜效果，只生效0，1，2 能大大减小内存内存占用
-00：小 default
-01：大 default
-02：双 default
+Compilation Notes: There is a mode_eye macro in eye.h
+When EYE_MIN is 0, all modes below are enabled, with four iris effects
+When 1, only one iris effect, only 0, 1, 2 take effect, which can greatly reduce memory usage
+00: Small default
+01: Large default
+02: Double default
 
-03：小 dragon
-04：大 dragon
-05：双 dragon
+03: Small dragon
+04: Large dragon
+05: Double dragon
 
-06：小 goat
-07：大 goat
-08：双 goat
+06: Small goat
+07: Large goat
+08: Double goat
 
-09：小 noSclera
-10：大 noSclera
-11：双 noSclera
+09: Small noSclera
+10: Large noSclera
+11: Double noSclera
 
 */
 
@@ -35,36 +35,36 @@
 
 
 
-/* 系统变量 */
+/* System variables */
 extern bool isCheckAction;
 extern ImuAction *act_info;
 
 eye_run *e_run = NULL;
 
 
-//128有61帧左右，实测1024也只有63帧左右（原大小的情况下）
-//改成240*240大小后，数据从pbuffer转移到pbuffer_m花费大量时间,同时屏幕刷新范围也增加
-//改成240*240大小后，pbuffer长度必须为128，确保一次渲染一整行，屏幕实际更新两行（也就是一次渲染128个像素，根据这128个像素同时一次更新240*2个像素）
-uint16_t *pbuffer=NULL; // 眼珠子算法渲染的缓冲区
-uint16_t *pbuffer_m=NULL;//实际刷新到屏幕的缓存(屏幕一行的大小，240*2)
+// At 128 there are about 61 frames, tested that 1024 also only has about 63 frames (in original size)
+// After changing to 240*240 size, transferring data from pbuffer to pbuffer_m takes a lot of time, and screen refresh range also increases
+// After changing to 240*240 size, pbuffer length must be 128 to ensure rendering a full row at once, screen actually updates two rows (i.e., render 128 pixels at once, update 240*2 pixels simultaneously based on these 128 pixels)
+uint16_t *pbuffer=NULL;    // Buffer for eye algorithm rendering
+uint16_t *pbuffer_m=NULL;  // Buffer actually refreshed to screen (size of one screen row, 240*2)
 
 
 
 
 
 
-//由updateEye调用
+// Called by updateEye
 bool eye_loop(void){
-    /* MPU6050数据获取 */
+    /* MPU6050 data acquisition */
     if (isCheckAction){
         isCheckAction = false;
         act_info = mpu.getAction();
 
-        /* MPU6050动作响应 */
+        /* MPU6050 action response */
         if (RETURN == act_info->active){
             tft->fillRect(0, 0, 240, 240, 0);
             e_run->eye_flg = false;
-            return true;//退出此功能
+            return true;  // Exit this function
         }else if(TURN_RIGHT == act_info->active){
         if(millis()-e_run->tempD > 1099){
             tft->fillRect(0, 0, 240, 240, 0);

@@ -4,7 +4,7 @@
 #include "common.h"
 #include "freertos/semphr.h"
 
-// 游戏名称
+// Game name
 #define GAME_APP_NAME "Snake"
 
 #define SNAKE_SPEED 1000
@@ -23,7 +23,7 @@ void taskRun(void *parameter)
 {
     while (1)
     {
-        // LVGL任务主函数，处理所有的LVGL任务，包括绘制界面，处理用户输入等。
+        // LVGL main task function, handles all LVGL tasks including UI rendering and user input processing
         AIO_LVGL_OPERATE_LOCK(lv_task_handler();)
         vTaskDelay(5 / portTICK_PERIOD_MS);
     }
@@ -33,21 +33,21 @@ void taskRun(void *parameter)
 
 static int game_snake_init(AppController *sys)
 {
-    // 随机数种子
+    // Random seed
     randomSeed(analogRead(A0));
-    // 初始化运行时的参数
+    // Initialize runtime parameters
     game_snake_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (SnakeAppRunData *)calloc(1, sizeof(SnakeAppRunData));
     run_data->score = 0;
     run_data->gameStatus = 0;
     run_data->xReturned_task_run = xTaskCreate(
-        taskRun,                      /*任务函数*/
-        "taskRun",                    /*任务名称*/
-        8 * 1024,                     /*堆栈大小，单位为字节*/
-        NULL,                         /*参数*/
-        1,                            /*优先级*/
-        &run_data->xHandle_task_run); /*任务句柄*/
+        taskRun,                      /* Task function */
+        "taskRun",                    /* Task name */
+        8 * 1024,                     /* Stack size in bytes */
+        NULL,                         /* Parameter */
+        1,                            /* Priority */
+        &run_data->xHandle_task_run); /* Task handle */
 
     return 0;
 }
@@ -57,11 +57,11 @@ static void game_snake_process(AppController *sys, const ImuAction *act_info)
     if (RETURN == act_info->active)
     {
         run_data->gameStatus = -1;
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
-    // 操作触发
+    // Operation trigger
     if (TURN_RIGHT == act_info->active)
     {
         update_driection(DIR_RIGHT);
@@ -84,42 +84,42 @@ static void game_snake_process(AppController *sys, const ImuAction *act_info)
         AIO_LVGL_OPERATE_LOCK(display_snake(run_data->gameStatus, LV_SCR_LOAD_ANIM_NONE););
     }
 
-    // 速度控制
+    // Speed control
     delay(SNAKE_SPEED);
 }
 
 static void game_snake_background_task(AppController *sys,
                                        const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This is a background task, the main controller will call this function every minute
+    // This function should only use "permanent data", other variables may have been released due to lifecycle
 
-    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 game_snake_message_handle 函数
+    // Send request. If it's a WiFi-related message, game_snake_message_handle will be called automatically when the request completes
     // sys->send_to(EXAMPLE_APP_NAME, CTRL_NAME,
     //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
 
-    // 也可以移除自身的后台任务，放在本APP可控的地方最合适
+    // You can also remove your own background task, best placed in APP-controllable location
     // sys->remove_backgroud_task();
 
-    // 程序需要时可以适当加延时
+    // Add delay if needed
     // delay(300);
 }
 
 static int game_snake_exit_callback(void *param)
 {
-    // 查杀任务
+    // Kill task
     if (run_data->xReturned_task_run == pdPASS)
     {
         vTaskDelete(run_data->xHandle_task_run);
     }
 
-    // 释放lvgl_mutex信号量
+    // Release lvgl_mutex semaphore
     xSemaphoreGive(lvgl_mutex);
 
-    // 释放页面资源
+    // Release page resources
     game_snake_gui_del();
 
-    // 释放事件资源
+    // Release event resources
     if (NULL != run_data)
     {
         free(run_data);
@@ -132,7 +132,7 @@ static void game_snake_message_handle(const char *from, const char *to,
                                       APP_MESSAGE_TYPE type, void *message,
                                       void *ext_info)
 {
-    // 目前主要是wifi开关类事件（用于功耗控制）
+    // Currently mainly WiFi on/off events (for power control)
     switch (type)
     {
     case APP_MESSAGE_WIFI_CONN:
@@ -147,7 +147,7 @@ static void game_snake_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // WiFi heartbeat response, no processing required
     }
     break;
     case APP_MESSAGE_GET_PARAM:

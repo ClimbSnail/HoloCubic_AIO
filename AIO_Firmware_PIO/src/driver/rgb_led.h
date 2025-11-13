@@ -50,12 +50,12 @@ struct RgbConfig
     float min_brightness;
     float max_brightness;
     float brightness_step;
-    int time; // 定时器的时间
+    int time; // Timer period
 };
 
 struct RgbParam
 {
-    uint8_t mode; // 0为RGB色彩(LED_MODE_RGB) 1为HSV色彩(LED_MODE_HSV)
+    uint8_t mode; // 0 for RGB color (LED_MODE_RGB), 1 for HSV color (LED_MODE_HSV)
     union
     {
         uint8_t min_value_r;
@@ -104,11 +104,11 @@ struct RgbParam
         int8_t step_v;
     };
 
-    float min_brightness; // 背光的最小亮度
-    float max_brightness; // 背光的最大亮度
+    float min_brightness; // Minimum backlight brightness
+    float max_brightness; // Maximum backlight brightness
     float brightness_step;
 
-    int time; // 定时器的时间
+    int time; // Timer period
 };
 
 struct RgbRunStatus

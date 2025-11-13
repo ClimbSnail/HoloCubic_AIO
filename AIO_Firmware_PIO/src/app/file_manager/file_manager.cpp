@@ -8,30 +8,30 @@
 
 #define FILE_MANAGER_APP_NAME "File Manager"
 
-#define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
+#define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // Configuration interface refresh time (2s)
 
 #define RECV_BUFFER_SIZE 2000    //
 #define SEND_BUFFER_SIZE 2000    //
-#define SERVER_PORT 8081         //设置监听端口
-#define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
+#define SERVER_PORT 8081         // Set listening port
+#define SHARE_WIFI_ALIVE 20000UL // Time to maintain WiFi heartbeat (20s)
 
-FtpServer ftpSrv; // 定义FTP服务端
+FtpServer ftpSrv; // Define FTP server
 
 struct FileManagerAppRunData
 {
-    boolean tcp_start;                    // 标志是否开启web server服务，0为关闭 1为开启
-    boolean req_sent;                     // 标志是否发送wifi请求服务，0为关闭 1为开启
-    unsigned long serverReflushPreMillis; // 上一回更新的时间
-    unsigned long apAlivePreMillis;       // 上一回更新的时间
-    uint8_t *recvBuf;                     // 接收数据缓冲区
-    uint8_t *sendBuf;                     // 发送数据缓冲区
+    boolean tcp_start;                    // Flag whether the web server service is enabled, 0 for off, 1 for on
+    boolean req_sent;                     // Flag whether the WiFi request service has been sent, 0 for off, 1 for on
+    unsigned long serverReflushPreMillis; // Time of last update
+    unsigned long apAlivePreMillis;       // Time of last update
+    uint8_t *recvBuf;                     // Receive data buffer
+    uint8_t *sendBuf;                     // Send data buffer
 };
 
 static FileManagerAppRunData *run_data = NULL;
 static int file_maneger_init(AppController *sys)
 {
     file_maneger_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (FileManagerAppRunData *)calloc(1, sizeof(FileManagerAppRunData));
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
@@ -54,23 +54,23 @@ static void file_maneger_process(AppController *sys,
 
     if (0 == run_data->tcp_start && 0 == run_data->req_sent)
     {
-        // 预显示
+        // Pre-display
         display_file_manager(
             "File Manager",
             WiFi.softAPIP().toString().c_str(),
             "21",
             "Wait connect ....",
             LV_SCR_LOAD_ANIM_NONE);
-        // 如果web服务没有开启 且 ap开启的请求没有发送 event_id这边没有作用（填0）
+        // If web service is not started and AP start request has not been sent, event_id has no effect (fill 0)
         sys->send_to(FILE_MANAGER_APP_NAME, CTRL_NAME,
                      APP_MESSAGE_WIFI_CONN, NULL, NULL);
-        run_data->req_sent = 1; // 标志为 ap开启请求已发送
+        run_data->req_sent = 1; // Flag as AP start request sent
     }
     else if (1 == run_data->tcp_start)
     {
         if (doDelayMillisTime(SHARE_WIFI_ALIVE, &run_data->apAlivePreMillis, false))
         {
-            // 发送wifi维持的心跳
+            // Send WiFi heartbeat
             sys->send_to(FILE_MANAGER_APP_NAME, CTRL_NAME,
                          APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
         }
@@ -81,8 +81,8 @@ static void file_maneger_process(AppController *sys,
 static void file_maneger_background_task(AppController *sys,
                                          const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller will call this function every minute
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int file_maneger_exit_callback(void *param)
@@ -101,7 +101,7 @@ static int file_maneger_exit_callback(void *param)
         run_data->sendBuf = NULL;
     }
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);
@@ -143,7 +143,7 @@ static void file_maneger_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // WiFi heartbeat maintenance response, can do nothing
     }
     break;
     default:

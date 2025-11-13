@@ -5,8 +5,8 @@
 #ifndef NEW_FLASH_FS
 
 /***************************************************
-    由于使用了新的文件系统，config.cpp/config.h中实现的功能
-已被摒弃，为留作参考故未删除代码。
+    Due to the use of a new file system, the functionality implemented in config.cpp/config.h
+    has been deprecated. The code is kept for reference purposes and has not been deleted.
 
     Github repositories：https://github.com/ClimbSnail/HoloCubic_AIO
 
@@ -37,7 +37,7 @@ void config_read(const char *file_path, Config *cfg)
         prefs.begin("tianqi"); // Open namespace "tianqi"
         cfg->tianqi_appid = prefs.getString("tianqi_aid", "");
         cfg->tianqi_appsecret = prefs.getString("tianqi_as", "");
-        cfg->tianqi_addr = prefs.getString("tianqi_addr", "北京");
+        cfg->tianqi_addr = prefs.getString("tianqi_addr", "Beijing");
         prefs.end(); // Close namespace "tianqi"
 
         prefs.begin("other"); // Open namespace "other"

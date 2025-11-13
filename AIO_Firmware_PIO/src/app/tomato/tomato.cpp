@@ -7,44 +7,44 @@
 #define ON 1
 #define OFF 0
 
-// 动态数据，APP的生命周期结束也需要释放它
+// Dynamic data, needs to be released when APP lifecycle ends
 struct TomatoAppRunData
 {
-    unsigned long time_start; // 记录系统开始计时时的毫秒数
-    unsigned long time_ms;    // 毫秒数,对应倒计时显示的时间
-    TimeStr t;                // 时间结构体
-    TimeStr t_start;          // 倒计时结构体
-    RgbConfig rgb_cfg;        // 灯效
-    bool rgb_fast;            // 使能
-    bool rgb_fast_update;     // 标志位
-    RgbParam rgb_setting;     // rgb参数
-    int time_mode;            // 倒计时种类
-    uint8_t switch_count;     // 切换次数，用于消抖
+    unsigned long time_start; // Milliseconds when system started timing
+    unsigned long time_ms;    // Milliseconds, corresponding to countdown display time
+    TimeStr t;                // Time structure
+    TimeStr t_start;          // Countdown structure
+    RgbConfig rgb_cfg;        // LED effect
+    bool rgb_fast;            // Enable flag
+    bool rgb_fast_update;     // Update flag
+    RgbParam rgb_setting;     // RGB parameters
+    int time_mode;            // Countdown type
+    uint8_t switch_count;     // Switch count, for debouncing
     ACTIVE_TYPE lastAct;
 };
 
-// 常驻数据，可以不随APP的生命周期而释放或删除
+// Persistent data, doesn't need to be released with APP lifecycle
 struct TomatoAppForeverData
 {
 };
 
 static bool hadOpened = false;
 
-// 保存APP运行时的参数信息，理论上关闭APP时推荐在 xxx_exit_callback 中释放掉
+// Stores APP runtime parameters, should be released in xxx_exit_callback when closing APP
 static TomatoAppRunData *run_data = NULL;
 
-// 当然你也可以添加恒定在内存中的少量变量（退出时不用释放，实现第二次启动时可以读取）
-// 考虑到所有的APP公用内存，尽量减少 forever_data 的数据占用
+// Can also add small amount of persistent variables (no need to release on exit, can be read on second launch)
+// Considering all APPs share memory, minimize forever_data usage
 static TomatoAppForeverData forever_data;
 
 static int tomato_init(AppController *sys)
 {
-    // 初始化运行时的参数
+    // Initialize runtime parameters
     tomato_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (TomatoAppRunData *)calloc(1, sizeof(TomatoAppRunData));
     run_data->time_start = millis();
-    run_data->t_start.second = 0; // 专注时间，初始化一次
+    run_data->t_start.second = 0; // Focus time, initialize once
     run_data->t_start.minute = 25;
     run_data->t = run_data->t_start;
     run_data->rgb_fast = 0;
@@ -118,14 +118,14 @@ static void time_switch()
     }
 }
 /*********************************************************************************
- *Function:     rgb 控制
- *Description： 用来提醒
+ *Function:     RGB control
+ *Description:  Used for reminders
  *Calls:
  *Called By:
  *Input:
  *Output:
  *Return:
- *Others:       调快了速度和最低亮度
+ *Others:       Increased speed and minimum brightness
  **********************************************************************************/
 static void rgb_ctrl()
 {
@@ -229,7 +229,7 @@ static void tomato_process(AppController *sys, const ImuAction *act_info)
         count = 0;
         count_down_reset = ON;
         hadOpened = false;
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
@@ -293,8 +293,8 @@ static void tomato_process(AppController *sys, const ImuAction *act_info)
         count_down_reset = ON;
         static int last_mode;
         run_data->switch_count <<= 2;
-        run_data->switch_count |= 3;      // 写11并移位
-        if (run_data->switch_count > 0xf) // 只有连续的触发才进行切换
+        run_data->switch_count |= 3;      // Write 11 and shift
+        if (run_data->switch_count > 0xf) // Only switch on continuous triggers
         {
             if (run_data->time_mode >= -1 && run_data->time_mode <= 2)
 
@@ -322,20 +322,20 @@ static void tomato_process(AppController *sys, const ImuAction *act_info)
                             run_data->time_start = millis();
                         }
                     }
-                    if (run_data->time_mode > 2) // 限幅
+                    if (run_data->time_mode > 2) // Limit value
                         run_data->time_mode = 2;
                     if (run_data->time_mode < -1)
                         run_data->time_mode = -1;
                     if (last_mode != run_data->time_mode)
                     {
-                        time_switch(); // 发生模式切换时运行
+                        time_switch(); // Run when mode switch occurs
                     }
                     last_mode = run_data->time_mode;
                 }
         }
         run_data->lastAct = act_info->active;
     }
-    else // 消抖 未触发，写00并移位
+    else // Debounce: not triggered, write 00 and shift
     {
         run_data->switch_count <<= 2;
         run_data->switch_count &= ~3;
@@ -346,16 +346,16 @@ static void tomato_process(AppController *sys, const ImuAction *act_info)
         run_data->lastAct = UNKNOWN;
     }
 
-    if (run_data->t.minute == 0 && run_data->t.second == 0 && run_data->rgb_fast == 0) // 到点，rgb闪烁提醒
+    if (run_data->t.minute == 0 && run_data->t.second == 0 && run_data->rgb_fast == 0) // Time's up, RGB blink reminder
     {
         run_data->rgb_fast = 1;
         run_data->rgb_fast_update = 0;
     }
     rgb_ctrl();
-    if (run_data->rgb_fast == 0) // 未到点持续计算之间
+    if (run_data->rgb_fast == 0) // Keep calculating when not time yet
     {
-        unsigned long ms_count = 999 + (run_data->t_start.second + run_data->t_start.minute * 60) * 1000; // 倒计时时长，单位ms，加999ms是为了可以显示x分00秒，否则会直接闪过
-        run_data->time_ms = ms_count - (millis() - run_data->time_start);                                 // 倒计时长减去已经过去的时间就是要显示的时间
+        unsigned long ms_count = 999 + (run_data->t_start.second + run_data->t_start.minute * 60) * 1000; // Countdown duration in ms, add 999ms to display x min 00 sec, otherwise it flashes by
+        run_data->time_ms = ms_count - (millis() - run_data->time_start);                                 // Countdown duration minus elapsed time equals display time
         run_data->t.second = run_data->time_ms % 60000 / 1000;
         run_data->t.minute = run_data->time_ms / 60 / 1000;
     }
@@ -370,7 +370,7 @@ static int tomato_exit_callback(void *param)
     rgb_reset();
     if (run_data != NULL)
     {
-        // 释放资源
+        // Release resources
         free(run_data);
         run_data = NULL;
         Serial.println("EXIT\n");
@@ -390,17 +390,17 @@ static void tomato_message_handle(const char *from, const char *to, APP_MESSAGE_
 static void tomato_background_task(AppController *sys,
                                    const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, called by main controller every minute
+    // This function should only call "persistent data", other variables may be released due to lifecycle
 
-    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 tomato_message_handle 函数
+    // Send request. If it's a wifi-related message, tomato_message_handle function will be called automatically after request completes
     // sys->send_to(tomato_APP_NAME, CTRL_NAME,
     //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
 
-    // 也可以移除自身的后台任务，放在本APP可控的地方最合适
+    // Can also remove own background task, best placed where this APP has control
     // sys->remove_backgroud_task();
 
-    // 程序需要时可以适当加延时
+    // Add delay when program needs it
     // delay(300);
 }
 

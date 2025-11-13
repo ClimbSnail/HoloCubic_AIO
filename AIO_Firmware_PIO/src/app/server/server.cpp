@@ -6,24 +6,24 @@
 #include "network.h"
 #include "common.h"
 
-#define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
-#define DNS_PORT 53                    // DNS端口
+#define SERVER_REFLUSH_INTERVAL 5000UL // Configuration interface refresh time (5s)
+#define DNS_PORT 53                    // DNS port
 WebServer server(80);
 
 // DNSServer dnsServer;
 
 struct ServerAppRunData
 {
-    boolean web_start;                    // 标志是否开启web server服务，0为关闭 1为开启
-    boolean req_sent;                     // 标志是否发送wifi请求服务，0为关闭 1为开启
-    unsigned long serverReflushPreMillis; // 上一回更新的时间
+    boolean web_start;                    // Flag for web server service, 0 is off, 1 is on
+    boolean req_sent;                     // Flag for wifi request service, 0 is off, 1 is on
+    unsigned long serverReflushPreMillis; // Last update time
 };
 
 static ServerAppRunData *run_data = NULL;
 
 void start_web_config()
 {
-    // 首页
+    // Home page
     server.on("/", HTTP_GET, HomePage);
 
     init_page_header();
@@ -72,7 +72,7 @@ void start_web_config()
         { server.send(200); },
         handleFileUpload);
 
-    // 连接
+    // Connection
     server.on("/saveSysConf", saveSysConf);
     server.on("/saveRgbConf", saveRgbConf);
 #if APP_WEATHER_USE
@@ -124,7 +124,7 @@ void stop_web_config()
 static int server_init(AppController *sys)
 {
     server_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (ServerAppRunData *)malloc(sizeof(ServerAppRunData));
     run_data->web_start = 0;
     run_data->req_sent = 0;
@@ -146,7 +146,7 @@ static void server_process(AppController *sys,
 
     if (0 == run_data->web_start && 0 == run_data->req_sent)
     {
-        // 预显示
+        // Pre-display
         display_setting(
             "WebServer Start",
             "Domain: holocubic",

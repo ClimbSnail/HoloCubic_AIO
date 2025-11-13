@@ -11,7 +11,7 @@ void taskOne(void *parameter)
 {
     while (1)
     {
-        // 心跳任务
+        // Heartbeat task
         //  lv_tick_inc(5); // todo
         delay(5);
     }
@@ -23,7 +23,7 @@ void taskTwo(void *parameter)
 {
     while (1)
     {
-        // LVGL任务主函数
+        // LVGL main task function
         AIO_LVGL_OPERATE_LOCK(lv_task_handler();)
         vTaskDelay(5 / portTICK_PERIOD_MS);
     }
@@ -35,8 +35,8 @@ GAME2048 game;
 
 struct Game2048AppRunData
 {
-    int Normal = 0;       // 记录移动的方向
-    int BornLocation = 0; // 记录新棋子的位置
+    int Normal = 0;       // Record the movement direction
+    int BornLocation = 0; // Record the position of new tile
     int *pBoard;
     int *moveRecord;
     BaseType_t xReturned_task_one = pdFALSE;
@@ -49,11 +49,11 @@ static Game2048AppRunData *run_data = NULL;
 
 static int game_2048_init(AppController *sys)
 {
-    // 初始化运行时的参数
+    // Initialize runtime parameters
     game_2048_gui_init();
 
     randomSeed(analogRead(25));
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (Game2048AppRunData *)calloc(1, sizeof(Game2048AppRunData));
     game.init();
     run_data->pBoard = game.getBoard();
@@ -68,21 +68,21 @@ static int game_2048_init(AppController *sys)
     //     &run_data->xHandle_task_one); /*任务句柄*/
 
     run_data->xReturned_task_two = xTaskCreate(
-        taskTwo,                      /*任务函数*/
-        "TaskTwo",                    /*带任务名称的字符串*/
-        8 * 1024,                     /*堆栈大小，单位为字节*/
-        NULL,                         /*作为任务输入传递的参数*/
-        1,                            /*任务的优先级*/
-        &run_data->xHandle_task_two); /*任务句柄*/
+        taskTwo,                      /* Task function */
+        "TaskTwo",                    /* Task name string */
+        8 * 1024,                     /* Stack size in bytes */
+        NULL,                         /* Parameter passed to task */
+        1,                            /* Task priority */
+        &run_data->xHandle_task_two); /* Task handle */
 
-    // 刷新棋盘显示
+    // Refresh board display
     int new1 = game.addRandom();
     int new2 = game.addRandom();
     AIO_LVGL_OPERATE_LOCK(showBoard(run_data->pBoard);)
-    // 棋子出生动画
+    // Tile birth animation
     AIO_LVGL_OPERATE_LOCK(born(new1);)
     AIO_LVGL_OPERATE_LOCK(born(new2);)
-    // 防止进入游戏时，误触发了向上
+    // Prevent accidental upward trigger when entering game
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     return 0;
 }
@@ -92,11 +92,11 @@ static void game_2048_process(AppController *sys,
 {
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
-    // 具体操作
+    // Specific operations
     if (TURN_RIGHT == act_info->active)
     {
         game.moveRight();
@@ -149,20 +149,20 @@ static void game_2048_process(AppController *sys,
         Serial.println("you lose!");
     }
 
-    // 程序需要时可以适当加延时
+    // Add delay if needed
     delay(300);
 }
 
 static void game_2048_background_task(AppController *sys,
                                       const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This is a background task, the main controller will call this function every minute
+    // This function should only use "permanent data", other variables may have been released due to lifecycle
 }
 
 static int game_2048_exit_callback(void *param)
 {
-    // 查杀任务
+    // Kill tasks
     if (run_data->xReturned_task_one == pdPASS)
     {
         vTaskDelete(run_data->xHandle_task_one);
@@ -176,7 +176,7 @@ static int game_2048_exit_callback(void *param)
 
     game_2048_gui_del();
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);
@@ -189,7 +189,7 @@ static void game_2048_message_handle(const char *from, const char *to,
                                      APP_MESSAGE_TYPE type, void *message,
                                      void *ext_info)
 {
-    // 目前事件主要是wifi开关类事件（用于功耗控制）
+    // Currently mainly WiFi on/off events (for power control)
     switch (type)
     {
     case APP_MESSAGE_WIFI_CONN:
@@ -204,7 +204,7 @@ static void game_2048_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // WiFi heartbeat response, no processing required
     }
     break;
     default:

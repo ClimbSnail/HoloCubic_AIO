@@ -33,22 +33,22 @@ void Display::init(uint8_t rotation, uint8_t backLight)
 
     lv_init();
 
-    setBackLight(0.0); // 设置亮度 为了先不显示初始化时的"花屏"
+    setBackLight(0.0); // Set brightness to 0 to avoid displaying "screen artifacts" during initialization
 
     tft->begin(); /* TFT init */
     tft->fillScreen(TFT_BLACK);
     tft->writecommand(ST7789_DISPON); // Display on
     // tft->fillScreen(BLACK);
 
-    // 尝试读取屏幕数据作为屏幕检测的依旧
+    // Attempt to read screen data for screen detection
     // uint8_t ret = tft->readcommand8(0x01, TFT_MADCTL);
     // Serial.printf("TFT read -> %u\r\n", ret);
 
-    // 以下setRotation函数是经过更改的第4位兼容原版 高四位设置镜像
-    // 正常方向需要设置为0 如果加上分光棱镜需要镜像改为4 如果是侧显示的需要设置为5
-    tft->setRotation(rotation); /* mirror 修改反转，如果加上分光棱镜需要改为4镜像*/
+    // The following setRotation function has been modified: bit 4 is compatible with the original version, the high four bits set the mirror
+    // Normal direction needs to be set to 0. If adding a beam splitter prism, it needs to be mirrored to 4. If side display is needed, set to 5
+    tft->setRotation(rotation); /* mirror Modify flip, if adding beam splitter prism needs to be changed to 4 for mirroring*/
 
-    setBackLight(backLight / 100.0); // 设置亮度
+    setBackLight(backLight / 100.0); // Set brightness
 
     lv_disp_draw_buf_init(&disp_buf, buf, NULL, SCREEN_HOR_RES * LV_HOR_RES_MAX_LEN);
 
@@ -59,7 +59,7 @@ void Display::init(uint8_t rotation, uint8_t backLight)
     disp_drv.flush_cb = my_disp_flush;
     disp_drv.draw_buf = &disp_buf;
     disp_drv.user_data = tft;
-    // 开启 LV_COLOR_SCREEN_TRANSP 屏幕具有透明和不透明样式
+    // Enable LV_COLOR_SCREEN_TRANSP - screen has transparent and opaque styles
     lv_disp_drv_register(&disp_drv);
 }
 

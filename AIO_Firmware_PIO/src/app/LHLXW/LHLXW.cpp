@@ -7,38 +7,38 @@
 #include "LHLXW_GUI.h"
 
 
-#define APP_NAME   "LH&LXW"//APP名字
-extern const lv_img_dsc_t LHLXW_ICO;//APP图标
+#define APP_NAME   "LH&LXW"  // APP name
+extern const lv_img_dsc_t LHLXW_ICO;  // APP icon
 
 /*
-作者建议：
-此APP功能选项框架非常垃圾，没有学习意义，请勿参考！
-主要体现在功能上面，如果后续添加功能相当于重新写整个框架。
-lvgl动画部分尚有一点参考价值
+Author's Note:
+This APP's option framework is quite poor and not worth studying for learning purposes!
+The main issue is with functionality - adding new features would require rewriting the entire framework.
+The LVGL animation part still has some reference value.
 
-说明：
-此APP共5个功能，每个功能的介绍在各自的.c文件中。
+Description:
+This APP has 5 functions, with each function's introduction in its respective .c file.
 
-SD卡存放说明(LH&LXW APP):
-./LH&LXW    存放LH&LXW APP需要的文件
+SD card storage instructions (LH&LXW APP):
+./LH&LXW    Store files required by LH&LXW APP
 
-./LH&LXW/log_anim/bg.bin 为此app启动动画的背景图片，可以修改成你的图片
+./LH&LXW/log_anim/bg.bin is the background image for this app's startup animation, can be replaced with your own image
 
 */
 
 
 
-/* 系统变量 */
+/* System variables */
 extern bool isCheckAction;
 extern ImuAction *act_info;
 
-/* APP变量 */
+/* APP variables */
 extern LHLXW_RUN *lhlxw_run;
 
 
 static int LHLXW_init(AppController *sys){
     lhlxw_run = (LHLXW_RUN*)malloc(sizeof(LHLXW_RUN));
-    lhlxw_run->option_num = 0;//确保每次进入app，当先选项序号都为0
+    lhlxw_run->option_num = 0;  // Ensure that each time entering app, the current option number is 0
     setCpuFrequencyMhz(240);
     LHLXW_GUI_Init();
     return 0;
@@ -50,17 +50,17 @@ static void LHLXW_process(AppController *sys,const ImuAction *action){
     while(1){
         lv_timer_handler();
 
-        /* MPU6050数据获取 */
+        /* MPU6050 data acquisition */
         if (isCheckAction){
             isCheckAction = false;
             act_info = mpu.getAction();
         }
 
-        /* MPU6050动作响应 */
+        /* MPU6050 action response */
         if (RETURN == act_info->active){
             LHLXW_GUI_DeInit();
             sys->app_exit();
-            return;//退出此功能
+            return;  // Exit this function
         }else if(TURN_RIGHT == act_info->active){
             lhlxw_run->option_num++;
             if(lhlxw_run->option_num==5)lhlxw_run->option_num = 0;
@@ -83,7 +83,7 @@ static void LHLXW_process(AppController *sys,const ImuAction *action){
             else if(lhlxw_run->option_num == 3)
                 codeRain_process(lhlxw_run->LV_LHLXW_GUI_OBJ);
             else if(lhlxw_run->option_num == 0)
-                eye_process(lhlxw_run->LV_LHLXW_GUI_OBJ);//眼睛渲染算法用了递归，导致无法丝滑退出
+                eye_process(lhlxw_run->LV_LHLXW_GUI_OBJ);  // Eye rendering algorithm uses recursion, which prevents smooth exit
             else if(lhlxw_run->option_num == 2)
                 heartbeat_process(lhlxw_run->LV_LHLXW_GUI_OBJ);
             else 
@@ -98,8 +98,8 @@ static void LHLXW_process(AppController *sys,const ImuAction *action){
 static void LHLXW_background_task(AppController *sys,
                                  const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller calls this function at one-minute intervals
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int LHLXW_exit_callback(void *param)

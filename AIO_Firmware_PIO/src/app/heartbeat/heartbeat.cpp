@@ -12,25 +12,25 @@
 #define DEFALUT_MQTT_IP_CLIMBSNAIL "climbsnail.cn"
 #define DEFALUT_MQTT_PORT 1883
 
-// Bilibili的持久化配置
+// Persistent configuration for Heartbeat
 #define HEARTBEAT_CONFIG_PATH "/heartbeat_v2.0.cfg"
 
-extern AppController *app_controller; // APP控制器
+extern AppController *app_controller; // APP controller
 
-// 常驻数据，可以不随APP的生命周期而释放或删除
+// Permanent data, not released or deleted with APP lifecycle
 struct HeartbeatAppForeverData
 {
     int role;                   // 0: heart, 1: beat
     char liz_mqtt_subtopic[32]; // "AIO-beat"
     char liz_mqtt_pubtopic[32]; // "AIO-heart"
-    char client_id[32];         // 用户设置的ID
-    char subtopic[32];          // 订阅的Topic
-    char connect_client_id[64]; // 连接是使用的client_id default "AIO"+MAC+client_id
-    char server_user[16];       // 服务的用户名
-    char server_password[16];   // 服务的密码
-    uint16_t port;              // mqtt服务器端口 1883
+    char client_id[32];         // User-configured ID
+    char subtopic[32];          // Subscribed Topic
+    char connect_client_id[64]; // Client ID used for connection, default "AIO"+MAC+client_id
+    char server_user[16];       // Server username
+    char server_password[16];   // Server password
+    uint16_t port;              // MQTT server port 1883
     IPAddress mqtt_server;
-    WiFiClient espClient;      // 定义wifiClient实例
+    WiFiClient espClient;      // WiFi client instance
     PubSubClient *mqtt_client; //(mqtt_server, 1883, callback, espClient);
     static void callback(char *topic, byte *payload, unsigned int length);
     void mqtt_reconnect();
@@ -41,7 +41,7 @@ void HeartbeatAppForeverData::callback(char *topic, byte *payload, unsigned int 
     Serial.printf("Message arrived [%s]", topic);
     for (int i = 0; i < length; i++)
     {
-        Serial.print((char)payload[i]); // 打印主题内容
+        Serial.print((char)payload[i]); // Print topic content
     }
     Serial.println();
 
@@ -103,29 +103,29 @@ static void write_config(HeartbeatAppForeverData *cfg)
 
 static void read_config(HeartbeatAppForeverData *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If persistent configuration file is needed, call this function to store data in flash
+    // Configuration file name should start with APP name and end with ".cfg" to avoid conflicts between multiple APPs
     char info[256] = {0};
     uint16_t size = g_flashCfg.readFile(HEARTBEAT_CONFIG_PATH, (uint8_t *)info);
     Serial.printf("size %d\n", size);
     info[size] = 0;
     if (size == 0)
     {
-        // 设置了mqtt服务器才能运行！
+        // MQTT server must be configured to run!
         Serial.println("Please config mqtt first!");
-        // 默认值
-        cfg->role = 0; // 角色
+        // Default values
+        cfg->role = 0; // Role
         strcpy(cfg->client_id, "");
         strcpy(cfg->subtopic, "");
         cfg->mqtt_server.fromString(DEFALUT_MQTT_IP);
-        cfg->port = DEFALUT_MQTT_PORT; // mqtt服务端口
+        cfg->port = DEFALUT_MQTT_PORT; // MQTT server port
         strcpy(cfg->server_user, "");
         strcpy(cfg->server_password, "");
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[9] = {0};
         analyseParam(info, 9, param);
         cfg->role = atoi(param[0]);
@@ -187,7 +187,7 @@ void HeartbeatAppForeverData::mqtt_reconnect()
     if (mqtt_client->connect(connect_client_id, user, password))
     {
         Serial.println("mqtt connected");
-        // 连接成功时订阅主题
+        // Subscribe to topic when connection succeeds
         mqtt_client->subscribe(liz_mqtt_subtopic);
         Serial.printf("%s subcribed\n", liz_mqtt_subtopic);
     }
@@ -197,49 +197,50 @@ void HeartbeatAppForeverData::mqtt_reconnect()
     }
 }
 
-// 动态数据，APP的生命周期结束也需要释放它
+// Dynamic data, needs to be released when APP lifecycle ends
 struct HeartbeatAppRunData
 {
     uint8_t send_cnt = 0;
     uint8_t recv_cnt = 0;
-    unsigned long preUpdataMillis;     // 上一回更新的毫秒数
-    unsigned long timeUpdataInterval;  // 更新时间计数器
-    unsigned long heartContinueMillis; // 心跳的持续时间
-    unsigned long lastHeartUpdataTime; // 上次心跳的更新时间
+    unsigned long preUpdataMillis;     // Milliseconds of last update
+    unsigned long timeUpdataInterval;  // Update time counter
+    unsigned long heartContinueMillis; // Heartbeat duration
+    unsigned long lastHeartUpdataTime; // Last heartbeat update time
 };
 
-// 保存APP运行时的参数信息，理论上关闭APP时推荐在 xxx_exit_callback 中释放掉
+// Stores APP runtime parameters, recommended to release in xxx_exit_callback when closing APP
 static HeartbeatAppRunData *run_data = NULL;
 
-// 当然你也可以添加恒定在内存中的少量变量（退出时不用释放，实现第二次启动时可以读取）
+// You can also add a small amount of constant variables in memory (no need to release on exit, can be read on second startup)
+
 
 static int heartbeat_init(AppController *sys)
 {
     heartbeat_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (HeartbeatAppRunData *)calloc(1, sizeof(HeartbeatAppRunData));
     run_data->send_cnt = 0;
     run_data->recv_cnt = 0;
-    run_data->timeUpdataInterval = 5000; // 日期时钟更新的时间间隔30000(30s)
+    run_data->timeUpdataInterval = 5000; // Date clock update interval 30000ms (30s)
     // run_data->preUpdataMillis = GET_SYS_MILLIS() - run_data->timeUpdataInterval;
     run_data->preUpdataMillis = GET_SYS_MILLIS();
-    run_data->heartContinueMillis = 10000; // 心跳的持续时间10s
-    // 上次心跳的更新时间
+    run_data->heartContinueMillis = 10000; // Heartbeat duration 10s
+    // Last heartbeat update time
     run_data->lastHeartUpdataTime = GET_SYS_MILLIS() - run_data->heartContinueMillis;
 
-    // 初始化MQTT
+    // Initialize MQTT
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(HEARTBEAT_CONFIG_PATH, (uint8_t *)info);
-    if (size != 0) // 如果已经设置过heartbeat了，则开启mqtt客户端
+    if (size != 0) // If heartbeat has been configured, start MQTT client
     {
-        // 获取配置参数
+        // Get configuration parameters
         read_config(&hb_cfg);
         if (NULL == hb_cfg.mqtt_client)
         {
             hb_cfg.mqtt_client = new PubSubClient(hb_cfg.mqtt_server, hb_cfg.port, hb_cfg.callback, hb_cfg.espClient);
             // hb_cfg.mqtt_client = new PubSubClient(DEFALUT_MQTT_IP_CLIMBL, hb_cfg.port, hb_cfg.callback, hb_cfg.espClient);
         }
-        // 连接wifi，并开启mqtt客户端
+        // Connect to WiFi and start MQTT client
         sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME, APP_MESSAGE_WIFI_CONN, NULL, NULL);
     }
     return 0;
@@ -251,10 +252,10 @@ static void heartbeat_process(AppController *sys,
     lv_scr_load_anim_t anim_type = LV_SCR_LOAD_ANIM_NONE;
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
-    else if (GO_FORWORD == act_info->active) // 向前按发送一条消息
+    else if (GO_FORWORD == act_info->active) // Forward press sends a message
     {
         anim_type = LV_SCR_LOAD_ANIM_MOVE_TOP;
         run_data->send_cnt += 1;
@@ -264,7 +265,7 @@ static void heartbeat_process(AppController *sys,
             Serial.printf(HEARTBEAT_APP_NAME " sent publish %s successful\n", hb_cfg.liz_mqtt_pubtopic);
         }
 
-        // 发送指示灯
+        // Send indicator light
         // RgbParam rgb_setting = {LED_MODE_RGB,
         //                     0, 0, 0,
         //                     240,240,240,
@@ -282,7 +283,7 @@ static void heartbeat_process(AppController *sys,
     {
         heartbeat_set_sr_type(RECV);
     }
-    else if (run_data->send_cnt == 0) // 进入app时自动发送mqtt消息
+    else if (run_data->send_cnt == 0) // Automatically send MQTT message when entering app
     {
         heartbeat_set_sr_type(SEND);
         run_data->send_cnt += 1;
@@ -295,23 +296,23 @@ static void heartbeat_process(AppController *sys,
 
     if (GET_SYS_MILLIS() - run_data->lastHeartUpdataTime >= run_data->heartContinueMillis)
     {
-        // 用于停止heart
+        // Used to stop heart
         heartbeat_set_sr_type(SEND);
     }
 
     if (NULL != hb_cfg.mqtt_client)
     {
-        // 以下减少网络请求的压力
+        // Reduce network request pressure
         if (doDelayMillisTime(run_data->timeUpdataInterval, &run_data->preUpdataMillis, false))
         {
-            // 发送请求。如果是wifi相关的消息，
-            // 当请求完成后自动会调用 heartbeat_message_handle 函数
+            // Send request. If it's a WiFi-related message,
+            // heartbeat_message_handle will be called automatically when the request completes
             sys->send_to(HEARTBEAT_APP_NAME, CTRL_NAME,
                          APP_MESSAGE_WIFI_ALIVE, NULL, NULL);
         }
     }
 
-    // 程序需要时可以适当加延时
+    // Add delay if needed
     display_heartbeat("heartbeat", anim_type);
     heartbeat_set_send_recv_cnt_label(run_data->send_cnt, run_data->recv_cnt);
     display_heartbeat_img();
@@ -321,16 +322,16 @@ static void heartbeat_process(AppController *sys,
 static void heartbeat_background_task(AppController *sys,
                                       const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This is a background task, the main controller will call this function every minute
+    // This function should only use "permanent data", other variables may have been released due to lifecycle
 }
 
 static int heartbeat_exit_callback(void *param)
 {
-    // 释放资源
+    // Release resources
     heartbeat_gui_del();
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);
@@ -343,7 +344,7 @@ static void heartbeat_message_handle(const char *from, const char *to,
                                      APP_MESSAGE_TYPE type, void *message,
                                      void *ext_info)
 {
-    // 目前主要是wifi开关类事件（用于功耗控制）
+    // Currently mainly WiFi on/off events (for power control)
     switch (type)
     {
     case APP_MESSAGE_WIFI_CONN:
@@ -355,7 +356,7 @@ static void heartbeat_message_handle(const char *from, const char *to,
         }
         else
         {
-            hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+            hb_cfg.mqtt_client->loop(); // Start MQTT client
         }
     }
     break;
@@ -373,7 +374,7 @@ static void heartbeat_message_handle(const char *from, const char *to,
         }
         else
         {
-            hb_cfg.mqtt_client->loop(); // 开启mqtt客户端
+            hb_cfg.mqtt_client->loop(); // Start MQTT client
         }
     }
     break;
@@ -464,7 +465,7 @@ static void heartbeat_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_MQTT_DATA:
     {
-        // if (run_data->send_cnt > 0) //已经手动发送过了
+        // if (run_data->send_cnt > 0) // Already manually sent
         // {
         //     heartbeat_set_sr_type(HEART);
         // }
@@ -474,7 +475,7 @@ static void heartbeat_message_handle(const char *from, const char *to,
         // }
         heartbeat_set_sr_type(HEART);
         run_data->lastHeartUpdataTime = GET_SYS_MILLIS();
-        /* 亮一下 */
+        /* Light up */
         // RgbParam rgb_setting = {LED_MODE_RGB,
         //                     0, 0, 0,
         //                     3,36,86,

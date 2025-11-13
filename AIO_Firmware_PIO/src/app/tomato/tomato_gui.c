@@ -29,21 +29,21 @@ void tomato_gui_init(void) // style init
         return;
     tomato_scr = lv_obj_create(NULL);
 
-    lv_style_init(&default_style); // 背景
+    lv_style_init(&default_style); // Background
     lv_style_set_bg_color(&default_style, lv_color_hex(0x000000));
     lv_obj_add_style(tomato_scr, &default_style, LV_STATE_DEFAULT);
 
-    lv_style_init(&chFont_style); // 汉字
+    lv_style_init(&chFont_style); // Chinese font
     lv_style_set_text_opa(&chFont_style, LV_OPA_COVER);
     lv_style_set_text_color(&chFont_style, lv_color_hex(0xffffff));
     lv_style_set_text_font(&chFont_style, &tomato_chFont_20);
 
-    lv_style_init(&numberSmall_style); // 数字 小
+    lv_style_init(&numberSmall_style); // Number - small
     lv_style_set_text_opa(&numberSmall_style, LV_OPA_COVER);
     lv_style_set_text_color(&numberSmall_style, lv_color_hex(0xffffff));
     lv_style_set_text_font(&numberSmall_style, &lv_font_ibmplex_64);
 
-    lv_style_init(&numberBig_style); // 数字 大
+    lv_style_init(&numberBig_style); // Number - large
     lv_style_set_text_opa(&numberBig_style, LV_OPA_COVER);
     lv_style_set_text_color(&numberBig_style, lv_color_hex(0xffffff));
     lv_style_set_text_font(&numberBig_style, &lv_font_ibmplex_200);

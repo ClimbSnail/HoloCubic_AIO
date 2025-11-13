@@ -17,19 +17,19 @@ static fs::FS *tf_vfs = NULL;
 
 void release_file_info(File_Info *info)
 {
-    File_Info *cur_node = NULL; // 记录当前节点
+    File_Info *cur_node = NULL; // Record the current node
     if (NULL == info)
     {
         return;
     }
     for (cur_node = info->next_node; NULL != cur_node;)
     {
-        // 判断是不是循环一圈回来了
+        // Check if we've looped back to the beginning
         if (info->next_node == cur_node)
         {
             break;
         }
-        File_Info *tmp = cur_node; // 保存准备删除的节点
+        File_Info *tmp = cur_node; // Save the node to be deleted
         cur_node = cur_node->next_node;
         free(tmp);
     }
@@ -68,7 +68,7 @@ void join_path(char *dst_path, const char *pre_path, const char *rear_path)
  */
 static const char *get_file_basename(const char *path)
 {
-    // 获取最后一个'/'所在的下标
+    // Get the index of the last '/' character
     const char *ret = path;
     for (const char *cur = path; *cur != 0; ++cur)
     {
@@ -92,7 +92,7 @@ void SdCard::init()
     tf_vfs = &SD;
     uint8_t cardType = SD.cardType();
 
-    // 目前SD_MMC驱动与硬件引脚存在冲突
+    // Currently, the SD_MMC driver has a conflict with the hardware pins
     // if(!SD_MMC.begin("/", true)){
     //     Serial.println("Card Mount Failed");
     //     return;
@@ -164,7 +164,7 @@ void SdCard::listDir(const char *dirname, uint8_t levels)
         else
         {
             Serial.print("  FILE: ");
-            // 只取文件名 保存到file_name_list中
+            // Only take the filename and save it to file_name_list
             strncpy(file_name_list[photo_file_num], file.name() + dir_len, DIR_FILE_NAME_MAX_LEN - 1);
             file_name_list[photo_file_num][strlen(file_name_list[photo_file_num]) - 4] = 0;
 
@@ -200,11 +200,11 @@ File_Info *SdCard::listDir(const char *dirname)
 
     int dir_len = strlen(dirname) + 1;
 
-    // 头节点的创建（头节点用来记录此文件夹）
+    // Create the head node (head node is used to record this folder)
     File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
     head_file->file_type = FILE_TYPE_FOLDER;
     head_file->file_name = (char *)malloc(dir_len);
-    // 将文件夹名赋值给头节点（当作这个节点的文件名）
+    // Assign the folder name to the head node (used as this node's filename)
     strncpy(head_file->file_name, dirname, dir_len - 1);
     head_file->file_name[dir_len - 1] = 0;
     head_file->front_node = NULL;
@@ -220,26 +220,26 @@ File_Info *SdCard::listDir(const char *dirname)
         //     listDir(file.name(), levels - 1);
         // }
         const char *fn = get_file_basename(file.name());
-        // 字符数组长度为实际字符串长度+1
+        // Character array length is the actual string length + 1
         int filename_len = strlen(fn);
         if (filename_len > FILENAME_MAX_LEN - 10)
         {
             Serial.println("Filename is too long.");
         }
 
-        // 创建新节点
+        // Create a new node
         file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
-        // 让下一个节点指向当前节点
-        // （此时第一个节点的front_next会指向head节点，等遍历结束再调一下）
+        // Make the next node point to the current node
+        // (At this point, the first node's front_next will point to the head node, adjust it after traversal is complete)
         file_node->next_node->front_node = file_node;
-        // file_node指针移向节点
+        // Move the file_node pointer to the node
         file_node = file_node->next_node;
 
-        // 船家创建新节点的文件名
+        // Create the filename for the new node
         file_node->file_name = (char *)malloc(filename_len);
         strncpy(file_node->file_name, fn, filename_len); //
         file_node->file_name[filename_len] = 0;          //
-        // 下一个节点赋空
+        // Set the next node to NULL
         file_node->next_node = NULL;
 
         char tmp_file_name[FILENAME_MAX_LEN] = {0};
@@ -248,14 +248,14 @@ File_Info *SdCard::listDir(const char *dirname)
         if (file.isDirectory())
         {
             file_node->file_type = FILE_TYPE_FOLDER;
-            // 类型为文件夹
+            // Type is folder
             Serial.print("  DIR : ");
             Serial.println(tmp_file_name);
         }
         else
         {
             file_node->file_type = FILE_TYPE_FILE;
-            // 类型为文件
+            // Type is file
             Serial.print("  FILE: ");
             Serial.print(tmp_file_name);
             Serial.print("  SIZE: ");
@@ -267,9 +267,9 @@ File_Info *SdCard::listDir(const char *dirname)
 
     if (NULL != head_file->next_node)
     {
-        // 将最后一个节点的next_node指针指向 head_file->next_node
+        // Point the last node's next_node pointer to head_file->next_node
         file_node->next_node = head_file->next_node;
-        // 调整第一个数据节点的front_node指针（非head节点）
+        // Adjust the first data node's front_node pointer (not the head node)
         head_file->next_node->front_node = file_node;
     }
     return head_file;

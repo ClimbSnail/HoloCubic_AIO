@@ -4,18 +4,18 @@
 
 struct StockMarket
 {
-    float OpenQuo;              //今日开盘价
-    float CloseQuo;             //昨日收盘价
-    float NowQuo;               //当前价
-    float MaxQuo;               //今日最高价
-    float MinQuo;               //今日最低价
-    float ChgValue;             //涨跌幅
-    float ChgPercent;           //涨跌率
-    unsigned int updownflag;    //升降标志 1：上涨  0:下跌
-    char name[13];              //股票名称
-    char code[9];               //股票代码
-    float tradvolume;           //成交量
-    float turnover;             //成交额
+    float OpenQuo;              // Today's opening price
+    float CloseQuo;             // Yesterday's closing price
+    float NowQuo;               // Current price
+    float MaxQuo;               // Today's highest price
+    float MinQuo;               // Today's lowest price
+    float ChgValue;             // Change value
+    float ChgPercent;           // Change percentage
+    unsigned int updownflag;    // Up/Down flag: 1=up, 0=down
+    char name[13];              // Stock name
+    char code[9];               // Stock code
+    float tradvolume;           // Trading volume
+    float turnover;             // Trading value
 };
 
 #ifdef __cplusplus
@@ -26,7 +26,7 @@ extern "C"
 #include "lvgl.h"
 #define ANIEND                      \
     while (lv_anim_count_running()) \
-        lv_task_handler(); //等待动画完成
+        lv_task_handler(); // Wait for animation to complete
 
     void stockmarket_gui_init(void);
     void display_stockmarket(struct StockMarket stockInfo, lv_scr_load_anim_t anim_type);

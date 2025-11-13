@@ -8,17 +8,17 @@
 
 #define PICTURE_APP_NAME "Picture"
 
-// 相册的持久化配置
+// Persistent configuration for picture album
 #define PICTURE_CONFIG_PATH "/picture.cfg"
 struct PIC_Config
 {
-    unsigned long switchInterval; // 自动播放下一张的时间间隔 ms
+    unsigned long switchInterval; // Time interval for automatic slideshow (ms)
 };
 
 static void write_config(PIC_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persistent)
     String w_data;
     memset(tmp, 0, 16);
     snprintf(tmp, 16, "%lu\n", cfg->switchInterval);
@@ -28,20 +28,20 @@ static void write_config(PIC_Config *cfg)
 
 static void read_config(PIC_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If you need to persist configuration files, you can call this function to store data in flash
+    // Config file name should start with APP name and end with ".cfg" to avoid confusion between multiple APPs
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(PICTURE_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
-        cfg->switchInterval = 10000; // 是否自动播放下一个（0不切换 默认10000毫秒）
+        // Default value
+        cfg->switchInterval = 10000; // Auto-play next (0 = no switch, default 10000 milliseconds)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[1] = {0};
         analyseParam(info, 1, param);
         cfg->switchInterval = atol(param[0]);
@@ -50,12 +50,12 @@ static void read_config(PIC_Config *cfg)
 
 struct PictureAppRunData
 {
-    unsigned long pic_perMillis; // 图片上一回更新的时间
+    unsigned long pic_perMillis; // Last update time of the picture
 
-    File_Info *image_file;      // movie文件夹下的文件指针头
-    File_Info *pfile;           // 指向当前播放的文件节点
-    int image_pos_increate = 1; // 文件的遍历方向
-    bool refreshFlag = false;   // 是否更新
+    File_Info *image_file;      // Head of file pointer list in movie folder
+    File_Info *pfile;           // Pointer to currently playing file node
+    int image_pos_increate = 1; // File traversal direction
+    bool refreshFlag = false;   // Whether to refresh
     bool tftSwapStatus;
 };
 
@@ -83,7 +83,7 @@ bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t *bitmap)
 
 static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 {
-    // 得到 p_cur_file 的下一个 类型为FILE_TYPE_FILE 的文件（即下一个非文件夹文件）
+    // Get the next file of type FILE_TYPE_FILE from p_cur_file (i.e., the next non-folder file)
     if (NULL == p_cur_file)
     {
         return NULL;
@@ -104,15 +104,15 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
 static int picture_init(AppController *sys)
 {
     photo_gui_init();
-    // 获取配置信息
+    // Get configuration information
     read_config(&cfg_data);
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (PictureAppRunData *)malloc(sizeof(PictureAppRunData));
     run_data->pic_perMillis = 0;
     run_data->image_file = NULL;
     run_data->pfile = NULL;
     run_data->image_pos_increate = 1;
-    // 保存系统的tft设置参数 用于退出时恢复设置
+    // Save system TFT settings parameters for restoration on exit
     run_data->tftSwapStatus = tft->getSwapBytes();
     tft->setSwapBytes(true); // We need to swap the colour bytes (endianess)
 
@@ -159,7 +159,7 @@ static void picture_process(AppController *sys,
         return;
     }
 
-    // 自动切换的时间检测
+    // Time detection for automatic switching
     if (0 != run_data->image_pos_increate &&
         0 != cfg_data.switchInterval &&
         GET_SYS_MILLIS() - run_data->pic_perMillis >= cfg_data.switchInterval)
@@ -183,16 +183,16 @@ static void picture_process(AppController *sys,
         Serial.println(file_name);
         if (NULL != strstr(file_name, ".jpg") || NULL != strstr(file_name, ".JPG"))
         {
-            // 直接解码jpg格式的图片
+            // Decode jpg format images directly
             TJpgDec.drawSdJpg(0, 0, file_name);
         }
         else if (NULL != strstr(file_name, ".bin") || NULL != strstr(file_name, ".BIN"))
         {
-            // 使用LVGL的bin格式的图片
+            // Use LVGL bin format images
             display_photo(file_name, anim_type);
         }
         run_data->refreshFlag = false;
-        // 重置更新的时间标记
+        // Reset the update time marker
         run_data->pic_perMillis = GET_SYS_MILLIS();
     }
     delay(300);
@@ -201,19 +201,19 @@ static void picture_process(AppController *sys,
 static void picture_background_task(AppController *sys,
                                     const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller calls this function at one-minute intervals
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int picture_exit_callback(void *param)
 {
     photo_gui_del();
-    // 释放文件名链表
+    // Release filename linked list
     release_file_info(run_data->image_file);
-    // 恢复此前的驱动参数
+    // Restore previous driver parameters
     tft->setSwapBytes(run_data->tftSwapStatus);
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);

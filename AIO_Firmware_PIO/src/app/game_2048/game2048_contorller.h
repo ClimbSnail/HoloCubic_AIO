@@ -49,7 +49,7 @@ public:
 
     int comparePre()
     {
-        //判断移动后是否相同
+        // Check if board is the same after move
         int x = 0;
         for (int i = 0; i < SCALE_SIZE * SCALE_SIZE; i++)
         {

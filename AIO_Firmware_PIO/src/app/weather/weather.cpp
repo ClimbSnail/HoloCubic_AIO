@@ -15,26 +15,26 @@
 #define WEATHER_DALIY_API "https://www.yiketianqi.com/free/week?unescape=1&appid=%s&appsecret=%s&city=%s"
 #define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
 #define WEATHER_PAGE_SIZE 2
-#define UPDATE_WEATHER 0x01       // 更新天气
-#define UPDATE_DALIY_WEATHER 0x02 // 更新每天天气
-#define UPDATE_TIME 0x04          // 更新时间
+#define UPDATE_WEATHER 0x01       // Update weather
+#define UPDATE_DALIY_WEATHER 0x02 // Update daily weather
+#define UPDATE_TIME 0x04          // Update time
 
-// 天气的持久化配置
+// Weather persistent configuration
 #define WEATHER_CONFIG_PATH "/weather_218.cfg"
 struct WT_Config
 {
-    String tianqi_url;                   // tianqiapi 的url
-    String tianqi_appid;                 // tianqiapi 的 appid
-    String tianqi_appsecret;             // tianqiapi 的 appsecret
-    String tianqi_addr;                  // tianqiapi 的地址（填中文）
-    unsigned long weatherUpdataInterval; // 天气更新的时间间隔(s)
-    unsigned long timeUpdataInterval;    // 日期时钟更新的时间间隔(s)
+    String tianqi_url;                   // Tianqiapi URL
+    String tianqi_appid;                 // Tianqiapi app ID
+    String tianqi_appsecret;             // Tianqiapi app secret
+    String tianqi_addr;                  // Tianqiapi address (in Chinese)
+    unsigned long weatherUpdataInterval; // Weather update time interval (s)
+    unsigned long timeUpdataInterval;    // Date and time update interval (s)
 };
 
 static void write_config(WT_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persistence)
     String w_data;
     w_data = w_data + cfg->tianqi_url + "\n";
     w_data = w_data + cfg->tianqi_appid + "\n";
@@ -51,23 +51,23 @@ static void write_config(WT_Config *cfg)
 
 static void read_config(WT_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If you need to persist configuration files, you can call this function to store the data in flash
+    // Configuration file names should preferably start with the APP name and end with ".cfg" to avoid confusion when multiple APPs read them
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(WEATHER_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
+        // Default values
         cfg->tianqi_url = "v1.yiketianqi.com/api?unescape=1&version=v61";
-        cfg->tianqi_addr = "北京";
-        cfg->weatherUpdataInterval = 900000; // 天气更新的时间间隔900000(900s)
-        cfg->timeUpdataInterval = 900000;    // 日期时钟更新的时间间隔900000(900s)
+        cfg->tianqi_addr = "Beijing";
+        cfg->weatherUpdataInterval = 900000; // Weather update interval 900000(900s)
+        cfg->timeUpdataInterval = 900000;    // Date and time update interval 900000(900s)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[6] = {0};
         analyseParam(info, 6, param);
         cfg->tianqi_url = param[0];
@@ -81,20 +81,20 @@ static void read_config(WT_Config *cfg)
 
 struct WeatherAppRunData
 {
-    unsigned long preWeatherMillis; // 上一回更新天气时的毫秒数
-    unsigned long preTimeMillis;    // 更新时间计数器
-    long long preNetTimestamp;      // 上一次的网络时间戳
-    long long errorNetTimestamp;    // 网络到显示过程中的时间误差
-    long long preLocalTimestamp;    // 上一次的本地机器时间戳
-    unsigned int coactusUpdateFlag; // 强制更新标志
+    unsigned long preWeatherMillis; // Milliseconds of the last weather update
+    unsigned long preTimeMillis;    // Time update counter
+    long long preNetTimestamp;      // Previous network timestamp
+    long long errorNetTimestamp;    // Time error from network to display
+    long long preLocalTimestamp;    // Previous local machine timestamp
+    unsigned int coactusUpdateFlag; // Forced update flag
     int clock_page;
-    unsigned int update_type; // 更新类型的标志位
+    unsigned int update_type; // Update type flag
 
-    BaseType_t xReturned_task_task_update; // 更新数据的异步任务
-    TaskHandle_t xHandle_task_task_update; // 更新数据的异步任务
+    BaseType_t xReturned_task_task_update; // Asynchronous task for updating data
+    TaskHandle_t xHandle_task_task_update; // Asynchronous task for updating data
 
-    ESP32Time g_rtc; // 用于时间解码
-    Weather wea;     // 保存天气状况
+    ESP32Time g_rtc; // Used for time decoding
+    Weather wea;     // Store weather conditions
 };
 
 static WT_Config cfg_data;
@@ -109,7 +109,7 @@ enum wea_event_Id
 
 std::map<String, int> weatherMap = {{"qing", 0}, {"yin", 1}, {"yu", 2}, {"yun", 3}, {"bingbao", 4}, {"wu", 5}, {"shachen", 6}, {"lei", 7}, {"xue", 8}};
 
-static void task_update(void *parameter); // 异步更新任务
+static void task_update(void *parameter); // Asynchronous update task
 
 static int windLevelAnalyse(String str)
 {
@@ -156,11 +156,11 @@ static void get_weather(void)
             run_data->wea.weather_code = weatherMap[sk["wea_img"].as<String>()];
             run_data->wea.temperature = sk["tem"].as<int>();
 
-            // 获取湿度
+            // Get humidity
             run_data->wea.humidity = 50;
             char humidity[8] = {0};
             strncpy(humidity, sk["humidity"].as<String>().c_str(), 8);
-            humidity[strlen(humidity) - 1] = 0; // 去除尾部的 % 号
+            humidity[strlen(humidity) - 1] = 0; // Remove the trailing % sign
             run_data->wea.humidity = atoi(humidity);
 
             run_data->wea.maxTemp = sk["tem1"].as<int>();
@@ -179,7 +179,7 @@ static void get_weather(void)
 
 static long long get_timestamp()
 {
-    // 使用本地的机器时钟
+    // Use local machine clock
     run_data->preNetTimestamp = run_data->preNetTimestamp + (GET_SYS_MILLIS() - run_data->preLocalTimestamp);
     run_data->preLocalTimestamp = GET_SYS_MILLIS();
     return run_data->preNetTimestamp;
@@ -204,7 +204,7 @@ static long long get_timestamp(String url)
             Serial.println(payload);
             int time_index = (payload.indexOf("data")) + 12;
             time = payload.substring(time_index, payload.length() - 3);
-            // 以网络时间戳为准
+            // Use network timestamp as reference
             run_data->preNetTimestamp = atoll(time.c_str()) + run_data->errorNetTimestamp + TIMEZERO_OFFSIZE;
             run_data->preLocalTimestamp = GET_SYS_MILLIS();
         }
@@ -212,7 +212,7 @@ static long long get_timestamp(String url)
     else
     {
         Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-        // 得不到网络时间戳时
+        // When network timestamp cannot be obtained
         run_data->preNetTimestamp = run_data->preNetTimestamp + (GET_SYS_MILLIS() - run_data->preLocalTimestamp);
         run_data->preLocalTimestamp = GET_SYS_MILLIS();
     }

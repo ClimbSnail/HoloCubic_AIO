@@ -3,18 +3,18 @@
 #include "sys/app_controller.h"
 #include "../../common.h"
 
-// STOCKmarket的持久化配置
+// Persistent configuration for STOCKmarket
 #define B_CONFIG_PATH "/stockmarket.cfg"
 struct B_Config
 {
-    String stock_id;              // bilibili的uid
-    unsigned long updataInterval; // 更新的时间间隔(s)
+    String stock_id;              // Stock ID
+    unsigned long updataInterval; // Update interval (s)
 };
 
 static void write_config(const B_Config *cfg)
 {
     char tmp[16];
-    // 将配置数据保存在文件中（持久化）
+    // Save configuration data to file (persistent)
     String w_data;
     w_data = w_data + cfg->stock_id + "\n";
     memset(tmp, 0, 16);
@@ -25,27 +25,27 @@ static void write_config(const B_Config *cfg)
 
 static void read_config(B_Config *cfg)
 {
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If you need to persist configuration files, you can call this function to store data in flash
+    // Config file name should start with APP name and end with ".cfg" to avoid confusion between multiple APPs
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile(B_CONFIG_PATH, (uint8_t *)info);
     info[size] = 0;
     if (size == 0)
     {
-        // 默认值
-        cfg->stock_id = "sh601126";  // 股票代码
-        cfg->updataInterval = 10000; // 更新的时间间隔10000(10s)
+        // Default values
+        cfg->stock_id = "sh601126";  // Stock code
+        cfg->updataInterval = 10000; // Update interval 10000(10s)
         write_config(cfg);
     }
     else
     {
-        // 解析数据
+        // Parse data
         char *param[2] = {0};
         analyseParam(info, 2, param);
         cfg->stock_id = param[0];
         cfg->updataInterval = atol(param[1]);
     }
-    //    cfg->stock_id = "sh601126";  // 股票代码
+    //    cfg->stock_id = "sh601126";  // Stock code
 }
 
 struct StockmarketAppRunData
@@ -90,9 +90,9 @@ static MyHttpResult http_request(String uid = "sh601126")
 static int stockmarket_init(AppController *sys)
 {
     stockmarket_gui_init();
-    // 获取配置信息
+    // Get configuration information
     read_config(&cfg_data);
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (StockmarketAppRunData *)malloc(sizeof(StockmarketAppRunData));
     run_data->stockdata.OpenQuo = 0;
     run_data->stockdata.CloseQuo = 0;
@@ -121,11 +121,11 @@ static void stockmarket_process(AppController *sys,
     {
         sys->send_to(STOCK_APP_NAME, CTRL_NAME,
                      APP_MESSAGE_WIFI_DISCONN, NULL, NULL);
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
 
-    // 以下减少网络请求的压力
+    // The following reduces network request pressure
     if (doDelayMillisTime(cfg_data.updataInterval, &run_data->refresh_time_millis, false))
     {
         sys->send_to(STOCK_APP_NAME, CTRL_NAME,
@@ -138,15 +138,15 @@ static void stockmarket_process(AppController *sys,
 static void stockmarket_background_task(AppController *sys,
                                         const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This function is a background task, the main controller calls this function at one-minute intervals
+    // This function should only call "resident data", other variables may have been released due to lifecycle
 }
 
 static int stockmarket_exit_callback(void *param)
 {
     stockmarket_gui_del();
 
-    // 释放运行数据
+    // Release runtime data
     if (NULL != run_data)
     {
         free(run_data);
@@ -180,16 +180,16 @@ static void update_stock_data()
             int endIndex_4 = payload.indexOf(',', startIndex_4);
             int startIndex_5 = payload.indexOf(',', endIndex_4) + 1;
             int endIndex_5 = payload.indexOf(',', startIndex_5);
-            String Stockname = payload.substring(payload.indexOf('"') + 1, payload.indexOf(',')); // 股票名称
+            String Stockname = payload.substring(payload.indexOf('"') + 1, payload.indexOf(',')); // Stock name
             memset(run_data->stockdata.name, '\0', 9);
             for (int i = 0; i < 8; i++)
                 run_data->stockdata.name[i] = Stockname.charAt(i);
             run_data->stockdata.name[8] = '\0';
-            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();  // 今日开盘价
-            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat(); // 昨日收盘价
-            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();   // 当前价
-            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();   // 今日最高价
-            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();   // 今日最低价
+            run_data->stockdata.OpenQuo = payload.substring(startIndex_1, endIndex_1).toFloat();  // Today's opening price
+            run_data->stockdata.CloseQuo = payload.substring(startIndex_2, endIndex_2).toFloat(); // Yesterday's closing price
+            run_data->stockdata.NowQuo = payload.substring(startIndex_3, endIndex_3).toFloat();   // Current price
+            run_data->stockdata.MaxQuo = payload.substring(startIndex_4, endIndex_4).toFloat();   // Today's highest price
+            run_data->stockdata.MinQuo = payload.substring(startIndex_5, endIndex_5).toFloat();   // Today's lowest price
 
             run_data->stockdata.ChgValue = run_data->stockdata.NowQuo - run_data->stockdata.CloseQuo;
             run_data->stockdata.ChgPercent = run_data->stockdata.ChgValue / run_data->stockdata.CloseQuo * 100;
@@ -212,8 +212,8 @@ static void update_stock_data()
             int endIndex_8 = payload.indexOf(',', startIndex_8);
             int startIndex_9 = payload.indexOf(',', endIndex_8) + 1;
             int endIndex_9 = payload.indexOf(',', startIndex_9);
-            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat(); // 成交量
-            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();   // 成交额
+            run_data->stockdata.tradvolume = payload.substring(startIndex_8, endIndex_8).toFloat(); // Trading volume
+            run_data->stockdata.turnover = payload.substring(startIndex_9, endIndex_9).toFloat();   // Trading value
             // Serial.printf("chg= %.2f\r\n",run_data->stockdata.ChgValue);
             // Serial.printf("chgpercent= %.2f%%\r\n",run_data->stockdata.ChgPercent);
         }

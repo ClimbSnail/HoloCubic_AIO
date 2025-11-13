@@ -5,7 +5,7 @@
 
 #define EXAMPLE_APP_NAME "Example"
 
-// 动态数据，APP的生命周期结束也需要释放它
+// Dynamic data, needs to be released when APP lifecycle ends
 struct ExampleAppRunData
 {
     unsigned int val1;
@@ -13,7 +13,7 @@ struct ExampleAppRunData
     unsigned int val3;
 };
 
-// 常驻数据，可以不随APP的生命周期而释放或删除
+// Permanent data, not released or deleted with APP lifecycle
 struct ExampleAppForeverData
 {
     unsigned int val1;
@@ -21,33 +21,33 @@ struct ExampleAppForeverData
     unsigned int val3;
 };
 
-// 保存APP运行时的参数信息，理论上关闭APP时推荐在 xxx_exit_callback 中释放掉
+// Stores APP runtime parameters, recommended to release in xxx_exit_callback when closing APP
 static ExampleAppRunData *run_data = NULL;
 
-// 当然你也可以添加恒定在内存中的少量变量（退出时不用释放，实现第二次启动时可以读取）
-// 考虑到所有的APP公用内存，尽量减少 forever_data 的数据占用
+// You can also add a small amount of constant variables in memory (no need to release on exit, can be read on second startup)
+// Considering all APPs share memory, minimize forever_data usage
 static ExampleAppForeverData forever_data;
 
 static int example_init(AppController *sys)
 {
-    // 初始化运行时的参数
+    // Initialize runtime parameters
     example_gui_init();
-    // 初始化运行时参数
+    // Initialize runtime parameters
     run_data = (ExampleAppRunData *)calloc(1, sizeof(ExampleAppRunData));
     run_data->val1 = 0;
     run_data->val2 = 0;
     run_data->val3 = 0;
-    // 使用 forever_data 中的变量，任何函数都可以用
+    // Use variables from forever_data, any function can use them
     Serial.print(forever_data.val1);
 
-    // 如果有需要持久化配置文件 可以调用此函数将数据存在flash中
-    // 配置文件名最好以APP名为开头 以".cfg"结尾，以免多个APP读取混乱
+    // If persistent configuration file is needed, call this function to store data in flash
+    // Configuration file name should start with APP name and end with ".cfg" to avoid conflicts between multiple APPs
     char info[128] = {0};
     uint16_t size = g_flashCfg.readFile("/example.cfg", (uint8_t *)info);
-    // 解析数据
-    // 将配置数据保存在文件中（持久化）
+    // Parse data
+    // Save configuration data to file (persistence)
     g_flashCfg.writeFile("/example.cfg", "value1=100\nvalue2=200");
-    
+
     return 0;
 }
 
@@ -56,37 +56,37 @@ static void example_process(AppController *sys,
 {
     if (RETURN == act_info->active)
     {
-        sys->app_exit(); // 退出APP
+        sys->app_exit(); // Exit APP
         return;
     }
-    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 example_message_handle 函数
+    // Send request. If it's a WiFi-related message, example_message_handle will be called automatically when the request completes
     // sys->send_to(EXAMPLE_APP_NAME, CTRL_NAME,
     //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
 
-    // 程序需要时可以适当加延时
+    // Add delay if needed
     // delay(300);
 }
 
 static void example_background_task(AppController *sys,
                                     const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 本函数尽量只调用"常驻数据",其他变量可能会因为生命周期的缘故已经释放
+    // This is a background task, the main controller will call this function every minute
+    // This function should only use "permanent data", other variables may have been released due to lifecycle
 
-    // 发送请求。如果是wifi相关的消息，当请求完成后自动会调用 example_message_handle 函数
+    // Send request. If it's a WiFi-related message, example_message_handle will be called automatically when the request completes
     // sys->send_to(EXAMPLE_APP_NAME, CTRL_NAME,
     //              APP_MESSAGE_WIFI_CONN, (void *)run_data->val1, NULL);
 
-    // 也可以移除自身的后台任务，放在本APP可控的地方最合适
+    // You can also remove your own background task, best placed in APP-controllable location
     // sys->remove_backgroud_task();
 
-    // 程序需要时可以适当加延时
+    // Add delay if needed
     // delay(300);
 }
 
 static int example_exit_callback(void *param)
 {
-    // 释放资源
+    // Release resources
     if (NULL != run_data)
     {
         free(run_data);
@@ -99,7 +99,7 @@ static void example_message_handle(const char *from, const char *to,
                                    APP_MESSAGE_TYPE type, void *message,
                                    void *ext_info)
 {
-    // 目前主要是wifi开关类事件（用于功耗控制）
+    // Currently mainly WiFi on/off events (for power control)
     switch (type)
     {
     case APP_MESSAGE_WIFI_CONN:
@@ -114,7 +114,7 @@ static void example_message_handle(const char *from, const char *to,
     break;
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // WiFi heartbeat response, no processing required
     }
     break;
     case APP_MESSAGE_GET_PARAM:
