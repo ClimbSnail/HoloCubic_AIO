@@ -119,4 +119,19 @@ TFT pins should be set in path/to/Arduino/libraries/TFT_eSPI/User_Setups/Setup24
 extern TFT_eSPI *tft;
 #endif
 
+// 时间有关的方法
+
+
+// 获取当前小时 (0-23)
+// 获取完整时间（小时和分钟）
+bool get_current_hour_minute(uint8_t* hour, uint8_t* minute);
+/**
+ * 检查是否处于夜间模式时间段
+ * @param night_start 夜间模式开始时间（0-23）
+ * @param night_end 夜间模式结束时间（0-23）
+ */
+bool is_night_mode_time(uint8_t night_start, uint8_t night_end);
+
+
+
 #endif

@@ -68,9 +68,20 @@ void Display::routine()
     AIO_LVGL_OPERATE_LOCK(lv_timer_handler();)
 }
 
+/**
+ * 设置亮度0~1之间
+ * 注意：如果LCD还未初始化（还没点亮），调用该函数会导致异常
+ */
 void Display::setBackLight(float duty)
 {
+    current_backlight = duty;
     duty = constrain(duty, 0, 1);
     duty = 1 - duty;
     ledcWrite(LCD_BL_PWM_CHANNEL, (int)(duty * 255));
+}
+/**
+ * 返回当前亮度 0-100
+ */
+uint8_t Display::getBrightness() {
+    return current_backlight * 100;
 }

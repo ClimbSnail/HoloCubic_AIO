@@ -47,16 +47,23 @@ String file_size(int bytes)
 }
 
 #define SETING_CSS ".input {display: block;margin-top: 10px;}"                                          \
-                   ".input span {width: 300px;float: left;float: left;height: 36px;line-height: 36px;}" \
+                   ".input span {width: 300px;float: left;height: 36px;line-height: 36px;}" \
                    ".input input {height: 30px;width: 200px;}"                                          \
                    ".input .radio {height: 30px;width: 50px;}"                                          \
-                   ".btn {width: 120px;height: 35px;background-color: #000000;border: 0px;color: #ffffff;margin-top: 15px;margin-left: auto;}" // margin-left: 100px;
-
+                   ".slider-container {display: block;margin-top: 15px;clear: both;}"                               \
+                   ".slider-container > span {display: block;width: 100%;height: auto;margin-bottom: 8px;}"  \
+                   ".slider-container input[type=\"range\"] {-webkit-appearance: none;width: 100%;height: 10px;border-radius: 5px;background: #d3d3d3;outline: none;opacity: 0.7;-webkit-transition: .2s;transition: opacity .2s;}" \
+                   ".slider-container input[type=\"range\"]:hover {opacity: 1;}" \
+                   ".slider-container input[type=\"range\"]::-webkit-slider-thumb {-webkit-appearance: none;appearance: none;width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}" \
+                   ".slider-container input[type=\"range\"]::-moz-range-thumb {width: 25px;height: 25px;border-radius: 50%;background: #4CAF50;cursor: pointer;}" \
+                   ".slider-value {display: inline-block;margin-left: 10px;font-weight: bold;color: #4CAF50;}" \
+                   ".btn {width: 120px;height: 35px;background-color: #000000;border: 0px;color: #ffffff;margin-top: 15px;margin-left: auto;}"  
+                
 #define SYS_SETTING "<form method=\"GET\" action=\"saveSysConf\">"                                                                                                                                                                                                      \
                     "<label class=\"input\"><span>WiFi SSID_0(2.4G)</span><input type=\"text\"name=\"ssid_0\"value=\"%s\"></label>"                                                                                                                                     \
                     "<label class=\"input\"><span>WiFi Passwd_0</span><input type=\"text\"name=\"password_0\"value=\"%s\"></label>"                                                                                                                                     \
                     "<label class=\"input\"><span>功耗控制（0低发热 1性能优先）</span><input type=\"text\"name=\"power_mode\"value=\"%s\"></label>"                                                                                                        \
-                    "<label class=\"input\"><span>屏幕亮度 (值为1~100)</span><input type=\"text\"name=\"backLight\"value=\"%s\"></label>"                                                                                                                         \
+                    "<div class=\"slider-container\"><span>屏幕亮度 (值为1~100)(夜间模式时间段不生效）：<span class=\"slider-value\">%s</span></span><input type=\"range\" min=\"1\" max=\"100\" step=\"1\" name=\"backLight\" value=\"%s\" oninput=\"this.previousElementSibling.querySelector('.slider-value').innerHTML = this.value\"></div>" \
                     "<label class=\"input\"><span>屏幕方向 (0~5可选)</span><input type=\"text\"name=\"rotation\"value=\"%s\"></label>"                                                                                                                            \
                     "<label class=\"input\"><span>操作方向（0~15可选）</span><input type=\"text\"name=\"mpu_order\"value=\"%s\"></label>"                                                                                                                       \
                     "<label class=\"input\"><span>MPU6050自动校准</span><input class=\"radio\" type=\"radio\" value=\"0\" name=\"auto_calibration_mpu\" %s>关闭<input class=\"radio\" type=\"radio\" value=\"1\" name=\"auto_calibration_mpu\" %s>开启</label>" \
@@ -67,11 +74,11 @@ String file_size(int bytes)
                     "<label class=\"input\"><span>RGB最低亮度（0~1000可选）</span><input type=\"text\"name=\"min_brightness\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>RGB最高亮度（0~1000可选）</span><input type=\"text\"name=\"max_brightness\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>RGB渐变时间（10~1000可选）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"          \
-                    "<label class=\"input\"><span>夜间模式指定亮度（0~100可选）</span><input type=\"text\"name=\"brightness_night_mode_specified\"value=\"%s\"></label>" \
+                    "<div class=\"slider-container\"><span>夜间模式指定亮度（1~100可选）：<span class=\"slider-value\">%s</span></span><input type=\"range\" min=\"1\" max=\"100\" step=\"1\" name=\"brightness_night_mode_specified\" value=\"%s\" oninput=\"this.previousElementSibling.querySelector('.slider-value').innerHTML = this.value\"></div>" \
                     "<label class=\"input\"><span>夜间模式开始时间（0~23可选）</span><input type=\"text\"name=\"brightness_night_mode_start\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>夜间模式结束时间（0~23可选）</span><input type=\"text\"name=\"brightness_night_mode_end\"value=\"%s\"></label>" \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
-
+                    
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                            \
                         "<label class=\"input\"><span>TianQi Url</span><input type=\"text\"name=\"tianqi_url\"value=\"%s\"></label>"                                  \
                         "<label class=\"input\"><span>城市名（或填6位城市代码）</span><input type=\"text\"name=\"tianqi_city_code\"value=\"%s\"></label>" \
@@ -273,7 +280,7 @@ void sys_setting()
     {
         sprintf(buf, SYS_SETTING,
                 ssid_0, password_0,
-                power_mode, backLight, rotation,
+                power_mode, backLight, backLight, rotation,
                 mpu_order, "checked=\"checked\"", "",
                 auto_start_app);
     }
@@ -281,7 +288,7 @@ void sys_setting()
     {
         sprintf(buf, SYS_SETTING,
                 ssid_0, password_0,
-                power_mode, backLight, rotation,
+                power_mode, backLight, backLight, rotation,
                 mpu_order, "", "checked=\"checked\"",
                 auto_start_app);
     }
@@ -322,7 +329,7 @@ void rgb_setting()
     
     sprintf(buf, RGB_SETTING,
             min_brightness, max_brightness, time, 
-            brightness_night_mode_specified, 
+            brightness_night_mode_specified,brightness_night_mode_specified,
             brightness_night_mode_start, 
             brightness_night_mode_end);
     webpage = buf;

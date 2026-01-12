@@ -24,6 +24,33 @@ boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis,
     return state;
 }
 
+bool get_current_hour_minute(uint8_t* hour, uint8_t* minute) {
+    struct tm timeinfo;
+    if(getLocalTime(&timeinfo)){
+        *hour = timeinfo.tm_hour;
+        *minute = timeinfo.tm_min;
+        return true;
+    }
+    return false;
+}
+
+bool is_night_mode_time(uint8_t start_hour, uint8_t end_hour)
+{
+    uint8_t current_hour, current_minute;
+    if (!get_current_hour_minute(&current_hour, &current_minute)) {
+        Serial.println("Failed to get time for night mode check");
+        return false; // 时间获取失败，默认非夜间模式
+    }
+
+    if (start_hour < end_hour) {
+        // 普通时间段，例如 20:00 - 06:00
+        return (current_hour >= start_hour || current_hour < end_hour);
+    } else {
+        // 跨天时间段，例如 22:00 - 05:00
+        return (current_hour >= start_hour || current_hour < end_hour);
+    }
+}
+
 #if GFX
 
 #include <Arduino_GFX_Library.h>

@@ -81,7 +81,10 @@ void AppController::write_config(SysUtilConfig *cfg)
     g_flashCfg.writeFile(APP_CTRL_CONFIG_PATH, w_data.c_str());
 
     // 立即生效相关配置
-    screen.setBackLight(cfg->backLight / 100.0);
+    if(!screen.night_mode) {
+        screen.setBackLight(cfg->backLight / 100.0);
+    }
+
     tft->setRotation(cfg->rotation);
     mpu.setOrder(cfg->mpu_order);
 }
@@ -296,6 +299,17 @@ void AppController::write_config(RgbConfig *cfg)
                             rgb_cfg.brightness_night_mode_end};
     // 初始化RGB任务
     set_rgb_and_run(&rgb_setting);
+    
+    // 立即生效数据
+    screen.night_mode = is_night_mode_time(cfg->brightness_night_mode_start, cfg->brightness_night_mode_end);
+    if(screen.night_mode) {
+        screen.setBackLight(cfg->brightness_night_mode_specified / 100.0);
+    } else {
+        Serial.println(sys_cfg.backLight / 100.0);
+        
+        screen.setBackLight(sys_cfg.backLight / 100.0);
+    }
+
 }
 
 void AppController::deal_config(APP_MESSAGE_TYPE type,
@@ -458,6 +472,8 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         {
             sys_cfg.auto_start_app = value;
         }
+
+        // 夜间模式亮度相关参数
         else if (!strcmp(key, "brightness_night_mode_specified"))
         {
             rgb_cfg.brightness_night_mode_specified = atol(value);

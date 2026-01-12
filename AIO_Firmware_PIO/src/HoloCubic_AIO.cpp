@@ -53,33 +53,6 @@ void my_print(const char *buf)
     Serial.flush();
 }
 
-/**
- * 检查是否处于夜间模式时间段
- * @param current_hour 当前小时（0-23）
- * @param night_start 夜间模式开始时间（0-23）
- * @param night_end 夜间模式结束时间（0-23）
- */
-bool is_night_mode_time(uint8_t current_hour, 
-                                    uint8_t night_start, 
-                                    uint8_t night_end)
-{
-    // 处理相同时间的情况（如0-0表示不启用或全天启用，根据需求决定）
-    if (night_start == night_end) {
-        // 可以根据需求调整：
-        // return true;    // 相同时间表示全天启用夜间模式
-        return false;      // 相同时间表示不启用夜间模式
-    }
-    
-    // 正常情况：开始时间 < 结束时间（如18:00-23:00）
-    if (night_start < night_end) {
-        return (current_hour >= night_start && current_hour < night_end);
-    }
-    // 跨越午夜的情况：开始时间 > 结束时间（如22:00-06:00）
-    else {
-        return (current_hour >= night_start || current_hour < night_end);
-    }
-}
-
 // NTP服务器配置
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 8 * 3600;  // 中国时区 UTC+8
@@ -104,72 +77,38 @@ bool initTime() {
         delay(500);
         Serial.print(".");
     }
-    
     Serial.println("\n时间同步失败!");
     return false;
 }
 
-// 获取当前小时 (0-23)
-// 获取完整时间（小时和分钟）
-bool get_current_time(uint8_t* hour, uint8_t* minute) {
-    struct tm timeinfo;
-    if(getLocalTime(&timeinfo)){
-        *hour = timeinfo.tm_hour;
-        *minute = timeinfo.tm_min;
-        return true;
-    }
-    return false;
-}
-
-
-// 全局变量
-bool currentNightMode = false;
-
 
 void checkAndUpdateBrightness() {
-    static bool lastNightMode = false;
-    Serial.print("Checking...");
-    uint8_t current_hour, current_minute;
-    if (!get_current_time(&current_hour, &current_minute)) {
-        Serial.println("Failed to get time");
-        return; // 时间获取失败
-    } else {
-        Serial.print("Current Time: ");
-        Serial.print(current_hour);
-        Serial.print(":");
-        Serial.println(current_minute);
-    }
-    
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;
-    
-    bool isNightNow = is_night_mode_time(
-        current_hour, 
+    screen.night_mode = is_night_mode_time(
         rgb_cfg->brightness_night_mode_start,
         rgb_cfg->brightness_night_mode_end
     );
-    
-    // 如果模式发生变化
-    if (isNightNow != lastNightMode) {
-        lastNightMode = isNightNow;
-        currentNightMode = isNightNow;
-        
-        if (isNightNow) {
-            Serial.println("切换到夜间模式");
-            // 设置RGB夜间亮度
-            // 设置屏幕夜间亮度（需要看你的屏幕API）
+    uint8_t screen_brightness = screen.getBrightness();
+    if(screen.night_mode) {
+        // 夜间模式时间段内，发现当前屏幕亮度不是指定亮度，则修改当前屏幕亮度为指定亮度
+        if(screen_brightness != rgb_cfg->brightness_night_mode_specified) {
             screen.setBackLight(rgb_cfg->brightness_night_mode_specified / 100.0);
-        } else {
-            Serial.println("切换到日间模式");
-            // 设置RGB日间亮度
-            // 设置屏幕日间亮度
+            Serial.print("更新夜间亮度到: ");
+            Serial.println(screen_brightness); 
+        }
+    } else {
+        // 非夜间模式时间段内，恢复日间亮度
+        if(screen_brightness != app_controller->sys_cfg.backLight) {
             screen.setBackLight(app_controller->sys_cfg.backLight / 100.0);
+            Serial.print("设置日间亮度到: ");
+            Serial.println(screen_brightness);
         }
     }
 }
 // 任务1：专门处理亮度检查
 void TaskBrightnessCheck(void *parameter)
 {
-    const TickType_t xDelay = 60000 / portTICK_PERIOD_MS;
+    const TickType_t xDelay = 5000 / portTICK_PERIOD_MS;
     
     for (;;)
     {
