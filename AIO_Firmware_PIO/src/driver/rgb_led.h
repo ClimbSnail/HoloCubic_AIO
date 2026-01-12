@@ -52,7 +52,7 @@ struct RgbConfig
     uint8_t brightness_step; // 亮度值 0~100
     int time;                // RGB渐变时间定时器的时间 10~1000
 
-    uint8_t brightness_night_mode_specified;      // 夜间模式指定亮度 0~1000
+    uint8_t brightness_night_mode_specified;      // 夜间模式指定亮度 0~100
     uint8_t brightness_night_mode_start;      // 夜间模式开始时间 0~23
     uint8_t brightness_night_mode_end;        // 夜间模式结束时间 0~23
 };

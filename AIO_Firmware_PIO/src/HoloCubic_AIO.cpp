@@ -53,6 +53,182 @@ void my_print(const char *buf)
     Serial.flush();
 }
 
+bool is_night_mode_time(uint8_t current_hour, 
+                                    uint8_t night_start, 
+                                    uint8_t night_end)
+{
+    // 处理相同时间的情况（如0-0表示不启用或全天启用，根据需求决定）
+    if (night_start == night_end) {
+        // 可以根据需求调整：
+        // return true;    // 相同时间表示全天启用夜间模式
+        return false;      // 相同时间表示不启用夜间模式
+    }
+    
+    // 正常情况：开始时间 < 结束时间（如18:00-23:00）
+    if (night_start < night_end) {
+        return (current_hour >= night_start && current_hour < night_end);
+    }
+    // 跨越午夜的情况：开始时间 > 结束时间（如22:00-06:00）
+    else {
+        return (current_hour >= night_start || current_hour < night_end);
+    }
+}
+
+// NTP服务器配置
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 8 * 3600;  // 中国时区 UTC+8
+const int daylightOffset_sec = 0;      // 不使用夏令时
+
+// 初始化时间服务
+bool initTime() {
+    app_controller->send_to(SERVER_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    
+    // 等待时间同步
+    Serial.print("等待时间同步");
+    struct tm timeinfo;
+    for (int i = 0; i < 20; i++) {
+        if (getLocalTime(&timeinfo)) {
+            Serial.println("\n时间同步成功!");
+            Serial.print("当前时间: ");
+            Serial.println(&timeinfo, "%Y-%m-%d %H:%M:%S");
+            return true;
+        }
+        delay(500);
+        Serial.print(".");
+    }
+    
+    Serial.println("\n时间同步失败!");
+    return false;
+}
+
+// 获取当前小时 (0-23)
+// 获取完整时间（小时和分钟）
+bool get_current_time(uint8_t* hour, uint8_t* minute) {
+
+    struct tm timeinfo;
+    if(getLocalTime(&timeinfo)){
+        *hour = timeinfo.tm_hour;
+        *minute = timeinfo.tm_min;
+        return true;
+    }
+    return false;
+}
+
+// 改进的时间判断函数
+bool is_night_mode_time_complete(uint8_t current_hour, uint8_t current_minute,
+                                 uint8_t night_start_hour, uint8_t night_start_minute,
+                                 uint8_t night_end_hour, uint8_t night_end_minute) {
+    
+    // 转换为分钟数
+    uint16_t current_time_minutes = current_hour * 60 + current_minute;
+    uint16_t night_start_minutes = night_start_hour * 60 + night_start_minute;
+    uint16_t night_end_minutes = night_end_hour * 60 + night_end_minute;
+    
+    if (night_start_minutes == night_end_minutes) {
+        return false; // 不启用夜间模式
+    }
+    
+    if (night_start_minutes < night_end_minutes) {
+        return (current_time_minutes >= night_start_minutes && 
+                current_time_minutes < night_end_minutes);
+    } else {
+        return (current_time_minutes >= night_start_minutes || 
+                current_time_minutes < night_end_minutes);
+    }
+}
+
+
+// 全局变量
+bool currentNightMode = false;
+
+
+void checkAndUpdateBrightness() {
+    static bool lastNightMode = false;
+    Serial.print("Checking...");
+    uint8_t current_hour, current_minute;
+    if (!get_current_time(&current_hour, &current_minute)) return; // 时间获取失败
+    Serial.print("Current Time: ");
+    Serial.print(current_hour);
+    RgbConfig *rgb_cfg = &app_controller->rgb_cfg;
+    
+    bool isNightNow = is_night_mode_time(
+        current_hour, 
+        rgb_cfg->brightness_night_mode_start,
+        rgb_cfg->brightness_night_mode_end
+    );
+    
+    // 如果模式发生变化
+    if (isNightNow != lastNightMode) {
+        lastNightMode = isNightNow;
+        currentNightMode = isNightNow;
+        
+        if (isNightNow) {
+            Serial.println("切换到夜间模式");
+            // 设置RGB夜间亮度
+            //rgb.setBrightness(rgb_cfg->brightness_night_mode_specified / 100.0);
+            // 设置屏幕夜间亮度（需要看你的屏幕API）
+            screen.setBackLight(rgb_cfg->brightness_night_mode_specified / 100.0);
+        } else {
+            Serial.println("切换到日间模式");
+            // 设置RGB日间亮度
+            //rgb.setBrightness(app_controller->sys_cfg.backLight / 100.0);
+            // 设置屏幕日间亮度
+            screen.setBackLight(app_controller->sys_cfg.backLight / 100.0);
+        }
+    }
+}
+// 任务1：专门处理亮度检查
+void TaskBrightnessCheck(void *parameter)
+{
+    const TickType_t xDelay = 5000 / portTICK_PERIOD_MS;
+    
+    for (;;)
+    {
+        checkAndUpdateBrightness();
+        vTaskDelay(xDelay);
+    }
+}
+
+// 任务2：专门处理时间同步
+void TaskTimeSync(void *parameter)
+{
+    const TickType_t xDelay = 60000 / portTICK_PERIOD_MS;  // 每分钟检查一次是否需要同步
+    
+    unsigned long lastSuccessfulSync = 0;
+    const unsigned long SYNC_INTERVAL = 12 * 3600 * 1000;
+    bool syncSucceeded = false;
+    
+    // 首次同步
+    if (initTime()) {
+        syncSucceeded = true;
+        lastSuccessfulSync = millis();
+    }
+    
+    for (;;)
+    {
+        unsigned long currentMillis = millis();
+        
+        // 检查是否需要同步
+        if (!syncSucceeded || (currentMillis - lastSuccessfulSync > SYNC_INTERVAL)) 
+        {
+            Serial.print("执行时间同步...");
+            if (initTime()) {
+                syncSucceeded = true;
+                lastSuccessfulSync = currentMillis;
+                Serial.println("成功");
+            } else {
+                syncSucceeded = false;
+                Serial.println("失败");
+            }
+        }
+        
+        vTaskDelay(xDelay);
+    }
+}
+
+
 void setup()
 {
     Serial.begin(115200);
@@ -68,6 +244,10 @@ void setup()
     // Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
 
     app_controller = new AppController(); // APP控制器
+
+    // 初始化wifi
+    app_controller->send_to(CTRL_NAME, SERVER_APP_NAME,
+                         APP_MESSAGE_WIFI_CONN, NULL, NULL);
 
     // 需要放在Setup里初始化
     if (!SPIFFS.begin(true))
@@ -133,9 +313,17 @@ void setup()
     app_controller->init();
 
     // 将APP"安装"到controller里
+#if APP_EXAMPLE_USE
+    app_controller->app_install(&example_app);
+#endif
+#if APP_MYEXAMPLE_USE
+    app_controller->app_install(&myexample_app);
+#endif
+
 #if APP_WEATHER_USE
     app_controller->app_install(&weather_app);
 #endif
+
 #if APP_WEATHER_OLD_USE
     app_controller->app_install(&weather_old_app);
 #endif
@@ -208,7 +396,10 @@ void setup()
                             rgb_cfg->max_value_0, rgb_cfg->max_value_1, rgb_cfg->max_value_2,
                             rgb_cfg->step_0, rgb_cfg->step_1, rgb_cfg->step_2,
                             rgb_cfg->min_brightness, rgb_cfg->max_brightness,
-                            rgb_cfg->brightness_step, rgb_cfg->time};
+                            rgb_cfg->brightness_step, rgb_cfg->time, 
+                            rgb_cfg->brightness_night_mode_specified,
+                            rgb_cfg->brightness_night_mode_start,
+                            rgb_cfg->brightness_night_mode_end};
     // 运行RGB任务
     set_rgb_and_run(&rgb_setting, RUN_MODE_TASK);
 
@@ -219,11 +410,37 @@ void setup()
                                 200 / portTICK_PERIOD_MS,
                                 pdTRUE, (void *)0, actionCheckHandle);
     xTimerStart(xTimerAction, 0);
+
+    
+    // 创建亮度检查任务
+    xTaskCreate(
+        TaskBrightnessCheck,
+        "BrightnessCheck",
+        2048,
+        NULL,
+        1,
+        NULL
+    );
+    
+    // 创建时间同步任务
+    xTaskCreate(
+        TaskTimeSync,
+        "TimeSync",
+        4096,  // 可能需要更多栈空间用于网络操作
+        NULL,
+        2,     // 优先级可以比亮度检查高一点
+        NULL
+    );
+    
 }
+
+
+
 
 void loop()
 {
     screen.routine();
+    // 定期检查亮度模式
 
 #ifdef PEAK
     // 适配稚晖君的PEAK
