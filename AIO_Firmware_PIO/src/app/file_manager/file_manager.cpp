@@ -8,11 +8,6 @@
 
 #define FILE_MANAGER_APP_NAME "File Manager"
 
-#define FILE_MANAGER_REFLUSH_INTERVAL 2000UL // 配置界面重新刷新时间(2s)
-
-#define RECV_BUFFER_SIZE 2000    //
-#define SEND_BUFFER_SIZE 2000    //
-#define SERVER_PORT 8081         //设置监听端口
 #define SHARE_WIFI_ALIVE 20000UL // 维持wifi心跳的时间（20s）
 
 FtpServer ftpSrv; // 定义FTP服务端
@@ -23,8 +18,7 @@ struct FileManagerAppRunData
     boolean req_sent;                     // 标志是否发送wifi请求服务，0为关闭 1为开启
     unsigned long serverReflushPreMillis; // 上一回更新的时间
     unsigned long apAlivePreMillis;       // 上一回更新的时间
-    uint8_t *recvBuf;                     // 接收数据缓冲区
-    uint8_t *sendBuf;                     // 发送数据缓冲区
+
 };
 
 static FileManagerAppRunData *run_data = NULL;
@@ -36,8 +30,6 @@ static int file_maneger_init(AppController *sys)
     run_data->tcp_start = 0;
     run_data->req_sent = 0;
     run_data->serverReflushPreMillis = 0;
-    run_data->recvBuf = (uint8_t *)calloc(1, RECV_BUFFER_SIZE);
-    run_data->sendBuf = (uint8_t *)calloc(1, SEND_BUFFER_SIZE);
     return 0;
 }
 
@@ -89,17 +81,6 @@ static int file_maneger_exit_callback(void *param)
 {
     file_manager_gui_del();
 
-    if (NULL == run_data->recvBuf)
-    {
-        free(run_data->recvBuf);
-        run_data->recvBuf = NULL;
-    }
-
-    if (NULL == run_data->sendBuf)
-    {
-        free(run_data->sendBuf);
-        run_data->sendBuf = NULL;
-    }
 
     // 释放运行数据
     if (NULL != run_data)
@@ -118,34 +99,38 @@ static void file_maneger_message_handle(const char *from, const char *to,
     {
     case APP_MESSAGE_WIFI_CONN:
     {
-        Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
-        display_file_manager(
-            "File Manager",
-            WiFi.localIP().toString().c_str(),
-            "21",
-            "Connect succ",
-            LV_SCR_LOAD_ANIM_NONE);
+        // STA模式：连接到外部WiFi
+        Serial.print(F("APP_MESSAGE_WIFI_CONN enable\n"));
+        String ip = WiFi.localIP().toString();
+        display_file_manager("File Manager", ip.c_str(), "21", 
+                           "Connect to WiFi", LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
         ftpSrv.begin("holocubic", "aio");
+        
+        Serial.println("FTP started on STA IP: " + ip);
     }
     break;
+    
     case APP_MESSAGE_WIFI_AP:
     {
+        // AP模式：自己创建热点
         Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
-        display_file_manager(
-            "File Manager",
-            WiFi.localIP().toString().c_str(),
-            "21",
-            "Connect succ",
-            LV_SCR_LOAD_ANIM_NONE);
+        String ip = WiFi.softAPIP().toString();  // 使用AP的IP
+        display_file_manager("File Manager", ip.c_str(), "21", 
+                           "Hotspot ready", LV_SCR_LOAD_ANIM_NONE);
         run_data->tcp_start = 1;
+        ftpSrv.begin("holocubic", "aio");  // 可以成功启动
+        
+        Serial.println("FTP started on AP IP: " + ip);
     }
     break;
+    
     case APP_MESSAGE_WIFI_ALIVE:
     {
-        // wifi心跳维持的响应 可以不做任何处理
+        // wifi心跳维持
     }
     break;
+    
     default:
         break;
     }
