@@ -330,6 +330,7 @@ bool AppController::wifi_event(APP_MESSAGE_TYPE type)
     {
     case APP_MESSAGE_WIFI_CONN:
     {
+        // TODO 这里m_wifi_status判断逻辑非常混乱，需要修改
         // 更新请求
         // CONN_ERROR == g_network.end_conn_wifi() ||
         if (false == m_wifi_status)
@@ -428,7 +429,11 @@ void AppController::app_exit()
                             cfg->max_value_0, cfg->max_value_1, cfg->max_value_2,
                             cfg->step_0, cfg->step_1, cfg->step_2,
                             cfg->min_brightness, cfg->max_brightness,
-                            cfg->brightness_step, cfg->time};
+                            cfg->brightness_step, cfg->time, 
+
+                            cfg->brightness_night_mode_specified, 
+                            cfg->brightness_night_mode_start, 
+                            cfg->brightness_night_mode_end};
     set_rgb_and_run(&rgb_setting);
 
     // 设置CPU主频

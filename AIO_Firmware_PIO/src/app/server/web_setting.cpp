@@ -67,6 +67,9 @@ String file_size(int bytes)
                     "<label class=\"input\"><span>RGB最低亮度（0~1000可选）</span><input type=\"text\"name=\"min_brightness\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>RGB最高亮度（0~1000可选）</span><input type=\"text\"name=\"max_brightness\"value=\"%s\"></label>" \
                     "<label class=\"input\"><span>RGB渐变时间（10~1000可选）</span><input type=\"text\"name=\"time\"value=\"%s\"></label>"          \
+                    "<label class=\"input\"><span>夜间模式指定亮度（0~100可选）</span><input type=\"text\"name=\"brightness_night_mode_specified\"value=\"%s\"></label>" \
+                    "<label class=\"input\"><span>夜间模式开始时间（0~23可选）</span><input type=\"text\"name=\"brightness_night_mode_start\"value=\"%s\"></label>" \
+                    "<label class=\"input\"><span>夜间模式结束时间（0~23可选）</span><input type=\"text\"name=\"brightness_night_mode_end\"value=\"%s\"></label>" \
                     "</label><input class=\"btn\" type=\"submit\" name=\"submit\" value=\"保存\"></form>"
 
 #define WEATHER_SETTING "<form method=\"GET\" action=\"saveWeatherConf\">"                                                                                            \
@@ -292,6 +295,11 @@ void rgb_setting()
     char min_brightness[32];
     char max_brightness[32];
     char time[32];
+
+        // 夜间模式亮度相关参数
+    char brightness_night_mode_specified[32];
+    char brightness_night_mode_start[32];
+    char brightness_night_mode_end[32];
     // 读取数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_READ_CFG,
                             NULL, NULL);
@@ -301,8 +309,22 @@ void rgb_setting()
                             (void *)"max_brightness", max_brightness);
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
                             (void *)"time", time);
+                                
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"brightness_night_mode_specified", brightness_night_mode_specified);
+    
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"brightness_night_mode_start", brightness_night_mode_start);
+
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_GET_PARAM,
+                            (void *)"brightness_night_mode_end", brightness_night_mode_end);
+
+    
     sprintf(buf, RGB_SETTING,
-            min_brightness, max_brightness, time);
+            min_brightness, max_brightness, time, 
+            brightness_night_mode_specified, 
+            brightness_night_mode_start, 
+            brightness_night_mode_end);
     webpage = buf;
     Send_HTML(webpage);
 }
@@ -579,6 +601,19 @@ void saveRgbConf(void)
                             APP_MESSAGE_SET_PARAM,
                             (void *)"time",
                             (void *)server.arg("time").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"brightness_night_mode_specified",
+                            (void *)server.arg("brightness_night_mode_specified").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"brightness_night_mode_start",
+                            (void *)server.arg("brightness_night_mode_start").c_str());
+    app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
+                            APP_MESSAGE_SET_PARAM,
+                            (void *)"brightness_night_mode_end",
+                 
+                            (void *)server.arg("brightness_night_mode_end").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);

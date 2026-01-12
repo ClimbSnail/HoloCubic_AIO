@@ -174,14 +174,17 @@ void AppController::read_config(RgbConfig *cfg)
         cfg->max_brightness = 250;
         cfg->brightness_step = 1;
         cfg->time = 30;
+        cfg->brightness_night_mode_specified = 100;
+        cfg->brightness_night_mode_start = 22;
+        cfg->brightness_night_mode_end = 7;
 
         this->write_config(cfg);
     }
     else
     {
         // 解析数据
-        char *param[14] = {0};
-        analyseParam(info, 14, param);
+        char *param[17] = {0};
+        analyseParam(info, 17, param);
         cfg->mode = atol(param[0]);
         cfg->min_value_0 = atol(param[1]);
         cfg->min_value_1 = atol(param[2]);
@@ -196,6 +199,9 @@ void AppController::read_config(RgbConfig *cfg)
         cfg->max_brightness = atol(param[11]);
         cfg->brightness_step = atol(param[12]);
         cfg->time = atol(param[13]);
+        cfg->brightness_night_mode_specified = atol(param[14]);
+        cfg->brightness_night_mode_start = atol(param[15]);
+        cfg->brightness_night_mode_end = atol(param[16]);
     }
 }
 
@@ -260,6 +266,21 @@ void AppController::write_config(RgbConfig *cfg)
     snprintf(tmp, 25, "%d\n", cfg->time);
     w_data += tmp;
 
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%d\n", cfg->brightness_night_mode_specified);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%d\n", cfg->brightness_night_mode_start);
+    w_data += tmp;
+
+    memset(tmp, 0, 25);
+    snprintf(tmp, 25, "%d\n", cfg->brightness_night_mode_end);
+    w_data += tmp;
+
+    Serial.println("Write RGB Config:");
+    Serial.println(w_data);
+
     g_flashCfg.writeFile(RGB_CONFIG_PATH, w_data.c_str());
 
     // 初始化RGB灯 HSV色彩模式
@@ -268,7 +289,11 @@ void AppController::write_config(RgbConfig *cfg)
                             rgb_cfg.max_value_0, rgb_cfg.max_value_1, rgb_cfg.max_value_2,
                             rgb_cfg.step_0, rgb_cfg.step_1, rgb_cfg.step_2,
                             rgb_cfg.min_brightness, rgb_cfg.max_brightness,
-                            rgb_cfg.brightness_step, rgb_cfg.time};
+                            rgb_cfg.brightness_step, rgb_cfg.time,
+
+                            rgb_cfg.brightness_night_mode_specified,
+                            rgb_cfg.brightness_night_mode_start,
+                            rgb_cfg.brightness_night_mode_end};
     // 初始化RGB任务
     set_rgb_and_run(&rgb_setting);
 }
@@ -344,10 +369,31 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         {
             snprintf(value, 32, "%s", sys_cfg.auto_start_app.c_str());
         }
+
+        else if (!strcmp(key, "brightness_night_mode_specified"))
+        {
+            rgb_cfg.brightness_night_mode_specified = constrain(rgb_cfg.brightness_night_mode_specified, 0, 100);
+            snprintf(value, 32, "%u", rgb_cfg.brightness_night_mode_specified);
+        }
+        else if (!strcmp(key, "brightness_night_mode_start"))
+        {
+            rgb_cfg.brightness_night_mode_start = constrain(rgb_cfg.brightness_night_mode_start, 0, 23);
+            snprintf(value, 32, "%u", rgb_cfg.brightness_night_mode_start);
+        }
+        else if (!strcmp(key, "brightness_night_mode_end"))
+        {
+            rgb_cfg.brightness_night_mode_end = constrain(rgb_cfg.brightness_night_mode_end, 0, 23);
+            snprintf(value, 32, "%u", rgb_cfg.brightness_night_mode_end);
+        }
     }
     break;
     case APP_MESSAGE_SET_PARAM:
     {
+        Serial.print("Set Param: ");
+        Serial.print(key);
+        Serial.print(" = ");
+        Serial.println(value);  
+        
         if (!strcmp(key, "ssid_0"))
         {
             sys_cfg.ssid_0 = value;
@@ -411,6 +457,18 @@ void AppController::deal_config(APP_MESSAGE_TYPE type,
         else if (!strcmp(key, "auto_start_app"))
         {
             sys_cfg.auto_start_app = value;
+        }
+        else if (!strcmp(key, "brightness_night_mode_specified"))
+        {
+            rgb_cfg.brightness_night_mode_specified = atol(value);
+        }
+        else if (!strcmp(key, "brightness_night_mode_start"))
+        {
+            rgb_cfg.brightness_night_mode_start = atol(value);
+        }
+        else if (!strcmp(key, "brightness_night_mode_end"))
+        {
+            rgb_cfg.brightness_night_mode_end = atol(value);
         }
     }
     break;
