@@ -359,13 +359,30 @@ void setup()
     );
     
 }
-
-
+#define PERFORMANCE_DEBUG 1
+#ifdef PERFORMANCE_DEBUG
+// 性能监控
+static void performance_monitor(void)
+{
+    static uint32_t last_log = 0;
+    uint32_t current = GET_SYS_MILLIS();
+    if (current - last_log > 5000) { // 每5秒记录一次
+        Serial.printf("Player Stats - CPU: %dMHz, Mem: %d\n", 
+                     getCpuFrequencyMhz(), esp_get_free_heap_size());
+        last_log = current;
+    }
+}
+#endif
 
 
 void loop()
 {
     screen.routine();
+
+#ifdef PERFORMANCE_DEBUG
+    performance_monitor();
+#endif
+    
     // 定期检查亮度模式
 
 #ifdef PEAK

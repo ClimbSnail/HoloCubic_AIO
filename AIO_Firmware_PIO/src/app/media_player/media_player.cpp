@@ -107,19 +107,6 @@ static bool has_extension(const char* filename, const char* ext)
     return strcasecmp(filename + name_len - ext_len, ext) == 0;
 }
 
-#ifdef MEDIA_PLAYER_DEBUG
-// 性能监控
-static void performance_monitor(void)
-{
-    static uint32_t last_log = 0;
-    uint32_t current = GET_SYS_MILLIS();
-    if (current - last_log > 5000) { // 每5秒记录一次
-        Serial.printf("Player Stats - CPU: %dMHz, Mem: %d, State: %d\n", 
-                     getCpuFrequencyMhz(), esp_get_free_heap_size(), run_data->state);
-        last_log = current;
-    }
-}
-#endif
 
 // ==================== 配置管理 ====================
 
@@ -179,6 +166,161 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
     return NULL;
 }
 
+// 辅助函数：计算文件数量（跳过头节点）
+static int count_files(File_Info *head)
+{
+    if (!head || !head->next_node) return 0;
+    
+    int count = 0;
+    File_Info *current = head->next_node;
+    File_Info *first_file = current;
+    
+    do {
+        if (current->file_type == FILE_TYPE_FILE) {
+            count++;
+        }
+        current = current->next_node;
+    } while (current != first_file);
+    
+    return count;
+}
+
+// 检查文件是否存在（通过尝试打开）
+static bool file_exists(const char* path)
+{
+    File file = tf.open(path);
+    if (file) {
+        file.close();
+        return true;
+    }
+    return false;
+}
+// 读取索引文件构建文件列表（保持与listDir相同的结构）
+static File_Info *load_from_index(const char* index_path)
+{
+    File index_file = tf.open(index_path);
+    if (!index_file) {
+        Serial.println("Index file not found, will scan directory");
+        return NULL;
+    }
+    
+    // 创建头节点（表示文件夹）
+    File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
+    if (!head_file) {
+        Serial.println("Memory allocation failed for head file");
+        index_file.close();
+        return NULL;
+    }
+    
+    head_file->file_type = FILE_TYPE_FOLDER;
+    head_file->file_name = strdup(MOVIE_PATH);
+    head_file->front_node = NULL;
+    head_file->next_node = NULL;
+    
+    File_Info *tail_file = head_file;
+    char line[MAX_FILENAME_LENGTH];
+    int file_count = 0;
+    
+    while (index_file.available()) {
+        int bytesRead = index_file.readBytesUntil('\n', line, sizeof(line)-1);
+        if (bytesRead > 0) {
+            line[bytesRead] = '\0';
+            // 去除换行符
+            if (bytesRead > 0 && line[bytesRead-1] == '\r') {
+                line[bytesRead-1] = '\0';
+                bytesRead--;
+            }
+            
+            // 跳过空行
+            if (bytesRead == 0) continue;
+            
+            // 验证文件实际存在
+            // char full_path[MAX_FILENAME_LENGTH];
+            // snprintf(full_path, sizeof(full_path), "%s/%s", MOVIE_PATH, line);
+
+            // 不要验证了，播放的时候再验证，不然每一个都验证相当于全盘扫面
+            // TODO 播放的时候验证文件是否存在，不存在则从索引里面删除
+            // if (!file_exists(full_path)) {
+            //     Serial.printf("File in index not found: %s\n", full_path);
+            //     continue;
+            // }
+            
+            // 创建文件节点
+            File_Info *new_file = (File_Info *)malloc(sizeof(File_Info));
+            if (!new_file) {
+                Serial.println("Memory allocation failed for file info");
+                break;
+            }
+            
+            new_file->file_name = strdup(line);
+            new_file->file_type = FILE_TYPE_FILE;
+            
+            // 添加到链表
+            tail_file->next_node = new_file;
+            new_file->front_node = tail_file;
+            new_file->next_node = NULL;
+            tail_file = new_file;
+            
+            file_count++;
+        }
+    }
+    
+    index_file.close();
+    
+    // 将链表设置为循环（与listDir保持一致）
+    if (head_file->next_node) {
+        // 将最后一个节点的next指向第一个文件节点
+        tail_file->next_node = head_file->next_node;
+        // 将第一个文件节点的front指向最后一个节点
+        head_file->next_node->front_node = tail_file;
+    } else {
+        // 如果没有文件，头节点自循环
+        head_file->next_node = head_file;
+        head_file->front_node = head_file;
+    }
+    
+    Serial.printf("Loaded %d files from index\n", file_count);
+    return head_file;
+}
+// 扫描目录并创建索引文件
+static File_Info *scan_and_create_index(const char* path, const char* index_path)
+{
+    Serial.println("Scanning directory to create index...");
+    File_Info *file_list = tf.listDir(path);
+    if (!file_list) {
+        Serial.println("No files found in directory");
+        return NULL;
+    }
+    
+    // 创建索引文件
+    File index_file = tf.open(index_path, FILE_WRITE);
+    if (!index_file) {
+        Serial.println("Failed to create index file");
+        return file_list; // 返回扫描结果，但不保存索引
+    }
+    
+    // 遍历文件列表，写入索引文件（跳过头节点）
+    int file_count = 0;
+    if (file_list && file_list->next_node) {
+        File_Info *current = file_list->next_node;
+        File_Info *first_file = current;
+        
+        do {
+            if (current->file_type == FILE_TYPE_FILE) {
+                index_file.println(current->file_name);
+                file_count++;
+            }
+            current = current->next_node;
+        } while (current != first_file);
+    }
+    
+    index_file.close();
+    Serial.printf("Created index with %d files\n", file_count);
+    return file_list;
+}
+
+
+
 // ==================== 播放器核心 ====================
 
 static void release_player_decoder(void)
@@ -217,7 +359,7 @@ static bool open_video_file(void)
 static bool create_video_decoder(void)
 {
     if (!run_data || !run_data->file) return false;
-    
+        
     release_player_decoder(); // 先释放之前的解码器
     
     if (has_extension(run_data->pfile->file_name, ".mjpeg") || 
@@ -414,11 +556,47 @@ static int media_player_init(AppController *sys)
     run_data->retryCount = 0;
     
     // 扫描视频文件
-    run_data->movie_file = tf.listDir(MOVIE_PATH);
-    if (run_data->movie_file) {
-        run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
+    // run_data->movie_file = tf.listDir(MOVIE_PATH);
+    // if (run_data->movie_file) {
+    //     run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
+    // }
+
+       // 扫描视频文件 - 使用索引文件加速
+    const char* index_path = "/movie/movie.txt";
+    
+    // 先尝试从索引文件加载
+    run_data->movie_file = load_from_index(index_path);
+    
+    // 如果索引加载失败，扫描目录并创建索引
+    if (!run_data->movie_file) {
+        run_data->movie_file = scan_and_create_index(MOVIE_PATH, index_path);
     }
     
+    if (run_data->movie_file) {
+        // 获取第一个文件节点（跳过头节点）
+        if (run_data->movie_file->next_node && 
+            run_data->movie_file->next_node != run_data->movie_file) {
+            run_data->pfile = run_data->movie_file->next_node;
+        } else {
+            run_data->pfile = NULL;
+        }
+        
+        // 如果没有找到有效文件
+        if (!run_data->pfile) {
+            Serial.println("No valid video files found");
+            // 清理并退出
+            if (run_data->movie_file) {
+                release_file_info(run_data->movie_file);
+                run_data->movie_file = NULL;
+            }
+            return -1;
+        }
+        
+        Serial.printf("Found %d video files\n", count_files(run_data->movie_file));
+    } else {
+        Serial.println("No video files found");
+        return -1;
+    }
     // 设置初始CPU频率
     setCpuFrequencyMhz(240);
     
@@ -433,9 +611,6 @@ static int media_player_init(AppController *sys)
 
 static void media_player_process(AppController *sys, const ImuAction *act_info)
 {
-#ifdef MEDIA_PLAYER_DEBUG
-    performance_monitor();
-#endif
     
     if (!handle_user_input(sys, act_info)) return;
     if (!manage_playback(sys)) return;
@@ -444,10 +619,49 @@ static void media_player_process(AppController *sys, const ImuAction *act_info)
     prepare_next_frame();
 }
 
+// static unsigned long last_index_check = 0;
+// unsigned long current_time = GET_SYS_MILLIS();
 static void media_player_background_task(AppController *sys, const ImuAction *act_info)
 {
     // 本函数为后台任务，主控制器会间隔一分钟调用此函数
     // 可以在这里执行一些低优先级的维护任务
+
+    // // 每5分钟检查一次索引是否需要更新
+    // if (current_time - last_index_check > 300000) {
+    //     last_index_check = current_time;
+        
+    //     // 检查movie目录下的文件数量是否与索引匹配
+    //     if (run_data && run_data->movie_file) {
+    //         int indexed_count = count_files(run_data->movie_file);
+            
+    //         // 简单检查：如果目录中的文件数量变化较大，重新创建索引
+    //         // 这里可以更复杂的检查，比如比较文件修改时间等
+    //         File temp_dir = tf.open(MOVIE_PATH);
+    //         if (temp_dir) {
+    //             int actual_count = 0;
+    //             File entry = temp_dir.openNextFile();
+    //             while (entry) {
+    //                 if (!entry.isDirectory()) {
+    //                     actual_count++;
+    //                 }
+    //                 entry = temp_dir.openNextFile();
+    //             }
+    //             temp_dir.close();
+                
+    //             if (abs(actual_count - indexed_count) > 2) { // 允许2个文件的差异
+    //                 Serial.println("Directory changed, updating index...");
+    //                 if (run_data->movie_file) {
+    //                     release_file_info(run_data->movie_file);
+    //                 }
+    //                 run_data->movie_file = scan_and_create_index(MOVIE_PATH, "/movie/movie.txt");
+    //                 if (run_data->movie_file) {
+    //                     run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
 }
 
 static int media_player_exit_callback(void *param)
