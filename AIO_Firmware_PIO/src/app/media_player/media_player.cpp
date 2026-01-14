@@ -41,7 +41,10 @@ struct MediaAppRunData
     unsigned long lastPowerCheckMillis; // 上次功耗检查时间
     unsigned long lastFrameTime;       // 上次帧播放时间
     int movie_pos_increate;
-    File_Info *movie_file; // movie文件夹下的文件指针头
+    File_Info *movie_file; // movie文件夹下的文件指针头，该指针就指向movie自身。
+    // movie_file结构如下 NULL <-- movie -> 1.mjpeg <=> 2.mjpeg <=> 3.mjpeg <=> 1.mjpeg
+    // 注意，1.mjpeg的上一个节点不指向movie，而是最后一个节点构成循环链表。
+    // 而这里的 movie 的上一个节点是空, movie的下一个节点才是循环链表的开始。
     File_Info *pfile;      // 指向当前播放的文件节点
     File file;
     player_state_t state;
@@ -53,6 +56,58 @@ static MP_Config cfg_data;
 static MediaAppRunData *run_data = NULL;
 
 // ==================== 辅助函数 ====================
+
+// ==================== 文件链表释放函数 ====================
+static void release_file_info1(File_Info *head)
+{
+
+    if (!head) return;
+    Serial.printf("正在释放内存1%s\n", head->file_name);
+
+    // 如果是空链表（只有头节点）
+    if (head->next_node == head) {
+        
+        if (head->file_name){ 
+            free(head->file_name);
+            Serial.printf("成功释放只有头节点内存%s\n", head->file_name);
+        }
+        free(head);
+        return;
+    }
+    
+    File_Info *start = head->next_node;
+    File_Info *current = start;
+    
+    do {
+        File_Info *next = current->next_node;
+        
+        // 释放文件名内存
+        if (current->file_name) {
+            //Serial.printf("成功释放内存1a %s\n", current->file_name);
+            free(current->file_name);
+            current->file_name = NULL;
+        }
+        
+        current = next;
+    } while (current && current != start);
+    
+    if (start->file_name) {
+        Serial.printf("成功释放头节点名称内存1 %s\n", start->file_name);
+        free(start->file_name);
+        start->file_name = NULL;
+    }
+    Serial.printf("成功释放首节点内存1\n");
+    free(start);
+
+    // 释放head节点/movie
+    Serial.printf("最后释放head节点内存\n");
+    if(head->file_name){
+        free(head->file_name);
+        head->file_name = NULL;
+    }
+    free(head);
+}
+
 
 // 安全的配置设置函数
 static void set_default_config(MP_Config *cfg)
@@ -196,6 +251,7 @@ static bool file_exists(const char* path)
     return false;
 }
 // 读取索引文件构建文件列表（保持与listDir相同的结构）
+
 static File_Info *load_from_index(const char* index_path)
 {
     File index_file = tf.open(index_path);
@@ -220,7 +276,7 @@ static File_Info *load_from_index(const char* index_path)
     File_Info *tail_file = head_file;
     char line[MAX_FILENAME_LENGTH];
     int file_count = 0;
-    
+    bool allocated_failed = false;
     while (index_file.available()) {
         int bytesRead = index_file.readBytesUntil('\n', line, sizeof(line)-1);
         if (bytesRead > 0) {
@@ -249,6 +305,9 @@ static File_Info *load_from_index(const char* index_path)
             File_Info *new_file = (File_Info *)malloc(sizeof(File_Info));
             if (!new_file) {
                 Serial.println("Memory allocation failed for file info");
+                release_file_info(head_file); // 这个函数会把头节点也清理掉
+                allocated_failed = true;
+                // TODO 这里直接break掉了，之前分配的内存没有释放，有内存泄漏风险
                 break;
             }
             
@@ -266,7 +325,9 @@ static File_Info *load_from_index(const char* index_path)
     }
     
     index_file.close();
-    
+
+    if(allocated_failed) return NULL;
+
     // 将链表设置为循环（与listDir保持一致）
     if (head_file->next_node) {
         // 将最后一个节点的next指向第一个文件节点
@@ -278,7 +339,7 @@ static File_Info *load_from_index(const char* index_path)
         head_file->next_node = head_file;
         head_file->front_node = head_file;
     }
-    
+
     Serial.printf("Loaded %d files from index\n", file_count);
     return head_file;
 }
@@ -385,6 +446,7 @@ static bool create_video_decoder(void)
 
 static bool video_start(bool create_new)
 {
+    
     if (!run_data || !run_data->movie_file) return false;
 
     if (create_new && run_data->pfile) {
@@ -565,7 +627,9 @@ static int media_player_init(AppController *sys)
     const char* index_path = "/movie/movie.txt";
     
     // 先尝试从索引文件加载
+    Serial.printf("加载索引之前 Mem: %d\n",  esp_get_free_heap_size());
     run_data->movie_file = load_from_index(index_path);
+    Serial.printf("加载索引之后 Mem: %d\n",  esp_get_free_heap_size());
     
     // 如果索引加载失败，扫描目录并创建索引
     if (!run_data->movie_file) {
@@ -586,7 +650,7 @@ static int media_player_init(AppController *sys)
             Serial.println("No valid video files found");
             // 清理并退出
             if (run_data->movie_file) {
-                release_file_info(run_data->movie_file);
+                release_file_info1(run_data->movie_file);
                 run_data->movie_file = NULL;
             }
             return -1;
@@ -605,7 +669,7 @@ static int media_player_init(AppController *sys)
         Serial.println("Failed to start video playback");
         return -1;
     }
-    
+
     return 0;
 }
 
@@ -623,68 +687,35 @@ static void media_player_process(AppController *sys, const ImuAction *act_info)
 // unsigned long current_time = GET_SYS_MILLIS();
 static void media_player_background_task(AppController *sys, const ImuAction *act_info)
 {
-    // 本函数为后台任务，主控制器会间隔一分钟调用此函数
-    // 可以在这里执行一些低优先级的维护任务
-
-    // // 每5分钟检查一次索引是否需要更新
-    // if (current_time - last_index_check > 300000) {
-    //     last_index_check = current_time;
-        
-    //     // 检查movie目录下的文件数量是否与索引匹配
-    //     if (run_data && run_data->movie_file) {
-    //         int indexed_count = count_files(run_data->movie_file);
-            
-    //         // 简单检查：如果目录中的文件数量变化较大，重新创建索引
-    //         // 这里可以更复杂的检查，比如比较文件修改时间等
-    //         File temp_dir = tf.open(MOVIE_PATH);
-    //         if (temp_dir) {
-    //             int actual_count = 0;
-    //             File entry = temp_dir.openNextFile();
-    //             while (entry) {
-    //                 if (!entry.isDirectory()) {
-    //                     actual_count++;
-    //                 }
-    //                 entry = temp_dir.openNextFile();
-    //             }
-    //             temp_dir.close();
-                
-    //             if (abs(actual_count - indexed_count) > 2) { // 允许2个文件的差异
-    //                 Serial.println("Directory changed, updating index...");
-    //                 if (run_data->movie_file) {
-    //                     release_file_info(run_data->movie_file);
-    //                 }
-    //                 run_data->movie_file = scan_and_create_index(MOVIE_PATH, "/movie/movie.txt");
-    //                 if (run_data->movie_file) {
-    //                     run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
 }
 
 static int media_player_exit_callback(void *param)
 {
     Serial.println("Media player exiting...");
     
+    // 检查释放了多少内存
+    Serial.printf("释放decoder之前 Mem: %d\n",  esp_get_free_heap_size());
     // 结束播放
     release_player_decoder();
+    Serial.printf("释放decoder之后 Mem: %d\n",  esp_get_free_heap_size());
     
+    Serial.printf("释放run_data之前 Mem: %d\n",  esp_get_free_heap_size());
     if (run_data) {
         if (run_data->file) {
             run_data->file.close();
         }
         
         // 释放文件循环队列
+        Serial.printf("释放run_data->movie_file之前 Mem: %d\n",  esp_get_free_heap_size());
         if (run_data->movie_file) {
-            release_file_info(run_data->movie_file);
+            release_file_info1(run_data->movie_file);
         }
+        Serial.printf("释放run_data->movie_file之后 Mem: %d\n",  esp_get_free_heap_size());
         
         free(run_data);
         run_data = NULL;
     }
-    
+    Serial.printf("释放run_data之后 Mem: %d\n",  esp_get_free_heap_size());
     return 0;
 }
 
