@@ -17,21 +17,26 @@ static fs::FS *tf_vfs = NULL;
 
 void release_file_info(File_Info *info)
 {
+
     File_Info *cur_node = NULL; // 记录当前节点
-    if (NULL == info)
-    {
-        return;
-    }
-    for (cur_node = info->next_node; NULL != cur_node;)
-    {
+    if (NULL == info) return;
+
+    for (cur_node = info->next_node; NULL != cur_node;) {
         // 判断是不是循环一圈回来了
-        if (info->next_node == cur_node)
-        {
-            break;
-        }
+        if (info->next_node == cur_node) break;
+
         File_Info *tmp = cur_node; // 保存准备删除的节点
         cur_node = cur_node->next_node;
+        if(tmp->file_name) {
+            Serial.printf("正在释放%s\n", tmp->file_name);
+            free(tmp->file_name); 
+        }
         free(tmp);
+    }
+    Serial.print("最后释放头节点");
+    if(info->file_name) {
+        Serial.println(info->file_name);
+        free(info->file_name);
     }
     free(info);
 }
@@ -203,7 +208,7 @@ File_Info *SdCard::listDir(const char *dirname)
     // 头节点的创建（头节点用来记录此文件夹）
     File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
     head_file->file_type = FILE_TYPE_FOLDER;
-    head_file->file_name = (char *)malloc(dir_len);
+    head_file->file_name = (char *)malloc(dir_len); // file_name也要释放内存
     // 将文件夹名赋值给头节点（当作这个节点的文件名）
     strncpy(head_file->file_name, dirname, dir_len - 1);
     head_file->file_name[dir_len - 1] = 0;
