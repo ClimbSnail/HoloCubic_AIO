@@ -58,18 +58,17 @@ static MediaAppRunData *run_data = NULL;
 // ==================== 辅助函数 ====================
 
 // ==================== 文件链表释放函数 ====================
+/*
 static void release_file_info1(File_Info *head)
 {
 
     if (!head) return;
-    Serial.printf("正在释放内存1%s\n", head->file_name);
 
     // 如果是空链表（只有头节点）
     if (head->next_node == head) {
         
         if (head->file_name){ 
             free(head->file_name);
-            Serial.printf("成功释放只有头节点内存%s\n", head->file_name);
         }
         free(head);
         return;
@@ -83,31 +82,31 @@ static void release_file_info1(File_Info *head)
         
         // 释放文件名内存
         if (current->file_name) {
-            //Serial.printf("成功释放内存1a %s\n", current->file_name);
             free(current->file_name);
             current->file_name = NULL;
         }
-        
+        // 释放节点本身
+        if (current != start) {  // 注意：start节点在循环外单独释放
+            free(current);
+        }
         current = next;
     } while (current && current != start);
     
     if (start->file_name) {
-        Serial.printf("成功释放头节点名称内存1 %s\n", start->file_name);
         free(start->file_name);
         start->file_name = NULL;
     }
-    Serial.printf("成功释放首节点内存1\n");
+
     free(start);
 
     // 释放head节点/movie
-    Serial.printf("最后释放head节点内存\n");
     if(head->file_name){
         free(head->file_name);
         head->file_name = NULL;
     }
     free(head);
 }
-
+*/
 
 // 安全的配置设置函数
 static void set_default_config(MP_Config *cfg)
@@ -293,7 +292,6 @@ static File_Info *load_from_index(const char* index_path)
             // 验证文件实际存在
             // char full_path[MAX_FILENAME_LENGTH];
             // snprintf(full_path, sizeof(full_path), "%s/%s", MOVIE_PATH, line);
-
             // 不要验证了，播放的时候再验证，不然每一个都验证相当于全盘扫面
             // TODO 播放的时候验证文件是否存在，不存在则从索引里面删除
             // if (!file_exists(full_path)) {
@@ -343,6 +341,7 @@ static File_Info *load_from_index(const char* index_path)
     Serial.printf("Loaded %d files from index\n", file_count);
     return head_file;
 }
+
 // 扫描目录并创建索引文件
 static File_Info *scan_and_create_index(const char* path, const char* index_path)
 {
@@ -592,11 +591,11 @@ static void prepare_next_frame(void)
 static int media_player_init(AppController *sys)
 {
     // 调整RGB模式
-    RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
-                            255, 255, 32,
-                            1, 1, 1,
-                            150, 200, 1, 50};
-    set_rgb_and_run(&rgb_setting);
+    // RgbParam rgb_setting = {LED_MODE_HSV, 0, 128, 32,
+    //                         255, 255, 32,
+    //                         1, 1, 1,
+    //                         150, 200, 1, 50};
+    // set_rgb_and_run(&rgb_setting);
 
     // 读取配置
     read_config(&cfg_data);
@@ -623,14 +622,10 @@ static int media_player_init(AppController *sys)
     //     run_data->pfile = get_next_file(run_data->movie_file->next_node, 1);
     // }
 
-       // 扫描视频文件 - 使用索引文件加速
+    // 扫描视频文件 - 使用索引文件加速
     const char* index_path = "/movie/movie.txt";
-    
     // 先尝试从索引文件加载
-    Serial.printf("加载索引之前 Mem: %d\n",  esp_get_free_heap_size());
     run_data->movie_file = load_from_index(index_path);
-    Serial.printf("加载索引之后 Mem: %d\n",  esp_get_free_heap_size());
-    
     // 如果索引加载失败，扫描目录并创建索引
     if (!run_data->movie_file) {
         run_data->movie_file = scan_and_create_index(MOVIE_PATH, index_path);
@@ -650,7 +645,7 @@ static int media_player_init(AppController *sys)
             Serial.println("No valid video files found");
             // 清理并退出
             if (run_data->movie_file) {
-                release_file_info1(run_data->movie_file);
+                release_file_info(run_data->movie_file);
                 run_data->movie_file = NULL;
             }
             return -1;
@@ -694,28 +689,20 @@ static int media_player_exit_callback(void *param)
     Serial.println("Media player exiting...");
     
     // 检查释放了多少内存
-    Serial.printf("释放decoder之前 Mem: %d\n",  esp_get_free_heap_size());
     // 结束播放
     release_player_decoder();
-    Serial.printf("释放decoder之后 Mem: %d\n",  esp_get_free_heap_size());
-    
-    Serial.printf("释放run_data之前 Mem: %d\n",  esp_get_free_heap_size());
     if (run_data) {
         if (run_data->file) {
             run_data->file.close();
         }
         
         // 释放文件循环队列
-        Serial.printf("释放run_data->movie_file之前 Mem: %d\n",  esp_get_free_heap_size());
         if (run_data->movie_file) {
-            release_file_info1(run_data->movie_file);
+            release_file_info(run_data->movie_file);
         }
-        Serial.printf("释放run_data->movie_file之后 Mem: %d\n",  esp_get_free_heap_size());
-        
         free(run_data);
         run_data = NULL;
     }
-    Serial.printf("释放run_data之后 Mem: %d\n",  esp_get_free_heap_size());
     return 0;
 }
 

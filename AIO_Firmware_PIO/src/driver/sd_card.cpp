@@ -15,31 +15,54 @@ char file_name_list[DIR_FILE_NUM][DIR_FILE_NAME_MAX_LEN];
 
 static fs::FS *tf_vfs = NULL;
 
-void release_file_info(File_Info *info)
+// ==================== 文件链表释放函数 ====================
+ void release_file_info(File_Info *head)
 {
 
-    File_Info *cur_node = NULL; // 记录当前节点
-    if (NULL == info) return;
-
-    for (cur_node = info->next_node; NULL != cur_node;) {
-        // 判断是不是循环一圈回来了
-        if (info->next_node == cur_node) break;
-
-        File_Info *tmp = cur_node; // 保存准备删除的节点
-        cur_node = cur_node->next_node;
-        if(tmp->file_name) {
-            Serial.printf("正在释放%s\n", tmp->file_name);
-            free(tmp->file_name); 
+    if (!head) return;
+    
+    // 检查是否是空链表（只有头节点）
+    if (head->next_node == head) {
+        if (head->file_name) { 
+            free(head->file_name);
         }
-        free(tmp);
+        free(head);
+        return;
     }
-    Serial.print("最后释放头节点");
-    if(info->file_name) {
-        Serial.println(info->file_name);
-        free(info->file_name);
+    
+    // 断开循环链表，变成单向链表
+    // 获取第一个文件节点
+    File_Info *first_file = head->next_node;
+    // 获取最后一个文件节点（通过第一个节点的front_node）
+    File_Info *last_file = first_file->front_node;
+    
+    // 断开循环：将最后一个节点的next置为NULL
+    if (last_file) {
+        last_file->next_node = NULL;
     }
-    free(info);
+    
+    // 现在可以安全遍历单向链表
+    File_Info *current = first_file;
+    while (current) {
+        File_Info *next = current->next_node;
+        
+        if (current->file_name) {
+            free(current->file_name);
+            current->file_name = NULL;
+        }
+        
+        free(current);
+        current = next;
+    }
+    
+    // 最后释放头节点
+    if (head->file_name) {
+        free(head->file_name);
+        head->file_name = NULL;
+    }
+    free(head);
 }
+
 
 void join_path(char *dst_path, const char *pre_path, const char *rear_path)
 {
@@ -203,15 +226,16 @@ File_Info *SdCard::listDir(const char *dirname)
         return NULL;
     }
 
-    int dir_len = strlen(dirname) + 1;
-
     // 头节点的创建（头节点用来记录此文件夹）
     File_Info *head_file = (File_Info *)malloc(sizeof(File_Info));
+    if (!head_file) return NULL;
+    
     head_file->file_type = FILE_TYPE_FOLDER;
-    head_file->file_name = (char *)malloc(dir_len); // file_name也要释放内存
-    // 将文件夹名赋值给头节点（当作这个节点的文件名）
-    strncpy(head_file->file_name, dirname, dir_len - 1);
-    head_file->file_name[dir_len - 1] = 0;
+    head_file->file_name = strdup(dirname); // 使用strdup简化
+    if (!head_file->file_name) {
+        free(head_file);
+        return NULL;
+    }
     head_file->front_node = NULL;
     head_file->next_node = NULL;
 
@@ -220,47 +244,54 @@ File_Info *SdCard::listDir(const char *dirname)
     File file = root.openNextFile();
     while (file)
     {
-        // if (levels)
-        // {
-        //     listDir(file.name(), levels - 1);
-        // }
         const char *fn = get_file_basename(file.name());
-        // 字符数组长度为实际字符串长度+1
         int filename_len = strlen(fn);
         if (filename_len > FILENAME_MAX_LEN - 10)
         {
             Serial.println("Filename is too long.");
+            file = root.openNextFile();
+            continue;
         }
 
         // 创建新节点
-        file_node->next_node = (File_Info *)malloc(sizeof(File_Info));
-        // 让下一个节点指向当前节点
-        // （此时第一个节点的front_next会指向head节点，等遍历结束再调一下）
-        file_node->next_node->front_node = file_node;
-        // file_node指针移向节点
-        file_node = file_node->next_node;
+        File_Info *new_node = (File_Info *)malloc(sizeof(File_Info));
+        if (!new_node) break;
+        
+        new_node->front_node = file_node;
+        new_node->next_node = NULL;
+        
+        // 使用strdup分配并复制文件名
+        new_node->file_name = strdup(fn);
+        if (!new_node->file_name) {
+            free(new_node);
+            break;
+        }
 
-        // 船家创建新节点的文件名
-        file_node->file_name = (char *)malloc(filename_len);
-        strncpy(file_node->file_name, fn, filename_len); //
-        file_node->file_name[filename_len] = 0;          //
-        // 下一个节点赋空
-        file_node->next_node = NULL;
-
-        char tmp_file_name[FILENAME_MAX_LEN] = {0};
-        // sprintf(tmp_file_name, "%s/%s", dirname, file_node->file_name);
-        join_path(tmp_file_name, dirname, file_node->file_name);
+        // 设置文件类型
         if (file.isDirectory())
         {
-            file_node->file_type = FILE_TYPE_FOLDER;
-            // 类型为文件夹
+            new_node->file_type = FILE_TYPE_FOLDER;
+        }
+        else
+        {
+            new_node->file_type = FILE_TYPE_FILE;
+        }
+
+        // 连接到链表
+        file_node->next_node = new_node;
+        file_node = new_node;
+
+        // 打印信息
+        char tmp_file_name[FILENAME_MAX_LEN] = {0};
+        join_path(tmp_file_name, dirname, file_node->file_name);
+        
+        if (file_node->file_type == FILE_TYPE_FOLDER)
+        {
             Serial.print("  DIR : ");
             Serial.println(tmp_file_name);
         }
         else
         {
-            file_node->file_type = FILE_TYPE_FILE;
-            // 类型为文件
             Serial.print("  FILE: ");
             Serial.print(tmp_file_name);
             Serial.print("  SIZE: ");
@@ -270,13 +301,13 @@ File_Info *SdCard::listDir(const char *dirname)
         file = root.openNextFile();
     }
 
-    if (NULL != head_file->next_node)
+    // 处理循环链表连接
+    if (head_file->next_node)
     {
-        // 将最后一个节点的next_node指针指向 head_file->next_node
         file_node->next_node = head_file->next_node;
-        // 调整第一个数据节点的front_node指针（非head节点）
         head_file->next_node->front_node = file_node;
     }
+    
     return head_file;
 }
 
