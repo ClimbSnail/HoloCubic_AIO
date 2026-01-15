@@ -107,7 +107,11 @@ static int picture_init(AppController *sys)
     // 获取配置信息
     read_config(&cfg_data);
     // 初始化运行时参数
-    run_data = (PictureAppRunData *)malloc(sizeof(PictureAppRunData));
+    run_data = (PictureAppRunData *)calloc(1, sizeof(PictureAppRunData));
+    if (run_data == NULL) {
+        return -1; // 内存分配失败
+    }
+
     run_data->pic_perMillis = 0;
     run_data->image_file = NULL;
     run_data->pfile = NULL;
@@ -181,7 +185,7 @@ static void picture_process(AppController *sys,
         // Draw the image, top left at 0,0
         Serial.print(F("Decode image: "));
         Serial.println(file_name);
-        if (NULL != strstr(file_name, ".jpg") || NULL != strstr(file_name, ".JPG"))
+        if (NULL != strstr(file_name, ".jpg") || NULL != strstr(file_name, ".JPG") || NULL != strstr(file_name, ".JEPG") || NULL != strstr(file_name, ".jpeg") )
         {
             // 直接解码jpg格式的图片
             TJpgDec.drawSdJpg(0, 0, file_name);
