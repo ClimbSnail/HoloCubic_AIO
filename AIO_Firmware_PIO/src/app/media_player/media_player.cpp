@@ -217,7 +217,7 @@ static File_Info *get_next_file(File_Info *p_cur_file, int direction)
         }
         pfile = (direction == 1) ? pfile->next_node : pfile->front_node;
     }
-    return NULL;
+    return pfile;
 }
 
 // 辅助函数：计算文件数量（跳过头节点）
