@@ -6,7 +6,7 @@
 
 #define ANNIVERSARY_APP_NAME "Anniversary"
 #define MAX_ANNIVERSARY_CNT 2
-#define TIME_API "http://api.m.taobao.com/rest/api3.do?api=mtop.common.gettimestamp"
+#define TIME_API "http://acs.m.taobao.com/gw/mtop.common.getTimestamp/"
 
 bool tmfromString(const char *date_str, struct tm *date);
 
