@@ -410,14 +410,38 @@ static void get_daliyWeather(short maxT[], short minT[])
 static void updateTime_RTC(long long timestamp)
 {
     struct TimeStr t;
-    run_data->g_rtc.setTime(timestamp / 1000);
-    t.month = run_data->g_rtc.getMonth() + 1;
-    t.day = run_data->g_rtc.getDay();
-    t.hour = run_data->g_rtc.getHour(true);
-    t.minute = run_data->g_rtc.getMinute();
-    t.second = run_data->g_rtc.getSecond();
-    t.weekday = run_data->g_rtc.getDayofWeek();
-    // Serial.printf("time : %d-%d-%d\n",t.hour, t.minute, t.second);
+    struct tm timeinfo;
+    
+    // 方法1：直接使用系统时间（已由NTP设置）
+    if (getLocalTime(&timeinfo)) {
+        // t.year = timeinfo.tm_year + 1900;
+        t.month = timeinfo.tm_mon + 1;
+        t.day = timeinfo.tm_mday;
+        t.hour = timeinfo.tm_hour;
+        t.minute = timeinfo.tm_min;
+        t.second = timeinfo.tm_sec;
+        t.weekday = timeinfo.tm_wday;
+        
+        // 调整周日显示（0=周日 -> 7）
+        if (t.weekday == 0) {
+            t.weekday = 7;
+        }
+    } 
+    // 方法2：如果系统时间不可用，使用ESP32Time（但需要修正）
+    else {
+        // 设置时间到 RTC
+        run_data->g_rtc.setTime(timestamp / 1000);
+        
+        // 从 RTC 读取时间
+        t.month = run_data->g_rtc.getMonth() + 1;
+        t.day = run_data->g_rtc.getDay();
+        t.hour = run_data->g_rtc.getHour(true); // 确保使用 true 参数
+        t.minute = run_data->g_rtc.getMinute();
+        t.second = run_data->g_rtc.getSecond();
+        t.weekday = run_data->g_rtc.getDayofWeek();
+        // t.year = run_data->g_rtc.getYear() + 1900;
+    }
+    
     display_time(t, LV_SCR_LOAD_ANIM_NONE);
 }
 
