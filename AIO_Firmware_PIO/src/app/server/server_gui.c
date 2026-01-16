@@ -30,6 +30,8 @@ void server_gui_init(void)
     lv_style_set_text_font(&label_style, &lv_font_montserrat_24);
 }
 
+// TODO 内存泄漏 这个函数或者(del函数)有200B左右的内存泄漏（不确定）
+// 每次进出app内存变化： 67604 67464 67132 65980 65884 65744 65604
 void display_setting_init(void)
 {
     lv_obj_t *act_obj = lv_scr_act(); // 获取当前活动页
@@ -67,6 +69,7 @@ void display_setting_init(void)
 
     lv_scr_load(main_scr);
 }
+
 
 void display_setting(const char *title, const char *domain,
                      const char *info, const char *ap_ip,

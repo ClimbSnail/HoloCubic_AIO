@@ -17,19 +17,30 @@ String webpage_footer = "";
 
 void Send_HTML(const String &content)
 {
-    server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    server.sendHeader("Pragma", "no-cache");
-    server.sendHeader("Expires", "-1");
-    server.setContentLength(CONTENT_LENGTH_UNKNOWN);
-    // Empty content inhibits Content-length header so we have to close the socket ourselves.
-    server.send(200, "text/html", "");
-    server.sendContent(webpage_header);
-
-    server.sendContent(content);
-    server.sendContent(webpage_footer);
-
-    server.sendContent("");
-    server.client().stop(); // Stop is needed because no content length was sent
+    // 检查客户端是否仍然连接
+    if (!server->client().connected()) {
+        return;
+    }
+    
+    // 使用局部变量减少全局变量使用
+    String fullResponse = "";
+    fullResponse.reserve(webpage_header.length() + content.length() + webpage_footer.length() + 100);
+    
+    fullResponse = webpage_header + content + webpage_footer;
+    
+    server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    server->sendHeader("Pragma", "no-cache");
+    server->sendHeader("Expires", "-1");
+    server->setContentLength(fullResponse.length());
+    
+    // 使用sendContent而不是多个sendContent调用
+    server->send(200, "text/html", fullResponse);
+    
+    // 不需要手动停止客户端，服务器会自动管理
+    // server->client().stop(); // 移除这一行
+    
+    // 清理局部变量
+    fullResponse = "";
 }
 
 String file_size(int bytes)
@@ -558,35 +569,35 @@ void saveSysConf(void)
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"ssid_0",
-                            (void *)server.arg("ssid_0").c_str());
+                            (void *)server->arg("ssid_0").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"password_0",
-                            (void *)server.arg("password_0").c_str());
+                            (void *)server->arg("password_0").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"power_mode",
-                            (void *)server.arg("power_mode").c_str());
+                            (void *)server->arg("power_mode").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"backLight",
-                            (void *)server.arg("backLight").c_str());
+                            (void *)server->arg("backLight").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"rotation",
-                            (void *)server.arg("rotation").c_str());
+                            (void *)server->arg("rotation").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mpu_order",
-                            (void *)server.arg("mpu_order").c_str());
+                            (void *)server->arg("mpu_order").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"auto_calibration_mpu",
-                            (void *)server.arg("auto_calibration_mpu").c_str());
+                            (void *)server->arg("auto_calibration_mpu").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"auto_start_app",
-                            (void *)server.arg("auto_start_app").c_str());
+                            (void *)server->arg("auto_start_app").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -599,28 +610,28 @@ void saveRgbConf(void)
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"min_brightness",
-                            (void *)server.arg("min_brightness").c_str());
+                            (void *)server->arg("min_brightness").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"max_brightness",
-                            (void *)server.arg("max_brightness").c_str());
+                            (void *)server->arg("max_brightness").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"time",
-                            (void *)server.arg("time").c_str());
+                            (void *)server->arg("time").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"brightness_night_mode_specified",
-                            (void *)server.arg("brightness_night_mode_specified").c_str());
+                            (void *)server->arg("brightness_night_mode_specified").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"brightness_night_mode_start",
-                            (void *)server.arg("brightness_night_mode_start").c_str());
+                            (void *)server->arg("brightness_night_mode_start").c_str());
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"brightness_night_mode_end",
                  
-                            (void *)server.arg("brightness_night_mode_end").c_str());
+                            (void *)server->arg("brightness_night_mode_end").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "AppCtrl", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -633,23 +644,23 @@ void saveWeatherConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"tianqi_url",
-                            (void *)server.arg("tianqi_url").c_str());
+                            (void *)server->arg("tianqi_url").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"tianqi_city_code",
-                            (void *)server.arg("tianqi_city_code").c_str());
+                            (void *)server->arg("tianqi_city_code").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"tianqi_api_key",
-                            (void *)server.arg("tianqi_api_key").c_str());
+                            (void *)server->arg("tianqi_api_key").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weatherUpdataInterval",
-                            (void *)server.arg("weatherUpdataInterval").c_str());
+                            (void *)server->arg("weatherUpdataInterval").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"timeUpdataInterval",
-                            (void *)server.arg("timeUpdataInterval").c_str());
+                            (void *)server->arg("timeUpdataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Weather", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -662,23 +673,23 @@ void saveWeatherOldConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Weather Old",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"cityname",
-                            (void *)server.arg("cityname").c_str());
+                            (void *)server->arg("cityname").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather Old",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"language",
-                            (void *)server.arg("language").c_str());
+                            (void *)server->arg("language").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather Old",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weather_key",
-                            (void *)server.arg("weather_key").c_str());
+                            (void *)server->arg("weather_key").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather Old",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"weatherUpdataInterval",
-                            (void *)server.arg("weatherUpdataInterval").c_str());
+                            (void *)server->arg("weatherUpdataInterval").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Weather Old",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"timeUpdataInterval",
-                            (void *)server.arg("timeUpdataInterval").c_str());
+                            (void *)server->arg("timeUpdataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Weather Old", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -690,11 +701,11 @@ void saveBiliConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Bili",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"bili_uid",
-                            (void *)server.arg("bili_uid").c_str());
+                            (void *)server->arg("bili_uid").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Bili",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"updataInterval",
-                            (void *)server.arg("updataInterval").c_str());
+                            (void *)server->arg("updataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Bili", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -706,11 +717,11 @@ void saveStockConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Stock",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"stock_id",
-                            (void *)server.arg("stock_id").c_str());
+                            (void *)server->arg("stock_id").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Stock",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"updataInterval",
-                            (void *)server.arg("updataInterval").c_str());
+                            (void *)server->arg("updataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Stock", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -722,7 +733,7 @@ void savePictureConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Picture",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"switchInterval",
-                            (void *)server.arg("switchInterval").c_str());
+                            (void *)server->arg("switchInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Picture", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -734,11 +745,11 @@ void saveMediaConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Media",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"switchFlag",
-                            (void *)server.arg("switchFlag").c_str());
+                            (void *)server->arg("switchFlag").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Media",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"powerFlag",
-                            (void *)server.arg("powerFlag").c_str());
+                            (void *)server->arg("powerFlag").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Media", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -750,7 +761,7 @@ void saveScreenConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Screen share",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"powerFlag",
-                            (void *)server.arg("powerFlag").c_str());
+                            (void *)server->arg("powerFlag").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Screen share", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -762,27 +773,27 @@ void saveHeartbeatConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"role",
-                            (void *)server.arg("role").c_str());
+                            (void *)server->arg("role").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"qq_num",
-                            (void *)server.arg("qq_num").c_str());
+                            (void *)server->arg("qq_num").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_server",
-                            (void *)server.arg("mqtt_server").c_str());
+                            (void *)server->arg("mqtt_server").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_port",
-                            (void *)server.arg("mqtt_port").c_str());
+                            (void *)server->arg("mqtt_port").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_user",
-                            (void *)server.arg("mqtt_user").c_str());
+                            (void *)server->arg("mqtt_user").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"mqtt_password",
-                            (void *)server.arg("mqtt_password").c_str());
+                            (void *)server->arg("mqtt_password").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Heartbeat", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -794,19 +805,19 @@ void saveAnniversaryConf(void)
     app_controller->send_to(SERVER_APP_NAME, "Anniversary",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"event_name0",
-                            (void *)server.arg("event_name0").c_str());
+                            (void *)server->arg("event_name0").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Anniversary",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"target_date0",
-                            (void *)server.arg("target_date0").c_str());
+                            (void *)server->arg("target_date0").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Anniversary",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"event_name1",
-                            (void *)server.arg("event_name1").c_str());
+                            (void *)server->arg("event_name1").c_str());
     app_controller->send_to(SERVER_APP_NAME, "Anniversary",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"target_date1",
-                            (void *)server.arg("target_date1").c_str());
+                            (void *)server->arg("target_date1").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "Anniversary", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -818,11 +829,11 @@ void savePCResourceConf(void)
     app_controller->send_to(SERVER_APP_NAME, "PC Resource",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"pc_ipaddr",
-                            (void *)server.arg("pc_ipaddr").c_str());
+                            (void *)server->arg("pc_ipaddr").c_str());
     app_controller->send_to(SERVER_APP_NAME, "PC Resource",
                             APP_MESSAGE_SET_PARAM,
                             (void *)"sensorUpdataInterval",
-                            (void *)server.arg("sensorUpdataInterval").c_str());
+                            (void *)server->arg("sensorUpdataInterval").c_str());
     // 持久化数据
     app_controller->send_to(SERVER_APP_NAME, "PC Resource", APP_MESSAGE_WRITE_CFG,
                             NULL, NULL);
@@ -840,7 +851,7 @@ void File_Delete()
 
 void delete_result(void)
 {
-    String del_file = server.arg("delete_filepath");
+    String del_file = server->arg("delete_filepath");
     boolean ret = tf.deleteFile(del_file);
     if (ret)
     {
@@ -857,10 +868,10 @@ void delete_result(void)
 
 void File_Download()
 { // This gets called twice, the first pass selects the input, the second pass then processes the command line arguments
-    if (server.args() > 0)
+    if (server->args() > 0)
     { // Arguments were received
-        if (server.hasArg("download"))
-            sd_file_download(server.arg(0));
+        if (server->hasArg("download"))
+            sd_file_download(server->arg(0));
     }
     else
         SelectInput("Enter filename to download", "download", "download");
@@ -873,10 +884,10 @@ void sd_file_download(const String &filename)
         File download = tf.open("/" + filename);
         if (download)
         {
-            server.sendHeader("Content-Type", "text/text");
-            server.sendHeader("Content-Disposition", "attachment; filename=" + filename);
-            server.sendHeader("Connection", "close");
-            server.streamFile(download, "application/octet-stream");
+            server->sendHeader("Content-Type", "text/text");
+            server->sendHeader("Content-Disposition", "attachment; filename=" + filename);
+            server->sendHeader("Connection", "close");
+            server->streamFile(download, "application/octet-stream");
             download.close();
         }
         else
@@ -897,13 +908,13 @@ void File_Upload()
                "<br><button class='buttons' style='width:10%' type='submit'>Upload File</button><br>"
                "<a href='/'>[Back]</a><br><br>";
     webpage += webpage_footer;
-    server.send(200, "text/html", webpage);
+    server->send(200, "text/html", webpage);
 }
 
 File UploadFile;
 void handleFileUpload()
 {                                                   // upload a new file to the Filing system
-    HTTPUpload &uploadFileStream = server.upload(); // See https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WebServer/srcv
+    HTTPUpload &uploadFileStream = server->upload(); // See https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266WebServer/srcv
                                                     // For further information on 'status' structure, there are other reasons such as a failed transfer that could be used
     String filename = uploadFileStream.filename;
     if (uploadFileStream.status == UPLOAD_FILE_START)
@@ -935,7 +946,7 @@ void handleFileUpload()
             webpage += F("<h2>File Size: ");
             webpage += file_size(uploadFileStream.totalSize) + "</h2><br>";
             webpage += webpage_footer;
-            server.send(200, "text/html", webpage);
+            server->send(200, "text/html", webpage);
             tf.listDir("/image", 250);
         }
         else

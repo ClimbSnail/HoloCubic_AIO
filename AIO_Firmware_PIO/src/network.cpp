@@ -142,6 +142,28 @@ boolean Network::close_wifi(void)
 
 boolean Network::open_ap(const char *ap_ssid, const char *ap_password)
 {
+        // 先检测AP是否已经开启
+    if (WiFi.getMode() & WIFI_MODE_AP) {
+        // 检查AP是否真的在运行（有IP地址）
+        IPAddress currentIP = WiFi.softAPIP();
+        if (currentIP != IPAddress(0,0,0,0)) {
+            Serial.println(F("\nAP is already running"));
+            Serial.print(F("Current AP IP: "));
+            Serial.println(currentIP);
+            
+            // 重置超时计时器
+            ap_timeout = 300;
+            
+            // 检查是否需要更新AP配置（SSID/密码是否相同）
+            String currentSSID = WiFi.softAPSSID();
+            if (currentSSID != String(ap_ssid)) {
+                Serial.println(F("AP SSID changed, restarting AP..."));
+            } else {
+                return true; // AP已在运行，直接返回成功
+            }
+        }
+    }
+    
     WiFi.enableAP(true); // 配置为AP模式
     // 修改主机名
     WiFi.setHostname(HOST_NAME);

@@ -8,8 +8,7 @@
 
 #define SERVER_REFLUSH_INTERVAL 5000UL // 配置界面重新刷新时间(5s)
 #define DNS_PORT 53                    // DNS端口
-WebServer server(80);
-
+WebServer *server = nullptr;
 // DNSServer dnsServer;
 
 struct ServerAppRunData
@@ -23,109 +22,133 @@ static ServerAppRunData *run_data = NULL;
 
 void start_web_config()
 {
+    if (server  == nullptr) {
+        server = new WebServer(80);
+    }
+
     // 首页
-    server.on("/", HTTP_GET, HomePage);
+    server->on("/", HTTP_GET, HomePage);
 
     init_page_header();
     init_page_footer();
-    server.on("/download", File_Download);
-    server.on("/upload", File_Upload);
-    server.on("/delete", File_Delete);
-    server.on("/delete_result", delete_result);
+    server->on("/download", File_Download);
+    server->on("/upload", File_Upload);
+    server->on("/delete", File_Delete);
+    server->on("/delete_result", delete_result);
 
-    server.on("/sys_setting", sys_setting);
-    server.on("/rgb_setting", rgb_setting);
+    server->on("/sys_setting", sys_setting);
+    server->on("/rgb_setting", rgb_setting);
 #if APP_WEATHER_USE
-    server.on("/weather_setting", weather_setting);
+    server->on("/weather_setting", weather_setting);
 #endif
 #if APP_WEATHER_OLD_USE
-    server.on("/weather_old_setting", weather_old_setting);
+    server->on("/weather_old_setting", weather_old_setting);
 #endif
 #if APP_BILIBILI_FANS_USE
-    server.on("/bili_setting", bili_setting);
+    server->on("/bili_setting", bili_setting);
 #endif
 #if APP_STOCK_MARKET_USE
-    server.on("/stock_setting", stock_setting);
+    server->on("/stock_setting", stock_setting);
 #endif
 #if APP_PICTURE_USE
-    server.on("/picture_setting", picture_setting);
+    server->on("/picture_setting", picture_setting);
 #endif
 #if APP_MEDIA_PLAYER_USE
-    server.on("/media_setting", media_setting);
+    server->on("/media_setting", media_setting);
 #endif
 #if APP_SCREEN_SHARE_USE
-    server.on("/screen_setting", screen_setting);
+    server->on("/screen_setting", screen_setting);
 #endif
 #if APP_HEARTBEAT_USE
-    server.on("/heartbeat_setting", heartbeat_setting);
+    server->on("/heartbeat_setting", heartbeat_setting);
 #endif
 #if APP_ANNIVERSARY_USE
-    server.on("/anniversary_setting", anniversary_setting);
+    server->on("/anniversary_setting", anniversary_setting);
 #endif
 #if APP_PC_RESOURCE_USE
-    server.on("/pc_resource_setting", pc_resource_setting);
+    server->on("/pc_resource_setting", pc_resource_setting);
 #endif
 
-    server.on(
+    server->on(
         "/fupload", HTTP_POST,
         []()
-        { server.send(200); },
+        { server->send(200); },
         handleFileUpload);
 
     // 连接
-    server.on("/saveSysConf", saveSysConf);
-    server.on("/saveRgbConf", saveRgbConf);
+    server->on("/saveSysConf", saveSysConf);
+    server->on("/saveRgbConf", saveRgbConf);
 #if APP_WEATHER_USE
-    server.on("/saveWeatherConf", saveWeatherConf);
+    server->on("/saveWeatherConf", saveWeatherConf);
 #endif
 #if APP_WEATHER_OLD_USE
-    server.on("/saveWeatherOldConf", saveWeatherOldConf);
+    server->on("/saveWeatherOldConf", saveWeatherOldConf);
 #endif
 #if APP_BILIBILI_FANS_USE
-    server.on("/saveBiliConf", saveBiliConf);
+    server->on("/saveBiliConf", saveBiliConf);
 #endif
 #if APP_STOCK_MARKET_USE
-    server.on("/saveStockConf", saveStockConf);
+    server->on("/saveStockConf", saveStockConf);
 #endif
 #if APP_PICTURE_USE
-    server.on("/savePictureConf", savePictureConf);
+    server->on("/savePictureConf", savePictureConf);
 #endif
 #if APP_MEDIA_PLAYER_USE
-    server.on("/saveMediaConf", saveMediaConf);
+    server->on("/saveMediaConf", saveMediaConf);
 #endif
 #if APP_SCREEN_SHARE_USE
-    server.on("/saveScreenConf", saveScreenConf);
+    server->on("/saveScreenConf", saveScreenConf);
 #endif
 #if APP_HEARTBEAT_USE
-    server.on("/saveHeartbeatConf", saveHeartbeatConf);
+    server->on("/saveHeartbeatConf", saveHeartbeatConf);
 #endif
 #if APP_ANNIVERSARY_USE
-    server.on("/saveAnniversaryConf", saveAnniversaryConf);
+    server->on("/saveAnniversaryConf", saveAnniversaryConf);
 #endif
 #if APP_PC_RESOURCE_USE
-    server.on("/savePCResourceConf", savePCResourceConf);
+    server->on("/savePCResourceConf", savePCResourceConf);
 #endif
-
-    server.begin();
+    // Serial.printf("server.begin()之前 Mem: %d\n",  esp_get_free_heap_size());
+    server->begin();
+    // Serial.printf("server.begin()之后 Mem: %d\n",  esp_get_free_heap_size());
+    //LOG: 创建server之前 Mem: 72172
+    //LOG: 创建server之后 Mem: 71912
     // MDNS.addService("http", "tcp", 80);
     Serial.println("HTTP server started");
 
-    // dnsServer.start(DNS_PORT, "*", gateway);
+    // dnsserver->start(DNS_PORT, "*", gateway);
 }
+
 
 void stop_web_config()
 {
     run_data->web_start = 0;
     run_data->req_sent = 0;
-    server.stop();
-    server.close();
+    if(server!=nullptr) {
+        server->stop();
+        server->close();
+        // Serial.printf("释放server之前 Mem: %d\n",  esp_get_free_heap_size());
+        // LOG: 释放server之前 Mem: 62708
+        delete server;
+        // Serial.printf("释放server之后 Mem: %d\n",  esp_get_free_heap_size());
+        // LOG 释放server之后 Mem: 66968
+        // 差不多是内存泄漏的大小，说明这玩意得手动释放
+        server = nullptr;
+    }
+
+    Serial.println("服务器关闭");
 }
 
 static int server_init(AppController *sys)
 {
     server_gui_init();
     // 初始化运行时参数
-    run_data = (ServerAppRunData *)malloc(sizeof(ServerAppRunData));
+    // 使用calloc而不是malloc，自动初始化为0
+    run_data = (ServerAppRunData *)calloc(1, sizeof(ServerAppRunData));
+    if (!run_data) {
+        Serial.println("Failed to allocate memory for server run data");
+        return -1;
+    }
     run_data->web_start = 0;
     run_data->req_sent = 0;
     run_data->serverReflushPreMillis = 0;
@@ -155,13 +178,19 @@ static void server_process(AppController *sys,
             LV_SCR_LOAD_ANIM_NONE);
         // 如果web服务没有开启 且 ap开启的请求没有发送 message这边没有作用（填0）
         sys->send_to(SERVER_APP_NAME, CTRL_NAME,
+                     APP_MESSAGE_WIFI_CONN, NULL, NULL);
+        sys->send_to(SERVER_APP_NAME, CTRL_NAME,
                      APP_MESSAGE_WIFI_AP, NULL, NULL);
+
+        // 若关闭GUI与消息通知和开启服务，仍然存在32~36B内存泄漏
+        // 每次进出app内存变化：81724 81736 81704 81664 81628 81592 81556 
+
         run_data->req_sent = 1; // 标志为 ap开启请求已发送
     }
     else if (1 == run_data->web_start)
     {
-        server.handleClient(); // 一定需要放在循环里扫描
-        // dnsServer.processNextRequest();
+        if(server != nullptr) server->handleClient(); // 一定需要放在循环里扫描
+        // dnsserver->processNextRequest();
         if (doDelayMillisTime(SERVER_REFLUSH_INTERVAL, &run_data->serverReflushPreMillis, false) == true)
         {
             // 发送wifi维持的心跳
@@ -207,7 +236,7 @@ static void server_message_handle(const char *from, const char *to,
     case APP_MESSAGE_WIFI_AP:
     {
         Serial.print(F("APP_MESSAGE_WIFI_AP enable\n"));
-        display_setting(
+        display_setting( 
             "WebServer Start",
             "Domain: holocubic",
             WiFi.localIP().toString().c_str(),
@@ -216,7 +245,7 @@ static void server_message_handle(const char *from, const char *to,
         start_web_config();
         run_data->web_start = 1;
     }
-    break;
+    break; 
     case APP_MESSAGE_WIFI_ALIVE:
     {
         // wifi心跳维持的响应 可以不做任何处理

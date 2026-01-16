@@ -17,7 +17,7 @@ extern ESP8266WebServer server;
 #include <ESPmDNS.h>
 #include <DNSServer.h>
 #include <HTTPClient.h>
-extern WebServer server;
+extern WebServer *server;
 #endif
 
 extern APP_OBJ server_app;
