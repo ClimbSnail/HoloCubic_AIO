@@ -1,2 +1,10 @@
 Docs/LvglFontTool
 .idea/
+.trae/
+agent/
+.vscode/
+build_log*.txt
+run_log*.txt
+diff_output.txt
+# 仿真测试图片（仅保留提交的5张）
+sim_data/sd/image/a*.jpg

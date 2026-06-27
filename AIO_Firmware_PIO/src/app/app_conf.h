@@ -12,117 +12,155 @@
 // 在开发新的app时，可以先把其他所有APP关闭，这样烧录速度也比较快
 
 // 范例APP 默认不开启
+#ifndef APP_EXAMPLE_USE
 #define APP_EXAMPLE_USE 0
+#endif
 #if APP_EXAMPLE_USE
 #include "app/example/example.h"
 #endif
 
 // 纪念日APP
+#ifndef APP_ANNIVERSARY_USE
 #define APP_ANNIVERSARY_USE 1
+#endif
 #if APP_ANNIVERSARY_USE
 #include "app/anniversary/anniversary.h"
 #endif
 
 // bilibili粉丝APP
+#ifndef APP_BILIBILI_FANS_USE
 #define APP_BILIBILI_FANS_USE 1
+#endif
 #if APP_BILIBILI_FANS_USE
 #include "app/bilibili_fans/bilibili.h"
 #endif
 
 // 文件管理器APP
+#ifndef APP_FILE_MANAGER_USE
 #define APP_FILE_MANAGER_USE 1
+#endif
 #if APP_FILE_MANAGER_USE
 #include "app/file_manager/file_manager.h"
 #endif
 
 // 2048游戏APP
+#ifndef APP_GAME_2048_USE
 #define APP_GAME_2048_USE 1
+#endif
 #if APP_GAME_2048_USE
 #include "app/game_2048/game_2048.h"
 #endif
 
 // 心跳APP
+#ifndef APP_HEARTBEAT_USE
 #define APP_HEARTBEAT_USE 1
+#endif
 #if APP_HEARTBEAT_USE
 #include "app/heartbeat/heartbeat.h"
 #endif
 
 // 特效动画APP
+#ifndef APP_IDEA_ANIM_USE
 #define APP_IDEA_ANIM_USE 1
+#endif
 #if APP_IDEA_ANIM_USE
 #include "app/idea_anim/idea.h"
 #endif
 
 // 视频播放器APP
+#ifndef APP_MEDIA_PLAYER_USE
 #define APP_MEDIA_PLAYER_USE 1
+#endif
 #if APP_MEDIA_PLAYER_USE
 #include "app/media_player/media_player.h"
 #endif
 
 // 相册APP
+#ifndef APP_PICTURE_USE
 #define APP_PICTURE_USE 1
+#endif
 #if APP_PICTURE_USE
 #include "app/picture/picture.h"
 #endif
 
 // 遥感器APP
+#ifndef APP_PC_RESOURCE_USE
 #define APP_PC_RESOURCE_USE 1
+#endif
 #if APP_PC_RESOURCE_USE
 #include "app/pc_resource/pc_resource.h"
 #endif
 
 // 屏幕分享/投屏APP
+#ifndef APP_SCREEN_SHARE_USE
 #define APP_SCREEN_SHARE_USE 1
+#endif
 #if APP_SCREEN_SHARE_USE
 #include "app/screen_share/screen_share.h"
 #endif
 
 // 网页配置服务APP
 // 此项用于配置小电视，为必选项，此处仅为了说明有这个app，此宏无作用
+#ifndef APP_WEB_SERVER_USE
 #define APP_WEB_SERVER_USE 1
+#endif
 #if APP_WEB_SERVER_USE
 #include "app/server/server.h"
 #endif
 
 // 设置APP
+#ifndef APP_SETTING_USE
 #define APP_SETTING_USE 1
+#endif
 #if APP_SETTING_USE
 #include "app/settings/settings.h"
 #endif
 
 // 股票行情查看APP
+#ifndef APP_STOCK_MARKET_USE
 #define APP_STOCK_MARKET_USE 1
+#endif
 #if APP_STOCK_MARKET_USE
 #include "app/stockmarket/stockmarket.h"
 #endif
 
 // 天气APP
 // 如flash空间不够，首选配置天气app二选一，腾出大量flash空间
+#ifndef APP_WEATHER_USE
 #define APP_WEATHER_USE 1
+#endif
 #if APP_WEATHER_USE
 #include "app/weather/weather.h"
 #endif
 
 // 天气(旧)APP
 // 如flash空间不够，首选配置天气app二选一，腾出大量flash空间
+#ifndef APP_WEATHER_OLD_USE
 #define APP_WEATHER_OLD_USE 1
+#endif
 #if APP_WEATHER_OLD_USE
 #include "app/weather_old/weather_old.h"
 #endif
 
 // 番茄时钟2.0 APP
+#ifndef APP_TOMATO_USE
 #define APP_TOMATO_USE 1
+#endif
 #if APP_TOMATO_USE
 #include "app/tomato/tomato.h"
 #endif
 
 // 贪吃蛇游戏APP
+#ifndef APP_GAME_SNAKE_USE
 #define APP_GAME_SNAKE_USE 1
+#endif
 #if APP_GAME_SNAKE_USE
 #include "app/game_snake/game_snake.h"
 #endif
 
+#ifndef APP_LHLXW_USE
 #define APP_LHLXW_USE 1
+#endif
 #if APP_LHLXW_USE
 #include "app/LHLXW/LHLXW.h"
 #endif

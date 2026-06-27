@@ -141,6 +141,7 @@ int AppController::main_process(ImuAction *act_info)
     {
         Serial.print(F("[Operate]\tact_info->active: "));
         Serial.println(active_type_info[act_info->active]);
+        Serial.flush();
     }
 
     if (isRunEventDeal)
@@ -169,6 +170,8 @@ int AppController::main_process(ImuAction *act_info)
         }
         else if (ACTIVE_TYPE::TURN_RIGHT == act_info->active)
         {
+            Serial.printf("[APPCTRL] TURN_RIGHT branch, cur_app_index=%d, app_num=%d\n", cur_app_index, app_num);
+            Serial.flush();
             anim_type = LV_SCR_LOAD_ANIM_MOVE_LEFT;
             pre_app_index = cur_app_index;
             // 以下等效与 processId = (processId - 1 + APP_NUM) % 4;
@@ -178,10 +181,22 @@ int AppController::main_process(ImuAction *act_info)
         }
         else if (ACTIVE_TYPE::GO_FORWORD == act_info->active)
         {
+            Serial.printf("[APPCTRL] GO_FORWORD: entering app[%d]='%s', app_init=%p\n",
+                          cur_app_index, appList[cur_app_index]->app_name, appList[cur_app_index]->app_init);
+            Serial.flush();
             app_exit_flag = 1; // 进入app
             if (NULL != appList[cur_app_index]->app_init)
             {
+                Serial.printf("[APPCTRL] GO_FORWORD: calling app_init()...\n");
+                Serial.flush();
                 (*(appList[cur_app_index]->app_init))(this); // 执行APP初始化
+                Serial.printf("[APPCTRL] GO_FORWORD: app_init() returned\n");
+                Serial.flush();
+            }
+            else
+            {
+                Serial.printf("[APPCTRL] GO_FORWORD: ERROR app_init is NULL!\n");
+                Serial.flush();
             }
         }
 
@@ -198,7 +213,6 @@ int AppController::main_process(ImuAction *act_info)
         app_control_display_scr(appList[cur_app_index]->app_image,
                                 appList[cur_app_index]->app_name,
                                 LV_SCR_LOAD_ANIM_NONE, false);
-        // 运行APP进程 等效于把控制权交给当前APP
         (*(appList[cur_app_index]->main_process))(this, act_info);
     }
     act_info->active = ACTIVE_TYPE::UNKNOWN;
@@ -275,7 +289,6 @@ int AppController::send_to(const char *from, const char *to,
 
 int AppController::req_event_deal(void)
 {
-    // 请求事件的处理
     for (std::list<EVENT_OBJ>::iterator event = eventList.begin(); event != eventList.end();)
     {
         if ((*event).nextRunTime > GET_SYS_MILLIS())
@@ -283,8 +296,11 @@ int AppController::req_event_deal(void)
             ++event;
             continue;
         }
-        // 后期可以拓展其他事件的处理
+        Serial.printf("[EVENT_DEAL] processing type=%d\n", (int)(*event).type);
+        Serial.flush();
         bool ret = wifi_event((*event).type);
+        Serial.printf("[EVENT_DEAL] wifi_event ret=%d\n", (int)ret);
+        Serial.flush();
         if (false == ret)
         {
             // 本事件没处理完成
@@ -309,8 +325,12 @@ int AppController::req_event_deal(void)
         // 事件回调
         if (NULL != (*event).from && NULL != (*event).from->message_handle)
         {
+            Serial.printf("[EVENT_DEAL] calling message_handle(%s)...\n", (*event).from->app_name);
+            Serial.flush();
             (*((*event).from->message_handle))(CTRL_NAME, (*event).from->app_name,
                                                (*event).type, (*event).info, NULL);
+            Serial.printf("[EVENT_DEAL] message_handle(%s) returned\n", (*event).from->app_name);
+            Serial.flush();
         }
         Serial.print("[EVENT]\tDelete -> " + String(app_event_type_info[(*event).type]));
         event = eventList.erase(event); // 删除该响应完成的事件

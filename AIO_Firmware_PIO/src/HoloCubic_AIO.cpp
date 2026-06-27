@@ -21,7 +21,10 @@
 #include <SPIFFS.h>
 #include <esp32-hal.h>
 #include <esp32-hal-timer.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
+TaskHandle_t g_app_main_task_handle = NULL;
 bool isCheckAction = false;
 
 /*** Component objects **7*/
@@ -66,15 +69,23 @@ void setup()
     // Serial.print(F("FlashChipMode: "));
     // Serial.println(ESP.getFlashChipMode());
     // Serial.println(F("FlashChipMode value: FM_QIO = 0, FM_QOUT = 1, FM_DIO = 2, FM_DOUT = 3, FM_FAST_READ = 4, FM_SLOW_READ = 5, FM_UNKNOWN = 255"));
+    Serial.printf("[SETUP] Step 1: Creating AppController...\n");
+    Serial.flush();
 
     app_controller = new AppController(); // APP控制器
+    Serial.printf("[SETUP] AppController created\n");
+    Serial.flush();
 
     // 需要放在Setup里初始化
+    Serial.printf("[SETUP] Step 2: Mounting SPIFFS...\n");
+    Serial.flush();
     if (!SPIFFS.begin(true))
     {
         Serial.println("SPIFFS Mount Failed");
         return;
     }
+    Serial.printf("[SETUP] SPIFFS OK\n");
+    Serial.flush();
 
 #ifdef PEAK
     pinMode(CONFIG_BAT_CHG_DET_PIN, INPUT);
@@ -89,13 +100,19 @@ void setup()
 #endif
 
     // config_read(NULL, &g_cfg);   // 旧的配置文件读取方式
+    Serial.printf("[SETUP] Step 3: Reading config...\n");
     app_controller->read_config(&app_controller->sys_cfg);
     app_controller->read_config(&app_controller->mpu_cfg);
     app_controller->read_config(&app_controller->rgb_cfg);
+    Serial.printf("[SETUP] Config OK\n");
+    Serial.flush();
 
     /*** Init screen ***/
+    Serial.printf("[SETUP] Step 4: screen.init()...\n");
     screen.init(app_controller->sys_cfg.rotation,
                 app_controller->sys_cfg.backLight);
+    Serial.printf("[SETUP] screen.init() OK\n");
+    Serial.flush();
 
     /*** Init on-board RGB ***/
     rgb.init();
@@ -108,6 +125,8 @@ void setup()
     tf.init();
 
     lv_fs_fatfs_init();
+    Serial.printf("[SETUP] Step 5: app_controller->init()...\n");
+    Serial.flush();
 
     // Update display in parallel thread.
     // BaseType_t taskLvglReturned = xTaskCreate(
@@ -131,6 +150,8 @@ void setup()
 #endif /*LV_USE_LOG*/
 
     app_controller->init();
+    Serial.printf("[SETUP] app_controller->init() OK\n");
+    Serial.flush();
 
     // 将APP"安装"到controller里
 #if APP_WEATHER_USE
@@ -155,7 +176,9 @@ void setup()
     app_controller->app_install(&file_manager_app);
 #endif
 
+#if APP_WEB_SERVER_USE
     app_controller->app_install(&server_app);
+#endif
 
 #if APP_IDEA_ANIM_USE
     app_controller->app_install(&idea_app);
@@ -191,14 +214,20 @@ void setup()
     app_controller->app_auto_start();
 
     // 优先显示屏幕 加快视觉上的开机时间
+    Serial.printf("[SETUP] Step 6: First main_process()...\n");
+    Serial.flush();
     app_controller->main_process(&mpu.action_info);
+    Serial.printf("[SETUP] First main_process() OK\n");
+    Serial.flush();
 
     /*** Init IMU as input device ***/
     // lv_port_indev_init();
 
+    Serial.printf("[SETUP] Step 7: mpu.init()...\n");
     mpu.init(app_controller->sys_cfg.mpu_order,
              app_controller->sys_cfg.auto_calibration_mpu,
              &app_controller->mpu_cfg); // 初始化比较耗时
+    Serial.printf("[SETUP] mpu.init() OK\n");
 
     /*** 以此作为MPU6050初始化完成的标志 ***/
     RgbConfig *rgb_cfg = &app_controller->rgb_cfg;
@@ -219,10 +248,17 @@ void setup()
                                 200 / portTICK_PERIOD_MS,
                                 pdTRUE, (void *)0, actionCheckHandle);
     xTimerStart(xTimerAction, 0);
+    Serial.printf("[SETUP] ====== setup() COMPLETE ======\n");
 }
 
 void loop()
 {
+    static unsigned long loop_count = 0;
+    loop_count++;
+    if (loop_count % 1000 == 0) {
+        Serial.printf("[LOOP] frame=%lu\n", loop_count);
+    }
+
     screen.routine();
 
 #ifdef PEAK

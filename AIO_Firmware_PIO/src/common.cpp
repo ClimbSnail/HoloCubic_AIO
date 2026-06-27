@@ -12,6 +12,8 @@ Ambient ambLight;   // 光线传感器对象
 
 // lvgl handle的锁
 SemaphoreHandle_t lvgl_mutex = xSemaphoreCreateMutex();
+// IMU 动作数据的锁（保护定时器回调和主循环的并发访问）
+SemaphoreHandle_t g_action_mutex = xSemaphoreCreateMutex();
 
 boolean doDelayMillisTime(unsigned long interval, unsigned long *previousMillis, boolean state)
 {

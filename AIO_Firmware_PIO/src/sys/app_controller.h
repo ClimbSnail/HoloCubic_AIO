@@ -66,9 +66,14 @@ public:
     void read_config(RgbConfig *cfg);
     void write_config(RgbConfig *cfg);
 
-private:
+public:
     APP_OBJ *getAppByName(const char *name);
     int getAppIdxByName(const char *name);
+    unsigned int app_num;
+    int cur_app_index;     // 当前运行的APP下标
+    boolean app_exit_flag; // 是否退出APP应用（1=已进入APP, 0=在APP列表）
+
+private:
     int app_is_legal(const APP_OBJ *app_obj);
 
 private:
@@ -79,9 +84,6 @@ private:
     std::list<EVENT_OBJ> eventList;   // 用来储存事件
     boolean m_wifi_status;            // 表示是wifi状态 true开启 false关闭
     unsigned long m_preWifiReqMillis; // 保存上一回请求的时间戳
-    unsigned int app_num;
-    boolean app_exit_flag; // 表示是否退出APP应用
-    int cur_app_index;     // 当前运行的APP下标
     int pre_app_index;     // 上一次运行的APP下标
 
     TimerHandle_t xTimerEventDeal; // 事件处理定时器
